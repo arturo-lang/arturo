@@ -101,21 +101,24 @@ proc defineModule*(moduleName: string) =
             ; => [a b c d e f g h i j k l m n ñ o p q r s t u v w x y z á é í ó ú ü A B C D E F G H I J K L M N Ñ O P Q R S T U V W X Y Z Á É Í Ó Ú Ü]
         """:
             #=======================================================
-            let lower = hadAttr("lower")
-            let upper = hadAttr("upper")
-            let all = hadAttr("all")
+            bindAttrs:
+                lower: Logical
+                upper: Logical
+                all:   Logical
 
-            var got: ValueArray
+            dispatch:
+                _:
+                    var got: ValueArray
 
-            if upper:
-                if lower:
-                    got = getCharset(x.s, withExtras=all)
+                    if upper:
+                        if lower:
+                            got = getCharset(x.s, withExtras=all)
 
-                got.add(getCharset(x.s, withExtras=all, doUppercase=true))
-            else:
-                got = getCharset(x.s, withExtras=all)
+                        got.add(getCharset(x.s, withExtras=all, doUppercase=true))
+                    else:
+                        got = getCharset(x.s, withExtras=all)
 
-            push(newBlock(got))
+                    push(newBlock(got))
 
     builtin "capitalize",
         alias       = unaliased, 
@@ -134,14 +137,9 @@ proc defineModule*(moduleName: string) =
             capitalize 'str                     ; str: "Hello World"
         """:
             #=======================================================
-            if xKind==String: push(newString(x.s.capitalize()))
-            elif xKind==Char: push(newChar(x.c.toUpper()))
-            else: 
-                ensureInPlaceAny()
-                if InPlaced.kind==String:
-                    InPlaced.s = InPlaced.s.capitalize()
-                else:
-                    InPlaced.c = InPlaced.c.toUpper()
+            dispatchWithLiteral:
+                String(s): s.capitalize()
+                Char(c):   c.toUpper()
 
     builtin "escape",
         alias       = unaliased, 
@@ -177,31 +175,15 @@ proc defineModule*(moduleName: string) =
             ; a long &quot;string&quot; + with \diffe\rent symbols.
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if (hadAttr("json")):
-                    SetInPlaceAny(newString(escapeJsonUnquoted(InPlaced.s)))
-                elif (hadAttr("regex")):
-                    SetInPlaceAny(newString(escapeForRegex(InPlaced.s)))
-                elif (hadAttr("shell")):
-                    when not defined(WEB):
-                        SetInPlaceAny(newString(quoteShell(InPlaced.s)))
-                elif (hadAttr("xml")):
-                    SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
-                else:
-                    SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
-            else:
-                if (hadAttr("json")):
-                    push(newString(escapeJsonUnquoted(x.s)))
-                elif (hadAttr("regex")):
-                    push(newString(escapeForRegex(x.s)))
-                elif (hadAttr("shell")):
-                    when not defined(WEB):
-                        push(newString(quoteShell(x.s)))
-                elif (hadAttr("xml")):
-                    push(newString(xmltree.escape(x.s)))
-                else:
-                    push(newString(strutils.escape(x.s)))
+            dispatchWithLiteral:
+                String(s):
+                    on json:  escapeJsonUnquoted(s)
+                    on regex: escapeForRegex(s)
+                    on xml:   xmltree.escape(s)
+                    on shell:
+                        when not defined(WEB): quoteShell(s)
+                        else:                  strutils.escape(s)
+                    _:        strutils.escape(s)
 
     builtin "indent",
         alias       = unaliased, 
@@ -230,20 +212,12 @@ proc defineModule*(moduleName: string) =
             ; ##########three
         """:
             #=======================================================
-            var count = 4
-            var padding = " "
+            bindAttrs:
+                n:               Integer = 4
+                padding(with):   String  = " "
 
-            if checkAttr("n"):
-                count = aN.i
-
-            if checkAttr("with"):
-                padding = aWith.s
-
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newString(indent(InPlaced.s, count, padding)))
-            else:
-                push(newString(indent(x.s, count, padding)))      
+            dispatchWithLiteral:
+                String(s): indent(s, n, padding)
 
     builtin "jaro",
         alias       = unaliased, 
@@ -265,7 +239,8 @@ proc defineModule*(moduleName: string) =
             jaro "abcdef" "fedcba"  ; => 0.3888888888888888
             jaro "abcde" "vwxyz"    ; => 0.0
         """:
-            push(newFloating(jaro(x.s,y.s)))    
+            dispatch:
+                (String(s), String(t)): push(newFloating(jaro(s, t)))
 
     builtin "join",
         alias       = unaliased, 
@@ -314,31 +289,31 @@ proc defineModule*(moduleName: string) =
             2. Banana
         """:
             #=======================================================
-            if (hadAttr("path")):
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newString(joinPath(InPlaced.a.map(proc (v:Value):string = $(v)))))
-                else:
-                    push(newString(joinPath(x.a.map(proc (v:Value):string = $(v)))))
-            else:
-                var sep: string
-                if checkAttr("with"):
-                    if likely(aWith.kind == String):
-                        sep = aWith.s
-                    else:
-                        sep = $(aWith.c)
-                elif hadAttr("words"):
-                    sep = " "
-                elif hadAttr("lines"):
-                    sep = "\n"
-                else:
-                    sep = ""
+            bindAttrs:
+                asPath(path):    Logical
+                asWords(words):  Logical
+                asLines(lines):  Logical
+                sepValue(`with`): {String, Char}
 
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newString(InPlaced.a.map(proc (v:Value):string = $(v)).join(sep)))
-                else:
-                    push(newString(x.a.map(proc (v:Value):string = $(v)).join(sep)))
+            var sep: string
+            if not asPath:
+                if not sepValue.isNil:
+                    if likely(sepValue.kind == String): sep = sepValue.s
+                    else:                               sep = $(sepValue.c)
+                elif asWords: sep = " "
+                elif asLines: sep = "\n"
+                else:         sep = ""
+
+            dispatchWithLiteral:
+                Block(a):
+                    value:
+                        let strs = a.map(proc (v: Value): string = $(v))
+                        if asPath: push(newString(joinPath(strs)))
+                        else:      push(newString(strs.join(sep)))
+                    inplace:
+                        let strs = a.map(proc (v: Value): string = $(v))
+                        if asPath: SetInPlaceAny(newString(joinPath(strs)))
+                        else:      SetInPlaceAny(newString(strs.join(sep)))
 
     builtin "levenshtein",
         alias       = unaliased, 
@@ -362,14 +337,17 @@ proc defineModule*(moduleName: string) =
             ; AC-TGCACTGAC
             ; GCATG-ACT-AT
         """:
-            if ( hadAttr("align")):
-                var filler:Rune = "-".runeAt(0)
-                if checkAttr("with"):
-                    filler = aWith.c
-                let aligned = levenshteinAlign(x.s,y.s,filler)
+            bindAttrs:
+                align:         Logical
+                filler(with):  Char = "-".runeAt(0)
+
+            if align:
+                let aligned = levenshteinAlign(x.s, y.s, filler)
                 push(newStringBlock(@[aligned[0], aligned[1]]))
-            else:
-                push(newInteger(editDistance(x.s,y.s)))
+                return
+
+            dispatch:
+                (String(s), String(t)): push(newInteger(editDistance(s, t)))
 
     builtin "lower",
         alias       = unaliased, 
@@ -392,14 +370,9 @@ proc defineModule*(moduleName: string) =
             ; => 'a'  
         """:
             #=======================================================
-            if xKind==String: push(newString(x.s.toLower()))
-            elif xKind==Char: push(newChar(x.c.toLower()))
-            else: 
-                ensureInPlaceAny()
-                if InPlaced.kind==String:
-                    InPlaced.s = InPlaced.s.toLower()
-                else:
-                    InPlaced.c = InPlaced.c.toLower()
+            dispatchWithLiteral:
+                String(s): s.toLower()
+                Char(c):   c.toLower()
 
     # TODO(Strings\match) should work for Web builds as well
     #  labels: library, web, bug
@@ -465,23 +438,24 @@ proc defineModule*(moduleName: string) =
                     elif yKind==String: newRegex(y.s).rx
                     else: newRegex($(y.c)).rx
 
+                bindAttrs:
+                    doOnce(once):       Logical
+                    doCount(count):     Logical
+                    doCapture(capture): Logical
+                    doNamed(named):     Logical
+                    doBounds(bounds):   Logical
+                    doFull(full):       Logical
+
                 var iFrom = 0
                 var iTo = int.high
 
-                let doOnce = hadAttr("once")
-                let doCount = hadAttr("count")
-                let doCapture = hadAttr("capture")
-                let doNamed = hadAttr("named")
-                let doBounds = hadAttr("bounds")
-                let doFull = hadAttr("full")
-
                 if checkAttr("in"):
                     iFrom = aIn.rng.start
-                    if iFrom < 0: 
+                    if iFrom < 0:
                         iFrom = 0
-                        
+
                     iTo = aIn.rng.stop
-                    if iTo >= x.s.len: 
+                    if iTo >= x.s.len:
                         iTo = x.s.len-1
 
                 if doCount:
@@ -571,6 +545,10 @@ proc defineModule*(moduleName: string) =
 
         """:
             #=======================================================
+            bindAttrs:
+                padding(`with`): String  = " "
+                nOverride(n):    Integer = int.low
+
             var count = 0
             if xKind in {Literal,PathLiteral}:
                 ensureInPlaceAny()
@@ -578,19 +556,14 @@ proc defineModule*(moduleName: string) =
             else:
                 count = indentation(x.s)
 
-            var padding = " "
-
-            if checkAttr("n"):
-                count = aN.i
-
-            if checkAttr("with"):
-                padding = aWith.s
+            if nOverride != int.low:
+                count = nOverride
 
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
                 SetInPlaceAny(newString(unindent(InPlaced.s, count, padding)))
             else:
-                push(newString(unindent(x.s, count, padding))) 
+                push(newString(unindent(x.s, count, padding)))
 
     builtin "pad",
         alias       = unaliased, 
@@ -619,25 +592,14 @@ proc defineModule*(moduleName: string) =
             ; => 00123
         """:
             #=======================================================
-            var padding = ' '.Rune
-            if checkAttr("with"):
-                padding = aWith.c
+            bindAttrs:
+                padding(with): Char = ' '.Rune
 
-            if (hadAttr("right")):
-                if xKind==String: push(newString(unicode.alignLeft(x.s, y.i, padding=padding)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = unicode.alignLeft(InPlaced.s, y.i, padding=padding)
-            elif (hadAttr("center")):
-                if xKind==String: push(newString(centerUnicode(x.s, y.i, padding=padding)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = centerUnicode(InPlaced.s, y.i, padding=padding)
-            else:
-                if xKind==String: push(newString(unicode.align(x.s, y.i, padding=padding)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
+            dispatchWithLiteral:
+                String(s):
+                    on right:  unicode.alignLeft(s, y.i, padding=padding)
+                    on center: centerUnicode(s, y.i, padding=padding)
+                    _:         unicode.align(s, y.i, padding=padding)
 
     when not defined(WEB):
         # TODO(Strings\render) function should also work for Web/JS builds
@@ -663,77 +625,73 @@ proc defineModule*(moduleName: string) =
             print ~"|greeting|, your number is |x|"       ; hello, your number is 2
             """:
                 #=======================================================
-                let recursive = not (hadAttr("once"))
-                let templated = (hadAttr("template"))
-                var res: string
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    res = InPlaced.s
-                else:
-                    res = x.s
+                bindAttrs:
+                    once: Logical
+                    templated(`template`): Logical
+
+                let recursive = not once
 
                 let Interpolated    = nre.re"\|([^\|]+)\|"
                 let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
 
-                if templated:
-                    var keepGoing = true
-                    if recursive: 
-                        keepGoing = res.contains(Embeddable)
+                dispatchWithLiteral:
+                    String(s):
+                        block:
+                            var res = s
+                            if templated:
+                                var keepGoing = true
+                                if recursive:
+                                    keepGoing = res.contains(Embeddable)
 
-                    while keepGoing:
-                        var evaled: Translation
+                                while keepGoing:
+                                    var evaled: Translation
 
-                        evaled = templateStore.getOrDefault(res, nil)
-                        if evaled.isNil:
-                            let initial = res
-                            # make necessary substitutions
-                            res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
-                                ("||>","««"),
-                                ("<||","»»")
-                            ) & "»»"
+                                    evaled = templateStore.getOrDefault(res, nil)
+                                    if evaled.isNil:
+                                        let initial = res
+                                        # make necessary substitutions
+                                        res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                                            ("||>","««"),
+                                            ("<||","»»")
+                                        ) & "»»"
 
-                            # parse string template
-                            evaled = doEval(doParse(res, isFile=false))
-                            templateStore[initial] = evaled
+                                        # parse string template
+                                        evaled = doEval(doParse(res, isFile=false))
+                                        templateStore[initial] = evaled
 
-                        # execute/reduce ('array') the resulting block
-                        let stop = SP
-                        execUnscoped(evaled)
-    
-                        let arr: ValueArray = sTopsFrom(stop)
-                        SP = stop
+                                    # execute/reduce ('array') the resulting block
+                                    let stop = SP
+                                    execUnscoped(evaled)
 
-                        # and join the different strings
-                        res = ""
-                        for i, v in arr:
-                            if (not v.isNil) and v.kind==String:
-                                add(res, v.s)
+                                    let arr: ValueArray = sTopsFrom(stop)
+                                    SP = stop
 
-                        # if recursive, check if there's still more embedded tags
-                        # otherwise, break out of the loop
-                        if recursive: keepGoing = res.contains(Embeddable)
-                        else: keepGoing = false
-                else:
-                    var keepGoing = true
-                    if recursive: 
-                        keepGoing = res.find(Interpolated).isSome
+                                    # and join the different strings
+                                    res = ""
+                                    for i, v in arr:
+                                        if (not v.isNil) and v.kind==String:
+                                            add(res, v.s)
 
-                    while keepGoing:
-                        res = res.replace(Interpolated, proc (match: RegexMatch): string =
-                                    execUnscoped(doParse(match.captures[0], isFile=false))
-                                    $(stack.pop())
-                                )
+                                    # if recursive, check if there's still more embedded tags
+                                    # otherwise, break out of the loop
+                                    if recursive: keepGoing = res.contains(Embeddable)
+                                    else: keepGoing = false
+                            else:
+                                var keepGoing = true
+                                if recursive:
+                                    keepGoing = res.find(Interpolated).isSome
 
-                        # if recursive, check if there's still more embedded tags
-                        # otherwise, break out of the loop
-                        if recursive: keepGoing = res.find(Interpolated).isSome
-                        else: keepGoing = false
+                                while keepGoing:
+                                    res = res.replace(Interpolated, proc (match: RegexMatch): string =
+                                                execUnscoped(doParse(match.captures[0], isFile=false))
+                                                $(stack.pop())
+                                            )
 
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newString(res))
-                else:
-                    push(newString(res))
+                                    # if recursive, check if there's still more embedded tags
+                                    # otherwise, break out of the loop
+                                    if recursive: keepGoing = res.find(Interpolated).isSome
+                                    else: keepGoing = false
+                            res
 
     # TODO(Strings\replace) better implementation with more options needed
     #  Obviously, no need to overdo it here. But at least, we could add support for things like `.once`
@@ -764,38 +722,36 @@ proc defineModule*(moduleName: string) =
             replace "hello" ["h" "o"] ["x" "z"]     ; => "xellz"
         """:
             #=======================================================
-            if xKind==String:
-                if yKind==String:
-                    push(newString(x.s.replaceAll(y.s, z.s)))
-                elif yKind==Regex:
-                    push(newString(x.s.replaceAll(y.rx, z.s)))
-                else:
-                    var final = x.s
-                    if zKind==String:
-                        for item in y.a:
+            dispatchWithLiteral:
+                (String(s), String(m),   String(r)):
+                    value:   push(newString(s.replaceAll(m, r)))
+                    inplace: s = s.replaceAll(m, r)
+                (String(s), Regex(rgx),  String(r)):
+                    value:   push(newString(s.replaceAll(rgx, r)))
+                    inplace: s = s.replaceAll(rgx, r)
+                (String(s), Block(matches), String(_)):
+                    value:
+                        var final = s
+                        for item in matches:
                             replaceStrWith(final, item, z)
-                    else:
-                        let lim = min(len(y.a), len(z.a))
+                        push(newString(final))
+                    inplace:
+                        for item in matches:
+                            replaceStrWith(s, item, z)
+                (String(s), Block(matches), Block(reps)):
+                    value:
+                        var final = s
+                        let lim = min(len(matches), len(reps))
                         var i = 0
                         while i < lim:
-                            replaceStrWith(final, y.a[i], z.a[i])
+                            replaceStrWith(final, matches[i], reps[i])
                             inc i
-                    push(newString(final))
-            else:
-                ensureInPlaceAny()
-                if yKind==String:
-                    InPlaced.s = InPlaced.s.replaceAll(y.s, z.s)
-                elif yKind==Regex:
-                    InPlaced.s = InPlaced.s.replaceAll(y.rx, z.s)
-                else:
-                    if zKind==String:
-                        for item in y.a:
-                            replaceStrWith(InPlaced.s, item, z)
-                    else:
-                        let lim = min(len(y.a), len(z.a))
+                        push(newString(final))
+                    inplace:
+                        let lim = min(len(matches), len(reps))
                         var i = 0
                         while i < lim:
-                            replaceStrWith(InPlaced.s, y.a[i], z.a[i])
+                            replaceStrWith(s, matches[i], reps[i])
                             inc i
 
     builtin "strip",
@@ -823,17 +779,18 @@ proc defineModule*(moduleName: string) =
             ; strip trailing: >      Hello World <
         """:
             #=======================================================
-            var leading = (hadAttr("start"))
-            var trailing = (hadAttr("end"))
+            bindAttrs:
+                leading(start):  Logical
+                trailing(`end`): Logical
 
+            var stripStart = leading
+            var stripEnd   = trailing
             if not leading and not trailing:
-                leading = true
-                trailing = true
+                stripStart = true
+                stripEnd   = true
 
-            if xKind==String: push(newString(strutils.strip(x.s, leading, trailing)))
-            else: 
-                ensureInPlaceAny()
-                InPlaced.s = strutils.strip(InPlaced.s, leading, trailing) 
+            dispatchWithLiteral:
+                String(s): strutils.strip(s, stripStart, stripEnd)
 
     builtin "translate",
         alias       = unaliased, 
@@ -858,11 +815,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             let replacements = (toSeq(y.d.pairs)).map((w) => (w[0], w[1].s))
 
-            if xKind==String:
-                push(newString(x.s.multiReplace(replacements)))
-            else:
-                ensureInPlaceAny()
-                InPlaced.s = InPlaced.s.multiReplace(replacements)
+            dispatchWithLiteral:
+                String(s): s.multiReplace(replacements)
 
     builtin "truncate",
         alias       = unaliased, 
@@ -894,20 +848,13 @@ proc defineModule*(moduleName: string) =
             ; => "Lorem ipsum dolor sit amet,---"
         """: 
             #=======================================================
-            var with = "..."
-            if checkAttr("with"):
-                with = aWith.s
+            bindAttrs:
+                filler(with): String = "..."
 
-            if (hadAttr("preserve")):
-                if xKind==String: push(newString(truncatePreserving(x.s, y.i, with)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = truncatePreserving(InPlaced.s, y.i, with)
-            else:
-                if xKind==String: push(newString(truncate(x.s, y.i, with)))
-                else: 
-                    ensureInPlaceAny()
-                    InPlaced.s = truncate(InPlaced.s, y.i, with)
+            dispatchWithLiteral:
+                String(s):
+                    on preserve: truncatePreserving(s, y.i, filler)
+                    _:           truncate(s, y.i, filler)
 
     builtin "upper",
         alias       = unaliased, 
@@ -930,14 +877,9 @@ proc defineModule*(moduleName: string) =
             ; => 'A'                     
         """:
             #=======================================================
-            if xKind==String: push(newString(x.s.toUpper()))
-            elif xKind==Char: push(newChar(x.c.toUpper()))
-            else: 
-                ensureInPlaceAny()
-                if InPlaced.kind==String:
-                    InPlaced.s = InPlaced.s.toUpper()
-                else:
-                    InPlaced.c = InPlaced.c.toUpper()
+            dispatchWithLiteral:
+                String(s): s.toUpper()
+                Char(c):   c.toUpper()
 
     builtin "wordwrap",
         alias       = unaliased, 
@@ -967,18 +909,14 @@ proc defineModule*(moduleName: string) =
             ; five six
             ; seven 
             ; eight nine
-            ; ten 
+            ; ten
         """:
             #=======================================================
-            var cutoff = 80
-            if checkAttr("at"):
-                cutoff = aAt.i
-            
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newString(wrapWords(InPlaced.s, maxLineWidth=cutoff)))
-            else:
-                push newString(wrapWords(x.s, maxLineWidth=cutoff))
+            bindAttrs:
+                cutoff(at): Integer = 80
+
+            dispatchWithLiteral:
+                String(s): wrapWords(s, maxLineWidth=cutoff)
 
     #----------------------------
     # Predicates
@@ -1004,18 +942,16 @@ proc defineModule*(moduleName: string) =
             ascii? "Γειά!"          ; false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(ord(x.c)<128))
-            else:
-                var allOK = true
-                for ch in runes(x.s):
-                    if ord(ch) >= 128:
-                        allOK = false
-                        push(VFALSE)
-                        break
-
-                if allOK:
-                    push(VTRUE)
+            dispatch:
+                Char(c): push(newLogical(ord(c) < 128))
+                String(s):
+                    var allOK = true
+                    for ch in runes(s):
+                        if ord(ch) >= 128:
+                            allOK = false
+                            push(VFALSE)
+                            break
+                    if allOK: push(VTRUE)
 
     builtin "lower?",
         alias       = unaliased, 
@@ -1037,18 +973,16 @@ proc defineModule*(moduleName: string) =
             lower? 'A'               ; => false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isLower()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isLower():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
+            dispatch:
+                Char(c): push(newLogical(c.isLower()))
+                String(s):
+                    var broken = false
+                    for ch in runes(s):
+                        if not ch.isLower():
+                            push(VFALSE)
+                            broken = true
+                            break
+                    if not broken: push(VTRUE)
 
     when not defined(WEB):
 
@@ -1086,11 +1020,11 @@ proc defineModule*(moduleName: string) =
 
                 if checkAttr("in"):
                     iFrom = aIn.rng.start
-                    if iFrom < 0: 
+                    if iFrom < 0:
                         iFrom = 0
-                        
+
                     iTo = aIn.rng.stop
-                    if iTo >= x.s.len: 
+                    if iTo >= x.s.len:
                         iTo = x.s.len-1
 
                 var matched = false
@@ -1120,10 +1054,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             var res: Value
-            if likely(xKind==String):
-                res = doParse(x.s.strip(leading=true,trailing=false,{'-'}), isFile=false)
-            else:
-                res = doParse($(x.c), isFile=false)
+            dispatch:
+                String(s): res = doParse(s.strip(leading=true, trailing=false, {'-'}), isFile=false)
+                Char(c):   res = doParse($(c), isFile=false)
 
             push(newLogical(res.a.len==1 and res.a[0].kind in {Integer,Floating,Rational}))
 
@@ -1148,12 +1081,10 @@ proc defineModule*(moduleName: string) =
             prefix? "hello" 'h'           ; => true
         """:
             #=======================================================
-            if likely(yKind==String):
-                push(newLogical(x.s.startsWith(y.s)))
-            elif yKind==Regex:
-                push(newLogical(x.s.startsWith(y.rx)))
-            else:
-                push(newLogical(x.s.len > 0 and x.s.runeAtPos(0)==y.c))
+            dispatch:
+                (String(s), String(t)): push(newLogical(s.startsWith(t)))
+                (String(s), Regex(r)):  push(newLogical(s.startsWith(r)))
+                (String(s), Char(ch)):  push(newLogical(s.len > 0 and s.runeAtPos(0) == ch))
 
     builtin "suffix?",
         alias       = unaliased, 
@@ -1177,13 +1108,12 @@ proc defineModule*(moduleName: string) =
             suffix? "world" 'o'           ; => false
         """:
             #=======================================================
-            if likely(yKind==String):
-                push(newLogical(x.s.endsWith(y.s)))
-            elif yKind==Regex:
-                push(newLogical(x.s.endsWith(y.rx)))
-            else:
-                let slen = x.s.runeLen()
-                push(newLogical(slen > 0 and x.s.runeAtPos(slen-1) == y.c))
+            dispatch:
+                (String(s), String(t)): push(newLogical(s.endsWith(t)))
+                (String(s), Regex(r)):  push(newLogical(s.endsWith(r)))
+                (String(s), Char(ch)):
+                    let slen = s.runeLen()
+                    push(newLogical(slen > 0 and s.runeAtPos(slen-1) == ch))
 
     builtin "upper?",
         alias       = unaliased, 
@@ -1205,18 +1135,16 @@ proc defineModule*(moduleName: string) =
             upper? 'a'               ; => false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isUpper()))
-            else:
-                var broken = false
-                for c in runes(x.s):
-                    if not c.isUpper():
-                        push(VFALSE)
-                        broken = true
-                        break
-
-                if not broken:
-                    push(VTRUE)
+            dispatch:
+                Char(c): push(newLogical(c.isUpper()))
+                String(s):
+                    var broken = false
+                    for ch in runes(s):
+                        if not ch.isUpper():
+                            push(VFALSE)
+                            broken = true
+                            break
+                    if not broken: push(VTRUE)
 
     builtin "whitespace?",
         alias       = unaliased, 
@@ -1239,7 +1167,6 @@ proc defineModule*(moduleName: string) =
             whitespace? 'a'               ; => false
         """:
             #=======================================================
-            if xKind==Char:
-                push(newLogical(x.c.isWhitespace()))
-            else:
-                push(newLogical(x.s.isWhitespace()))
+            dispatch:
+                Char(c):   push(newLogical(c.isWhitespace()))
+                String(s): push(newLogical(s.isWhitespace()))

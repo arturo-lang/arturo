@@ -56,15 +56,13 @@ proc defineModule*(moduleName: string) =
             ; => #D99999
         """:
             #=======================================================
-            var balance = 0.5
-            if checkAttr("balance"):
-                balance = aBalance.f
+            bindAttrs:
+                balance: Floating = 0.5
 
-            if xKind == Color:
-                push newColor(blendColors(x.l, y.l, balance))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(blendColors(InPlaced.l, y.l, balance)))                
+            dispatchWithLiteral:
+                (Color(c), Color(d)):
+                    value:   push newColor(blendColors(c, d, balance))
+                    inplace: SetInPlaceAny(newColor(blendColors(c, d, balance)))
 
     builtin "darken",
         alias       = unaliased, 
@@ -84,11 +82,8 @@ proc defineModule*(moduleName: string) =
             darken #9944CC 0.3      ; => #6B308F
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(alterColorValue(x.l, y.f * (-1)))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f * (-1))))                
+            dispatchWithLiteral:
+                Color(c): alterColorValue(c, y.f * (-1))
 
     builtin "desaturate",
         alias       = unaliased, 
@@ -108,11 +103,10 @@ proc defineModule*(moduleName: string) =
             desaturate #9944CC 0.3      ; => #9558B8
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(saturateColor(x.l, y.f * (-1)))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f * (-1))))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(saturateColor(c, y.f * (-1)))
+                    inplace: SetInPlaceAny(newColor(saturateColor(c, y.f * (-1))))
 
     builtin "grayscale",
         alias       = unaliased, 
@@ -131,11 +125,10 @@ proc defineModule*(moduleName: string) =
             grayscale #FF44CC           ; => #A2A2A2
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(saturateColor(x.l, -1.0))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(saturateColor(InPlaced.l, -1.0)))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(saturateColor(c, -1.0))
+                    inplace: SetInPlaceAny(newColor(saturateColor(c, -1.0)))
 
     builtin "invert",
         alias       = unaliased, 
@@ -153,11 +146,10 @@ proc defineModule*(moduleName: string) =
             invert #orange              ; => #0059FF
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(invertColor(x.l))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(invertColor(InPlaced.l)))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(invertColor(c))
+                    inplace: SetInPlaceAny(newColor(invertColor(c)))
 
     builtin "lighten",
         alias       = unaliased, 
@@ -179,11 +171,8 @@ proc defineModule*(moduleName: string) =
             lighten #9944CC 0.3         ; => #C758FF
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(alterColorValue(x.l, y.f))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(alterColorValue(InPlaced.l, y.f)))                
+            dispatchWithLiteral:
+                Color(c): alterColorValue(c, y.f)
 
     builtin "palette",
         alias       = unaliased, 
@@ -228,29 +217,18 @@ proc defineModule*(moduleName: string) =
             ; => [#FF0000 #00FF00 #0000FF #00FE00 #F30000 #00FD00 #0000ED #EC0000 #00F800 #0000D8]
         """:
             #=======================================================
-            if (hadAttr("triad")):
-                push newBlock(triadPalette(x.l).map((c) => newColor(c)))
-            elif (hadAttr("tetrad")):
-                push newBlock(tetradPalette(x.l).map((c) => newColor(c)))
-            elif (hadAttr("split")):
-                push newBlock(splitPalette(x.l).map((c) => newColor(c)))
-            elif (hadAttr("analogous")):
-                var size = 6
-                if checkAttr("size"):
-                    size = aSize.i
-                push newBlock(analogousPalette(x.l, size).map((c) => newColor(c)))
-            elif (hadAttr("monochrome")):
-                var size = 6
-                if checkAttr("size"):
-                    size = aSize.i
-                push newBlock(monochromePalette(x.l, size).map((c) => newColor(c)))
-            elif (hadAttr("random")):
-                var size = 6
-                if checkAttr("size"):
-                    size = aSize.i
-                push newBlock(randomPalette(x.l, size).map((c) => newColor(c)))
-            else:
-                push newBlock(@[x])
+            bindAttrs:
+                size: Integer = 6
+
+            dispatch:
+                Color(c):
+                    on triad:      push newBlock(triadPalette(c).map((k) => newColor(k)))
+                    on tetrad:     push newBlock(tetradPalette(c).map((k) => newColor(k)))
+                    on split:      push newBlock(splitPalette(c).map((k) => newColor(k)))
+                    on analogous:  push newBlock(analogousPalette(c, size).map((k) => newColor(k)))
+                    on monochrome: push newBlock(monochromePalette(c, size).map((k) => newColor(k)))
+                    on random:     push newBlock(randomPalette(c, size).map((k) => newColor(k)))
+                    _:             push newBlock(@[x])
 
     builtin "saturate",
         alias       = unaliased, 
@@ -272,11 +250,10 @@ proc defineModule*(moduleName: string) =
             saturate #9944CC 0.3        ; => #A030E0
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(saturateColor(x.l, y.f))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(saturateColor(InPlaced.l, y.f)))
+            dispatchWithLiteral:
+                Color(c):
+                    value:   push newColor(saturateColor(c, y.f))
+                    inplace: SetInPlaceAny(newColor(saturateColor(c, y.f)))
 
     builtin "spin",
         alias       = unaliased, 
@@ -297,8 +274,5 @@ proc defineModule*(moduleName: string) =
             spin #123456 360        ; => #123456
         """:
             #=======================================================
-            if xKind == Color:
-                push newColor(spinColor(x.l, y.i))
-            else:
-                ensureInPlaceAny()
-                SetInPlaceAny(newColor(spinColor(InPlaced.l, y.i)))
+            dispatchWithLiteral:
+                Color(c): spinColor(c, y.i)

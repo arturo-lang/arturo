@@ -235,51 +235,52 @@ proc defineModule*(moduleName: string) =
             => 0
             """:
                 #=======================================================
-                # get arguments & options
-                var cmd = x.s
-                var args: seq[string]
-                if checkAttr("args"):
-                    args = aArgs.a.map((x) => (requireAttrValue("args", x, {String}); x.s))
-                let code = (hadAttr("code"))
-                let directly = (hadAttr("directly"))
-
                 # TODO(System\execute) Fix handling of `.async`
                 #  It currently "works" but in a very - very - questionable way.
                 #  This has to be implemented properly.
                 #  Also: having a globally-available array of "processes" makes things looking even worse.
                 #  labels: library, enhancement, windows, linux, macos
 
-                if (hadAttr("async")):
-                    let newProcess = startProcess(command = cmd, args = args)
-                    let pid = processID(newProcess)
-                    
-                    ActiveProcesses[pid] = newProcess
-                    push newInteger(pid)
-                else:
-                    # add arguments, if any
-                    for i in 0..high(args):
-                        cmd.add(' ')
-                        cmd.add(quoteShell(args[i]))
+                bindAttrs:
+                    rawArgs(args): Block = newSeq[Value]()
+                    async:         Logical
+                    code:          Logical
+                    directly:      Logical
 
-                    if directly:
-                        let pcode = execCmd(cmd)
+                let cliArgs = rawArgs.map((x) => (requireAttrValue("args", x, {String}); x.s))
 
-                        if code:
-                            push(newInteger(pcode))
+                dispatch:
+                    String(s):
+                        var cmd = s
+
+                        if async:
+                            let newProcess = startProcess(command = cmd, args = cliArgs)
+                            let pid = processID(newProcess)
+
+                            ActiveProcesses[pid] = newProcess
+                            push newInteger(pid)
                         else:
-                            discard
-                    else:
-                        # actually execute the command
-                        let (output, pcode) = execCmdEx(cmd)
+                            for i in 0..high(cliArgs):
+                                cmd.add(' ')
+                                cmd.add(quoteShell(cliArgs[i]))
 
-                        # return result, accordingly
-                        if code:
-                            push(newDictionary({
-                                "output": newString(output),
-                                "code": newInteger(pcode)
-                            }.toOrderedTable))
-                        else:
-                            push(newString(output))
+                            if directly:
+                                let pcode = execCmd(cmd)
+
+                                if code:
+                                    push(newInteger(pcode))
+                                else:
+                                    discard
+                            else:
+                                let (output, pcode) = execCmdEx(cmd)
+
+                                if code:
+                                    push(newDictionary({
+                                        "output": newString(output),
+                                        "code": newInteger(pcode)
+                                    }.toOrderedTable))
+                                else:
+                                    push(newString(output))
 
     builtin "exit",
         alias       = unaliased, 
@@ -323,18 +324,20 @@ proc defineModule*(moduleName: string) =
             ; prints a properly formatted error with the given message
         """:
             #=======================================================
-            var code = 1
-            if checkAttr("code"):
-                code = aCode.i
+            bindAttrs:
+                code:     Integer = 1
+                unstyled: Logical
 
             when not defined(WEB):
                 savePendingStores()
 
-            if (hadAttr("unstyled")):
-                echo $(x)
-                quit(code)
-            else:
-                ProgramError_panic(x.s.replace("\n",";"), code)
+            dispatch:
+                String(s):
+                    if unstyled:
+                        echo s
+                        quit(code)
+                    else:
+                        ProgramError_panic(s.replace("\n",";"), code)
 
     builtin "path",
         alias       = unaliased, 
@@ -379,10 +382,9 @@ proc defineModule*(moduleName: string) =
             print "done!"
             """:
                 #=======================================================
-                if xKind == Integer:
-                    sleep(x.i)
-                else:
-                    sleep(toInt((x.q.convertTo(parseAtoms("ms"))).original))
+                dispatch:
+                    Integer(i):  sleep(i)
+                    Quantity(q): sleep(toInt((q.convertTo(parseAtoms("ms"))).original))
 
         builtin "process",
             alias       = unaliased, 
@@ -553,31 +555,31 @@ proc defineModule*(moduleName: string) =
                 terminate pid
             """:
                 #=======================================================
-                let pid = x.i
+                dispatch:
+                    Integer(pid):
+                        # check if it's a process that has been
+                        # created by us
+                        if (let activeProcess = ActiveProcesses.getOrDefault(pid, nil); not activeProcess.isNil()):
+                            # terminate the process
+                            terminate(activeProcess)
 
-                # check if it's a process that has been
-                # created by us
-                if (let activeProcess = ActiveProcesses.getOrDefault(pid, nil); not activeProcess.isNil()):
-                    # terminate the process
-                    terminate(activeProcess)
+                            # close it
+                            close(activeProcess)
 
-                    # close it
-                    close(activeProcess)
-
-                    # and remove it from the table
-                    ActiveProcesses.del(pid)
-                else:
-                    # if it's an external process,
-                    # proceed with its termination
-                    when defined(windows):
-                        # TerminateProcess needs a HANDLE, not a PID
-                        let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
-                        if hProc != 0:
-                            discard terminateProcess(hProc, DWORD(QuitSuccess))
-                            discard closeHandle(hProc)
-                    else:
-                        # send SIGTERM; signal 0 would only probe existence
-                        sendSignal(int32(pid), 15)
+                            # and remove it from the table
+                            ActiveProcesses.del(pid)
+                        else:
+                            # if it's an external process,
+                            # proceed with its termination
+                            when defined(windows):
+                                # TerminateProcess needs a HANDLE, not a PID
+                                let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
+                                if hProc != 0:
+                                    discard terminateProcess(hProc, DWORD(QuitSuccess))
+                                    discard closeHandle(hProc)
+                            else:
+                                # send SIGTERM; signal 0 would only probe existence
+                                sendSignal(int32(pid), 15)
 
     #----------------------------
     # Predicates

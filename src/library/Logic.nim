@@ -54,21 +54,23 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            var allOK = true
+            dispatch:
+                Block(a):
+                    var allOK = true
 
-            for item in x.a:
-                var val {.cursor.}: Value
-                if item.kind == Block: 
-                    execUnscoped(item)
-                    val = stack.pop()
-                else:
-                    val = item
+                    for item in a:
+                        var val {.cursor.}: Value
+                        if item.kind == Block:
+                            execUnscoped(item)
+                            val = stack.pop()
+                        else:
+                            val = item
 
-                if val!=VTRUE:
-                    allOK = false
-                    break
+                        if val!=VTRUE:
+                            allOK = false
+                            break
 
-            push(newLogical(allOK))
+                    push(newLogical(allOK))
 
     builtin "and?",
         alias       = logicaland, 
@@ -92,29 +94,22 @@ proc defineModule*(moduleName: string) =
             ; yep, that's correct!
         """:
             #=======================================================
-            if xKind==Logical and yKind==Logical:
-                push(newLogical(And(x.b,y.b)))
-            else:
-                if xKind==Block:
-                    if yKind==Block:
-                        # block block
-                        execUnscoped(x)
-                        if isFalse(stack.pop()):
-                            push(newLogical(false))
-                            return
-
-                        execUnscoped(y)
-                        push(newLogical(stack.pop().b))
-                    else:
-                        # block logical
-                        execUnscoped(x)
-                        push(newLogical(And(stack.pop().b,y.b)))
-                else:
-                    # logical block
+            dispatch:
+                (Logical(a), Logical(b)): push(newLogical(And(a, b)))
+                (Block(_),   Block(_)):
+                    execUnscoped(x)
+                    if isFalse(stack.pop()):
+                        push(newLogical(false))
+                        return
+                    execUnscoped(y)
+                    push(newLogical(stack.pop().b))
+                (Block(_),   Logical(b)):
+                    execUnscoped(x)
+                    push(newLogical(And(stack.pop().b, b)))
+                (Logical(_), Block(_)):
                     if isFalse(x):
                         push(newLogical(false))
                         return
-
                     execUnscoped(y)
                     push(newLogical(stack.pop().b))
 
@@ -137,27 +132,28 @@ proc defineModule*(moduleName: string) =
             ; false
         """:
             #=======================================================
-            # check if empty
-            if x.a.len==0: 
-                push(newLogical(false))
-                return
-            
-            var anyOK = false
-            for item in x.a:
-                var val: Value
-                if item.kind == Block: 
-                    execUnscoped(item)
-                    val = pop()
-                else:
-                    val = item
+            dispatch:
+                Block(a):
+                    if a.len==0:
+                        push(newLogical(false))
+                        return
 
-                if val==VTRUE:
-                    anyOK = true
-                    push(newLogical(true))
-                    break
-                
-            if not anyOK:
-                push(newLogical(false))
+                    var anyOK = false
+                    for item in a:
+                        var val: Value
+                        if item.kind == Block:
+                            execUnscoped(item)
+                            val = pop()
+                        else:
+                            val = item
+
+                        if val==VTRUE:
+                            anyOK = true
+                            push(newLogical(true))
+                            break
+
+                    if not anyOK:
+                        push(newLogical(false))
 
     builtin "false?",
         alias       = unaliased, 
@@ -177,8 +173,9 @@ proc defineModule*(moduleName: string) =
             print false? [1 2 3]        ; false
         """:
             #=======================================================
-            if xKind != Logical: push(newLogical(false))
-            else: push(newLogical(Not(x.b)))
+            dispatch:
+                Logical(b): push(newLogical(Not(b)))
+                _:          push(newLogical(false))
 
     builtin "nand?",
         alias       = logicalnand, 
@@ -202,29 +199,22 @@ proc defineModule*(moduleName: string) =
             ; nope, that's not correct
         """:
             #=======================================================
-            if xKind==Logical and yKind==Logical:
-                push(newLogical(NAnd(x.b, y.b)))
-            else:
-                if xKind==Block:
-                    if yKind==Block:
-                        # block block
-                        execUnscoped(x)
-                        if isFalse(stack.pop()):
-                            push(newLogical(true))
-                            return
-
-                        execUnscoped(y)
-                        push(newLogical(Not(stack.pop().b)))
-                    else:
-                        # block logical
-                        execUnscoped(x)
-                        push(newLogical(Nand(stack.pop().b, y.b)))
-                else:
-                    # logical block
+            dispatch:
+                (Logical(a), Logical(b)): push(newLogical(NAnd(a, b)))
+                (Block(_),   Block(_)):
+                    execUnscoped(x)
+                    if isFalse(stack.pop()):
+                        push(newLogical(true))
+                        return
+                    execUnscoped(y)
+                    push(newLogical(Not(stack.pop().b)))
+                (Block(_),   Logical(b)):
+                    execUnscoped(x)
+                    push(newLogical(Nand(stack.pop().b, b)))
+                (Logical(_), Block(_)):
                     if isFalse(x):
                         push(newLogical(true))
                         return
-
                     execUnscoped(y)
                     push(newLogical(Not(stack.pop().b)))
 
@@ -250,29 +240,22 @@ proc defineModule*(moduleName: string) =
             ; nope, that's not correct
         """:
             #=======================================================
-            if xKind==Logical and yKind==Logical:
-                push(newLogical(Nor(x.b, y.b)))
-            else:
-                if xKind==Block:
-                    if yKind==Block:
-                        # block block
-                        execUnscoped(x)
-                        if isTrue(stack.pop()):
-                            push(newLogical(false))
-                            return
-
-                        execUnscoped(y)
-                        push(newLogical(Not(stack.pop().b)))
-                    else:
-                        # block logical
-                        execUnscoped(x)
-                        push(newLogical(Nor(stack.pop().b, y.b)))
-                else:
-                    # logical block
+            dispatch:
+                (Logical(a), Logical(b)): push(newLogical(Nor(a, b)))
+                (Block(_),   Block(_)):
+                    execUnscoped(x)
+                    if isTrue(stack.pop()):
+                        push(newLogical(false))
+                        return
+                    execUnscoped(y)
+                    push(newLogical(Not(stack.pop().b)))
+                (Block(_),   Logical(b)):
+                    execUnscoped(x)
+                    push(newLogical(Nor(stack.pop().b, b)))
+                (Logical(_), Block(_)):
                     if isTrue(x):
                         push(newLogical(false))
                         return
-
                     execUnscoped(y)
                     push(newLogical(Not(stack.pop().b)))
 
@@ -295,11 +278,11 @@ proc defineModule*(moduleName: string) =
             ; we're still not ready!
         """:
             #=======================================================
-            if xKind==Logical:
-                push(newLogical(Not(x.b)))
-            else:
-                execUnscoped(x)
-                push(newLogical(Not(stack.pop().b)))
+            dispatch:
+                Logical(b): push(newLogical(Not(b)))
+                _:
+                    execUnscoped(x)
+                    push(newLogical(Not(stack.pop().b)))
 
     builtin "or?",
         alias       = logicalor, 
@@ -323,29 +306,22 @@ proc defineModule*(moduleName: string) =
             ; yep, that's correct!
         """:
             #=======================================================
-            if xKind==Logical and yKind==Logical:
-                push(newLogical(Or(x.b, y.b)))
-            else:
-                if xKind==Block:
-                    if yKind==Block:
-                        # block block
-                        execUnscoped(x)
-                        if isTrue(stack.pop()):
-                            push(newLogical(true))
-                            return
-
-                        execUnscoped(y)
-                        push(newLogical(stack.pop().b))
-                    else:
-                        # block logical
-                        execUnscoped(x)
-                        push(newLogical(Or(stack.pop().b, y.b)))
-                else:
-                    # logical block
+            dispatch:
+                (Logical(a), Logical(b)): push(newLogical(Or(a, b)))
+                (Block(_),   Block(_)):
+                    execUnscoped(x)
+                    if isTrue(stack.pop()):
+                        push(newLogical(true))
+                        return
+                    execUnscoped(y)
+                    push(newLogical(stack.pop().b))
+                (Block(_),   Logical(b)):
+                    execUnscoped(x)
+                    push(newLogical(Or(stack.pop().b, b)))
+                (Logical(_), Block(_)):
                     if isTrue(x):
                         push(newLogical(true))
                         return
-
                     execUnscoped(y)
                     push(newLogical(stack.pop().b))
 
@@ -367,8 +343,9 @@ proc defineModule*(moduleName: string) =
             print true? [1 2 3]         ; false
         """:
             #=======================================================
-            if xKind != Logical: push(newLogical(false))
-            else: push(x)
+            dispatch:
+                Logical(_): push(x)
+                _:          push(newLogical(false))
 
     builtin "xnor?",
         alias       = unaliased, 
@@ -392,21 +369,10 @@ proc defineModule*(moduleName: string) =
             ; yep, that's correct!
         """:
             #=======================================================
-            var a: VLogical
-            var b: VLogical
-            if xKind == Logical: 
-                a = x.b
-            else:
-                execUnscoped(x)
-                a = stack.pop().b
-
-            if yKind == Logical: 
-                b = y.b
-            else:
-                execUnscoped(y)
-                b = stack.pop().b
-
-            push(newLogical(Xnor(a, b)))
+            template asBool(v, vKind: untyped): VLogical =
+                if vKind == Logical: v.b
+                else: (execUnscoped(v); stack.pop().b)
+            push(newLogical(Xnor(asBool(x, xKind), asBool(y, yKind))))
 
     builtin "xor?",
         alias       = logicalxor, 
@@ -430,21 +396,10 @@ proc defineModule*(moduleName: string) =
             ; nope, that's not correct
         """:
             #=======================================================
-            var a: VLogical
-            var b: VLogical
-            if xKind == Logical: 
-                a = x.b
-            else:
-                execUnscoped(x)
-                a = stack.pop().b
-
-            if yKind == Logical: 
-                b = y.b
-            else:
-                execUnscoped(y)
-                b = stack.pop().b
-
-            push(newLogical(Xor(a, b)))
+            template asBool(v, vKind: untyped): VLogical =
+                if vKind == Logical: v.b
+                else: (execUnscoped(v); stack.pop().b)
+            push(newLogical(Xor(asBool(x, xKind), asBool(y, yKind))))
             
     #----------------------------
     # Constants

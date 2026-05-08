@@ -88,62 +88,46 @@ proc defineModule*(moduleName: string) =
             print b                   ; [1 2 3 4]
         """:
             #=======================================================
+            # Object's magic-method dispatch and the Block default arm don't
+            # fit the kind/kind grid, so handle them outside `dispatch`.
+            if xKind == Object:
+                if x.magic.fetch(AppendM): mgk(@[x, y])
+                return
             if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if yKind == String:
-                        InPlaced.s &= y.s
-                    elif yKind == Char:
-                        InPlaced.s &= $(y.c)
-                elif InPlaced.kind == Char:
-                    if yKind == String:
-                        SetInPlaceAny(newString($(InPlaced.c) & y.s))
-                    elif yKind == Char:
-                        SetInPlaceAny(newString($(InPlaced.c) & $(y.c)))
-                elif InPlaced.kind == Binary:
-                    if yKind == Binary:
-                        InPlaced.n &= y.n
-                    elif yKind == Integer:
-                        InPlaced.n &= numberToBinary(y.i)
-                elif InPlaced.kind == Object:
+                ensureInPlace()
+                if InPlaced.kind == Object:
                     if InPlaced.magic.fetch(AppendM):
                         pushAttr("inplace", VTRUE)
                         mgk(@[InPlaced, y])
-                    else:
-                        discard
-                else:
-                    if yKind == Block:
-                        InPlaced.a.add(y.a)
-                    else:
-                        InPlaced.a.add(y)
-            else:
-                if xKind == String:
-                    if yKind == String:
-                        push(newString(x.s & y.s))
-                    elif yKind == Char:
-                        push(newString(x.s & $(y.c)))
-                elif xKind == Char:
-                    if yKind == String:
-                        push(newString($(x.c) & y.s))
-                    elif yKind == Char:
-                        push(newString($(x.c) & $(y.c)))
-                elif xKind == Binary:
-                    if yKind == Binary:
-                        push(newBinary(x.n & y.n))
-                    elif yKind == Integer:
-                        push(newBinary(x.n & numberToBinary(y.i)))
-                elif xKind == Object:
-                    if x.magic.fetch(AppendM):
-                        mgk(@[x, y]) # value already pushed
-                    else:
-                        # TODO(Collections\append) no magic method for object values should be an error
-                        #  labels: library, oop, error handling
-                        discard
-                else:
-                    if yKind==Block:
-                        push newBlock(x.a & y.a)
-                    else:
-                        push newBlock(x.a & y)
+                    return
+                if InPlaced.kind == Block:
+                    if yKind == Block: InPlaced.a.add(y.a)
+                    else:              InPlaced.a.add(y)
+                    return
+            elif xKind == Block:
+                if yKind == Block: push newBlock(x.a & y.a)
+                else:              push newBlock(x.a & y)
+                return
+
+            dispatchWithLiteral:
+                (String(s), String(t)):
+                    value:   push(newString(s & t))
+                    inplace: s &= t
+                (String(s), Char(c)):
+                    value:   push(newString(s & $(c)))
+                    inplace: s &= $(c)
+                (Char(a), String(t)):
+                    value:   push(newString($(a) & t))
+                    inplace: SetInPlaceAny(newString($(a) & t))
+                (Char(a), Char(b)):
+                    value:   push(newString($(a) & $(b)))
+                    inplace: SetInPlaceAny(newString($(a) & $(b)))
+                (Binary(n), Binary(m)):
+                    value:   push(newBinary(n & m))
+                    inplace: n &= m
+                (Binary(n), Integer(i)):
+                    value:   push(newBinary(n & numberToBinary(i)))
+                    inplace: n &= numberToBinary(i)
 
     builtin "array",
         alias       = at,
@@ -188,50 +172,49 @@ proc defineModule*(moduleName: string) =
             ; => [[0 0 0 0] [0 0 0 0] [0 0 0 0]]
         """:
             #=======================================================
-            if checkAttr("of"):
-                if aOf.kind == Integer:
-                    let size = aOf.i
+            bindAttrs:
+                shape(`of`): {Integer, Block}
+
+            if not shape.isNil:
+                if shape.kind == Integer:
+                    let size = shape.i
                     let blk:ValueArray = safeRepeat(x, size)
                     push newBlock(blk)
                 else:
                     var val: Value = copyValue(x)
                     var blk: ValueArray
 
-                    for item in aOf.a.reversed:
+                    for item in shape.a.reversed:
                         requireValue(item, {Integer})
                         blk = safeRepeat(val, item.i)
                         val = newBlock(blk.map((v)=>copyValue(v)))
 
                     push newBlock(blk)
             else:
-                if xKind==Range:
-                    push(newBlock(toSeq(items(x.rng))))
-                else:
-                    if xKind==Block:
+                dispatch:
+                    Range(rng): push(newBlock(toSeq(items(rng))))
+                    Block(_):
                         let stop = SP
                         execUnscoped(x)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
-
                         push(newBlock(arr))
-                    elif xKind==String:
+                    String(s):
                         let stop = SP
 
                         when defined(BUNDLE):
-                            let (_{.inject.}, tp) = (getBundledResource(x.s)[0], FileData)
+                            let (_{.inject.}, tp) = (getBundledResource(s)[0], FileData)
                         else:
-                            let (_{.inject.}, tp) = getSource(x.s)
+                            let (_{.inject.}, tp) = getSource(s)
 
                         if tp!=TextData:
-                            execUnscoped(doParse(x.s, isFile=false))
+                            execUnscoped(doParse(s, isFile=false))
                         else:
-                            Error_FileNotFound(x.s)
+                            Error_FileNotFound(s)
                         let arr: ValueArray = sTopsFrom(stop)
                         SP = stop
-
                         push(newBlock(arr))
-                    else:
-                        push(newBlock(@[x]))
+                    _: push(newBlock(@[x]))
 
     builtin "chop",
         alias       = unaliased,
@@ -268,43 +251,23 @@ proc defineModule*(moduleName: string) =
             chop.times: neg 2 [1 2 3]   ; => [3]
         """:
             #=======================================================
-            var times = -1
+            bindAttrs:
+                rawTimes(times): Integer = 1
 
-            if checkAttr("times"):
-                times = -aTimes.i
-            
-            template numberInRange(container: untyped): untyped = 
-                container.len >= abs(times)
-                
+            let times = -rawTimes
+
             template drop(container: untyped): untyped =
-                if 0 < times:
+                if container.len < abs(times):
+                    when container is string: ""
+                    else: newSeq[Value](0)
+                elif 0 < times:
                     container[times..^1]
                 else:
-                    container[0.. container.high - abs(times)]
-                
-            if x.kind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind
-                of String:
-                    if numberInRange(InPlaced.s):
-                        InPlaced.s = InPlaced.s.drop()
-                    else: 
-                        InPlaced.s = ""
-                of Block:
-                    if numberInRange(InPlaced.a):
-                        InPlaced.a = InPlaced.a.drop()
-                    else:
-                        InPlaced.a = newSeq[Value](0)
-                else: discard
-            else:
-                case x.kind
-                of String:
-                    if numberInRange(x.s): push(newString(x.s.drop()))
-                    else: push(newString(""))
-                of Block:
-                    if numberInRange(x.a): push(newBlock(x.a.drop()))
-                    else: push(newBlock())
-                else: discard
+                    container[0 .. container.high - abs(times)]
+
+            dispatchWithLiteral:
+                String(s): s.drop()
+                Block(a):  a.drop()
 
     # TODO(Collections\combine) should also work with in-place Literals?
     #  labels: library, enhancement, open discussion
@@ -347,17 +310,14 @@ proc defineModule*(moduleName: string) =
             ; => 6
         """:
             #=======================================================
-            let doRepeat = hadAttr("repeated")
+            bindAttrs:
+                repeated: Logical
+                sz(by):   Integer = x.a.len
 
-            var sz = x.a.len
-            if checkAttr("by"):
-                sz = aBy.i
-
-            if hadAttr("count"):
-                push(countCombinations(x.a, sz, doRepeat))
-            else:
-                push(newBlock(getCombinations(x.a, sz, doRepeat).map((
-                        z)=>newBlock(z))))
+            dispatch:
+                Block(items):
+                    on count: push(countCombinations(items, sz, repeated))
+                    _:        push(newBlock(getCombinations(items, sz, repeated).map((z)=>newBlock(z))))
 
     # TODO(Collections\couple) should work with in-place Literals
     #  labels: library, enhancement
@@ -377,7 +337,9 @@ proc defineModule*(moduleName: string) =
             ; => [[1 "one"] [2 "two"] [3 "three"]]
         """:
             #=======================================================
-            push(newBlock(zip(x.a, y.a).map((z)=>newBlock(@[z[0], z[1]]))))
+            dispatch:
+                (Block(a), Block(b)):
+                    push(newBlock(zip(a, b).map((p)=>newBlock(@[p[0], p[1]]))))
 
     builtin "decouple",
         alias       = unaliased,
@@ -397,13 +359,14 @@ proc defineModule*(moduleName: string) =
             ; => ["one" "two" "three"] [1 2 3]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                let res = unzip(InPlaced.a.map((w)=>(requireValue(w,{Block,Inline});(w.a[0], w.a[1]))))
-                InPlaced.a = @[newBlock(res[0]), newBlock(res[1])]
-            else:
-                let res = unzip(x.a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
-                push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+            dispatchWithLiteral:
+                Block(a):
+                    value:
+                        let res = unzip(a.map((z)=>(requireValue(z,{Block,Inline});(z.a[0], z.a[1]))))
+                        push(newBlock(@[newBlock(res[0]), newBlock(res[1])]))
+                    inplace:
+                        let res = unzip(a.map((w)=>(requireValue(w,{Block,Inline});(w.a[0], w.a[1]))))
+                        a = @[newBlock(res[0]), newBlock(res[1])]
 
     builtin "dictionary",
         alias       = sharp,
@@ -459,34 +422,39 @@ proc defineModule*(moduleName: string) =
             print location\entity   ; => EU
         """:
             #=======================================================
+            bindAttrs:
+                raw:           Logical
+                lower:         Logical
+                embed(`with`): Block = newSeq[Value]()
+
             var dict: ValueDict
 
-            if xKind==Block:
-                if (hadAttr("raw")):
-                    dict = initOrderedTable[string,Value]()
-                    var idx = 0
-                    while idx < x.a.len:
-                        dict[x.a[idx].s] = x.a[idx+1]
-                        idx += 2
-                else:
-                    dict = execDictionary(x)
-            elif xKind==String:
-                when defined(BUNDLE):
-                    let (src, tp) = (getBundledResource(x.s)[0], FileData)
-                else:
-                    let (src, tp) = getSource(x.s)
+            dispatch:
+                Block(a):
+                    if raw:
+                        dict = initOrderedTable[string,Value]()
+                        var idx = 0
+                        while idx < a.len:
+                            dict[a[idx].s] = a[idx+1]
+                            idx += 2
+                    else:
+                        dict = execDictionary(x)
+                String(s):
+                    when defined(BUNDLE):
+                        let (src, tp) = (getBundledResource(s)[0], FileData)
+                    else:
+                        let (src, tp) = getSource(s)
 
-                if tp!=TextData:
-                    dict = execDictionary(doParse(src, isFile=false))#, isIsolated=true)
-                else:
-                    Error_FileNotFound(x.s)
+                    if tp!=TextData:
+                        dict = execDictionary(doParse(src, isFile=false))
+                    else:
+                        Error_FileNotFound(s)
 
-            if checkAttr("with"):
-                for x in aWith.a:
-                    requireValue(x, {Word,Literal})
-                    dict[x.s] = FetchSym(x.s)
+            for x in embed:
+                requireValue(x, {Word,Literal})
+                dict[x.s] = FetchSym(x.s)
 
-            if (hadAttr("lower")):
+            if lower:
                 var oldDict = dict
                 dict = initOrderedTable[string,Value]()
                 for k,v in pairs(oldDict):
@@ -529,43 +497,21 @@ proc defineModule*(moduleName: string) =
             drop.times: neg 2 [1 2 3]   ; => [1]
         """:
             #=======================================================
-            var times = 1
+            bindAttrs:
+                times: Integer = 1
 
-            if checkAttr("times"):
-                times = aTimes.i
-            
-            template numberInRange(container: untyped): untyped = 
-                container.len >= abs(times)
-                
             template drop(container: untyped): untyped =
-                if 0 < times:
+                if container.len < abs(times):
+                    when container is string: ""
+                    else: newSeq[Value](0)
+                elif 0 < times:
                     container[times..^1]
                 else:
-                    container[0.. container.high - abs(times)]
-                
-            if x.kind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind
-                of String:
-                    if numberInRange(InPlaced.s):
-                        InPlaced.s = InPlaced.s.drop()
-                    else: 
-                        InPlaced.s = ""
-                of Block:
-                    if numberInRange(InPlaced.a):
-                        InPlaced.a = InPlaced.a.drop()
-                    else:
-                        InPlaced.a = newSeq[Value](0)
-                else: discard
-            else:
-                case x.kind
-                of String:
-                    if numberInRange(x.s): push(newString(x.s.drop()))
-                    else: push(newString(""))
-                of Block:
-                    if numberInRange(x.a): push(newBlock(x.a.drop()))
-                    else: push(newBlock())
-                else: discard
+                    container[0 .. container.high - abs(times)]
+
+            dispatchWithLiteral:
+                String(s): s.drop()
+                Block(a):  a.drop()
 
     builtin "empty",
         alias       = unaliased,
@@ -585,12 +531,11 @@ proc defineModule*(moduleName: string) =
             empty 'str            ; str: ""
         """:
             #=======================================================
-            ensureInPlaceAny()
-            case InPlaced.kind:
-                of String: InPlaced.s = ""
-                of Block: InPlaced.a = @[]
-                of Dictionary: InPlaced.d = initOrderedTable[string, Value]()
-                else: discard
+            # x is always Literal/PathLiteral — only inplace branches run.
+            dispatchWithLiteral:
+                String(s):     inplace: s = ""
+                Block(a):      inplace: a = @[]
+                Dictionary(d): inplace: d = initOrderedTable[string, Value]()
 
     # TODO(Collections\extend) Consider renaming?
     #  we could actually rename it to `merge`? - which is what it does
@@ -614,16 +559,14 @@ proc defineModule*(moduleName: string) =
             ; [name:john surname:doe age:35]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                for k, v in pairs(y.d):
-                    InPlaced.d[k] = v
-            else:
-                var res = copyValue(x)
-                for k, v in pairs(y.d):
-                    res.d[k] = v
-
-                push(res)
+            dispatchWithLiteral:
+                (Dictionary(d), Dictionary(extra)):
+                    value:
+                        var res = copyValue(x)
+                        for k, v in pairs(extra): res.d[k] = v
+                        push(res)
+                    inplace:
+                        for k, v in pairs(extra): d[k] = v
 
     builtin "first",
         alias       = unaliased,
@@ -643,33 +586,32 @@ proc defineModule*(moduleName: string) =
             ..........
             print first.n:2 ["one" "two" "three"] ; one two
         """:
-            #=======================================================            
-            if checkAttr("n"):
-                if xKind == String:
-                    if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[0..min(aN.i-1, x.s.high)]))
-                elif xKind == Range:
-                    if aN.i == 1 or aN.i == 0:
-                        push(x.rng[1, true])
-                    elif aN.i < 0:
+            #=======================================================
+            dispatch:
+                String(s):
+                    on n(num: Integer):
+                        if s.len == 0: push(newString(""))
+                        else: push(newString(s[0..min(num-1, s.high)]))
+                    _:
+                        if s.len == 0: push(VNULL)
+                        else: push(newChar(s.runeAt(0)))
+                Range(rng):
+                    on n(num: Integer):
+                        if num == 1 or num == 0: push(rng[1, true])
                         # TODO(Collections\first) Better handling of errors related to the value of `n`
                         #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
                         #  labels: error handling, library
-                        raise newException(ValueError, "negative number of elements")
-                    else:
-                        push(newRange(x.rng[0..min(aN.i, x.rng.len), true]))
-                else:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[0..min(aN.i-1, x.a.high)]))
-            else:
-                if xKind == String:
-                    if x.s.len == 0: push(VNULL)
-                    else: push(newChar(x.s.runeAt(0)))
-                elif xKind == Range:
-                    push(x.rng[0])
-                else:
-                    if x.a.len == 0: push(VNULL)
-                    else: push(x.a[0])
+                        elif num < 0: raise newException(ValueError, "negative number of elements")
+                        else: push(newRange(rng[0..min(num, rng.len), true]))
+                    _:
+                        push(rng[0])
+                Block(a):
+                    on n(num: Integer):
+                        if a.len == 0: push(newBlock())
+                        else: push(newBlock(a[0..min(num-1, a.high)]))
+                    _:
+                        if a.len == 0: push(VNULL)
+                        else: push(a[0])
 
     builtin "flatten",
         alias       = unaliased,
@@ -699,11 +641,13 @@ proc defineModule*(moduleName: string) =
             ; => [1 2 3 4 [5 6]]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(InPlaced.flattened(once = hadAttr("once")))
-            else:
-                push(newBlock(x.a).flattened(once = hadAttr("once")))
+            bindAttrs:
+                once: Logical
+
+            dispatchWithLiteral:
+                Block(a):
+                    value:   push(newBlock(a).flattened(once = once))
+                    inplace: SetInPlaceAny(InPlaced.flattened(once = once))
 
     builtin "get",
         alias       = unaliased,
@@ -759,8 +703,8 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
-            case xKind:
-                of Block:
+            dispatch:
+                Block(_):
                     if likely(yKind==Integer):
                         push(GetArrayIndex(x, y.i))
                     elif yKind==Range:
@@ -773,7 +717,7 @@ proc defineModule*(moduleName: string) =
                         push(newBlock(res))
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
-                of Range:
+                Range(_):
                     if likely(yKind==Integer):
                         if likely(y.i >= 0 and y.i < x.rng.len()):
                             push(x.rng[y.i])
@@ -793,7 +737,7 @@ proc defineModule*(moduleName: string) =
                         push(newBlock(res))
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
-                of Binary:
+                Binary(_):
                     if likely(yKind==Integer):
                         if likely(y.i >= 0 and y.i < x.n.len):
                             push(newInteger(int(x.n[y.i])))
@@ -801,7 +745,7 @@ proc defineModule*(moduleName: string) =
                             Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                of Bytecode:
+                Bytecode(_):
                     case yKind
                         of String, Word, Literal:
                             if ("data" == y.s):
@@ -822,36 +766,22 @@ proc defineModule*(moduleName: string) =
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the data of a Bytecode value, and `1` to get the code block; every other value is not accepted.")
                         else:
                             Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
-                of Dictionary:
-                    case yKind:
-                        of String, Word, Literal:
-                            push(GetDictionaryKey(x, y.s))
-                        else:
-                            push(GetDictionaryKey(x, $(y)))
-                of Object:
-                    case yKind:
-                        of String, Word, Literal:
-                            if (let got = GetObjectKey(x, y.s, withError=false); not got.isNil):
-                                push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
-                                mgk(@[x, y]) # value already pushed
-                            else:
-                                discard GetObjectKey(x, y.s) # Merely to trigger the error
-                        else:
-                            if (let got = GetObjectKey(x, $(y), withError=false); not got.isNil):
-                                push(got)
-                            elif x.magic.fetch(GetM) and (not hadAttr("field")):
-                                mgk(@[x, y]) # value already pushed
-                            else:
-                                discard GetObjectKey(x, $(y)) # Merely to trigger the error
-                of Store:
+                Dictionary(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                    push(GetDictionaryKey(x, key))
+                Object(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                    if (let got = GetObjectKey(x, key, withError=false); not got.isNil):
+                        push(got)
+                    elif x.magic.fetch(GetM) and (not hadAttr("field")):
+                        mgk(@[x, y]) # value already pushed
+                    else:
+                        discard GetObjectKey(x, key) # Merely to trigger the error
+                Store(_):
                     when not defined(WEB):
-                        case yKind:
-                            of String, Word, Literal:
-                                push(getStoreKey(x.sto, y.s))
-                            else:
-                                push(getStoreKey(x.sto, $(y)))
-                of String:
+                        let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                        push(getStoreKey(x.sto, key))
+                String(_):
                     if likely(yKind==Integer):
                         if likely(y.i >= 0 and y.i < x.s.runeLen()):
                             push(newChar(x.s.runeAtPos(y.i)))
@@ -871,7 +801,7 @@ proc defineModule*(moduleName: string) =
                         push(newString($(res)))
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer), stringify(Range)])
-                of Date:
+                Date(_):
                     if likely(yKind in {String, Word, Literal}):
                         let got = x.e.getOrDefault(y.s, nil)
                         if got.isNil:
@@ -882,7 +812,7 @@ proc defineModule*(moduleName: string) =
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
 
-                of Complex:
+                Complex(_):
                     case yKind
                         of String, Word, Literal:
                             if ("real" == y.s or "re" == y.s):
@@ -901,7 +831,7 @@ proc defineModule*(moduleName: string) =
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to get the real part of a Complex value, or `1` to get the imaginary part; every other value is not accepted.")
                         else:
                             Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
-                of Error:
+                Error(_):
                     if yKind in {String, Word, Literal}:
                         case y.s
                         of "message":
@@ -912,7 +842,7 @@ proc defineModule*(moduleName: string) =
                             Error_InvalidKey(y.s, Dumper(x), "You may use `message` to get the message of an Error value, and `kind` to get its ErrorKind; every other value is not accepted.")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
-                of ErrorKind:
+                ErrorKind(_):
                     if yKind in {String, Word, Literal}:
                         if y.s == "label":
                             push(newString(x.errkind.label))
@@ -922,8 +852,7 @@ proc defineModule*(moduleName: string) =
                             Error_InvalidKey(y.s, Dumper(x), "You may use `label` to get the main label of an ErrorKind value, and `description` to get its description; every other value is not accepted.")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal)])
-                else: 
-                    discard
+                _: discard
 
     # TODO(Collections\index) add `.from:` & `.to:` options to search in range
     #  The two options don't have to be used at the same time. For example:
@@ -953,30 +882,27 @@ proc defineModule*(moduleName: string) =
             ; :null
         """:
             #=======================================================
-            case xKind:
-                of String:
-                    let indx = x.s.find(y.s)
-                    if indx != -1: push(newInteger(indx))
+            dispatch:
+                String(s):
+                    let idx = s.find(y.s)
+                    if idx != -1: push(newInteger(idx))
                     else: push(VNULL)
-                of Block:
-                    let indx = x.a.find(y)
-                    if indx != -1: push(newInteger(indx))
+                Block(a):
+                    let idx = a.find(y)
+                    if idx != -1: push(newInteger(idx))
                     else: push(VNULL)
-                of Range:
-                    let indx = x.rng.find(y)
-                    if indx != -1: push(newInteger(indx))
+                Range(rng):
+                    let idx = rng.find(y)
+                    if idx != -1: push(newInteger(idx))
                     else: push(VNULL)
-                of Dictionary:
+                Dictionary(d):
                     var found = false
-                    for k, v in pairs(x.d):
+                    for k, v in pairs(d):
                         if v == y:
                             push(newString(k))
                             found = true
                             break
-
-                    if not found:
-                        push(VNULL)
-                else: discard
+                    if not found: push(VNULL)
 
     # TODO(Collections\insert) add new `.many` option?
     #  or something similar - the name doesn't have to be this one
@@ -1011,36 +937,31 @@ proc defineModule*(moduleName: string) =
             ; dict: [name: "Jane"]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind:
-                    of String: 
-                        if zKind==String: 
-                            InPlaced.s.insert(z.s, y.i)
-                        else:
-                            InPlaced.s.insert($(z.c), y.i)
-                    of Block: InPlaced.a.insert(z, y.i)
-                    of Dictionary:
-                        InPlaced.d[y.s] = z
-                    else: discard
-            else:
-                case xKind:
-                    of String:
-                        var copied = x.s
-                        if zKind==String:
-                            copied.insert(z.s, y.i)
-                        else:
-                            copied.insert($(z.c), y.i)
+            dispatchWithLiteral:
+                (String(s), Integer(idx), String(val)):
+                    value:
+                        var copied = s
+                        copied.insert(val, idx)
                         push(newString(copied))
-                    of Block:
-                        var copied = x.a
-                        copied.insert(z, y.i)
+                    inplace: s.insert(val, idx)
+                (String(s), Integer(idx), Char(ch)):
+                    value:
+                        var copied = s
+                        copied.insert($(ch), idx)
+                        push(newString(copied))
+                    inplace: s.insert($(ch), idx)
+                (Block(a), Integer(idx), _):
+                    value:
+                        var copied = a
+                        copied.insert(z, idx)
                         push(newBlock(copied))
-                    of Dictionary:
-                        var copied = x.d
-                        copied[y.s] = z
+                    inplace: a.insert(z, idx)
+                (Dictionary(d), String(k), _):
+                    value:
+                        var copied = d
+                        copied[k] = z
                         push(newDictionary(copied))
-                    else: discard
+                    inplace: d[k] = z
 
     builtin "keys",
         alias       = unaliased,
@@ -1062,13 +983,9 @@ proc defineModule*(moduleName: string) =
             => ["name" "surname"]
         """:
             #=======================================================
-            var s: seq[string]
-            if xKind == Dictionary:
-                s = toSeq(x.d.keys)
-            else:
-                s = toSeq(x.o.objectKeys)
-
-            push(newStringBlock(s))
+            dispatch:
+                Dictionary(d): push(newStringBlock(toSeq(d.keys)))
+                Object(o):     push(newStringBlock(toSeq(o.objectKeys)))
 
     builtin "last",
         alias       = unaliased,
@@ -1089,38 +1006,33 @@ proc defineModule*(moduleName: string) =
             print last.n:2 ["one" "two" "three"] ; two three
         """:
             #=======================================================
-            if checkAttr("n"):
-                if xKind == String:
-                    if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[x.s.len-aN.i..^1]))
-                elif xKind == Range:
-                    if x.rng.infinite:
-                        push(newFloating(Inf))
-                    else:
-                        if aN.i == 1 or aN.i == 0:
-                            push(x.rng[x.rng.len, true])
-                        elif aN.i < 0:
-                            # TODO(Collections\last) Better handling of errors related to the value of `n`
-                            #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
-                            #  labels: error handling, library
-                            raise newException(ValueError, "negative number of elements")
-                        else:
-                            push(newRange(x.rng[max(x.rng.len-aN.i, 0)..x.rng.len, true]))
-                else:
-                    if x.a.len == 0: push(newBlock())
-                    else: push(newBlock(x.a[x.a.len-aN.i..^1]))
-            else:
-                if xKind == String:
-                    if x.s.len == 0: push(VNULL)
-                    else: push(newChar(toRunes(x.s)[^1]))
-                elif xKind == Range:
-                    if x.rng.infinite:
-                        push(newFloating(Inf))
-                    else:
-                        push(x.rng[x.rng.len, true])
-                else:
-                    if x.a.len == 0: push(VNULL)
-                    else: push(x.a[x.a.len-1])
+            dispatch:
+                String(s):
+                    on n(num: Integer):
+                        if s.len == 0: push(newString(""))
+                        else: push(newString(s[s.len-num..^1]))
+                    _:
+                        if s.len == 0: push(VNULL)
+                        else: push(newChar(toRunes(s)[^1]))
+                Range(rng):
+                    on n(num: Integer):
+                        if rng.infinite: push(newFloating(Inf))
+                        elif num == 1 or num == 0: push(rng[rng.len, true])
+                        # TODO(Collections\last) Better handling of errors related to the value of `n`
+                        #  to be handled in: https://github.com/arturo-lang/arturo/pull/1432
+                        #  labels: error handling, library
+                        elif num < 0: raise newException(ValueError, "negative number of elements")
+                        else: push(newRange(rng[max(rng.len-num, 0)..rng.len, true]))
+                    _:
+                        if rng.infinite: push(newFloating(Inf))
+                        else: push(rng[rng.len, true])
+                Block(a):
+                    on n(num: Integer):
+                        if a.len == 0: push(newBlock())
+                        else: push(newBlock(a[a.len-num..^1]))
+                    _:
+                        if a.len == 0: push(VNULL)
+                        else: push(a[a.len-1])
 
     builtin "max",
         alias       = unaliased,
@@ -1138,34 +1050,27 @@ proc defineModule*(moduleName: string) =
             print max [4 2 8 5 1 9]       ; 9
         """:
             #=======================================================
-            let withIndex = hadAttr("index")
+            bindAttrs:
+                withIndex(index): Logical
 
-            if xKind==Range:
-                let (maxIndex, maxElement) = max(x.rng)
-                if withIndex: push(newInteger(maxIndex))
-                else: push(maxElement)
-            else:
-                if x.a.len == 0: push(VNULL)
-                else:
-                    var maxElement = x.a[0]
-                    if withIndex:
-                        var maxIndex = 0
-                        var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] > maxElement):
-                                maxElement = x.a[i]
-                                maxIndex = i
-                            inc(i)
-
-                        push(newInteger(maxIndex))
+            dispatch:
+                Range(rng):
+                    let (maxIdx, maxElt) = max(rng)
+                    if withIndex: push(newInteger(maxIdx))
+                    else: push(maxElt)
+                Block(items):
+                    if items.len == 0: push(VNULL)
                     else:
+                        var maxElt = items[0]
+                        var maxIdx = 0
                         var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] > maxElement):
-                                maxElement = x.a[i]
+                        while i < items.len:
+                            if items[i] > maxElt:
+                                maxElt = items[i]
+                                maxIdx = i
                             inc(i)
-
-                        push(maxElement)
+                        if withIndex: push(newInteger(maxIdx))
+                        else: push(maxElt)
 
     builtin "min",
         alias       = unaliased,
@@ -1183,34 +1088,27 @@ proc defineModule*(moduleName: string) =
             print min [4 2 8 5 1 9]       ; 1
         """:
             #=======================================================
-            let withIndex = hadAttr("index")
+            bindAttrs:
+                withIndex(index): Logical
 
-            if xKind==Range:
-                let (minIndex, minElement) = min(x.rng)
-                if withIndex: push(newInteger(minIndex))
-                else: push(minElement)
-            else:
-                if x.a.len == 0: push(VNULL)
-                else:
-                    var minElement = x.a[0]
-                    var minIndex = 0
-                    if withIndex:
-                        var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] < minElement):
-                                minElement = x.a[i]
-                                minIndex = i
-                            inc(i)
-
-                        push(newInteger(minIndex))
+            dispatch:
+                Range(rng):
+                    let (minIdx, minElt) = min(rng)
+                    if withIndex: push(newInteger(minIdx))
+                    else: push(minElt)
+                Block(items):
+                    if items.len == 0: push(VNULL)
                     else:
+                        var minElt = items[0]
+                        var minIdx = 0
                         var i = 1
-                        while i < x.a.len:
-                            if (x.a[i] < minElement):
-                                minElement = x.a[i]
+                        while i < items.len:
+                            if items[i] < minElt:
+                                minElt = items[i]
+                                minIdx = i
                             inc(i)
-
-                        push(minElement)
+                        if withIndex: push(newInteger(minIdx))
+                        else: push(minElt)
 
     builtin "permutate",
         alias       = unaliased,
@@ -1250,17 +1148,14 @@ proc defineModule*(moduleName: string) =
             ; => 9
         """:
             #=======================================================
-            let doRepeat = hadAttr("repeated")
+            bindAttrs:
+                repeated: Logical
+                sz(by):   Integer = x.a.len
 
-            var sz = x.a.len
-            if checkAttr("by"):
-                sz = aBy.i
-
-            if hadAttr("count"):
-                push(countPermutations(x.a, sz, doRepeat))
-            else:
-                push(newBlock(getPermutations(x.a, sz, doRepeat).map((
-                        z)=>newBlock(z))))
+            dispatch:
+                Block(items):
+                    on count: push(countPermutations(items, sz, repeated))
+                    _:        push(newBlock(getPermutations(items, sz, repeated).map((z)=>newBlock(z))))
 
     builtin "pop",
         alias       = unaliased,
@@ -1315,32 +1210,32 @@ proc defineModule*(moduleName: string) =
             inspect b     ; uro :string
         """:
             #=======================================================
-            var n = 
-                if checkAttr("n"): aN.i
-                else: 1
-            
-            ensureInPlaceAny()
-            if n == 1:
-                case InPlaced.kind:
-                of String: 
-                    push(newChar(InPlaced.s[^1]))
-                    Inplaced.s = InPlaced.s[0..^(n + 1)]
-                of Block:
-                    if InPlaced.a.len > 0:
-                        push(InPlaced.a[^1])
-                        InPlaced.a = InPlaced.a[0..^(n + 1)]
-                else: discard
-            elif n > 1:
-                case InPlaced.kind:
-                of String: 
-                    push(newString(InPlaced.s[(InPlaced.s.len-n)..^1]))
-                    InPlaced.s = InPlaced.s[0..^(n + 1)]
-                of Block:
-                    if InPlaced.a.len > 0:
-                        push(newBlock(InPlaced.a[(InPlaced.a.len-n)..^1]))
-                        InPlaced.a = InPlaced.a[0..^(n + 1)]
-                else: discard
-            else: raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
+            bindAttrs:
+                n: Integer = 1
+
+            if n <= 0:
+                raise newException(ValueError, "Attribute 'n can't be 0 or negative.")
+
+            # `pop` has no value-mode (x is always Literal/PathLiteral) — only
+            # the inplace branches do real work. Each one *both* pushes the
+            # popped fragment and mutates `s`/`a`, hence `inplace:` blocks.
+            dispatchWithLiteral:
+                String(s):
+                    inplace:
+                        if n == 1:
+                            push(newChar(s[^1]))
+                            s = s[0..^(n + 1)]
+                        else:
+                            push(newString(s[(s.len-n)..^1]))
+                            s = s[0..^(n + 1)]
+                Block(a):
+                    inplace:
+                        if a.len > 0:
+                            if n == 1:
+                                push(a[^1])
+                            else:
+                                push(newBlock(a[(a.len-n)..^1]))
+                            a = a[0..^(n + 1)]
                 
     builtin "prepend",
         alias       = unaliased,
@@ -1363,49 +1258,31 @@ proc defineModule*(moduleName: string) =
             print a                 ; prepend
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if yKind == String:
-                        InPlaced.s.insert(y.s, 0)
-                    elif yKind == Char:
-                        InPlaced.s.insert($(y.c), 0)
-                elif InPlaced.kind == Char:
-                    if yKind == String:
-                        SetInPlaceAny(newString(y.s & $(InPlaced.c)))
-                    elif yKind == Char:
-                        SetInPlaceAny(newString($(y.c) & $(InPlaced.c)))
-                elif InPlaced.kind == Binary:
-                    if yKind == Binary:
-                        InPlaced.n.insert(y.n, 0)
-                    elif yKind == Integer:
-                        InPlaced.n.insert(numberToBinary(y.i), 0)
-                else:
-                    if yKind == Block:
-                        InPlaced.prependInPlace(y)
-                    else:
-                        InPlaced.a.insert(y, 0)
-            else:
-                if xKind == String:
-                    if yKind == String:
-                        push(newString(y.s & x.s))
-                    elif yKind == Char:
-                        push(newString($(y.c) & x.s))
-                elif xKind == Char:
-                    if yKind == String:
-                        push(newString(y.s & $(x.c)))
-                    elif yKind == Char:
-                        push(newString($(y.c) & $(x.c)))
-                elif xKind == Binary:
-                    if yKind == Binary:
-                        push(newBinary(y.n & x.n))
-                    elif yKind == Integer:
-                        push(newBinary(numberToBinary(y.i) & x.n))
-                else:
-                    if yKind==Block:
-                        push newBlock(prepend(x, y))
-                    else:
-                        push newBlock(prepend(x, y, singleValue=true))
+            dispatchWithLiteral:
+                (String(s), String(t)):
+                    value:   push(newString(t & s))
+                    inplace: s.insert(t, 0)
+                (String(s), Char(c)):
+                    value:   push(newString($(c) & s))
+                    inplace: s.insert($(c), 0)
+                (Char(a), String(t)):
+                    value:   push(newString(t & $(a)))
+                    inplace: SetInPlaceAny(newString(t & $(a)))
+                (Char(a), Char(b)):
+                    value:   push(newString($(b) & $(a)))
+                    inplace: SetInPlaceAny(newString($(b) & $(a)))
+                (Binary(n), Binary(m)):
+                    value:   push(newBinary(m & n))
+                    inplace: n.insert(m, 0)
+                (Binary(n), Integer(i)):
+                    value:   push(newBinary(numberToBinary(i) & n))
+                    inplace: n.insert(numberToBinary(i), 0)
+                (Block(a), Block(t)):
+                    value:   push newBlock(prepend(x, y))
+                    inplace: InPlaced.prependInPlace(y)
+                (Block(a), _):
+                    value:   push newBlock(prepend(x, y, singleValue=true))
+                    inplace: a.insert(y, 0)
 
     builtin "range",
         alias       = ellipsis,
@@ -1451,41 +1328,41 @@ proc defineModule*(moduleName: string) =
         in? 5 0..10     ; => true
         """:
             #=======================================================
-            var limX: int
-            var limY: int
-            var numeric = true
-            var infinite = false
+            bindAttrs:
+                step: Integer = 1
 
-            if xKind == Integer: limX = x.i
-            else:
-                numeric = false
-                limX = ord(x.c)
+            if step < 0:    step = -step
+            elif step == 0: Error_RangeWithZeroStep()
 
-            var forward: bool
+            dispatch:
+                _:
+                    var limX: int
+                    var limY: int
+                    var numeric = true
+                    var infinite = false
 
-            if yKind == Integer: limY = y.i
-            elif yKind == Floating:
-                if y.f == Inf or y.f == NegInf:
-                    infinite = true
-                    if y.f == Inf: forward = true
-                    else: forward = false
-                else:
-                    limY = int(y.f)
-            else:
-                limY = ord(y.c)
+                    if xKind == Integer: limX = x.i
+                    else:
+                        numeric = false
+                        limX = ord(x.c)
 
-            var step = 1
-            if checkAttr("step"):
-                step = aStep.i
-                if step < 0:
-                    step = -step
-                elif step == 0:
-                    Error_RangeWithZeroStep()
+                    var forward: bool
 
-            if not infinite:
-                forward = limX < limY
+                    if yKind == Integer: limY = y.i
+                    elif yKind == Floating:
+                        if y.f == Inf or y.f == NegInf:
+                            infinite = true
+                            if y.f == Inf: forward = true
+                            else:          forward = false
+                        else:
+                            limY = int(y.f)
+                    else:
+                        limY = ord(y.c)
 
-            push newRange(limX, limY, step, infinite, numeric, forward)
+                    if not infinite:
+                        forward = limX < limY
+
+                    push newRange(limX, limY, step, infinite, numeric, forward)
 
     # TODO(Collections\remove) is `.index` broken?
     #  Example: `remove.index 3 'a, debug a`
@@ -1537,97 +1414,87 @@ proc defineModule*(moduleName: string) =
             remove.instance.once [1 [6 2] 5 3 [6 2] 4 5 6] [6 2]  ; => [1 5 3 [6 2] 4 5 6]
         """:
             #=======================================================
+            bindAttrs:
+                key:      Logical
+                once:     Logical
+                index:    Logical
+                prefix:   Logical
+                suffix:   Logical
+                instance: Logical
+
+            proc removeFromString(s: string): Value =
+                if once:
+                    if yKind == String: return newString(s.removeFirst(y.s))
+                    else:               return newString(s.removeFirst($(y.c)))
+                if prefix:
+                    var ret = s; ret.removePrefix(y.s); return newString(ret)
+                if suffix:
+                    var ret = s; ret.removeSuffix(y.s); return newString(ret)
+                newString(s.removeAll(y))
+
+            proc removeFromBlock(a: ValueArray): Value =
+                if yKind == Block and instance:
+                    if once: return newBlock(a.removeFirstInstance(y))
+                    return newBlock(a.removeAllInstances(y))
+                if once:  return newBlock(a.removeFirst(y))
+                if index: return newBlock(a.removeByIndex(y.i))
+                newBlock(a.removeAll(y))
+
+            proc removeFromDict(d: ValueDict): Value =
+                if once: return newDictionary(d.removeFirst(y, key))
+                newDictionary(d.removeAll(y, key))
+
+            # Object's magic-method dispatch doesn't fit the kind grid; handle
+            # it (and the non-magic Object case) outside `dispatch`.
+            if xKind == Object:
+                if x.magic.fetch(RemoveM):
+                    mgk(@[x, y])
+                else:
+                    if once:
+                        push(newObject(x.proto, x.o.removeFirst(y, key), x.magic))
+                    else:
+                        push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
+                return
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if (hadAttr("once")):
-                        if yKind == String:
-                            SetInPlaceAny(newString(InPlaced.s.removeFirst(y.s)))
-                        else:
-                            SetInPlaceAny(newString(InPlaced.s.removeFirst($(y.c))))
-                    elif (hadAttr("prefix")):
-                        InPlaced.s.removePrefix(y.s)
-                    elif (hadAttr("suffix")):
-                        InPlaced.s.removeSuffix(y.s)
-                    else:
-                        SetInPlaceAny(newString(InPlaced.s.removeAll(y)))
-                elif InPlaced.kind == Block:
-                    if yKind == Block and hadAttr("instance"):
-                        if hadAttr("once"):
-                            InPlaced.a = InPlaced.a.removeFirstInstance(y)
-                        else:
-                            InPlaced.a = Inplaced.a.removeAllInstances(y)
-                    elif (hadAttr("once")):
-                        SetInPlaceAny(newBlock(InPlaced.a.removeFirst(y)))
-                    elif (hadAttr("index")):
-                        # TODO(General) All `SetInPlace` or `InPlace=` that change the type of object should be changed
-                        #  It doesn't work when in-place changing passed parameters to a function
-                        #  The above is mostly a hack to get around this
-                        #  labels: bug, critical, vm
-                        InPlaced.a = InPlaced.a.removeByIndex(y.i)
-                        #SetInPlace(newBlock(InPlaced.a.removeByIndex(y.i)))
-                    else:
-                        SetInPlaceAny(newBlock(InPlaced.a.removeAll(y)))
-                elif InPlaced.kind == Dictionary:
-                    let key = (hadAttr("key"))
-                    if (hadAttr("once")):
-                        SetInPlaceAny(newDictionary(InPlaced.d.removeFirst(y, key)))
-                    else:
-                        SetInPlaceAny(newDictionary(InPlaced.d.removeAll(y, key)))
-                elif InPlaced.kind == Object:
+                if InPlaced.kind == Object:
                     if InPlaced.magic.fetch(RemoveM):
                         pushAttr("inplace", VTRUE)
-                        mgk(@[InPlaced,y])
+                        mgk(@[InPlaced, y])
                     else:
-                        let key = (hadAttr("key"))
-                        if (hadAttr("once")):
+                        if once:
                             SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeFirst(y, key), InPlaced.magic))
                         else:
                             SetInPlaceAny(newObject(InPlaced.proto, InPlaced.o.removeAll(y, key), InPlaced.magic))
-            else:
-                if xKind == String:
-                    if (hadAttr("once")):
-                        if yKind == String:
-                            push(newString(x.s.removeFirst(y.s)))
+                    return
+
+            # Inplace asymmetry preserved from the pre-dispatch implementation:
+            # `index` and `instance` paths mutate `InPlaced.a` directly so that
+            # `remove.index … 'lst` (where `lst` is a Literal arg) propagates
+            # through the caller; the other paths replace the whole Value via
+            # `SetInPlaceAny` so that aliased references (e.g. `initial: lst`)
+            # don't see the mutation. See examples/src/rosetta/{Stack,
+            # Last list item}.art for the regression cases.
+            dispatchWithLiteral:
+                (String(s), _):
+                    value: push(removeFromString(s))
+                    inplace:
+                        if prefix:   s.removePrefix(y.s)
+                        elif suffix: s.removeSuffix(y.s)
+                        else:        SetInPlaceAny(removeFromString(s))
+                (Block(a), _):
+                    value: push(removeFromBlock(a))
+                    inplace:
+                        if yKind == Block and instance:
+                            if once: a = a.removeFirstInstance(y)
+                            else:    a = a.removeAllInstances(y)
+                        elif index:
+                            a = a.removeByIndex(y.i)
                         else:
-                            push(newString(x.s.removeFirst($(y.c))))
-                    elif (hadAttr("prefix")):
-                        var ret = x.s
-                        ret.removePrefix(y.s)
-                        push(newString(ret))
-                    elif (hadAttr("suffix")):
-                        var ret = x.s
-                        ret.removeSuffix(y.s)
-                        push(newString(ret))
-                    else:
-                        push(newString(x.s.removeAll(y)))
-                elif xKind == Block:
-                    if yKind == Block and hadAttr("instance"):
-                        if hadAttr("once"):
-                            push(newBlock(x.a.removeFirstInstance(y)))
-                        else:
-                            push(newBlock(x.a.removeAllInstances(y)))
-                    elif (hadAttr("once")):
-                        push(newBlock(x.a.removeFirst(y)))
-                    elif (hadAttr("index")):
-                        push(newBlock(x.a.removeByIndex(y.i)))
-                    else:
-                        push(newBlock(x.a.removeAll(y)))
-                elif xKind == Dictionary:
-                    let key = (hadAttr("key"))
-                    if (hadAttr("once")):
-                        push(newDictionary(x.d.removeFirst(y, key)))
-                    else:
-                        push(newDictionary(x.d.removeAll(y, key)))
-                elif xKind == Object:
-                    if x.magic.fetch(RemoveM):
-                        mgk(@[x, y]) # already pushed value
-                    else:
-                        let key = (hadAttr("key"))
-                        if (hadAttr("once")):
-                            push(newObject(x.proto, x.o.removeFirst(y, key), x.magic))
-                        else:
-                            push(newObject(x.proto, x.o.removeAll(y, key), x.magic))
+                            SetInPlaceAny(removeFromBlock(a))
+                (Dictionary(d), _):
+                    value:   push(removeFromDict(d))
+                    inplace: SetInPlaceAny(removeFromDict(d))
 
     builtin "repeat",
         alias       = unaliased,
@@ -1700,23 +1567,19 @@ proc defineModule*(moduleName: string) =
                 for i, c in s:
                     result[s.high - i] = c
 
-            let exact = hadAttr("exact")
+            bindAttrs:
+                exact: Logical
 
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    InPlaced.s.reverse()
-                elif InPlaced.kind == Range:
-                    InPlaced.rng = InPlaced.rng.reversed(safe=exact)
-                else:
-                    InPlaced.a.reverse()
-            else:
-                if xKind == Block:
-                    push(newBlock(x.a.reversed))
-                elif xKind == Range:
-                    push(newRange(x.rng.reversed(safe=exact)))
-                else:
-                    push(newString(reversed(x.s)))
+            dispatchWithLiteral:
+                String(s):
+                    value:   push(newString(reversed(s)))
+                    inplace: s.reverse()
+                Block(a):
+                    value:   push(newBlock(a.reversed))
+                    inplace: a.reverse()
+                Range(rng):
+                    value:   push(newRange(rng.reversed(safe=exact)))
+                    inplace: rng = rng.reversed(safe=exact)
 
     builtin "rotate",
         alias       = unaliased,
@@ -1738,21 +1601,16 @@ proc defineModule*(moduleName: string) =
             rotate 1..6 4                   ; => [3 4 5 6 1 2]
         """:
             #=======================================================
-            let offset = if (not hadAttr("left")): -y.i else: y.i
+            bindAttrs:
+                left: Logical
 
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    InPlaced.s = toSeq(runes(InPlaced.s)).map((w) => $(w))
-                                 .rotatedLeft(offset).join("")
-                elif InPlaced.kind == Block:
-                    InPlaced.a.rotateLeft(offset)
-            else:
-                if xKind == String:
-                    push(newString(toSeq(runes(x.s)).map((w) => $(w))
-                                 .rotatedLeft(offset).join("")))
-                elif xKind == Block:
-                    push(newBlock(x.a.rotatedLeft(offset)))
+            let offset = if not left: -y.i else: y.i
+
+            dispatchWithLiteral:
+                String(s): toSeq(runes(s)).map((w) => $(w)).rotatedLeft(offset).join("")
+                Block(a):
+                    value:   push(newBlock(a.rotatedLeft(offset)))
+                    inplace: a.rotateLeft(offset)
 
     builtin "sample",
         alias       = unaliased,
@@ -1770,12 +1628,13 @@ proc defineModule*(moduleName: string) =
             ; apple
         """:
             #=======================================================
-            if xKind == Range:
-                let rnd = rand(0..int(x.rng.len-1))
-                push(x.rng[rnd])
-            else:
-                if x.a.len == 0: push(VNULL)
-                else: push(sample(x.a))
+            dispatch:
+                Range(rng):
+                    let rnd = rand(0..int(rng.len-1))
+                    push(rng[rnd])
+                Block(items):
+                    if items.len == 0: push(VNULL)
+                    else: push(sample(items))
 
     builtin "set",
         alias       = unaliased,
@@ -1822,13 +1681,13 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
-            case xKind:
-                of Block:
+            dispatch:
+                Block(_):
                     if likely(yKind == Integer):
                         SetArrayIndex(x, y.i, z)
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                of Binary:
+                Binary(_):
                     if likely(yKind == Integer):
                         if likely(y.i >= 0 and y.i < x.n.len):
                             let bn = numberToBinary(z.i)
@@ -1842,9 +1701,9 @@ proc defineModule*(moduleName: string) =
                                     x.n[bi + y.i] = bt
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.n.len-1, "Binary")
-                    else: 
+                    else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                of Bytecode:
+                Bytecode(_):
                     case yKind
                         of String, Word, Literal:
                             if ("data" == y.s):
@@ -1863,34 +1722,24 @@ proc defineModule*(moduleName: string) =
                                 Error_InvalidIndex(y.i, Dumper(x), "You may use `0` to set the data of a Bytecode value, and `1` to set the code block; every other value is not accepted.")
                         else:
                             Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(String), stringify(Word), stringify(Literal), stringify(Integer)])
-                of Dictionary:
-                    case yKind:
-                        of String, Word, Literal:
-                            x.d[y.s] = z
-                        else:
-                            x.d[$(y)] = z
-                of Object:
+                Dictionary(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                    x.d[key] = z
+                Object(_):
+                    let key = if yKind in {String, Word, Literal}: y.s else: $(y)
                     if unlikely(x.magic.fetch(ChangingM)):
                         mgk(@[x, y])
-                    if (x.magic.fetch(SetM) and (not hadAttr("field")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
+                    if (x.magic.fetch(SetM) and (not hadAttr("field")) and (yKind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
                     else:
-                        case yKind:
-                            of String, Word, Literal:
-                                x.o[y.s] = z
-                            else:
-                                x.o[$(y)] = z
+                        x.o[key] = z
                     if unlikely(x.magic.fetch(ChangedM)):
                         mgk(@[x, y])
-                of Store:
+                Store(_):
                     when not defined(WEB):
-                        case yKind:
-                            of String, Word, Literal:
-                                setStoreKey(x.sto, y.s, z)
-                            else:
-                                setStoreKey(x.sto, $(y), z)
-                
-                of String:
+                        let key = if yKind in {String, Word, Literal}: y.s else: $(y)
+                        setStoreKey(x.sto, key, z)
+                String(_):
                     if likely(yKind == Integer):
                         if likely(y.i >= 0 and y.i < x.s.runeLen()):
                             var res: string
@@ -1907,7 +1756,7 @@ proc defineModule*(moduleName: string) =
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     else:
                         Error_UnsupportedKeyType(Dumper(y), Dumper(x), @[stringify(Integer)])
-                else: discard
+                _: discard
 
     builtin "shuffle",
         alias       = unaliased,
@@ -1927,11 +1776,10 @@ proc defineModule*(moduleName: string) =
             print arr                     ; 5 9 2
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                InPlaced.a.shuffle()
-            else:
-                push(newBlock(x.a.dup(shuffle)))
+            dispatchWithLiteral:
+                Block(a):
+                    value:   push(newBlock(a.dup(shuffle)))
+                    inplace: a.shuffle()
  
     builtin "size",
         alias       = unaliased,
@@ -1956,22 +1804,17 @@ proc defineModule*(moduleName: string) =
             print size "你好!"              ; 3
         """:
             #=======================================================
-            if xKind == String:
-                push(newInteger(runeLen(x.s)))
-            elif xKind == Dictionary:
-                push(newInteger(x.d.len))
-            elif xKind == Object:
-                push(newInteger(x.o.objectSize))
-            elif xKind == Range:
-                let sz = x.rng.len
-                if sz == InfiniteRange: push(newFloating(Inf))
-                else: push(newInteger(sz))
-            elif xKind == Block:
-                push(newInteger(x.a.len))
-            elif xKind == Binary:
-                push(newInteger(x.n.len))
-            else: # Null
-                push(newInteger(0))
+            dispatch:
+                String(s):     push(newInteger(runeLen(s)))
+                Dictionary(d): push(newInteger(d.len))
+                Object(o):     push(newInteger(o.objectSize))
+                Range(rng):
+                    let sz = rng.len
+                    if sz == InfiniteRange: push(newFloating(Inf))
+                    else: push(newInteger(sz))
+                Block(a):      push(newInteger(a.len))
+                Binary(n):     push(newInteger(n.len))
+                _:             push(newInteger(0))   # Null
 
     builtin "slice",
         alias       = unaliased,
@@ -1991,29 +1834,28 @@ proc defineModule*(moduleName: string) =
             print slice 1..10 3 4         ; 4 5
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if InPlaced.s.len == 0:
-                        SetInPlaceAny newString("")
-                    else:
-                        if y.i >= 0 and z.i <= InPlaced.s.runeLen:
-                            SetInPlaceAny newString Inplaced.s.runeSubStr(y.i, z.i - y.i + 1)
-                else:
-                    if y.i >= 0 and z.i <= InPlaced.a.len-1:
-                        InPlaced.a = InPlaced.a[y.i..z.i]
-            elif xKind == String:
-                if x.s.len == 0: push(newString(""))
-                else:
-                    if y.i >= 0 and z.i <= x.s.runeLen:
-                        push(newString(x.s.runeSubStr(y.i, z.i-y.i+1)))
-                    else:
-                        push(newString(""))
-            else:
-                if y.i >= 0 and z.i <= x.a.len-1:
-                    push(newBlock(x.a[y.i..z.i]))
-                else:
-                    push(newBlock())
+            dispatchWithLiteral:
+                String(s):
+                    value:
+                        if s.len == 0: push(newString(""))
+                        elif y.i >= 0 and z.i <= s.runeLen:
+                            push(newString(s.runeSubStr(y.i, z.i-y.i+1)))
+                        else:
+                            push(newString(""))
+                    inplace:
+                        if s.len == 0:
+                            s = ""
+                        elif y.i >= 0 and z.i <= s.runeLen:
+                            s = s.runeSubStr(y.i, z.i - y.i + 1)
+                Block(a):
+                    value:
+                        if y.i >= 0 and z.i <= a.len-1:
+                            push(newBlock(a[y.i..z.i]))
+                        else:
+                            push(newBlock())
+                    inplace:
+                        if y.i >= 0 and z.i <= a.len-1:
+                            a = a[y.i..z.i]
 
     # TODO(Collections\sort) clean rewrite needed
     #  the whole implementation looks like a patchwork of ideas and is not that
@@ -2078,145 +1920,81 @@ proc defineModule*(moduleName: string) =
             ; => #[age: 35 income: 5000 surname: "Doe" name: "John" ]
         """:
             #=======================================================
-            var sortOrdering = SortOrder.Ascending
+            bindAttrs:
+                descending:    Logical
+                sensitive:     Logical
+                byValue(values): Logical
+                byKey(by):     String = ""
+                locale(`as`):  String = ""
 
-            if (hadAttr("descending")):
-                sortOrdering = SortOrder.Descending
+            let sortOrdering =
+                if descending: SortOrder.Descending
+                else:          SortOrder.Ascending
 
-            if xKind == Block:
-                if x.a.len == 0: push(newBlock())
-                else:
-                    if checkAttr("by"):
-                        if x.a.len > 0:
-                            var sorted: ValueArray
-
-                            if x.a[0].kind == Dictionary:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                            order = sortOrdering)
-                            else:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.o[aBy.s], v2.o[aBy.s]),
-                                            order = sortOrdering)
-
-                            push(newBlock(sorted))
-                        else:
-                            push(newDictionary())
+            proc sortBlockArr(arr: var ValueArray) =
+                if arr.len == 0: return
+                if byKey != "":
+                    if arr[0].kind == Dictionary:
+                        arr.sort(proc (v1, v2: Value): int =
+                                    cmp(v1.d[byKey], v2.d[byKey]),
+                                 order = sortOrdering)
                     else:
-                        if checkAttr("as"):
-                            push(newBlock(x.a.unisorted(aAs.s,
-                                    sensitive = hadAttr("sensitive"),
-                                    order = sortOrdering)))
-                        else:
-                            if (hadAttr("sensitive")):
-                                push(newBlock(x.a.unisorted("en",
-                                        sensitive = true, order = sortOrdering)))
-                            else:
-                                if x.a[0].kind == String:
-                                    push(newBlock(x.a.unisorted("en",
-                                            order = sortOrdering)))
-                                else:
-                                    push(newBlock(x.a.sorted(
-                                            order = sortOrdering)))
-
-            elif xKind == Dictionary:
-                var sorted = x.d
-
-                if checkAttr("as"):
-                    push(newDictionary(sorted.unisorted(aAs.s, 
-                        sensitive = hadAttr("sensitive"),
-                        order = sortOrdering, 
-                        byValue = hadAttr("values"))))
+                        arr.sort(proc (v1, v2: Value): int =
+                                    cmp(v1.o[byKey], v2.o[byKey]),
+                                 order = sortOrdering)
+                    return
+                if locale != "":
+                    arr.unisort(locale, sensitive = sensitive, order = sortOrdering)
+                    return
+                if sensitive:
+                    arr.unisort("en", sensitive = true, order = sortOrdering)
+                    return
+                if arr[0].kind == String:
+                    arr.unisort("en", order = sortOrdering)
                 else:
-                    if (hadAttr("sensitive")):
-                        push(newDictionary(sorted.unisorted("en", 
-                            sensitive = true,
-                            order = sortOrdering, 
-                            byValue = hadAttr("values"))))
-                    else:
-                        var isString = false
-                        for v in values(sorted):
-                            if v.kind == String:
-                                isString = true
-                            break
+                    arr.sort(order = sortOrdering)
 
-                        if isString:
-                            push(newDictionary(sorted.unisorted("en",
-                                order = sortOrdering,
-                                byValue = hadAttr("values"))))
-                        else:
-                            var res = newOrderedTable[string, Value]()
-                            for k, v in sorted.pairs:
-                                res[k] = v
-
-                            if hadAttr("values"):
-                                res.sort(proc (x, y: (string, Value)): int = 
-                                    cmp(x[1], y[1])
-                                , order = sortOrdering)
-                            else:
-                                res.sort(proc (x, y: (string, Value)): int = 
-                                    cmp(x[0], y[0])
-                                , order = sortOrdering)
-
-                            push(newDictionary(res))
-
-            else:
-                ensureInPlaceAny()
-                if InPlaced.kind == Block:
-                    if InPlaced.a.len > 0:
-                        if checkAttr("by"):
-                            InPlaced.a.sort(
-                                proc (v1, v2: Value): int =
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                        order = sortOrdering)
-                        else:               
-                            if checkAttr("as"):
-                                InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
-                                        "sensitive"), order = sortOrdering)
-                            else:
-                                if (hadAttr("sensitive")):
-                                    InPlaced.a.unisort("en", sensitive = true,
-                                            order = sortOrdering)
-                                else:
-                                    if InPlaced.a[0].kind == String:
-                                        InPlaced.a.unisort("en",
-                                                order = sortOrdering)
-                                    else:
-                                        InPlaced.a.sort(order = sortOrdering)
+            proc sortDictTbl(dt: var ValueDict) =
+                if locale != "":
+                    dt.unisort(locale, sensitive = sensitive,
+                               order = sortOrdering,
+                               byValue = byValue)
+                    return
+                if sensitive:
+                    dt.unisort("en", sensitive = true,
+                               order = sortOrdering,
+                               byValue = byValue)
+                    return
+                var isString = false
+                for v in values(dt):
+                    if v.kind == String: isString = true
+                    break
+                if isString:
+                    dt.unisort("en", order = sortOrdering, byValue = byValue)
+                elif byValue:
+                    dt.sort(proc (x, y: (string, Value)): int =
+                                cmp(x[1], y[1]),
+                            order = sortOrdering)
                 else:
-                    if checkAttr("as"):
-                        InPlaced.d.unisort(aAs.s, 
-                            sensitive = hadAttr("sensitive"),
-                            order = sortOrdering, 
-                            byValue = hadAttr("values"))
-                    else:
-                        if (hadAttr("sensitive")):
-                            InPlaced.d.unisort("en", 
-                                sensitive = true,
-                                order = sortOrdering, 
-                                byValue = hadAttr("values"))
-                        else:
-                            var isString = false
-                            for v in values(InPlaced.d):
-                                if v.kind == String:
-                                    isString = true
-                                break
+                    dt.sort(proc (x, y: (string, Value)): int =
+                                cmp(x[0], y[0]),
+                            order = sortOrdering)
 
-                            if isString:
-                                InPlaced.d.unisort("en",
-                                    order = sortOrdering,
-                                    byValue = hadAttr("values"))
-                            else:
-                                if hadAttr("values"):
-                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
-                                        cmp(x[1], y[1])
-                                    , order = sortOrdering)
-                                else:
-                                    InPlaced.d.sort(proc (x, y: (string, Value)): int = 
-                                        cmp(x[0], y[0])
-                                    , order = sortOrdering)
+            dispatchWithLiteral:
+                Block(a):
+                    value:
+                        var copy = a
+                        sortBlockArr(copy)
+                        push(newBlock(copy))
+                    inplace:
+                        sortBlockArr(a)
+                Dictionary(d):
+                    value:
+                        var copy = d
+                        sortDictTbl(copy)
+                        push(newDictionary(copy))
+                    inplace:
+                        sortDictTbl(d)
 
     # TODO(Collections\split) Add better support for unicode strings
     #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
@@ -2261,131 +2039,69 @@ proc defineModule*(moduleName: string) =
             ; => [ [1 2 3 4] [5 6 7 8 9] ]
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
-                    if (hadAttr("words")):
-                        SetInPlaceAny(newStringBlock(strutils.splitWhitespace(InPlaced.s)))
-                    elif (hadAttr("lines")):
-                        SetInPlaceAny(newStringBlock(InPlaced.s.splitLines()))
-                    elif (hadAttr("path")):
-                        var strStart = 0
-                        var strEnd = 1
-                        if InPlaced.s.startsWith(DirSep) or InPlaced.s.startsWith(AltSep):
-                            strStart = 1
-                        if InPlaced.s.endsWith(DirSep) or InPlaced.s.endsWith(AltSep):
-                            strEnd = 2
-                        SetInPlaceAny(newStringBlock(InPlaced.s[strStart..^strEnd].split({DirSep,AltSep})))
-                    elif checkAttr("by"):
-                        if aBy.kind == String:
-                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.s)))
-                        elif aBy.kind == Char:
-                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.c)))
-                        elif aBy.kind == Regex:
-                            SetInPlaceAny(newStringBlock(InPlaced.s.split(aBy.rx)))
-                        else:
-                            SetInPlaceAny(newStringBlock(toSeq(
-                                    InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
-                    elif checkAttr("at"):
-                        SetInPlaceAny(newStringBlock(@[InPlaced.s[0..aAt.i-1],
-                                InPlaced.s[aAt.i..^1]]))
-                    elif checkAttr("every"):
-                        var ret: seq[string]
-                        var length = InPlaced.s.len
-                        var i = 0
-                        
-                        while i < length:
-                            if i + aEvery.i <= length:
-                                ret.add(InPlaced.s[i..i+aEvery.i-1])
-                                i += aEvery.i
-                            else:
-                                ret.add(InPlaced.s[i..^1])
-                                i += aEvery.i
+            bindAttrs:
+                words: Logical
+                lines: Logical
+                path:  Logical
+                splitAt(at):       Integer = int.low
+                splitEvery(every): Integer = int.low
+                splitBy(by):       {String, Regex, Char, Block}
 
-                        SetInPlaceAny(newStringBlock(ret))
-
-                    else:
-                        SetInPlaceAny(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
-                                $(w))))
-                else:
-                    if checkAttr("at"):
-                        SetInPlaceAny(newBlock(@[newBlock(InPlaced.a[0..aAt.i-1]),
-                                newBlock(InPlaced.a[aAt.i..^1])]))
-                    elif checkAttr("every"):
-                        var ret: ValueArray
-                        var length = InPlaced.a.len
-                        var i = 0
-
-                        while i < length:
-                            if i + aEvery.i > length:
-                                ret.add(newBlock(InPlaced.a[i..^1]))
-                            else:
-                                ret.add(newBlock(InPlaced.a[i..i+aEvery.i-1]))
-                            i += aEvery.i
-
-                        SetInPlaceAny(newBlock(ret))
-                    else: discard
-
-            elif xKind == String:
-                if (hadAttr("words")):
-                    push(newStringBlock(strutils.splitWhitespace(x.s)))
-                elif (hadAttr("lines")):
-                    push(newStringBlock(x.s.splitLines()))
-                elif (hadAttr("path")):
+            proc splitStringValue(s: string): Value =
+                if words:
+                    return newStringBlock(strutils.splitWhitespace(s))
+                if lines:
+                    return newStringBlock(s.splitLines())
+                if path:
                     var strStart = 0
-                    var strEnd = 1
-                    if x.s.startsWith(DirSep) or x.s.startsWith(AltSep):
-                        strStart = 1
-                    if x.s.endsWith(DirSep) or x.s.endsWith(AltSep):
-                        strEnd = 2
-                    push(newStringBlock(x.s[strStart..^strEnd].split({DirSep,AltSep})))
-                elif checkAttr("by"):
-                    if aBy.kind == String:
-                        push(newStringBlock(x.s.split(aBy.s)))
-                    elif aBy.kind == Char:
-                        push(newStringBlock(x.s.split(aBy.c)))
-                    elif aBy.kind == Regex:
-                        push(newStringBlock(x.s.split(aBy.rx)))
-                    else:
-                        push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
-                elif checkAttr("at"):
-                    push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
-                elif checkAttr("every"):
+                    var strEnd   = 1
+                    if s.startsWith(DirSep) or s.startsWith(AltSep): strStart = 1
+                    if s.endsWith(DirSep)   or s.endsWith(AltSep):   strEnd   = 2
+                    return newStringBlock(s[strStart..^strEnd].split({DirSep,AltSep}))
+                if not splitBy.isNil:
+                    case splitBy.kind
+                    of String: return newStringBlock(s.split(splitBy.s))
+                    of Char:   return newStringBlock(s.split(splitBy.c))
+                    of Regex:  return newStringBlock(s.split(splitBy.rx))
+                    else:      return newStringBlock(toSeq(
+                                    s.tokenize(splitBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s)))))
+                if splitAt != int.low:
+                    return newStringBlock(@[s[0..splitAt-1], s[splitAt..^1]])
+                if splitEvery != int.low:
                     var ret: seq[string]
-                    var length = x.s.len
+                    let length = s.len
                     var i = 0
-
                     while i < length:
-                        if i + aEvery.i <= length:
-                            ret.add(x.s[i..i+aEvery.i-1])
-                            i += aEvery.i
-                        else:
-                            ret.add(x.s[i..^1])
-                            i += aEvery.i
+                        if i + splitEvery <= length: ret.add(s[i..i+splitEvery-1])
+                        else:                       ret.add(s[i..^1])
+                        i += splitEvery
+                    return newStringBlock(ret)
+                newStringBlock(toSeq(runes(s)).map((w) => $(w)))
 
-                    push(newStringBlock(ret))
-                
-                else:
-                    push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
-            else:
-                if checkAttr("at"):
-                    push(newBlock(@[newBlock(x.a[0..aAt.i-1]), newBlock(
-                            x.a[aAt.i..^1])]))
-                elif checkAttr("every"):
+            proc splitBlockValue(a: ValueArray): Value =
+                if splitAt != int.low:
+                    return newBlock(@[newBlock(a[0..splitAt-1]), newBlock(a[splitAt..^1])])
+                if splitEvery != int.low:
                     var ret: ValueArray
-                    var length = x.a.len
+                    let length = a.len
                     var i = 0
-
                     while i < length:
-                        if i+aEvery.i > length:
-                            ret.add(newBlock(x.a[i..^1]))
-                        else:
-                            ret.add(newBlock(x.a[i..i+aEvery.i-1]))
+                        if i + splitEvery > length: ret.add(newBlock(a[i..^1]))
+                        else:                      ret.add(newBlock(a[i..i+splitEvery-1]))
+                        i += splitEvery
+                    return newBlock(ret)
 
-                        i += aEvery.i
-
-                    push(newBlock(ret))
-                else: push(x)
+            dispatchWithLiteral:
+                String(s):
+                    value:   push(splitStringValue(s))
+                    inplace: SetInPlaceAny(splitStringValue(s))
+                Block(a):
+                    value:
+                        let res = splitBlockValue(a)
+                        push(if res.isNil: x else: res)
+                    inplace:
+                        let res = splitBlockValue(a)
+                        if not res.isNil: SetInPlaceAny(res)
 
     builtin "squeeze",
         alias       = unaliased,
@@ -2408,46 +2124,25 @@ proc defineModule*(moduleName: string) =
             ; helo world
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                if InPlaced.kind == String:
+            dispatchWithLiteral:
+                String(s):
                     var i = 0
                     var ret: string
-                    while i < InPlaced.s.len:
-                        ret &= $(InPlaced.s[i])
-                        while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == InPlaced.s[i]):
+                    while i < s.len:
+                        ret &= $(s[i])
+                        while (i+1 < s.len and s[i+1] == s[i]):
                             i += 1
                         i += 1
-                    SetInPlaceAny(newString(ret))
-                elif InPlaced.kind == Block:
+                    ret
+                Block(a):
                     var i = 0
                     var ret: ValueArray
-                    while i < InPlaced.a.len:
-                        ret.add(InPlaced.a[i])
-                        while (i+1 < InPlaced.a.len and InPlaced.a[i+1] ==
-                                InPlaced.a[i]):
+                    while i < a.len:
+                        ret.add(a[i])
+                        while (i+1 < a.len and a[i+1] == a[i]):
                             i += 1
                         i += 1
-                    SetInPlaceAny(newBlock(ret))
-            else:
-                if xKind == String:
-                    var i = 0
-                    var ret: string
-                    while i < x.s.len:
-                        ret &= $(x.s[i])
-                        while (i+1 < x.s.len and x.s[i+1] == x.s[i]):
-                            i += 1
-                        i += 1
-                    push(newString(ret))
-                elif xKind == Block:
-                    var i = 0
-                    var ret: ValueArray
-                    while i < x.a.len:
-                        ret.add(x.a[i])
-                        while (i+1 < x.a.len and x.a[i+1] == x.a[i]):
-                            i += 1
-                        i += 1
-                    push(newBlock(ret))
+                    ret
 
     builtin "take",
         alias       = unaliased,
@@ -2475,66 +2170,57 @@ proc defineModule*(moduleName: string) =
             take [1 2 3] 4          ; => [1 2 3]
         """:
             #=======================================================
-            
             template getUpperLimit(container: untyped): untyped =
                 if abs(y.i) > container.len: container.high
                 else: abs(y.i) - 1
-            
-            template take(container: untyped): untyped =
+
+            template doTake(container: untyped): untyped =
                 let upperLimit: int = container.getUpperLimit()
                 if 0 < y.i:
                     container[0..upperLimit]
                 else:
                     container[container.high - upperLimit..^1]
-            
-            if x.kind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                case InPlaced.kind
-                of String:
-                    if x.s.len > 0:
-                        InPlaced.s = InPlaced.s.take()
-                of Block:
-                    if InPlaced.a.len > 0:
-                        InPlaced.a = InPlaced.a.take()
-                of Range:
-                    if 0 < y.i:
-                        let upperLimit: int = 
-                            if y.i < InPlaced.rng.len: y.i - 1 
-                            else: InPlaced.rng.len - 1
-                        InPlaced = newBlock(InPlaced.rng[0..upperLimit])
-                    elif 0 > y.i:
-                        let lowerLimit: int = 
-                            if abs(y.i) < InPlaced.rng.len: abs(y.i) - 1
-                            else: InPlaced.rng.len - 1
-                        InPlaced = newBlock(
-                            InPlaced.rng[InPlaced.rng.len-lowerLimit-1..InPlaced.rng.len-1])
-                    else:
-                        InPlaced = newBlock()
-                else: discard
-            else:
-                case x.kind
-                of String:
-                    if x.s.len == 0: push(newString(""))
-                    else:
-                        push(newString(x.s.take()))
-                of Block:
-                    if x.a.len == 0: push(newBlock())
-                    else:
-                        push(newBlock(x.a.take()))
-                of Range:
-                    if 0 < y.i:
-                        let upperLimit: int = 
-                            if y.i < x.rng.len: y.i - 1 
-                            else: x.rng.len - 1
-                        push(newBlock(x.rng[0..upperLimit]))
-                    elif 0 > y.i:
-                        let lowerLimit: int = 
-                            if abs(y.i) < x.rng.len: abs(y.i) - 1
-                            else: x.rng.len - 1
-                        push(newBlock(x.rng[x.rng.len-lowerLimit-1..x.rng.len-1]))
-                    else:
-                        push(newBlock())      
-                else: discard
+
+            dispatchWithLiteral:
+                String(s):
+                    value:
+                        if s.len == 0: push(newString(""))
+                        else:          push(newString(s.doTake()))
+                    inplace:
+                        if s.len > 0: s = s.doTake()
+                Block(a):
+                    value:
+                        if a.len == 0: push(newBlock())
+                        else:          push(newBlock(a.doTake()))
+                    inplace:
+                        if a.len > 0: a = a.doTake()
+                Range(rng):
+                    value:
+                        if 0 < y.i:
+                            let upperLimit: int =
+                                if y.i < rng.len: y.i - 1
+                                else: rng.len - 1
+                            push(newBlock(rng[0..upperLimit]))
+                        elif 0 > y.i:
+                            let lowerLimit: int =
+                                if abs(y.i) < rng.len: abs(y.i) - 1
+                                else: rng.len - 1
+                            push(newBlock(rng[rng.len-lowerLimit-1..rng.len-1]))
+                        else:
+                            push(newBlock())
+                    inplace:
+                        if 0 < y.i:
+                            let upperLimit: int =
+                                if y.i < rng.len: y.i - 1
+                                else: rng.len - 1
+                            SetInPlaceAny(newBlock(rng[0..upperLimit]))
+                        elif 0 > y.i:
+                            let lowerLimit: int =
+                                if abs(y.i) < rng.len: abs(y.i) - 1
+                                else: rng.len - 1
+                            SetInPlaceAny(newBlock(rng[rng.len-lowerLimit-1..rng.len-1]))
+                        else:
+                            SetInPlaceAny(newBlock())
 
     builtin "tally",
         alias       = unaliased,
@@ -2554,24 +2240,21 @@ proc defineModule*(moduleName: string) =
             ; => [1:5 2:5 4:3 3:2 5:3 6:3 7:1]
         """:
             #=======================================================
-            var occurrences = initOrderedTable[string,Value]()
-
-            if xKind == String:
-                for r in runes(x.s): 
-                    let str = $(r)
-                    if not occurrences.hasKey(str):
-                        occurrences[str] = newInteger(0)
-
-                    occurrences[str].i += 1
-            else:
-                for item in x.a:
-                    let str = $(item)
-                    if not occurrences.hasKey(str):
-                        occurrences[str] = newInteger(0)
-                        
-                    occurrences[str].i += 1
-            
-            push(newDictionary(occurrences))
+            dispatch:
+                String(s):
+                    var occurrences = initOrderedTable[string,Value]()
+                    for r in runes(s):
+                        let str = $(r)
+                        if not occurrences.hasKey(str): occurrences[str] = newInteger(0)
+                        occurrences[str].i += 1
+                    push(newDictionary(occurrences))
+                Block(items):
+                    var occurrences = initOrderedTable[string,Value]()
+                    for item in items:
+                        let str = $(item)
+                        if not occurrences.hasKey(str): occurrences[str] = newInteger(0)
+                        occurrences[str].i += 1
+                    push(newDictionary(occurrences))
 
     builtin "unique",
         alias       = unaliased,
@@ -2596,22 +2279,21 @@ proc defineModule*(moduleName: string) =
             unique.id "user-"   ; => user-67915b7a409e222b2f9a6bed
         """:
             #=======================================================
-            if (hadAttr("id")):
-                # TODO(Collections\unique) make `.id` work for Web/JS builds
-                #  labels: library,enhancement,web
-                when not defined(WEB):
+            # `.id` short-circuits the dispatch entirely — the result kind
+            # has nothing to do with x's kind, so handle it as a prelude.
+            # TODO(Collections\unique) make `.id` work for Web/JS builds
+            #  labels: library,enhancement,web
+            bindAttrs:
+                id: Logical
+
+            when not defined(WEB):
+                if id:
                     push newString(x.s & $(genOid()))
-            else:
-                if xKind == Block:
-                    push(newBlock(x.a.deduplicated()))
-                elif xKind == String:
-                    push newString(toSeq(runes(x.s)).deduplicate.map((w) => $(w)).join(""))
-                else: 
-                    ensureInPlaceAny()
-                    if InPlaced.kind == Block:
-                        InPlaced.a = InPlaced.a.deduplicated()
-                    else:
-                        InPlaced.s = toSeq(runes(InPlaced.s)).deduplicate.map((w) => $(w)).join("")
+                    return
+
+            dispatchWithLiteral:
+                String(s): toSeq(runes(s)).deduplicate.map((w) => $(w)).join("")
+                Block(a):  a.deduplicated()
 
     builtin "values",
         alias       = unaliased,
@@ -2632,17 +2314,11 @@ proc defineModule*(moduleName: string) =
             values user     ; => ["John" "Doe"]
         """:
             #=======================================================
-            if xKind == Block:
-                push x
-            elif xKind == Range:
-                let items = toSeq(x.rng.items)
-                push(newBlock(items))
-            elif xKind == Dictionary:
-                let s = toSeq(x.d.values)
-                push(newBlock(s))
-            else:
-                let s = toSeq(x.o.objectValues)
-                push(newBlock(s))
+            dispatch:
+                Block(_):      push x
+                Range(rng):    push(newBlock(toSeq(rng.items)))
+                Dictionary(d): push(newBlock(toSeq(d.values)))
+                Object(o):     push(newBlock(toSeq(o.objectValues)))
 
     #----------------------------
     # Predicates
@@ -2706,70 +2382,57 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
-            if checkAttr("at"):
-                let at = aAt.i
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx, at)))
-                        elif yKind == Char:
-                            push(newLogical(toRunes(x.s)[at] == y.c))
+            bindAttrs:
+                deep: Logical
+
+            dispatch:
+                String(s):
+                    on at(i: Integer):
+                        if yKind == Regex:  push(newLogical(s.contains(y.rx, i)))
+                        elif yKind == Char: push(newLogical(toRunes(s)[i] == y.c))
+                        else:               push(newLogical(s.continuesWith(y.s, i)))
+                    _:
+                        if yKind == Regex:  push(newLogical(s.contains(y.rx)))
+                        elif yKind == Char: push(newLogical($(y.c) in s))
+                        else:               push(newLogical(y.s in s))
+                Block(a):
+                    on at(i: Integer): push(newLogical(a[i] == y))
+                    _:
+                        if deep: push(newLogical(a.inNestedBlock(y)))
+                        else:    push(newLogical(y in a))
+                Range(rng):
+                    on at(i: Integer): push(newLogical(rng[i] == y))
+                    _:                 push(newLogical(y in rng))
+                Dictionary(d):
+                    on at(i: Integer):
+                        let values = toSeq(d.values)
+                        push(newLogical(values[i] == y))
+                    _:
+                        if deep:
+                            let values: ValueArray = d.getValuesinDeep()
+                            push(newLogical(y in values))
                         else:
-                            push(newLogical(x.s.continuesWith(y.s, at)))
-                    of Block:
-                        push(newLogical(x.a[at] == y))
-                    of Range:
-                        push(newLogical(x.rng[at] == y))
-                    of Dictionary:
-                        let values = toSeq(x.d.values)
-                        push(newLogical(values[at] == y))
-                    of Object:
+                            let values = toSeq(d.values)
+                            push(newLogical(y in values))
+                Object(o):
+                    on at(i: Integer):
                         if unlikely(x.magic.fetch(ContainsQM)):
                             pushAttr("at", aAt)
-                            mgk(@[x, y]) # already pushes value
+                            mgk(@[x, y])
                         else:
-                            let values = toSeq(x.o.values)
-                            push(newLogical(values[at] == y))
-                    else:
-                        discard
-            else:
-                case xKind:
-                    of String:
-                        if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx)))
-                        elif yKind == Char:
-                            push(newLogical($(y.c) in x.s))
-                        else:
-                            push(newLogical(y.s in x.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(x.a.inNestedBlock(y))
-                        else:
-                            push(newLogical(y in x.a))
-                    of Range:
-                        push(newLogical(y in x.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = x.d.getValuesinDeep()
-                            push newLogical(y in values)
-                        else:
-                            let values = toSeq(x.d.values)
-                            push(newLogical(y in values))
-                    of Object:
+                            let values = toSeq(o.values)
+                            push(newLogical(values[i] == y))
+                    _:
                         if unlikely(x.magic.fetch(ContainsQM)):
-                            if hadAttr("deep"):
-                                pushAttr("deep", VTRUE)
-
-                            mgk(@[x, y]) # already pushes value
+                            if deep: pushAttr("deep", VTRUE)
+                            mgk(@[x, y])
                         else:
-                            if hadAttr("deep"):
-                                let values: ValueArray = x.o.getValuesinDeep()
-                                push newLogical(y in values)
-                            else:
-                                let values = toSeq(x.o.values)
+                            if deep:
+                                let values: ValueArray = o.getValuesinDeep()
                                 push(newLogical(y in values))
-                    else:
-                        discard
+                            else:
+                                let values = toSeq(o.values)
+                                push(newLogical(y in values))
 
     builtin "empty?",
         alias       = unaliased,
@@ -2789,13 +2452,11 @@ proc defineModule*(moduleName: string) =
             empty? [1 "two" 3]    ; => false
         """:
             #=======================================================
-            case xKind:
-                of Null: push(VTRUE)
-                of String: push(newLogical(x.s == ""))
-                of Block:
-                    push(newLogical(x.a.len == 0))
-                of Dictionary: push(newLogical(x.d.len == 0))
-                else: discard
+            dispatch:
+                String(s):     push(newLogical(s == ""))
+                Block(a):      push(newLogical(a.len == 0))
+                Dictionary(d): push(newLogical(d.len == 0))
+                _:             push(VTRUE)   # Null
 
     # TODO(Collections\in?) add new `.key` option?
     #  same as with `contains?`
@@ -2854,70 +2515,55 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
-            if checkAttr("at"):
-                let at = aAt.i
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx, at)))
-                        elif xKind == Char:
-                            push(newLogical(toRunes(y.s)[at] == x.c))
-                        else:
-                            push(newLogical(y.s.continuesWith(x.s, at)))
-                    of Block:
-                        push(newLogical(y.a[at] == x))
-                    of Range:
-                        push(newLogical(y.rng[at] == x))
-                    of Dictionary:
-                        let values = toSeq(y.d.values)
-                        push(newLogical(values[at] == x))
-                    of Object:
-                        if unlikely(y.magic.fetch(ContainsQM)):
-                            pushAttr("at", aAt)
-                            mgk(@[y, x]) # already pushes value
-                        else:
-                            let values = toSeq(y.o.values)
-                            push(newLogical(values[at] == x))
-                    else:
-                        discard
-            else:
-                case yKind:
-                    of String:
-                        if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx)))
-                        elif xKind == Char:
-                            push(newLogical($(x.c) in y.s))
-                        else:
-                            push(newLogical(x.s in y.s))
-                    of Block:
-                        if hadAttr("deep"):
-                            push newLogical(y.a.inNestedBlock(x))
-                        else:
-                            push(newLogical(x in y.a))
-                    of Range:
-                        push(newLogical(x in y.rng))
-                    of Dictionary:
-                        if hadAttr("deep"):
-                            let values: ValueArray = y.d.getValuesinDeep()
-                            push newLogical(x in values)
-                        else:
-                            let values = toSeq(y.d.values)
-                            push(newLogical(x in values))
-                    of Object:
-                        if unlikely(y.magic.fetch(ContainsQM)):
-                            if hadAttr("deep"):
-                                pushAttr("deep", VTRUE)
+            # `in? x y` is `contains? y x` — same kind table on the collection,
+            # same attrs. Written out (rather than as a 2-axis dispatch) because
+            # x-axis wildcards in tuple clauses aren't supported yet.
+            bindAttrs:
+                deep:        Logical
+                atIdx(at):   Integer = int.low
 
-                            mgk(@[y, x]) # already pushes value
-                        else:
-                            if hadAttr("deep"):
-                                let values: ValueArray = y.o.getValuesinDeep()
-                                push newLogical(x in values)
-                            else:
-                                let values = toSeq(y.o.values)
-                                push(newLogical(x in values))
-                    else:
-                        discard
+            proc inAt(coll, val: Value, at: int): Value =
+                case coll.kind:
+                of String:
+                    if val.kind == Regex:  return newLogical(coll.s.contains(val.rx, at))
+                    elif val.kind == Char: return newLogical(toRunes(coll.s)[at] == val.c)
+                    else:                  return newLogical(coll.s.continuesWith(val.s, at))
+                of Block:      return newLogical(coll.a[at] == val)
+                of Range:      return newLogical(coll.rng[at] == val)
+                of Dictionary: return newLogical(toSeq(coll.d.values)[at] == val)
+                of Object:     return newLogical(toSeq(coll.o.values)[at] == val)
+                else:          return VFALSE
+
+            proc inAny(coll, val: Value): Value =
+                case coll.kind:
+                of String:
+                    if val.kind == Regex:  return newLogical(coll.s.contains(val.rx))
+                    elif val.kind == Char: return newLogical($(val.c) in coll.s)
+                    else:                  return newLogical(val.s in coll.s)
+                of Block:
+                    if deep: return newLogical(coll.a.inNestedBlock(val))
+                    return newLogical(val in coll.a)
+                of Range: return newLogical(val in coll.rng)
+                of Dictionary:
+                    if deep: return newLogical(val in coll.d.getValuesinDeep())
+                    return newLogical(val in toSeq(coll.d.values))
+                of Object:
+                    if deep: return newLogical(val in coll.o.getValuesinDeep())
+                    return newLogical(val in toSeq(coll.o.values))
+                else: return VFALSE
+
+            if atIdx != int.low:
+                if yKind == Object and unlikely(y.magic.fetch(ContainsQM)):
+                    pushAttr("at", newInteger(atIdx))
+                    mgk(@[y, x])
+                else:
+                    push(inAt(y, x, atIdx))
+            else:
+                if yKind == Object and unlikely(y.magic.fetch(ContainsQM)):
+                    if deep: pushAttr("deep", VTRUE)
+                    mgk(@[y, x])
+                else:
+                    push(inAny(y, x))
 
     builtin "key?",
         alias       = unaliased,
@@ -2943,17 +2589,13 @@ proc defineModule*(moduleName: string) =
             ; Hello John
         """:
             #=======================================================
-            var needle: string
-            if yKind == String: needle = y.s
-            else: needle = $(y)
+            let needle = if yKind == String: y.s else: $(y)
 
-            if xKind == Dictionary:
-                push(newLogical(x.d.hasKey(needle)))
-            else:
-                if unlikely(x.magic.fetch(KeyQM)):
-                    mgk(@[x, y]) # already pushes value
-                else:
-                    push(newLogical(x.o.hasKey(needle)))
+            dispatch:
+                Dictionary(d): push(newLogical(d.hasKey(needle)))
+                Object(o):
+                    if unlikely(x.magic.fetch(KeyQM)): mgk(@[x, y])
+                    else:                              push(newLogical(o.hasKey(needle)))
 
     builtin "one?",
         alias       = unaliased, 
@@ -2981,27 +2623,21 @@ proc defineModule*(moduleName: string) =
             one? ø              ; => false
         """:
             #=======================================================
-            case xKind:
-                of Integer:
+            dispatch:
+                Integer(i):
                     if x.iKind == BigInteger:
                         when defined(WEB):
                             push(newLogical(x.bi==big(1)))
                         elif defined(GMP):
                             push(newLogical(x.bi==newInt(1)))
                     else:
-                        push(newLogical(x.i == 1))
-                of Floating:
-                    push(newLogical(x.f == 1.0))
-                of String:
-                    push(newLogical(runeLen(x.s) == 1))
-                of Block:
-                    push(newLogical(x.a.len == 1))
-                of Range:
-                    push(newLogical(x.rng.len == 1))
-                of Dictionary:
-                    push(newLogical(x.d.len == 1))
-                else:
-                    push(VFALSE)
+                        push(newLogical(i == 1))
+                Floating(f):   push(newLogical(f == 1.0))
+                String(s):     push(newLogical(runeLen(s) == 1))
+                Block(a):      push(newLogical(a.len == 1))
+                Range(rng):    push(newLogical(rng.len == 1))
+                Dictionary(d): push(newLogical(d.len == 1))
+                _:             push(VFALSE)
 
     # TODO(Collections\sorted?) doesn't work properly
     #  it should work in an identical way as `sort`
@@ -3028,12 +2664,11 @@ proc defineModule*(moduleName: string) =
             sorted?.descending [1 2 3 4 5]      ; => false
         """:
             #=======================================================
-            var ascending = true
+            bindAttrs:
+                descending: Logical
 
-            if (hadAttr("descending")):
-                ascending = false
-
-            push newLogical(isSorted(x.a, ascending = ascending))
+            dispatch:
+                Block(a): push newLogical(isSorted(a, ascending = not descending))
 
     builtin "zero?",
         alias       = unaliased, 
@@ -3061,24 +2696,18 @@ proc defineModule*(moduleName: string) =
             zero? ø             ; => true
         """:
             #=======================================================
-            case xKind:
-                of Integer:
+            dispatch:
+                Integer(i):
                     if x.iKind == BigInteger:
                         when defined(WEB):
                             push(newLogical(x.bi==big(0)))
                         elif defined(GMP):
                             push(newLogical(isZero(x.bi)))
                     else:
-                        push(newLogical(x.i == 0))
-                of Floating:
-                    push(newLogical(x.f == 0.0))
-                of String:
-                    push(newLogical(runeLen(x.s) == 0))
-                of Block:
-                    push(newLogical(x.a.len == 0))
-                of Range:
-                    push(newLogical(x.rng.len == 0))
-                of Dictionary:
-                    push(newLogical(x.d.len == 0))
-                else:
-                    push(VTRUE)
+                        push(newLogical(i == 0))
+                Floating(f):   push(newLogical(f == 0.0))
+                String(s):     push(newLogical(runeLen(s) == 0))
+                Block(a):      push(newLogical(a.len == 0))
+                Range(rng):    push(newLogical(rng.len == 0))
+                Dictionary(d): push(newLogical(d.len == 0))
+                _:             push(VTRUE)

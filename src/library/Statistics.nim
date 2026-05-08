@@ -55,19 +55,17 @@ proc defineModule*(moduleName: string) =
             ; 4.142857142857143
         """:
             #=======================================================
-            var res = F0.copyValue
-            if xKind == Block:
-                for num in x.a:
-                    res += num
-
-                res //= newFloating(x.a.len)
-            else:
-                for item in items(x.rng):
-                    res += item
-
-                res //= newFloating(x.rng.len)
-
-            push(res)
+            dispatch:
+                Block(items):
+                    var res = F0.copyValue
+                    for num in items: res += num
+                    res //= newFloating(items.len)
+                    push(res)
+                Range(rng):
+                    var res = F0.copyValue
+                    for item in items(rng): res += item
+                    res //= newFloating(rng.len)
+                    push(res)
 
     builtin "deviation",
         alias       = unaliased,
@@ -92,10 +90,10 @@ proc defineModule*(moduleName: string) =
             deviation.sample arr2       ; => 45.65847597731914
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(standardDeviationS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(standardDeviation(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(standardDeviationS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(standardDeviation(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "kurtosis",
         alias       = unaliased,
@@ -120,10 +118,10 @@ proc defineModule*(moduleName: string) =
             kurtosis.sample arr2        ; => 0.5886192422439724
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(kurtosisS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(kurtosis(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(kurtosisS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(kurtosis(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "median",
         alias       = unaliased,
@@ -143,27 +141,24 @@ proc defineModule*(moduleName: string) =
             ; 3.5
         """:
             #=======================================================
-            if x.a.len==0:
-                push(VNULL)
-            elif x.a.len < 6 and x.a.len mod 2 == 0:
-                let
-                    sorted = x.a.sorted()
-                    secondPos = sorted.len div 2
-                    first = sorted[secondPos - 1]
-                    second = sorted[secondPos]
-
-                push ((first + second)//I2)
-
-            else:
-                let secondPos = x.a.len div 2
-                if x.a.len mod 2 == 1:
-                    push x.a.quickSelect(secondPos)
-                else:
-                    let
-                        first = x.a.quickSelect(secondPos - 1)
-                        second = x.a.quickSelect(secondPos)
-
-                    push ((first + second)//I2)
+            dispatch:
+                Block(a):
+                    if a.len == 0:
+                        push(VNULL)
+                    elif a.len < 6 and a.len mod 2 == 0:
+                        let sorted = a.sorted()
+                        let secondPos = sorted.len div 2
+                        let first = sorted[secondPos - 1]
+                        let second = sorted[secondPos]
+                        push ((first + second)//I2)
+                    else:
+                        let secondPos = a.len div 2
+                        if a.len mod 2 == 1:
+                            push a.quickSelect(secondPos)
+                        else:
+                            let first = a.quickSelect(secondPos - 1)
+                            let second = a.quickSelect(secondPos)
+                            push ((first + second)//I2)
 
     builtin "skewness",
         alias       = unaliased,
@@ -188,10 +183,10 @@ proc defineModule*(moduleName: string) =
             skewness.sample arr2        ; => 1.40680083744453
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(skewnessS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(skewness(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(skewnessS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(skewness(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
 
     builtin "variance",
         alias       = unaliased,
@@ -216,7 +211,7 @@ proc defineModule*(moduleName: string) =
             variance.sample arr2        ; => 2084.696428571428
         """:
             #=======================================================
-            if (hadAttr("sample")):
-                push newFloating(varianceS(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
-            else:
-                push newFloating(variance(x.a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+            dispatch:
+                Block(a):
+                    on sample: push newFloating(varianceS(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))
+                    _:         push newFloating(variance(a.map((z)=>(requireValue(z,{Integer,Floating}); asFloat(z)))))

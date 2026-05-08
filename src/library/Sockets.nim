@@ -63,13 +63,15 @@ proc defineModule*(moduleName: string) =
             print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
-                var client: netsock.Socket
-                x.sock.socket.accept(client)
+                dispatch:
+                    Socket(srv):
+                        var client: netsock.Socket
+                        srv.socket.accept(client)
 
-                let (address,port) = getPeerAddr(client)
+                        let (address,port) = getPeerAddr(client)
 
-                let socket = initSocket(client, proto=x.sock.protocol, address=address, port=port)
-                push newSocket(socket)
+                        let socket = initSocket(client, proto=srv.protocol, address=address, port=port)
+                        push newSocket(socket)
 
         builtin "connect",
             alias       = unaliased, 
@@ -95,27 +97,25 @@ proc defineModule*(moduleName: string) =
             server: connect.to:"123.456.789.123" 18966
             """:
                 #=======================================================
-                let isUDP = hadAttr("udp")
+                bindAttrs:
+                    udp: Logical
+                    toAddress(to): String = "0.0.0.0"
 
-                let protocol = 
-                    if isUDP: IPPROTO_UDP
-                    else: IPPROTO_TCP
+                let protocol =
+                    if udp: IPPROTO_UDP
+                    else:   IPPROTO_TCP
 
-                var toAddress: string  
-                if checkAttr("to"):
-                    toAddress = aTo.s
-                else:
-                    toAddress = "0.0.0.0"
+                dispatch:
+                    Integer(i):
+                        let port = Port(i)
 
-                var port = Port(x.i)
+                        var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                        if not udp:
+                            sock.connect(toAddress, port)
 
-                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
-                if not isUDP:
-                    sock.connect(toAddress, port)
+                        let socket = initSocket(sock, proto=protocol, address=toAddress, port=port)
 
-                let socket = initSocket(sock, proto=protocol, address=toAddress, port=port)
-
-                push newSocket(socket)
+                        push newSocket(socket)
 
         builtin "listen",
             alias       = unaliased, 
@@ -134,23 +134,29 @@ proc defineModule*(moduleName: string) =
             server: listen 18966
             """:
                 #=======================================================
-                let blocking = true
-                let protocol = 
-                    if hadAttr("udp"): IPPROTO_UDP
-                    else: IPPROTO_TCP
+                bindAttrs:
+                    udp: Logical
 
-                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
-                sock.setSockOpt(OptReuseAddr, true)
-                
-                sock.getFd().setBlocking(blocking)
-                sock.bindAddr(Port(x.i))
-                sock.listen()
+                let protocol =
+                    if udp: IPPROTO_UDP
+                    else:   IPPROTO_TCP
 
-                let (address,port) = getLocalAddr(sock)
+                dispatch:
+                    Integer(i):
+                        let blocking = true
 
-                let socket = initSocket(sock, proto=protocol, address=address, port=port)
+                        var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                        sock.setSockOpt(OptReuseAddr, true)
 
-                push newSocket(socket)
+                        sock.getFd().setBlocking(blocking)
+                        sock.bindAddr(Port(i))
+                        sock.listen()
+
+                        let (address,port) = getLocalAddr(sock)
+
+                        let socket = initSocket(sock, proto=protocol, address=address, port=port)
+
+                        push newSocket(socket)
 
         builtin "receive",
             alias       = unaliased, 
@@ -186,15 +192,13 @@ proc defineModule*(moduleName: string) =
             unplug server
             """:
                 #=======================================================
-                var size = MaxLineLength
-                if checkAttr("size"):
-                    size = aSize.i
+                bindAttrs:
+                    size:    Integer = MaxLineLength
+                    timeout: Integer = -1
 
-                var timeout = -1
-                if checkAttr("timeout"):
-                    timeout = aTimeout.i
-
-                push newString(x.sock.socket.recvLine(timeout=timeout, maxLength=size))
+                dispatch:
+                    Socket(s):
+                        push newString(s.socket.recvLine(timeout=timeout, maxLength=size))
 
         builtin "send",
             alias       = unaliased, 
@@ -217,13 +221,16 @@ proc defineModule*(moduleName: string) =
             send socket "Hello Socket World"
             """:
                 #=======================================================
-                let asChunk = hadAttr("chunk")
+                bindAttrs:
+                    chunk: Logical
 
-                let message = 
-                    if asChunk: y.s
-                    else: y.s & "\r\L"
+                dispatch:
+                    (Socket(s), String(t)):
+                        let message =
+                            if chunk: t
+                            else:     t & "\r\L"
 
-                x.sock.socket.send(message)
+                        s.socket.send(message)
 
         builtin "unplug",
             alias       = unaliased, 
@@ -246,7 +253,8 @@ proc defineModule*(moduleName: string) =
             unplug socket
             """:
                 #=======================================================
-                x.sock.socket.close()
+                dispatch:
+                    Socket(s): s.socket.close()
 
     #----------------------------
     # Predicates
@@ -276,4 +284,5 @@ proc defineModule*(moduleName: string) =
             print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
-                push newLogical(x.sock.socket.trySend(y.s))
+                dispatch:
+                    (Socket(s), String(t)): push newLogical(s.socket.trySend(t))

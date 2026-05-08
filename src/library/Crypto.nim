@@ -62,11 +62,8 @@ proc defineModule*(moduleName: string) =
             ; 414FA339
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                InPlaced.s = InPlaced.s.crc32()
-            else:
-                push(newString(x.s.crc32()))
+            dispatchWithLiteral:
+                String(s): s.crc32()
 
     builtin "decode",
         alias       = unaliased, 
@@ -88,18 +85,10 @@ proc defineModule*(moduleName: string) =
             ; http://foo bar/
         """:
             #=======================================================
-            if (hadAttr("url")):
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.decodeUrl()
-                else:
-                    push(newString(x.s.decodeUrl()))
-            else:
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.decode()
-                else:
-                    push(newString(x.s.decode()))
+            dispatchWithLiteral:
+                String(s):
+                    on url: s.decodeUrl()
+                    _:      s.decode()
 
     # TODO(Crypto\encode) Move function to different module?
     #  Function doesn't really correspond to cryptography anymore. Or at least most of it. What should be done?
@@ -129,51 +118,22 @@ proc defineModule*(moduleName: string) =
             ; http%3A%2F%2Ffoo+bar%2F
         """:
             #=======================================================
-            if (hadAttr("url")):
-                let spaces = (hadAttr("spaces"))
-                let slashes = (hadAttr("slashes"))
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
-                else:
-                    push(newString(x.s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)))
+            bindAttrs:
+                spaces:           Logical
+                slashes:          Logical
+                srcEnc(`from`):   String = ""
+                destEnc(`to`):    String = ""
 
-            elif checkAttr("from"):
-                when not defined(WEB):
-                    var src = aFrom.s
-                    var dest = "UTF-8"
-                    if checkAttr("to"):
-                        dest = aTo.s
-
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
-                    else:
-                        push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
-                else:
-                    if xKind==String:
-                        push(newString(x.s))
-
-            elif checkAttr("to"):
-                when not defined(WEB):
-                    var src = "CP1252"
-                    var dest = aTo.s
-
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        InPlaced.s = convert(InPlaced.s, srcEncoding=src, destEncoding=dest)
-                    else:
-                        push(newString(convert(x.s, srcEncoding=src, destEncoding=dest)))
-                else:
-                    if xKind==String:
-                        push(newString(x.s))
-
-            else:
-                if xKind in {Literal, PathLiteral}:
-                    ensureInPlaceAny()
-                    InPlaced.s = InPlaced.s.encode()
-                else:
-                    push(newString(x.s.encode()))
+            dispatchWithLiteral:
+                String(s):
+                    on url: s.urlencode(encodeSpaces=spaces, encodeSlashes=slashes)
+                    _:
+                        if srcEnc != "" or destEnc != "":
+                            let src  = if srcEnc != "":  srcEnc  else: "CP1252"
+                            let dest = if destEnc != "": destEnc else: "UTF-8"
+                            when not defined(WEB): convert(s, srcEncoding=src, destEncoding=dest)
+                            else:                  s
+                        else:                  s.encode()
 
     when not defined(WEB):
         # TODO(Crypto\digest) could it be used for Web/JS builds too?
@@ -200,18 +160,10 @@ proc defineModule*(moduleName: string) =
             ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
             """:
                 #=======================================================
-                if (hadAttr("sha")):
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        SetInPlaceAny(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
-                    else:
-                        push(newString(($(secureHash(x.s))).toLowerAscii()))
-                else:
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        SetInPlaceAny(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
-                    else:
-                        push(newString(($(toMD5(x.s))).toLowerAscii()))
+                dispatchWithLiteral:
+                    String(s):
+                        on sha: ($(secureHash(s))).toLowerAscii()
+                        _:      ($(toMD5(s))).toLowerAscii()
 
     builtin "hash",
         alias       = unaliased, 
@@ -235,7 +187,10 @@ proc defineModule*(moduleName: string) =
             print (hash a)=(hash b) ; true
         """:
             #=======================================================
-            if (hadAttr("string")):
+            bindAttrs:
+                stringify(string): Logical
+
+            if stringify:
                 push(newString($(hash(x))))
             else:
                 push(newInteger(hash(x)))

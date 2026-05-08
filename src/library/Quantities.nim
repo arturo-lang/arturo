@@ -80,7 +80,8 @@ proc defineModule*(moduleName: string) =
             ; 0.836127 m²
         """:
             #=======================================================
-            convertQuantity(y, x, yKind, xKind)
+            dispatch:
+                _: convertQuantity(y, x, yKind, xKind)
 
     builtin "in",
         alias       = unaliased,
@@ -101,7 +102,8 @@ proc defineModule*(moduleName: string) =
             ; 0.836127 m²
         """:
             #=======================================================
-            convertQuantity(x, y, xKind, yKind)
+            dispatch:
+                _: convertQuantity(x, y, xKind, yKind)
 
     builtin "property",
         alias       = unaliased,
@@ -124,16 +126,16 @@ proc defineModule*(moduleName: string) =
             property 3`V            ; => 'potential
         """:
             #=======================================================
-            if xKind == Quantity:
-                if hadAttr("hash"):
-                    push newInteger(x.q.signature)
-                else:
-                    push newLiteral(getProperty(x.q))
-            else:
-                if hadAttr("hash"):
-                    push newInteger(getSignature(x.u))
-                else:
-                    push newLiteral(getProperty(x.u))
+            bindAttrs:
+                hash: Logical
+
+            dispatch:
+                Quantity(q):
+                    if hash: push newInteger(q.signature)
+                    else:    push newLiteral(getProperty(q))
+                Unit(u):
+                    if hash: push newInteger(getSignature(u))
+                    else:    push newLiteral(getProperty(u))
 
     builtin "scalar",
         alias       = unaliased,
@@ -156,23 +158,25 @@ proc defineModule*(moduleName: string) =
             scalar 13:3`m           ; => 13/3
         """:
             #=======================================================
-            let r {.cursor.} = x.q.original
+            dispatch:
+                Quantity(q):
+                    let r {.cursor.} = q.original
 
-            if r.rKind == NormalRational:
-                if r.den == 1:
-                    push(newInteger(r.num))
-                elif r.canBeCoerced():
-                    push(newFloating(toFloat(r)))
-                else:
-                    push(newRational(r))
-            else:
-                when defined(GMP):
-                    if r.br.denominator() == 1:
-                        push(newInteger(r.br.numerator()))
-                    elif r.canBeCoerced():
-                        push(newFloating(toFloat(r)))
+                    if r.rKind == NormalRational:
+                        if r.den == 1:
+                            push(newInteger(r.num))
+                        elif r.canBeCoerced():
+                            push(newFloating(toFloat(r)))
+                        else:
+                            push(newRational(r))
                     else:
-                        push(newRational(r))
+                        when defined(GMP):
+                            if r.br.denominator() == 1:
+                                push(newInteger(r.br.numerator()))
+                            elif r.canBeCoerced():
+                                push(newFloating(toFloat(r)))
+                            else:
+                                push(newRational(r))
 
     builtin "specify",
         alias       = unaliased,
@@ -209,25 +213,22 @@ proc defineModule*(moduleName: string) =
             print property 3`tspSugar       ; sweetness
         """:
             #=======================================================
-            if hadAttr("property"):
-                if yKind == Quantity:
-                    defineNewProperty(x.s, y.q)
-                else:
-                    defineNewProperty(x.s, y.u)
-            else:
-                var sym = x.s
-                var desc = x.s
- 
-                if checkAttr("symbol"):
-                    sym = aSymbol.s
- 
-                if checkAttr("describes"):
-                    desc = aDescribes.s
- 
-                if yKind == Quantity:
-                    defineNewUserUnit(x.s, sym, desc, y.q)
-                else:
-                    defineNewUserUnit(x.s, sym, desc, y.u)
+            bindAttrs:
+                asProperty(property): Logical
+                symbol:    String = ""
+                describes: String = ""
+
+            dispatch:
+                _:
+                    if asProperty:
+                        if yKind == Quantity: defineNewProperty(x.s, y.q)
+                        else:                 defineNewProperty(x.s, y.u)
+                    else:
+                        let sym  = if symbol.len > 0:    symbol    else: x.s
+                        let desc = if describes.len > 0: describes else: x.s
+
+                        if yKind == Quantity: defineNewUserUnit(x.s, sym, desc, y.q)
+                        else:                 defineNewUserUnit(x.s, sym, desc, y.u)
 
     builtin "units",
         alias       = unaliased,
@@ -262,16 +263,13 @@ proc defineModule*(moduleName: string) =
             units.base 3`kk         ; => `m2
         """:
             #=======================================================
-            if likely(xKind == Quantity):
-                if hadAttr("base"):
-                    push newUnit(getBaseUnits(x.q))
-                else:
-                    push(newUnit(x.q.atoms))
-            else:
-                if hadAttr("base"):
-                    push newUnit(getBaseUnits(x.u))
-                else:
-                    push(newUnit(x.u))
+            dispatch:
+                Quantity(q):
+                    on base: push newUnit(getBaseUnits(q))
+                    _:       push(newUnit(q.atoms))
+                Unit(u):
+                    on base: push newUnit(getBaseUnits(u))
+                    _:       push(newUnit(u))
 
     #----------------------------
     # Predicates
@@ -305,16 +303,11 @@ proc defineModule*(moduleName: string) =
             5`W := 3`J/s                    ; => true
         """:
             #=======================================================
-            if xKind == Quantity:
-                if yKind == Quantity:
-                    push newLogical(x.q =~ y.q)
-                else:
-                    push newLogical(x.q =~ y.u)
-            else:
-                if yKind == Quantity:
-                    push newLogical(x.u =~ y.q)
-                else:
-                    push newLogical(x.u =~ y.u)
+            dispatch:
+                (Quantity(q), Quantity(r)): push newLogical(q =~ r)
+                (Quantity(q), Unit(v)):     push newLogical(q =~ v)
+                (Unit(u),     Quantity(r)): push newLogical(u =~ r)
+                (Unit(u),     Unit(v)):     push newLogical(u =~ v)
 
     # TODO(Quantities) erroneous module name for property predicates
     #  For any of the, automatically-generated, property predicates,

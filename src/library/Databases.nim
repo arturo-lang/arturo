@@ -72,10 +72,12 @@ proc defineModule*(moduleName: string) =
             close db            ; and close it
         """:
             #=======================================================
-            if x.dbKind == SqliteDatabase:
-                closeSqliteDb(x.sqlitedb)
-            # elif x.dbKind == MysqlDatabase:
-            #     closeMysqlDb(x.mysqldb)
+            dispatch:
+                Database(_):
+                    if x.dbKind == SqliteDatabase:
+                        closeSqliteDb(x.sqlitedb)
+                    # elif x.dbKind == MysqlDatabase:
+                    #     closeMysqlDb(x.mysqldb)
 
     builtinWhen SQLITE, "open",
         alias       = unaliased,
@@ -94,17 +96,17 @@ proc defineModule*(moduleName: string) =
             db: open "my.db"    ; opens an SQLite database named 'my.db'
         """:
             #=======================================================
-            var dbKind = SqliteDatabase
+            bindAttrs:
+                mysql: Logical
 
-            if (hadAttr("mysql")):
-                dbKind = MysqlDatabase
+            dispatch:
+                String(dbName):
+                    let dbKind = if mysql: MysqlDatabase else: SqliteDatabase
 
-            let dbName = x.s
-
-            if dbKind == SqliteDatabase:
-                push(newDatabase(openSqliteDb(dbName)))
-            # elif dbKind == MysqlDatabase:
-            #     push(newDatabase(openMysqlDb(dbName)))
+                    if dbKind == SqliteDatabase:
+                        push(newDatabase(openSqliteDb(dbName)))
+                    # elif dbKind == MysqlDatabase:
+                    #     push(newDatabase(openMysqlDb(dbName)))
 
     builtinWhen SQLITE, "query",
         alias       = unaliased,
@@ -134,23 +136,29 @@ proc defineModule*(moduleName: string) =
             print query db .with: ["johndoe"] {!sql SELECT * FROM users WHERE name = ?}
         """:
             #=======================================================
-            var with: seq[string]
-            if checkAttr("with"):
-                with = aWith.a.map((x) => $(x))
+            bindAttrs:
+                returnId(id):   Logical
+                rawWith(`with`): Block = newSeq[Value]()
 
-            if x.dbKind == SqliteDatabase:
-                if yKind == String:
-                    if (let got = execSqliteDb(x.sqlitedb, y.s, with); got[0]==ValidQueryResult):
-                        push(newBlock(got[1]))
-                else:
-                    if (let got = execManySqliteDb(x.sqlitedb, y.a.map(proc (v:Value):string = (requireValue(v,{String},2); v.s)), with); got[0]==ValidQueryResult):
-                        push(newBlock(got[1]))
+            let withArgs = rawWith.map((x) => $(x))
 
-                if (hadAttr("id")):
-                    push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
+            dispatch:
+                (Database(_), String(s)):
+                    if x.dbKind == SqliteDatabase:
+                        if (let got = execSqliteDb(x.sqlitedb, s, withArgs); got[0] == ValidQueryResult):
+                            push(newBlock(got[1]))
 
-            # elif x.dbKind == MysqlDatabase:
-            #     execMysqlDb(x.mysqldb, y.s)
+                        if returnId:
+                            push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
+                    # elif x.dbKind == MysqlDatabase:
+                    #     execMysqlDb(x.mysqldb, s)
+                (Database(_), Block(a)):
+                    if x.dbKind == SqliteDatabase:
+                        if (let got = execManySqliteDb(x.sqlitedb, a.map(proc (v:Value):string = (requireValue(v,{String},2); v.s)), withArgs); got[0] == ValidQueryResult):
+                            push(newBlock(got[1]))
+
+                        if returnId:
+                            push(newInteger(getLastIdSqliteDb(x.sqlitedb)))
 
     when not defined(WEB):
 
@@ -225,29 +233,29 @@ proc defineModule*(moduleName: string) =
             ; the program terminates!
             """:
                 #=======================================================
-                let isGlobal = hadAttr("global")
-                let isAutosave = not hadAttr("deferred")
+                bindAttrs:
+                    deferred: Logical
+                    global:   Logical
+                    native:   Logical
+                    json:     Logical
+                    db:       Logical
+
+                let isAutosave = not deferred
 
                 var storeKind = UndefinedStore
+                if native:   storeKind = NativeStore
+                elif json:   storeKind = JsonStore
+                elif db:     storeKind = SqliteStore
 
-                let isNative = hadAttr("native")
-                let isJson = hadAttr("json")
-                let isSqlite = hadAttr("db")
+                dispatch:
+                    _:
+                        let store = initStore(
+                            x.s,
+                            doLoad = true,
+                            forceExtension = true,
+                            global = global,
+                            autosave = isAutosave,
+                            kind = storeKind
+                        )
 
-                if isNative:
-                    storeKind = NativeStore
-                elif isJson:
-                    storeKind = JsonStore
-                elif isSqlite:
-                    storeKind = SqliteStore
-
-                let store = initStore(
-                    x.s,
-                    doLoad = true,
-                    forceExtension = true,
-                    global = isGlobal,
-                    autosave = isAutosave,
-                    kind = storeKind
-                )
-
-                push newStore(store)
+                        push newStore(store)

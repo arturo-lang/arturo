@@ -80,20 +80,14 @@ proc defineModule*(moduleName: string) =
             ; => 404: Page not Found
         """:
             #=======================================================
-            let kind: VErrorKind = if checkAttr "as":
-                aAs.errKind
-            elif xkind == ErrorKind:
-                x.errKind
-            else:
-                RuntimeErr
+            bindAttrs:
+                asKind(`as`): ErrorKind = RuntimeErr
 
-            var error = verror.VError(kind: kind)
-            if xkind == String:
-                error.msg = x.s
-            elif xkind == ErrorKind:
-                error.msg = x.errkind.label
-
-            raise error 
+            dispatch:
+                String(s):
+                    raise verror.VError(kind: asKind, msg: s)
+                ErrorKind(k):
+                    raise verror.VError(kind: k, msg: k.label)
 
     # TODO(Exceptions/throws?) rename function?
     #  if not though it appears a natural name, every time I look
@@ -123,11 +117,13 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            try:
-                execUnscoped(x)
-                push(VFALSE)
-            except CatchableError, Defect, VError:
-                push(VTRUE)
+            dispatch:
+                _:
+                    try:
+                        execUnscoped(x)
+                        push(VFALSE)
+                    except CatchableError, Defect, VError:
+                        push(VTRUE)
 
     builtin "try",
         alias       = unaliased, 
@@ -166,19 +162,23 @@ proc defineModule*(moduleName: string) =
             ; => hi
         """:
             #=======================================================
-            let verbose = hadAttr "verbose" 
-            try:
-                execUnscoped(x)
-                push(VNULL)
-            except VError as e:
-                push newError(e)
-                if verbose:
-                    showError(e)
-            except CatchableError, Defect:
-                let e = getCurrentException()
-                push newError(e)
-                if verbose:
-                    showError(VError(e))
+            bindAttrs:
+                verbose: Logical
+
+            dispatch:
+                _:
+                    try:
+                        execUnscoped(x)
+                        push(VNULL)
+                    except VError as e:
+                        push newError(e)
+                        if verbose:
+                            showError(e)
+                    except CatchableError, Defect:
+                        let e = getCurrentException()
+                        push newError(e)
+                        if verbose:
+                            showError(VError(e))
 
     #----------------------------
     # Constants

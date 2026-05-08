@@ -75,12 +75,16 @@ proc defineModule*(moduleName: string) =
             nand 'a 3          ; a: -3
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced &&= y; !!= InPlaced
-            elif normalIntegerOperation():
-                push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
-            else:
-                push(!! (x && y))
+            dispatchWithLiteral:
+                _:
+                    value:
+                        if normalIntegerOperation():
+                            push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
+                        else:
+                            push(!! (x && y))
+                    inplace:
+                        InPlaced &&= y
+                        !!= InPlaced
 
     builtin "nor",
         alias       = unaliased, 
@@ -100,12 +104,16 @@ proc defineModule*(moduleName: string) =
             nor 'a 3           ; a: -4
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced ||= y; !!= InPlaced
-            elif normalIntegerOperation():
-                push(normalIntegerNot(normalIntegerOr(x.i, y.i).i))
-            else:
-                push(!! (x || y))
+            dispatchWithLiteral:
+                _:
+                    value:
+                        if normalIntegerOperation():
+                            push(normalIntegerNot(normalIntegerOr(x.i, y.i).i))
+                        else:
+                            push(!! (x || y))
+                    inplace:
+                        InPlaced ||= y
+                        !!= InPlaced
 
     builtin "not",
         alias       = unaliased, 
@@ -166,22 +174,23 @@ proc defineModule*(moduleName: string) =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}: 
-                ensureInPlaceAny(); 
-                let valBefore = InPlaced
-                InPlaced <<= y
-                if InPlaced < valBefore and (hadAttr("safe")):
-                    SetInPlaceAny(newBigInteger(valBefore.i) << y)
-            elif normalIntegerOperation():
-                var res = normalIntegerShl(x.i, y.i)
-                if res < x and (hadAttr("safe")):
-                    res = newBigInteger(x.i) << y
-                push(res)
-            else:
-                var res = x << y
-                if res < x and (hadAttr("safe")):
-                    res = newBigInteger(x.i) << y
-                push(res)
+            bindAttrs:
+                safe: Logical
+
+            dispatchWithLiteral:
+                _:
+                    value:
+                        var res =
+                            if normalIntegerOperation(): normalIntegerShl(x.i, y.i)
+                            else:                        x << y
+                        if res < x and safe:
+                            res = newBigInteger(x.i) << y
+                        push(res)
+                    inplace:
+                        let valBefore = InPlaced
+                        InPlaced <<= y
+                        if InPlaced < valBefore and safe:
+                            SetInPlaceAny(newBigInteger(valBefore.i) << y)
 
     builtin "shr",
         alias       = unaliased, 
@@ -221,12 +230,16 @@ proc defineModule*(moduleName: string) =
             xnor 'a 3          ; a: -2
         """:
             #=======================================================
-            if xKind==Literal : 
-                ensureInPlace(); InPlaced ^^= y; !!= InPlaced
-            elif normalIntegerOperation():
-                push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
-            else:
-                push(!! (x ^^ y))
+            dispatchWithLiteral:
+                _:
+                    value:
+                        if normalIntegerOperation():
+                            push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
+                        else:
+                            push(!! (x ^^ y))
+                    inplace:
+                        InPlaced ^^= y
+                        !!= InPlaced
         
     builtin "xor",
         alias       = unaliased, 

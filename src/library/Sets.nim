@@ -61,18 +61,10 @@ proc defineModule*(moduleName: string) =
             ; 1 2 5 6
         """:
             #=======================================================
-            if (hadAttr("symmetric")):
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newBlock(toSeq(symmetricDifference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-                else:
-                    push(newBlock(toSeq(symmetricDifference(toOrderedSet(x.a), toOrderedSet(y.a)))))
-            else:
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newBlock(toSeq(difference(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-                else:
-                    push(newBlock(toSeq(difference(toOrderedSet(x.a), toOrderedSet(y.a)))))
+            dispatchWithLiteral:
+                Block(a):
+                    on symmetric: toSeq(symmetricDifference(toOrderedSet(a), toOrderedSet(y.a)))
+                    _:            toSeq(difference(toOrderedSet(a), toOrderedSet(y.a)))
 
     builtin "intersection",
         alias       = VSymbol.intersection, 
@@ -95,11 +87,8 @@ proc defineModule*(moduleName: string) =
             ; a: [3 4]
         """:
             #=======================================================
-            if xKind in {Literal,PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newBlock(toSeq(intersection(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-            else:
-                push(newBlock(toSeq(intersection(toOrderedSet(x.a), toOrderedSet(y.a)))))
+            dispatchWithLiteral:
+                Block(a): toSeq(intersection(toOrderedSet(a), toOrderedSet(y.a)))
 
     builtin "powerset",
         alias       = unaliased, 
@@ -116,11 +105,8 @@ proc defineModule*(moduleName: string) =
             ;  [[] [1] [2] [1 3] [3] [1 2] [2 3] [1 2 3]]
         """:
             #=======================================================
-            if xKind in {Literal,PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newBlock(toSeq(powerset(toOrderedSet(InPlaced.a))).map((hs) => newBlock(toSeq(hs)))))
-            else:
-                push(newBlock(toSeq(powerset(toOrderedSet(x.a)).map((hs) => newBlock(toSeq(hs))))))
+            dispatchWithLiteral:
+                Block(a): toSeq(powerset(toOrderedSet(a)).map((hs) => newBlock(toSeq(hs))))
 
     builtin "union",
         alias       = VSymbol.union, 
@@ -143,11 +129,8 @@ proc defineModule*(moduleName: string) =
             ; a: [1 2 3 4 5 6]
         """:
             #=======================================================
-            if xKind in {Literal,PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newBlock(toSeq(union(toOrderedSet(InPlaced.a), toOrderedSet(y.a)))))
-            else:
-                push(newBlock(toSeq(union(toOrderedSet(x.a), toOrderedSet(y.a)))))
+            dispatchWithLiteral:
+                Block(a): toSeq(union(toOrderedSet(a), toOrderedSet(y.a)))
 
     #----------------------------
     # Predicates
@@ -172,7 +155,8 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(disjoint(toOrderedSet(x.a), toOrderedSet(y.a))))
+            dispatch:
+                (Block(a), Block(b)): push(newLogical(disjoint(toOrderedSet(a), toOrderedSet(b))))
 
     builtin "intersect?",
         alias       = unaliased, 
@@ -196,11 +180,11 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            let res = intersection(toOrderedSet(x.a), toOrderedSet(y.a))
-            if len(res) >= 0:
-                push(VTRUE)
-            else:
-                push(VFALSE)
+            dispatch:
+                (Block(a), Block(b)):
+                    let res = intersection(toOrderedSet(a), toOrderedSet(b))
+                    if len(res) >= 0: push(VTRUE)
+                    else: push(VFALSE)
 
     builtin "subset?",
         alias       = subsetorequal, 
@@ -232,32 +216,20 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            if (hadAttr("proper")):
-                if x == y: 
-                    push(newLogical(false))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in xblk:
-                        if item notin yblk:
-                            contains = false
-                            break
+            bindAttrs:
+                proper: Logical
 
-                    push(newLogical(contains))
-            else:
-                if x == y:
-                    push(newLogical(true))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in xblk:
-                        if item notin yblk:
-                            contains = false
-                            break
-
-                    push(newLogical(contains))
+            dispatch:
+                (Block(a), Block(b)):
+                    if x == y:
+                        push(newLogical(not proper))
+                    else:
+                        var contains = true
+                        for item in a:
+                            if item notin b:
+                                contains = false
+                                break
+                        push(newLogical(contains))
 
     builtin "superset?",
         alias       = supersetorequal, 
@@ -289,29 +261,17 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            if (hadAttr("proper")):
-                if x == y: 
-                    push(newLogical(false))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in yblk:
-                        if item notin xblk:
-                            contains = false
-                            break
+            bindAttrs:
+                proper: Logical
 
-                    push(newLogical(contains))
-            else:
-                if x == y:
-                    push(newLogical(true))
-                else:
-                    var contains = true
-                    let xblk = x.a
-                    let yblk = y.a
-                    for item in yblk:
-                        if item notin xblk:
-                            contains = false
-                            break
-
-                    push(newLogical(contains))
+            dispatch:
+                (Block(a), Block(b)):
+                    if x == y:
+                        push(newLogical(not proper))
+                    else:
+                        var contains = true
+                        for item in b:
+                            if item notin a:
+                                contains = false
+                                break
+                        push(newLogical(contains))

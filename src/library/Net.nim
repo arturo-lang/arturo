@@ -94,7 +94,8 @@ proc defineModule*(moduleName: string) =
             ; opens Arturo's official website in a new browser window
             """:
                 #=======================================================
-                openDefaultBrowser(x.s)
+                dispatch:
+                    String(s): openDefaultBrowser(s)
         
         builtin "download",
             alias       = unaliased, 
@@ -118,17 +119,13 @@ proc defineModule*(moduleName: string) =
             ; (downloads file with a different name)
             """:
                 #=======================================================
-                let path = x.s
+                dispatch:
+                    String(path):
+                        bindAttrs:
+                            target(`as`): String = extractFilename(path)
 
-                var target: string
-
-                if checkAttr("as"):
-                    target = aAs.s
-                else:
-                    target = extractFilename(path)
-
-                var client = newHttpClient()
-                client.downloadFile(path,target)
+                        var client = newHttpClient()
+                        client.downloadFile(path, target)
 
         when defined(ssl):
             builtin "mail",
@@ -151,28 +148,23 @@ proc defineModule*(moduleName: string) =
                         username: "myusername"
                         password: "mypass123"
                     ]
-                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
+                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"
                 """:
                     #=======================================================
-                    let recipient = x.s
-                    let subject = y.s
-                    let message = z.s
+                    dispatch:
+                        (String(recipient), String(subject), String(message)):
+                            retrieveConfig("mail", "using")
 
-                    if checkAttr("using"):
-                        discard
-                    
-                    retrieveConfig("mail", "using")
+                            # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
+                            #  perhaps, this could be also done in a more "templated" way; at least, for Config values
+                            #  labels: library, bug
 
-                    # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
-                    #  perhaps, this could be also done in a more "templated" way; at least, for Config values
-                    #  labels: library, bug
-
-                    var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
-                    let smtpConn = newSmtp(useSsl = true, debug=true)
-                    smtpConn.connect(config["server"].s, Port 465)
-                    smtpConn.auth(config["username"].s, config["password"].s)
-                    smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
-                    smtpConn.close()
+                            var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
+                            let smtpConn = newSmtp(useSsl = true, debug=true)
+                            smtpConn.connect(config["server"].s, Port 465)
+                            smtpConn.auth(config["username"].s, config["password"].s)
+                            smtpConn.sendmail(config["username"].s, @[recipient], $mesg)
+                            smtpConn.close()
 
         # TODO(Net\request) could it work for Web/JS builds?
         #  it could easily be a hidden Ajax request
@@ -235,136 +227,144 @@ proc defineModule*(moduleName: string) =
             ; ...same as above...
             """:
                 #=======================================================
-                var url = x.s
-                var meth: HttpMethod = HttpGet 
+                bindAttrs:
+                    asGet(get):       Logical
+                    asPost(post):     Logical
+                    asPatch(patch):   Logical
+                    asPut(put):       Logical
+                    asDelete(delete): Logical
+                    asJson(json):     Logical
+                    raw:              Logical
+                    agent: String  = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
+                    timeout: Integer = -1
+                    rawHeaders(headers): Dictionary = newOrderedTable[string,Value]()
+                    proxyUrl(proxy):     String = ""
+                    certPath(certificate): String = ""
 
-                if (hadAttr("get")): discard
-                if (hadAttr("post")): meth = HttpPost
-                if (hadAttr("patch")): meth = HttpPatch
-                if (hadAttr("put")): meth = HttpPut
-                if (hadAttr("delete")): meth = HttpDelete
+                dispatch:
+                    String(initialUrl):
+                        var url = initialUrl
+                        var meth: HttpMethod = HttpGet
 
-                var headers: HttpHeaders = newHttpHeaders()
-                if checkAttr("headers"):
-                    var headersArr: seq[(string,string)]
-                    for k,v in pairs(aHeaders.d):
-                        headersArr.add((k, $(v)))
-                    headers = newHttpHeaders(headersArr)
+                        if asGet:    discard
+                        if asPost:   meth = HttpPost
+                        if asPatch:  meth = HttpPatch
+                        if asPut:    meth = HttpPut
+                        if asDelete: meth = HttpDelete
 
-                var agent = "Arturo HTTP Client / " & $(getSystemInfo()["version"])
-                if checkAttr("agent"):
-                    agent = aAgent.s
+                        var headers: HttpHeaders = newHttpHeaders()
+                        if rawHeaders.len > 0:
+                            var headersArr: seq[(string,string)]
+                            for k,v in pairs(rawHeaders):
+                                headersArr.add((k, $(v)))
+                            headers = newHttpHeaders(headersArr)
 
-                var timeout: int = -1
-                if checkAttr("timeout"):
-                    timeout = aTimeout.i
+                        let proxy: Proxy =
+                            if proxyUrl != "": newProxy(proxyUrl)
+                            else:              nil
 
-                var proxy: Proxy = nil
-                if checkAttr("proxy"):
-                    proxy = newProxy(aProxy.s)
- 
-                var body: string
-                var multipart: MultipartData = nil
-                if meth != HttpGet:
-                    if (hadAttr("json")):
-                        headers.add("Content-Type", "application/json")
-                        body = jsonFromValue(y, pretty=false)
-                    else:
-                        if yKind == String:
-                            body = y.s
-                        else:
-                            multipart = newMultipartData()
-                            for k,v in pairs(y.d):
-                                multipart[k] = $(v)
-                else:
-                    if y != VNULL:
-                        if (yKind==Dictionary and y.d.len!=0):
-                            var parts: seq[string]
-                            for k,v in pairs(y.d):
-                                parts.add(k & "=" & urlencode($(v)))
-                            url &= "?" & parts.join("&")
-                        elif yKind==String:
-                            url &= "?" & y.s
-
-                var client: HttpClient
-
-                if checkAttr("certificate"):
-                    when defined(ssl):
-                        client = newHttpClient(
-                            userAgent = agent,
-                            sslContext = newContext(certFile=aCertificate.s),
-                            proxy = proxy, 
-                            timeout = timeout,
-                            headers = headers
-                        )
-                    else:
-                        client = newHttpClient(
-                            userAgent = agent,
-                            proxy = proxy, 
-                            timeout = timeout,
-                            headers = headers
-                        )
-                else:
-                    client = newHttpClient(
-                        userAgent = agent,
-                        proxy = proxy, 
-                        timeout = timeout,
-                        headers = headers
-                    )
-
-                try:
-                    let response = client.request(url = url,
-                                                httpMethod = meth,
-                                                body = body,
-                                                multipart = multipart)
-
-                    var ret: ValueDict = initOrderedTable[string,Value]()
-                    ret["version"] = newString(response.version)
-                    
-                    ret["body"] = newString(response.body)
-                    ret["headers"] = newDictionary()
-
-                    if (hadAttr("raw")):
-                        ret["status"] = newString(response.status)
-
-                        for k,v in response.headers.table:
-                            ret["headers"].d[k] = newStringBlock(v)
-                    else:
-                        try:
-                            let respStatus = (response.status.splitWhitespace())[0]
-                            ret["status"] = newInteger(respStatus)
-                        except CatchableError:
-                            ret["status"] = newString(response.status)
-
-                        for k,v in response.headers.table:
-                            var val: Value
-                            if v.len==1:
-                                case k
-                                    of "age","content-length": 
-                                        try:
-                                            val = newInteger(v[0])
-                                        except CatchableError:
-                                            val = newString(v[0])
-                                    of "access-control-allow-credentials":
-                                        val = newLogical(v[0])
-                                    of "date", "expires", "last-modified":
-                                        let dateParts = v[0].splitWhitespace()
-                                        let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
-                                        var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
-                                        let timeFormat = initTimeFormat(dateFormat)
-                                        try:
-                                            val = newDate(parse(cleanDate, timeFormat))
-                                        except CatchableError:
-                                            val = newString(v[0])
-                                    else:
-                                        val = newString(v[0])
+                        var body: string
+                        var multipart: MultipartData = nil
+                        if meth != HttpGet:
+                            if asJson:
+                                headers.add("Content-Type", "application/json")
+                                body = jsonFromValue(y, pretty=false)
                             else:
-                                val = newStringBlock(v)
-                            ret["headers"].d[k] = val
-                
-                    push newDictionary(ret)
-                except CatchableError:
-                    push(VNULL)
+                                if yKind == String:
+                                    body = y.s
+                                else:
+                                    multipart = newMultipartData()
+                                    for k,v in pairs(y.d):
+                                        multipart[k] = $(v)
+                        else:
+                            if y != VNULL:
+                                if yKind == Dictionary and y.d.len != 0:
+                                    var parts: seq[string]
+                                    for k,v in pairs(y.d):
+                                        parts.add(k & "=" & urlencode($(v)))
+                                    url &= "?" & parts.join("&")
+                                elif yKind == String:
+                                    url &= "?" & y.s
+
+                        var client: HttpClient
+
+                        if certPath != "":
+                            when defined(ssl):
+                                client = newHttpClient(
+                                    userAgent = agent,
+                                    sslContext = newContext(certFile=certPath),
+                                    proxy = proxy,
+                                    timeout = timeout,
+                                    headers = headers
+                                )
+                            else:
+                                client = newHttpClient(
+                                    userAgent = agent,
+                                    proxy = proxy,
+                                    timeout = timeout,
+                                    headers = headers
+                                )
+                        else:
+                            client = newHttpClient(
+                                userAgent = agent,
+                                proxy = proxy,
+                                timeout = timeout,
+                                headers = headers
+                            )
+
+                        try:
+                            let response = client.request(url = url,
+                                                        httpMethod = meth,
+                                                        body = body,
+                                                        multipart = multipart)
+
+                            var ret: ValueDict = initOrderedTable[string,Value]()
+                            ret["version"] = newString(response.version)
+
+                            ret["body"] = newString(response.body)
+                            ret["headers"] = newDictionary()
+
+                            if raw:
+                                ret["status"] = newString(response.status)
+
+                                for k,v in response.headers.table:
+                                    ret["headers"].d[k] = newStringBlock(v)
+                            else:
+                                try:
+                                    let respStatus = (response.status.splitWhitespace())[0]
+                                    ret["status"] = newInteger(respStatus)
+                                except CatchableError:
+                                    ret["status"] = newString(response.status)
+
+                                for k,v in response.headers.table:
+                                    var val: Value
+                                    if v.len == 1:
+                                        case k
+                                            of "age","content-length":
+                                                try:
+                                                    val = newInteger(v[0])
+                                                except CatchableError:
+                                                    val = newString(v[0])
+                                            of "access-control-allow-credentials":
+                                                val = newLogical(v[0])
+                                            of "date", "expires", "last-modified":
+                                                let dateParts = v[0].splitWhitespace()
+                                                let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
+                                                var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
+                                                let timeFormat = initTimeFormat(dateFormat)
+                                                try:
+                                                    val = newDate(parse(cleanDate, timeFormat))
+                                                except CatchableError:
+                                                    val = newString(v[0])
+                                            else:
+                                                val = newString(v[0])
+                                    else:
+                                        val = newStringBlock(v)
+                                    ret["headers"].d[k] = val
+
+                            push newDictionary(ret)
+                        except CatchableError:
+                            push(VNULL)
 
         builtin "serve",
             alias       = unaliased, 
@@ -444,162 +444,160 @@ proc defineModule*(moduleName: string) =
             ]
             """:
                 #=======================================================
-                # get parameters
-                let routes = x
-                var port = 18966
-                var verbose = not (hadAttr("silent"))
-                if checkAttr("port"):
-                    port = aPort.i
-            
-                if hadAttr("chrome"):
-                    openChromeWindow(port)
+                bindAttrs:
+                    port:   Integer = 18966
+                    silent: Logical
+                    chrome: Logical
 
-                if routes.kind != Function:
-                    # necessary so that "serveInternal" is available
-                    execInternal("Net/serve")
+                let verbose = not silent
 
-                    # call internal implementation
-                    # to initialize routes
-                    callInternal("initServerInternal", getValue=false,
-                        routes
-                    )
+                dispatch:
+                    _:
+                        let routes = x
 
-                proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
-                    {.cast(gcsafe).}:
-                        # store many request details
-                        let reqAction = req.action()
-                        let reqBody = req.body()
-                        let reqHeaders = req.headers().table
-                        var reqQuery = initOrderedTable[string,Value]()
-                        var reqPath = req.path()
-                        let initialReqPath = reqPath
+                        if chrome:
+                            openChromeWindow(port)
 
-                        # get query components, if any
-                        if reqPath.contains("?"):
-                            let parts = reqPath.split("?", maxsplit=1)
-                            reqPath = decodeUrl(parts[0])
-                            for k,v in decodeQuery(parts[1]):
-                                reqQuery[k] = newString(v)
-                        else:
-                            reqPath = decodeUrl(reqPath)
+                        if routes.kind != Function:
+                            # necessary so that "serveInternal" is available
+                            execInternal("Net/serve")
 
-                        # carefully parse request body, if any
-                        var reqBodyV: Value
-
-                        if reqAction!=HttpGet: 
-                            try:
-                                reqBodyV = valueFromJson(reqBody) 
-                            except CatchableError:
-                                reqBodyV = newDictionary()
-                                for k,v in decodeQuery(reqBody):
-                                    reqBodyV.d[k] = newString(v)
-                        else: 
-                            reqBodyV = newString(reqBody)
-
-                        # store request info inside a Dictionary
-                        # we will pass this to the function -
-                        # user-defined or the "default" one -
-                        # which will handle it
-                        let requestDict = newDictionary({
-                                "method": newString($(reqAction)),
-                                "path": newString(reqPath),
-                                "uri": newString(initialReqPath),
-                                "body": reqBodyV,
-                                "query": newDictionary(reqQuery),
-                                "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
-                                "ip": newString(req.ip())
-                            }.toOrderedTable)
-
-                        # the response
-                        var responseDict: ValueDict = {
-                            "body": newString(""),
-                            "status": newInteger(200),
-                            "headers": newDictionary()
-                        }.toOrderedTable
-
-                        var resp: Value
-                        if routes.kind == Function:
-                            let timeTaken = getBenchmark:
-                                try:
-                                    callFunction(routes, "<closure>", @[requestDict])
-                                    resp = stack.pop()
-
-                                    if resp.kind == String:
-                                        responseDict["body"] = resp
-                                    else:
-                                        for k,v in resp.d.pairs:
-                                            responseDict[k] = v
-
-                                except VError as e:
-                                    showError(e)
-                                    responseDict["status"] = newInteger(500)
-                                except CatchableError, Defect:
-                                    let e = getCurrentException()
-                                    showError(VError(e))
-                                    responseDict["status"] = newInteger(500)
-                            
-                            responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
-                        else:
                             # call internal implementation
-                            responseDict = callInternal("serveInternal", getValue=true,
-                                requestDict
-                            ).d
+                            # to initialize routes
+                            callInternal("initServerInternal", getValue=false,
+                                routes
+                            )
 
-                            if not responseDict["headers"].d.hasKey("Content-Type"):
-                                responseDict["headers"].d["Content-Type"] = newString("text/html")
+                        proc requestHandler(req: ServerRequest): Future[void] {.gcsafe.} =
+                            {.cast(gcsafe).}:
+                                # store many request details
+                                let reqAction = req.action()
+                                let reqBody = req.body()
+                                let reqHeaders = req.headers().table
+                                var reqQuery = initOrderedTable[string,Value]()
+                                var reqPath = req.path()
+                                let initialReqPath = reqPath
 
-                        let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
-                            proc(kv: (string,Value)): string = 
-                                kv[0] & ": " & kv[1].s
-                        ).join("\c\L")
+                                # get query components, if any
+                                if reqPath.contains("?"):
+                                    let parts = reqPath.split("?", maxsplit=1)
+                                    reqPath = decodeUrl(parts[0])
+                                    for k,v in decodeQuery(parts[1]):
+                                        reqQuery[k] = newString(v)
+                                else:
+                                    reqPath = decodeUrl(reqPath)
 
-                        # send response
-                        let bodyStr = if responseDict["body"].kind == Binary:
-                                var s = newString(responseDict["body"].n.len)
-                                if s.len > 0:
-                                    copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
-                                s
-                            else:
-                                responseDict["body"].s
+                                # carefully parse request body, if any
+                                var reqBodyV: Value
 
-                        req.respond(newServerResponse(
-                            bodyStr,
-                            HttpCode(responseDict["status"].i),
-                            headerStr
-                        ))
+                                if reqAction != HttpGet:
+                                    try:
+                                        reqBodyV = valueFromJson(reqBody)
+                                    except CatchableError:
+                                        reqBodyV = newDictionary()
+                                        for k,v in decodeQuery(reqBody):
+                                            reqBodyV.d[k] = newString(v)
+                                else:
+                                    reqBodyV = newString(reqBody)
 
-                        # show request response info
-                        # if we're on .verbose mode
+                                # store request info inside a Dictionary
+                                let requestDict = newDictionary({
+                                        "method": newString($(reqAction)),
+                                        "path": newString(reqPath),
+                                        "uri": newString(initialReqPath),
+                                        "body": reqBodyV,
+                                        "query": newDictionary(reqQuery),
+                                        "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
+                                        "ip": newString(req.ip())
+                                    }.toOrderedTable)
+
+                                # the response
+                                var responseDict: ValueDict = {
+                                    "body": newString(""),
+                                    "status": newInteger(200),
+                                    "headers": newDictionary()
+                                }.toOrderedTable
+
+                                var resp: Value
+                                if routes.kind == Function:
+                                    let timeTaken = getBenchmark:
+                                        try:
+                                            callFunction(routes, "<closure>", @[requestDict])
+                                            resp = stack.pop()
+
+                                            if resp.kind == String:
+                                                responseDict["body"] = resp
+                                            else:
+                                                for k,v in resp.d.pairs:
+                                                    responseDict[k] = v
+
+                                        except VError as e:
+                                            showError(e)
+                                            responseDict["status"] = newInteger(500)
+                                        except CatchableError, Defect:
+                                            let e = getCurrentException()
+                                            showError(VError(e))
+                                            responseDict["status"] = newInteger(500)
+
+                                    responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                                else:
+                                    # call internal implementation
+                                    responseDict = callInternal("serveInternal", getValue=true,
+                                        requestDict
+                                    ).d
+
+                                    if not responseDict["headers"].d.hasKey("Content-Type"):
+                                        responseDict["headers"].d["Content-Type"] = newString("text/html")
+
+                                let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
+                                    proc(kv: (string,Value)): string =
+                                        kv[0] & ": " & kv[1].s
+                                ).join("\c\L")
+
+                                # send response
+                                let bodyStr = if responseDict["body"].kind == Binary:
+                                        var s = newString(responseDict["body"].n.len)
+                                        if s.len > 0:
+                                            copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
+                                        s
+                                    else:
+                                        responseDict["body"].s
+
+                                req.respond(newServerResponse(
+                                    bodyStr,
+                                    HttpCode(responseDict["status"].i),
+                                    headerStr
+                                ))
+
+                                # show request response info
+                                if verbose:
+                                    let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
+                                    let requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
+
+                                    var colorCode = greenColor
+                                    if responseDict["status"].i != 200:
+                                        colorCode = redColor
+
+                                    var serverPattern = " "
+                                    if requestPattern.s != initialReqPath and requestPattern.s != "":
+                                        serverPattern = " -> " & requestPattern.s & " "
+
+                                    var serverBenchmark: string
+                                    formatValue(serverBenchmark, toFloat(responseDict["benchmark"].q.original), ".2f")
+                                    serverBenchmark = "| " & align(serverBenchmark, 6) & " ms "
+                                    let timestamp = "[" & $(now()) & "] "
+
+                                    let logStr =
+                                        bold(colorCode) & " -- " & $(responseDict["status"].i) & resetColor & " " &
+                                        fg(whiteColor) & timestamp &
+                                        bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath &
+                                        bold(colorCode)  & " " & resetColor
+
+                                    echo logStr & fg(whiteColor) & align(contentType.s, terminalWidth() - logStr.realLen() - serverBenchmark.realLen() - 1) & " " &
+                                                  fg(grayColor) & serverBenchmark & resetColor
+
+                        # show server startup info
                         if verbose:
-                            let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
-                            let requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
+                            echo " :: Starting server on port " & $(port) & "...\n"
 
-                            var colorCode = greenColor
-                            if responseDict["status"].i != 200: 
-                                colorCode = redColor
-
-                            var serverPattern = " "
-                            if requestPattern.s != initialReqPath and requestPattern.s != "":
-                                serverPattern = " -> " & requestPattern.s & " "
-
-                            var serverBenchmark: string
-                            formatValue(serverBenchmark, toFloat(responseDict["benchmark"].q.original), ".2f")
-                            serverBenchmark = "| " & align(serverBenchmark, 6) & " ms "
-                            let timestamp = "[" & $(now()) & "] "
-
-                            let logStr = 
-                                bold(colorCode) & " -- " & $(responseDict["status"].i) & resetColor & " " & 
-                                fg(whiteColor) & timestamp &
-                                bold(whiteColor) & ($(reqAction)).toUpperAscii() & " " & initialReqPath & #& "\n" & align($(responseDict["status"].i), timestamp.len() + 6)
-                                bold(colorCode)  & " " & resetColor
-
-                            echo logStr & fg(whiteColor) & align(contentType.s, terminalWidth() - logStr.realLen() - serverBenchmark.realLen() - 1) & " " &
-                                          fg(grayColor) & serverBenchmark & resetColor
-
-
-                # show server startup info
-                # if we're on .verbose mode
-                if verbose:
-                    echo " :: Starting server on port " & $(port) & "...\n"
-                
-                startServer(requestHandler.RequestHandler, port)
+                        startServer(requestHandler.RequestHandler, port)

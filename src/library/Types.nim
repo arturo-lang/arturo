@@ -80,8 +80,9 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             var args: ValueArray
 
-            if xKind == Literal: args = @[x]
-            else: args = x.a
+            dispatch:
+                Literal(_): args = @[x]
+                Block(a):   args = a
 
             if (let constructorMethod = generatedConstructor(args); not constructorMethod.isNil):
                 push(constructorMethod)
@@ -156,37 +157,39 @@ proc defineModule*(moduleName: string) =
             print n1 + n2           ; 8
         """:
             #=======================================================
-            var definitions: ValueDict = newOrderedTable[string,Value]()
-            var inherits: Value = VNULL
-            var super: ValueDict = newOrderedTable[string,Value]()
+            dispatch:
+                Type(_):
+                    var definitions: ValueDict = newOrderedTable[string,Value]()
+                    var inherits: Value = VNULL
+                    var super: ValueDict = newOrderedTable[string,Value]()
 
-            if yKind == Block:
-                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    definitions[$ConstructorM] = constructorMethod
-                else:
-                    for k,v in newDictionary(execDictionary(y)).d:
-                        definitions[k] = v
-            elif yKind == Dictionary:
-                for k,v in y.d:
-                    definitions[k] = copyValue(v)
-            else:
-                if y.tpKind == UserType:
-                    if (let yproto = getType(y.tid); not yproto.isNil):
-                        inherits = yproto.inherits
-                        super = yproto.super
-                        for k,v in yproto.content:
+                    if yKind == Block:
+                        if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                            definitions[$ConstructorM] = constructorMethod
+                        else:
+                            for k,v in newDictionary(execDictionary(y)).d:
+                                definitions[k] = v
+                    elif yKind == Dictionary:
+                        for k,v in y.d:
                             definitions[k] = copyValue(v)
                     else:
-                        Error_UsingUndefinedType(y.tid)
-                else:
-                    # TODO(Types\define) check if inherited type is a BuiltinType
-                    #  how do we handle this?
-                    #  labels: error handling, enhancement
-                    discard
+                        if y.tpKind == UserType:
+                            if (let yproto = getType(y.tid); not yproto.isNil):
+                                inherits = yproto.inherits
+                                super = yproto.super
+                                for k,v in yproto.content:
+                                    definitions[k] = copyValue(v)
+                            else:
+                                Error_UsingUndefinedType(y.tid)
+                        else:
+                            # TODO(Types\define) check if inherited type is a BuiltinType
+                            #  how do we handle this?
+                            #  labels: error handling, enhancement
+                            discard
 
-            # Get fields
-            let fieldTable = getFieldTable(definitions)
-            setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
+                    # Get fields
+                    let fieldTable = getFieldTable(definitions)
+                    setType(x.tid, newPrototype(x.tid, definitions, inherits, fieldTable, super))
 
             # Debugging!!
             # push newDictionary({
@@ -242,63 +245,57 @@ proc defineModule*(moduleName: string) =
             ; Snowflake: 'meow!'
         """:
             #=======================================================
-            # Get our defined fields & methods
-            # as a dictionary
-            var definitions: ValueDict = newOrderedTable[string,Value]()
-            var extra: ValueDict = newOrderedTable[string,Value]()
-            var inherits: Value = VNULL
+            dispatch:
+                Type(_):
+                    var definitions: ValueDict = newOrderedTable[string,Value]()
+                    var extra: ValueDict = newOrderedTable[string,Value]()
+                    var inherits: Value = VNULL
 
-            var super = newOrderedTable[string,Value]()
+                    var super = newOrderedTable[string,Value]()
 
-            if x.tpKind == UserType:
-                if (let xproto = getType(x.tid); not xproto.isNil):
-                    inherits = x
-                    
-                    for k,v in xproto.content:
-                        if v.kind == Method:
-                            super[k] = v.uninjectingThis()
+                    if x.tpKind == UserType:
+                        if (let xproto = getType(x.tid); not xproto.isNil):
+                            inherits = x
 
-                        definitions[k] = copyValue(v)
-                else:
-                    Error_UsingUndefinedType(x.tid)
-            else:
-                # DRAFT:
-                # if x.t in {Integer, Floating, Rational, Complex, Quantity}:
-                #     for k,v in newDictionary(execDictionary(doParse(GenerateNumericSubtype.replace("%TYPE%",":" & ($(x.t)).toLowerAscii()), isFile=false))).d:
-                #         super[k] = v.uninjectingThis()
-                #         definitions[k] = copyValue(v)
-                # else:
-                Error_UnsupportedParentType(($(x.t)).toLowerAscii())
+                            for k,v in xproto.content:
+                                if v.kind == Method:
+                                    super[k] = v.uninjectingThis()
 
-            if yKind == Block:
-                if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
-                    extra[$ConstructorM] = constructorMethod
-                else:
-                    for k,v in newDictionary(execDictionary(y)).d:
-                        extra[k] = v
-            else:
-                for k,v in y.d:
-                    extra[k] = copyValue(v)
-
-            for k,v in extra:
-                if v.kind == Method:
-                    if (let superF = super.getOrDefault(k, nil); not superF.isNil):
-                        definitions[k] = v.injectingSuper(superF)
+                                definitions[k] = copyValue(v)
+                        else:
+                            Error_UsingUndefinedType(x.tid)
                     else:
-                        definitions[k] = copyValue(v)
-                        
-                    definitions[k].injectThis()
-                else:
-                    definitions[k] = v
+                        Error_UnsupportedParentType(($(x.t)).toLowerAscii())
 
-            when not defined(WEB):
-                let tmpTid = x.tid & "_" & $(genOid())
-            else:
-                let tmpTid = x.tid & "_" & "temp"
-                
-            setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits, super))
+                    if yKind == Block:
+                        if (let constructorMethod = generatedConstructor(y.a); not constructorMethod.isNil):
+                            extra[$ConstructorM] = constructorMethod
+                        else:
+                            for k,v in newDictionary(execDictionary(y)).d:
+                                extra[k] = v
+                    else:
+                        for k,v in y.d:
+                            extra[k] = copyValue(v)
 
-            push newUserType(tmpTid)
+                    for k,v in extra:
+                        if v.kind == Method:
+                            if (let superF = super.getOrDefault(k, nil); not superF.isNil):
+                                definitions[k] = v.injectingSuper(superF)
+                            else:
+                                definitions[k] = copyValue(v)
+
+                            definitions[k].injectThis()
+                        else:
+                            definitions[k] = v
+
+                    when not defined(WEB):
+                        let tmpTid = x.tid & "_" & $(genOid())
+                    else:
+                        let tmpTid = x.tid & "_" & "temp"
+
+                    setType(tmpTid, newPrototype("_" & x.tid, definitions, inherits, super))
+
+                    push newUserType(tmpTid)
 
     builtin "sortable",
         alias       = unaliased,
@@ -325,7 +322,8 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(generatedCompare(x))
+            dispatch:
+                Literal(_): push(generatedCompare(x))
 
     # TODO(Types\to) revise attributes
     #  the attributes to this function seem to me a bit confusing. I mean, `to` is
@@ -460,10 +458,9 @@ proc defineModule*(moduleName: string) =
             print type "hello world"  ; :string
         """:
             #=======================================================
-            if xKind != Object:
-                push(newType(xKind))
-            else:
-                push(newUserType(x.proto.name))
+            dispatch:
+                Object(_): push(newUserType(x.proto.name))
+                _:         push(newType(xKind))
 
     #----------------------------
     # Predicates
@@ -484,7 +481,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Attribute))
+            dispatch:
+                Attribute(_): push(VTRUE)
+                _:            push(VFALSE)
 
     builtin "attributeLabel?",
         alias       = unaliased, 
@@ -501,7 +500,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==AttributeLabel))
+            dispatch:
+                AttributeLabel(_): push(VTRUE)
+                _:                 push(VFALSE)
 
     builtin "binary?",
         alias       = unaliased, 
@@ -518,7 +519,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Binary))
+            dispatch:
+                Binary(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "block?",
         alias       = unaliased, 
@@ -537,7 +540,9 @@ proc defineModule*(moduleName: string) =
             print block? 123                ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Block))
+            dispatch:
+                Block(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "bytecode?",
         alias       = unaliased, 
@@ -557,7 +562,9 @@ proc defineModule*(moduleName: string) =
             print bytecode? code       ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Bytecode))
+            dispatch:
+                Bytecode(_): push(VTRUE)
+                _:           push(VFALSE)
 
     builtin "char?",
         alias       = unaliased,
@@ -574,7 +581,9 @@ proc defineModule*(moduleName: string) =
             print char? 123         ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Char))
+            dispatch:
+                Char(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "color?",
         alias       = unaliased, 
@@ -593,7 +602,9 @@ proc defineModule*(moduleName: string) =
             print color? 123            ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Color))
+            dispatch:
+                Color(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "complex?",
         alias       = unaliased, 
@@ -612,7 +623,9 @@ proc defineModule*(moduleName: string) =
             print complex? 123          ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Complex))
+            dispatch:
+                Complex(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "database?",
         alias       = unaliased, 
@@ -629,7 +642,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Database))
+            dispatch:
+                Database(_): push(VTRUE)
+                _:           push(VFALSE)
 
     builtin "date?",
         alias       = unaliased, 
@@ -646,7 +661,9 @@ proc defineModule*(moduleName: string) =
             print date? "hello"         ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Date))
+            dispatch:
+                Date(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "defined?",
         alias       = unaliased, 
@@ -681,18 +698,19 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            if xKind == Type:
-                if x.tpKind == BuiltinType:
-                    push(VTRUE)
-                else:
-                    push(newLogical(not getType(x.tid).isNil))
-            else:
-                try:
-                    discard parseEnum[ValueKind](x.s.capitalizeAscii())
-                    push(VTRUE)
-                except:
-                    let tp = getType(x.s, safe=true)
-                    push(newLogical(not (tp.isNil or tp == NoPrototypeFound)))
+            dispatch:
+                Type(_):
+                    if x.tpKind == BuiltinType:
+                        push(VTRUE)
+                    else:
+                        push(newLogical(not getType(x.tid).isNil))
+                _:
+                    try:
+                        discard parseEnum[ValueKind](x.s.capitalizeAscii())
+                        push(VTRUE)
+                    except:
+                        let tp = getType(x.s, safe=true)
+                        push(newLogical(not (tp.isNil or tp == NoPrototypeFound)))
 
     builtin "dictionary?",
         alias       = unaliased, 
@@ -709,7 +727,9 @@ proc defineModule*(moduleName: string) =
             print dictionary? 123               ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Dictionary))
+            dispatch:
+                Dictionary(_): push(VTRUE)
+                _:             push(VFALSE)
 
     builtin "error?",
         alias       = unaliased, 
@@ -726,7 +746,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Error))
+            dispatch:
+                Error(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "errorKind?",
         alias       = unaliased, 
@@ -745,7 +767,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Errorkind))
+            dispatch:
+                ErrorKind(_): push(VTRUE)
+                _:            push(VFALSE)
 
     builtin "inline?",
         alias       = unaliased, 
@@ -762,7 +786,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Inline))
+            dispatch:
+                Inline(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "integer?",
         alias       = unaliased, 
@@ -784,10 +810,12 @@ proc defineModule*(moduleName: string) =
             integer?.big 12345678901234567890   ; => true
         """:
             #=======================================================
-            if (hadAttr("big")):
-                push(newLogical(xKind==Integer and x.iKind==BigInteger))
-            else:
-                push(newLogical(xKind==Integer))
+            dispatch:
+                Integer(_):
+                    on big: push(newLogical(x.iKind==BigInteger))
+                    _:      push(VTRUE)
+                _:
+                    push(VFALSE)
 
     # TODO(Types\is?) should add `.strict` option for Object values?
     #  in that case, it would return true only if the object's type
@@ -814,61 +842,61 @@ proc defineModule*(moduleName: string) =
             is? [:integer] [1 "two]         ; => false
         """:
             #=======================================================
-            if yKind != Object:
-                if xKind == Type:
-                    if x.t == Any:
-                        push(VTRUE)
-                    else:
-                        push(newLogical(x.t == yKind))
-                else:
-                    let elem {.cursor.} = x.a[0]
-                    requireValue(elem, {Type})
-
-                    let tp = elem.t
-                    var res = true
-                    if tp != Any:
-                        if yKind != Block: 
-                            res = false
+            dispatch:
+                _:
+                    if yKind != Object:
+                        if xKind == Type:
+                            if x.t == Any: push(VTRUE)
+                            else:          push(newLogical(x.t == yKind))
                         else:
-                            if y.a.len==0: 
-                                res = false
-                            else:
-                                for item in y.a:
-                                    if tp != item.kind:
-                                        res = false
-                                        break
-                    push newLogical(res)
-            else:
-                if x.t in {Object,Any} and x.tpKind == BuiltinType:
-                    push(VTRUE)
-                else:
-                    if x.tpKind == BuiltinType:
-                        push(VFALSE)
-                    else:
-                        let givenPrototype = getType(x.tid, safe=true)
-                        if givenPrototype == NoPrototypeFound:
-                            push(VFALSE)
-                        else:
-                            var found = false
-                            var currentPrototype = y.proto
-                            while true:
-                                # TODO(Types\is?) better inheritance identification needed
-                                #  right now, we're merely comparing the names of the prototypes
-                                #  but what if the prototype has been redefined in the meantime?
-                                #  we actually have to implement a proper `==` overload for 
-                                #  Prototype values!
-                                #  labels: bug, values
-                                if currentPrototype.name == givenPrototype.name:
-                                    found = true
-                                    break
+                            let elem {.cursor.} = x.a[0]
+                            requireValue(elem, {Type})
 
-                                if y.proto.inherits == VNULL: break
-                                if (let newProto = getType(y.proto.inherits.tid, safe=true); newProto != NoPrototypeFound):
-                                    currentPrototype = newProto
+                            let tp = elem.t
+                            var res = true
+                            if tp != Any:
+                                if yKind != Block:
+                                    res = false
                                 else:
-                                    break
+                                    if y.a.len == 0:
+                                        res = false
+                                    else:
+                                        for item in y.a:
+                                            if tp != item.kind:
+                                                res = false
+                                                break
+                            push newLogical(res)
+                    else:
+                        if x.t in {Object,Any} and x.tpKind == BuiltinType:
+                            push(VTRUE)
+                        else:
+                            if x.tpKind == BuiltinType:
+                                push(VFALSE)
+                            else:
+                                let givenPrototype = getType(x.tid, safe=true)
+                                if givenPrototype == NoPrototypeFound:
+                                    push(VFALSE)
+                                else:
+                                    var found = false
+                                    var currentPrototype = y.proto
+                                    while true:
+                                        # TODO(Types\is?) better inheritance identification needed
+                                        #  right now, we're merely comparing the names of the prototypes
+                                        #  but what if the prototype has been redefined in the meantime?
+                                        #  we actually have to implement a proper `==` overload for
+                                        #  Prototype values!
+                                        #  labels: bug, values
+                                        if currentPrototype.name == givenPrototype.name:
+                                            found = true
+                                            break
 
-                            push(newLogical(found))
+                                        if y.proto.inherits == VNULL: break
+                                        if (let newProto = getType(y.proto.inherits.tid, safe=true); newProto != NoPrototypeFound):
+                                            currentPrototype = newProto
+                                        else:
+                                            break
+
+                                    push(newLogical(found))
 
     builtin "floating?",
         alias       = unaliased, 
@@ -886,7 +914,9 @@ proc defineModule*(moduleName: string) =
             print floating? "hello"     ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Floating))
+            dispatch:
+                Floating(_): push(VTRUE)
+                _:           push(VFALSE)
 
     builtin "function?",
         alias       = unaliased, 
@@ -914,10 +944,12 @@ proc defineModule*(moduleName: string) =
             function?.builtin var'print     ; => true
         """:
             #=======================================================
-            if (hadAttr("builtin")):
-                push(newLogical(xKind==Function and x.fnKind==BuiltinFunction))
-            else:
-                push(newLogical(xKind==Function))
+            dispatch:
+                Function(_):
+                    on builtin: push(newLogical(x.fnKind==BuiltinFunction))
+                    _:          push(VTRUE)
+                _:
+                    push(VFALSE)
 
     builtin "label?",
         alias       = unaliased, 
@@ -934,7 +966,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Label))
+            dispatch:
+                Label(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "literal?",
         alias       = unaliased, 
@@ -952,7 +986,9 @@ proc defineModule*(moduleName: string) =
             print literal? 123          ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Literal))
+            dispatch:
+                Literal(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "logical?",
         alias       = unaliased, 
@@ -973,7 +1009,9 @@ proc defineModule*(moduleName: string) =
             print logical? 123          ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Logical))
+            dispatch:
+                Logical(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "method?",
         alias       = unaliased, 
@@ -996,7 +1034,9 @@ proc defineModule*(moduleName: string) =
             ; => false
         """:
             #=======================================================
-            push(newLogical(xKind == Method))
+            dispatch:
+                Method(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "null?",
         alias       = unaliased, 
@@ -1015,7 +1055,9 @@ proc defineModule*(moduleName: string) =
             print null? 123             ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Null))
+            dispatch:
+                Null(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "object?",
         alias       = unaliased, 
@@ -1036,7 +1078,9 @@ proc defineModule*(moduleName: string) =
             print object? "hello"       ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Object))
+            dispatch:
+                Object(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "path?",
         alias       = unaliased, 
@@ -1053,7 +1097,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Path))
+            dispatch:
+                Path(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "pathLabel?",
         alias       = unaliased, 
@@ -1070,7 +1116,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==PathLabel))
+            dispatch:
+                PathLabel(_): push(VTRUE)
+                _:            push(VFALSE)
 
     builtin "pathLiteral?",
         alias       = unaliased, 
@@ -1087,7 +1135,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==PathLiteral))
+            dispatch:
+                PathLiteral(_): push(VTRUE)
+                _:              push(VFALSE)
 
     builtin "quantity?",
         alias       = unaliased, 
@@ -1108,10 +1158,12 @@ proc defineModule*(moduleName: string) =
             print quantity? 3           ; false 
         """:
             #=======================================================
-            if (hadAttr("big")):
-                push(newLogical(xKind==Quantity and x.q.original.rKind==BigRational))
-            else:
-                push(newLogical(xKind==Quantity))
+            dispatch:
+                Quantity(q):
+                    on big: push(newLogical(q.original.rKind==BigRational))
+                    _:      push(VTRUE)
+                _:
+                    push(VFALSE)
 
     builtin "range?",
         alias       = unaliased, 
@@ -1130,7 +1182,9 @@ proc defineModule*(moduleName: string) =
             print range? [1 2 3]        ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Range))
+            dispatch:
+                Range(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "rational?",
         alias       = unaliased, 
@@ -1151,10 +1205,12 @@ proc defineModule*(moduleName: string) =
             print rational? 3.14        ; false
         """:
             #=======================================================
-            if (hadAttr("big")):
-                push(newLogical(xKind==Rational and x.rat.rKind==BigRational))
-            else:
-                push(newLogical(xKind==Rational))
+            dispatch:
+                Rational(rat):
+                    on big: push(newLogical(rat.rKind==BigRational))
+                    _:      push(VTRUE)
+                _:
+                    push(VFALSE)
 
     builtin "regex?",
         alias       = unaliased, 
@@ -1172,7 +1228,9 @@ proc defineModule*(moduleName: string) =
             print regex? 123            ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Regex))
+            dispatch:
+                Regex(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "socket?",
         alias       = unaliased, 
@@ -1190,7 +1248,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Socket))
+            dispatch:
+                Socket(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "store?",
         alias       = unaliased, 
@@ -1207,7 +1267,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Store))
+            dispatch:
+                Store(_): push(VTRUE)
+                _:        push(VFALSE)
 
     builtin "string?",
         alias       = unaliased, 
@@ -1225,7 +1287,9 @@ proc defineModule*(moduleName: string) =
             print string? 123           ; false
         """:
             #=======================================================
-            push(newLogical(xKind==String))
+            dispatch:
+                String(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "symbol?",
         alias       = unaliased, 
@@ -1242,7 +1306,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Symbol))
+            dispatch:
+                Symbol(_): push(VTRUE)
+                _:         push(VFALSE)
 
     builtin "symbolLiteral?",
         alias       = unaliased, 
@@ -1259,7 +1325,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==SymbolLiteral))
+            dispatch:
+                SymbolLiteral(_): push(VTRUE)
+                _:                push(VFALSE)
 
     builtin "type?",
         alias       = unaliased, 
@@ -1277,7 +1345,9 @@ proc defineModule*(moduleName: string) =
             print type? 123             ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Type))
+            dispatch:
+                Type(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "unit?",
         alias       = unaliased, 
@@ -1294,7 +1364,9 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Unit))
+            dispatch:
+                Unit(_): push(VTRUE)
+                _:       push(VFALSE)
 
     builtin "version?",
         alias       = unaliased, 
@@ -1311,7 +1383,9 @@ proc defineModule*(moduleName: string) =
             print version? "1.0.2"      ; false
         """:
             #=======================================================
-            push(newLogical(xKind==Version))
+            dispatch:
+                Version(_): push(VTRUE)
+                _:          push(VFALSE)
 
     builtin "word?",
         alias       = unaliased, 
@@ -1328,4 +1402,6 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
-            push(newLogical(xKind==Word))
+            dispatch:
+                Word(_): push(VTRUE)
+                _:       push(VFALSE)

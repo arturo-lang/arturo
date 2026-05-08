@@ -80,18 +80,16 @@ proc defineModule*(moduleName: string) =
             ; => 3.296908309475615
         """:
             #=======================================================
-            if xKind==Integer:
-                if x.iKind==NormalInteger: 
-                    push(newInteger(abs(x.i)))
-                else:
-                    when defined(WEB) or defined(GMP):
-                        push(newInteger(abs(x.bi)))
-            elif xKind==Floating:
-                push(newFloating(abs(x.f)))
-            elif xKind==Complex:
-                push(newFloating(abs(x.z)))
-            else:
-                push(newRational(abs(x.rat)))
+            dispatch:
+                Integer(i):
+                    if x.iKind == NormalInteger:
+                        push(newInteger(abs(i)))
+                    else:
+                        when defined(WEB) or defined(GMP):
+                            push(newInteger(abs(x.bi)))
+                Floating(f):   push(newFloating(abs(f)))
+                Complex(z):    push(newFloating(abs(z)))
+                Rational(rat): push(newRational(abs(rat)))
 
     builtin "acos",
         alias       = unaliased, 
@@ -234,7 +232,8 @@ proc defineModule*(moduleName: string) =
             print angle a           ; 0.7853981633974483
         """:
             #=======================================================
-            push(newFloating(phase(x.z)))
+            dispatch:
+                Complex(z): push(newFloating(phase(z)))
 
     builtin "asec",
         alias       = unaliased, 
@@ -398,7 +397,8 @@ proc defineModule*(moduleName: string) =
             print ceil to :rational @[neg 7 2]  ; -3
         """:
             #=======================================================
-            push(newInteger(int(ceil(asFloat(x)))))
+            dispatch:
+                _: push(newInteger(int(ceil(asFloat(x)))))
 
     builtin "clamp",
         alias       = unaliased, 
@@ -427,30 +427,27 @@ proc defineModule*(moduleName: string) =
             clamp 2.5 @[1 to :rational [5 2]]   ; 2.5
         """:
             #=======================================================
-            case y.kind
-            of Range:
-                if not y.rng.numeric:
-                    Error_IncompatibleValueType("clamp", valueKind(y), "numeric range")
-                
-                if (let minElem = y.rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
-                elif (let maxElem = y.rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
-                else: push(x)       
-            of Block:
-                y.requireBlockSize(2)
-                let firstElem {.cursor} = y.a[0]
-                let secondElem {.cursor} = y.a[1]
-                firstElem.requireValue({Integer, Floating, Rational})
-                secondElem.requireValue({Integer, Floating, Rational})
-                
-                let minElem = min([firstElem, secondElem])
-                let maxElem = max([firstElem, secondElem])
-                
-                if x.asFloat < minElem.asFloat: push(minElem)
-                elif x.asFloat > maxElem.asFloat: push(maxElem)
-                else: push(x)  
-                    
-            else:
-                discard
+            dispatch:
+                (_, Range(rng)):
+                    if not rng.numeric:
+                        Error_IncompatibleValueType("clamp", valueKind(y), "numeric range")
+
+                    if (let minElem = rng.min()[1]; x.asFloat < float(minElem.i)): push(minElem)
+                    elif (let maxElem = rng.max()[1]; x.asFloat > float(maxElem.i)): push(maxElem)
+                    else: push(x)
+                (_, Block(a)):
+                    y.requireBlockSize(2)
+                    let firstElem {.cursor} = a[0]
+                    let secondElem {.cursor} = a[1]
+                    firstElem.requireValue({Integer, Floating, Rational})
+                    secondElem.requireValue({Integer, Floating, Rational})
+
+                    let minElem = min([firstElem, secondElem])
+                    let maxElem = max([firstElem, secondElem])
+
+                    if x.asFloat < minElem.asFloat: push(minElem)
+                    elif x.asFloat > maxElem.asFloat: push(maxElem)
+                    else: push(x)
              
     builtin "conj",
         alias       = unaliased, 
@@ -467,7 +464,8 @@ proc defineModule*(moduleName: string) =
             print conj b                ; 1.0-2.0i
         """:
             #=======================================================
-            push(newComplex(conjugate(x.z)))
+            dispatch:
+                Complex(z): push(newComplex(conjugate(z)))
 
     builtin "cos",
         alias       = unaliased, 
@@ -614,19 +612,16 @@ proc defineModule*(moduleName: string) =
             ; => 1
         """:
             #=======================================================
-            var rat: VRational
+            template pushDenom(rat: VRational) =
+                if rat.rKind == NormalRational:
+                    push(newInteger(getDenominator(rat)))
+                else:
+                    push(newInteger(getDenominator(rat, big=true)))
 
-            if xKind==Rational:
-                rat = x.rat
-            elif xKind==Integer:
-                rat = toRational(x.i)
-            else:
-                rat = toRational(x.f)
-
-            if rat.rKind == NormalRational:
-                push(newInteger(getDenominator(rat)))
-            else:
-                push(newInteger(getDenominator(rat, big=true)))
+            dispatch:
+                Rational(rat): pushDenom(rat)
+                Integer(i):    pushDenom(toRational(i))
+                Floating(f):   pushDenom(toRational(f))
 
     builtin "digits",
         alias       = unaliased, 
@@ -657,23 +652,22 @@ proc defineModule*(moduleName: string) =
             ; => [1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 0 2 3]
         """:
             #=======================================================
-            var base = 10
-            if checkAttr("base"):
-                base = aBase.i
+            bindAttrs:
+                base: Integer = 10
 
-            if x.kind == Block:
-                var digits = x.a
-                var composedNumber = 0
-                for digit in digits:
-                    requireValue(digit, {Integer})
-                    composedNumber = composedNumber * base + digit.i
-                push newInteger(composedNumber)
-            else:
-                if x.iKind == NormalInteger:
-                    push newBlock(getDigits(x.i, base).map((z)=>newInteger(z)))
-                else:
-                    when defined(WEB) or defined(GMP):
-                        push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
+            dispatch:
+                Block(a):
+                    var composedNumber = 0
+                    for digit in a:
+                        requireValue(digit, {Integer})
+                        composedNumber = composedNumber * base + digit.i
+                    push newInteger(composedNumber)
+                Integer(i):
+                    if x.iKind == NormalInteger:
+                        push newBlock(getDigits(i, base).map((z)=>newInteger(z)))
+                    else:
+                        when defined(WEB) or defined(GMP):
+                            push newBlock(getDigits(x.bi, base).map((z)=>newInteger(z)))
 
     builtin "exp",
         alias       = unaliased, 
@@ -694,8 +688,9 @@ proc defineModule*(moduleName: string) =
             ; => 12.50296958887651+19.47222141884161i
         """:
             #=======================================================
-            if xKind==Complex: push(newComplex(exp(x.z)))
-            else: push(newFloating(exp(asFloat(x))))
+            dispatch:
+                Complex(z): push(newComplex(exp(z)))
+                _:          push(newFloating(exp(asFloat(x))))
 
     builtin "factorial",
         alias       = unaliased, 
@@ -713,10 +708,12 @@ proc defineModule*(moduleName: string) =
             factorial 20        ; => 2432902008176640000
         """:
             #=======================================================
-            if unlikely(x.iKind == BigInteger):
-                Error_InvalidOperation("factorial", valueKind(x, withBigInfo=true), "")
-            else:
-                push(factorial(x.i))
+            dispatch:
+                Integer(i):
+                    if unlikely(x.iKind == BigInteger):
+                        Error_InvalidOperation("factorial", valueKind(x, withBigInfo=true), "")
+                    else:
+                        push(factorial(i))
 
     builtin "factors",
         alias       = unaliased, 
@@ -740,25 +737,22 @@ proc defineModule*(moduleName: string) =
             ; => [2 2 2 2 3 5 61 141529 26970107 330103811]
         """:
             #=======================================================
-            var prime = false
-            if (hadAttr("prime")): prime = true
-
-            if x.iKind==NormalInteger:
-                if prime:
-                    push(newBlock(primeFactorization(x.i).map((x)=>newInteger(x))))
-                else:
-                    push(newBlock(factors(x.i).map((x)=>newInteger(x))))
-            else:
-                when defined(WEB) or defined(GMP):
-                    # TODO(Numbers\factors) `.prime` not working for Web builds
-                    # labels: web,enhancement
-                    if prime:
-                        when not defined(WEB):
-                            push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
+            dispatch:
+                Integer(i):
+                    on prime:
+                        if x.iKind==NormalInteger:
+                            push(newBlock(primeFactorization(i).map((z)=>newInteger(z))))
                         else:
-                            discard
-                    else:
-                        push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
+                            # TODO(Numbers\factors) `.prime` not working for Web builds
+                            # labels: web,enhancement
+                            when defined(GMP):
+                                push(newBlock(primeFactorization(x.bi).map((z)=>newInteger(z))))
+                    _:
+                        if x.iKind==NormalInteger:
+                            push(newBlock(factors(i).map((z)=>newInteger(z))))
+                        else:
+                            when defined(WEB) or defined(GMP):
+                                push(newBlock(factors(x.bi).map((z)=>newInteger(z))))
 
     builtin "floor",
         alias       = unaliased, 
@@ -778,7 +772,8 @@ proc defineModule*(moduleName: string) =
             print floor to :rational @[neg 7 2] ; -4
         """:
             #=======================================================
-            push(newInteger(int(floor(asFloat(x)))))
+            dispatch:
+                _: push(newInteger(int(floor(asFloat(x)))))
 
     when not defined(WEB):
         builtin "gamma",
@@ -797,7 +792,8 @@ proc defineModule*(moduleName: string) =
             print gamma 15          ; 87178291199.99985
             """:
                 #=======================================================
-                push(newFloating(gamma(asFloat(x))))
+                dispatch:
+                    _: push(newFloating(gamma(asFloat(x))))
 
     builtin "gcd",
         alias       = unaliased, 
@@ -813,31 +809,33 @@ proc defineModule*(moduleName: string) =
             print gcd [48 60 120]         ; 12
         """:
             #=======================================================
-            var current = x.a[0]
-            requireValue(current, {Integer})
+            dispatch:
+                Block(a):
+                    var current = a[0]
+                    requireValue(current, {Integer})
 
-            var i = 1
-            # TODO(Numbers\gcd) not working for Web builds
-            # labels: web,enhancement
-            while i<x.a.len:
-                let elem {.cursor.} = x.a[i]
-                requireValue(elem, {Integer})
+                    var i = 1
+                    # TODO(Numbers\gcd) not working for Web builds
+                    # labels: web,enhancement
+                    while i<a.len:
+                        let elem {.cursor.} = a[i]
+                        requireValue(elem, {Integer})
 
-                if current.iKind==NormalInteger:
-                    if elem.iKind==BigInteger:
-                        when defined(GMP):
-                            current = newInteger(gcd(current.i, elem.bi))
-                    else:
-                        current = newInteger(gcd(current.i, elem.i))
-                else:
-                    when defined(GMP):
-                        if elem.iKind==BigInteger:
-                            current = newInteger(gcd(current.bi, elem.bi))
+                        if current.iKind==NormalInteger:
+                            if elem.iKind==BigInteger:
+                                when defined(GMP):
+                                    current = newInteger(gcd(current.i, elem.bi))
+                            else:
+                                current = newInteger(gcd(current.i, elem.i))
                         else:
-                            current = newInteger(gcd(current.bi, elem.i))
-                inc(i)
+                            when defined(GMP):
+                                if elem.iKind==BigInteger:
+                                    current = newInteger(gcd(current.bi, elem.bi))
+                                else:
+                                    current = newInteger(gcd(current.bi, elem.i))
+                        inc(i)
 
-            push(current)
+                    push(current)
 
     builtin "hypot",
         alias       = unaliased, 
@@ -858,7 +856,8 @@ proc defineModule*(moduleName: string) =
             ; 6.403124237432849
         """:
             #=======================================================
-            push(newFloating(hypot(asFloat(x), asFloat(y))))
+            dispatch:
+                _: push(newFloating(hypot(asFloat(x), asFloat(y))))
 
     builtin "lcm",
         alias       = unaliased,
@@ -874,31 +873,33 @@ proc defineModule*(moduleName: string) =
             print lcm [48 60 120]         ; 240
         """:
             #=======================================================
-            var current = x.a[0]
-            requireValue(current, {Integer})
+            dispatch:
+                Block(a):
+                    var current = a[0]
+                    requireValue(current, {Integer})
 
-            var i = 1
-            # TODO(Numbers\lcm) not working for Web builds
-            # labels: web,enhancement
-            while i<x.a.len:
-                let elem {.cursor.} = x.a[i]
-                requireValue(elem, {Integer})
+                    var i = 1
+                    # TODO(Numbers\lcm) not working for Web builds
+                    # labels: web,enhancement
+                    while i<a.len:
+                        let elem {.cursor.} = a[i]
+                        requireValue(elem, {Integer})
 
-                if current.iKind==NormalInteger:
-                    if elem.iKind==BigInteger:
-                        when defined(GMP):
-                            current = newInteger(lcm(current.i, elem.bi))
-                    else:
-                        current = newInteger(lcm(current.i, elem.i))
-                else:
-                    when defined(GMP):
-                        if elem.iKind==BigInteger:
-                            current = newInteger(lcm(current.bi, elem.bi))
+                        if current.iKind==NormalInteger:
+                            if elem.iKind==BigInteger:
+                                when defined(GMP):
+                                    current = newInteger(lcm(current.i, elem.bi))
+                            else:
+                                current = newInteger(lcm(current.i, elem.i))
                         else:
-                            current = newInteger(lcm(current.bi, elem.i))
-                inc(i)
+                            when defined(GMP):
+                                if elem.iKind==BigInteger:
+                                    current = newInteger(lcm(current.bi, elem.bi))
+                                else:
+                                    current = newInteger(lcm(current.bi, elem.i))
+                        inc(i)
 
-            push(current)
+                    push(current)
 
     builtin "ln",
         alias       = unaliased, 
@@ -919,8 +920,9 @@ proc defineModule*(moduleName: string) =
             ; => 1.19298515341341+0.308169071115985i
         """:
             #=======================================================
-            if xKind==Complex: push(newComplex(ln(x.z)))
-            else: push(newFloating(ln(asFloat(x))))
+            dispatch:
+                Complex(z): push(newComplex(ln(z)))
+                _:          push(newFloating(ln(asFloat(x))))
 
     builtin "log",
         alias       = unaliased, 
@@ -940,7 +942,8 @@ proc defineModule*(moduleName: string) =
             print log 100.0 10.0    ; 2.0
         """:
             #=======================================================
-            push(newFloating(log(asFloat(x),asFloat(y))))
+            dispatch:
+                _: push(newFloating(log(asFloat(x), asFloat(y))))
 
     builtin "numerator",
         alias       = unaliased, 
@@ -961,19 +964,16 @@ proc defineModule*(moduleName: string) =
             ; => 10
         """:
             #=======================================================
-            var rat: VRational
+            template pushNumer(rat: VRational) =
+                if rat.rKind == NormalRational:
+                    push(newInteger(getNumerator(rat)))
+                else:
+                    push(newInteger(getNumerator(rat, big=true)))
 
-            if xKind==Rational:
-                rat = x.rat
-            elif xKind==Integer:
-                rat = toRational(x.i)
-            else:
-                rat = toRational(x.f)
-
-            if rat.rKind == NormalRational:
-                push(newInteger(getNumerator(rat)))
-            else:
-                push(newInteger(getNumerator(rat, big=true)))
+            dispatch:
+                Rational(rat): pushNumer(rat)
+                Integer(i):    pushNumer(toRational(i))
+                Floating(f):   pushNumer(toRational(f))
 
     when defined(GMP):
         # TODO(Numbers\powmod) not working for Web builds
@@ -1002,7 +1002,8 @@ proc defineModule*(moduleName: string) =
 
             """:
                 #=======================================================
-                push(powmod(x, y, z))
+                dispatch:
+                    _: push(powmod(x, y, z))
         
     builtin "product",
         alias       = product, 
@@ -1027,22 +1028,22 @@ proc defineModule*(moduleName: string) =
             ; => [[A D] [A E] [B D] [B E] [C D] [C E]]
         """:
             #=======================================================
-            if (hadAttr("cartesian")):
-                let blk = x.a.map((z)=>z.a)
-                push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
-            else:
-                var product = I1.copyValue
-                if xKind==Range:
-                    for item in items(x.rng):
-                        product *= item
+            dispatch:
+                Range(rng):
+                    var product = I1.copyValue
+                    for item in items(rng): product *= item
                     push(product)
-                else:
-                    var i = 0
-                    while i<x.a.len:
-                        product *= x.a[i]
-                        i += 1
-
-                    push(product)
+                Block(items):
+                    on cartesian:
+                        let blk = items.map((z)=>z.a)
+                        push(newBlock(cartesianProduct(blk).map((z) => newBlock(z))))
+                    _:
+                        var product = I1.copyValue
+                        var i = 0
+                        while i < items.len:
+                            product *= items[i]
+                            i += 1
+                        push(product)
 
     builtin "random",
         alias       = unaliased, 
@@ -1059,10 +1060,9 @@ proc defineModule*(moduleName: string) =
             rnd: random 0 60          ; rnd: (a random number between 0 and 60)
         """:
             #=======================================================
-            if xKind==Integer and yKind==Integer:
-                push(newInteger(rand(x.i..y.i)))
-            else:
-                push(newFloating(rand(asFloat(x)..asFloat(y))))
+            dispatch:
+                (Integer(a), Integer(b)): push(newInteger(rand(a..b)))
+                _:                        push(newFloating(rand(asFloat(x)..asFloat(y))))
 
     builtin "reciprocal",
         alias       = unaliased, 
@@ -1084,12 +1084,10 @@ proc defineModule*(moduleName: string) =
             reciprocal 3.2      ; => 5/16
         """:
             #=======================================================
-            if xKind==Integer:
-                push(newRational(reciprocal(toRational(x.i))))
-            elif xKind==Floating:
-                push(newRational(reciprocal(toRational(x.f))))
-            else:
-                push(newRational(reciprocal(x.rat)))
+            dispatch:
+                Integer(i):    push(newRational(reciprocal(toRational(i))))
+                Floating(f):   push(newRational(reciprocal(toRational(f))))
+                Rational(rat): push(newRational(reciprocal(rat)))
 
     builtin "round",
         alias       = unaliased, 
@@ -1118,11 +1116,11 @@ proc defineModule*(moduleName: string) =
             print round.to:2 pi     ; 3.14
         """:
             #=======================================================
-            var places = 0
-            if checkAttr("to"):
-                places = aTo.i
-                
-            push(newFloating(round(asFloat(x), places)))
+            bindAttrs:
+                places(to): Integer = 0
+
+            dispatch:
+                _: push(newFloating(round(asFloat(x), places)))
 
     builtin "sec",
         alias       = unaliased, 
@@ -1192,29 +1190,27 @@ proc defineModule*(moduleName: string) =
             sign to :complex @[0 neg 1]      ; => -1
         """:
             #=======================================================
-            if xKind==Integer:
-                if x.iKind==NormalInteger:
-                    push(newInteger(sgn(x.i)))
-                else:
-                    when defined(WEB):
-                        if x.bi > big(0): push(newInteger(1))
-                        elif x.bi < big(0): push(newInteger(-1))
-                        else: push(newInteger(0))
-                    elif defined(GMP):
-                        push(newInteger(int(sign(x.bi))))
-            elif xKind==Floating:
-                push(newInteger(sgn(x.f)))
-            elif xKind==Rational:
-                push(newInteger(sign(x.rat)))
-            elif xKind==Complex:
-                if x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0):
-                    push(newInteger(1))
-                elif x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0):
-                    push(newInteger(-1))
-                else:
-                    push(newInteger(0))
-            else:
-                push(newInteger(sign(x.q.original)))
+            dispatch:
+                Integer(i):
+                    if x.iKind == NormalInteger:
+                        push(newInteger(sgn(i)))
+                    else:
+                        when defined(WEB):
+                            if x.bi > big(0): push(newInteger(1))
+                            elif x.bi < big(0): push(newInteger(-1))
+                            else: push(newInteger(0))
+                        elif defined(GMP):
+                            push(newInteger(int(sign(x.bi))))
+                Floating(f):   push(newInteger(sgn(f)))
+                Rational(rat): push(newInteger(sign(rat)))
+                Complex(z):
+                    if z.re > 0.0 or (z.re == 0.0 and z.im > 0.0):
+                        push(newInteger(1))
+                    elif z.re < 0.0 or (z.re == 0.0 and z.im < 0.0):
+                        push(newInteger(-1))
+                    else:
+                        push(newInteger(0))
+                Quantity(q):   push(newInteger(sign(q.original)))
 
     builtin "sin",
         alias       = unaliased, 
@@ -1279,7 +1275,10 @@ proc defineModule*(moduleName: string) =
             ; => 1.794226987182141+0.2786715413222365i
         """:
             #=======================================================
-            if (hadAttr("integer")):
+            bindAttrs:
+                integer: Logical
+
+            if integer:
                 when defined(WEB) or defined(GMP):
                     if x.iKind == NormalInteger:
                         push(newInteger(isqrt(x.i)))
@@ -1287,8 +1286,11 @@ proc defineModule*(moduleName: string) =
                         push(newInteger(isqrt(x.bi)))
                 else:
                     push(newInteger(isqrt(x.i)))
-            elif xKind==Complex: push(newComplex(sqrt(x.z)))
-            else: push(newFloating(sqrt(asFloat(x))))
+                return
+
+            dispatch:
+                Complex(z): push(newComplex(sqrt(z)))
+                _:          push(newFloating(sqrt(asFloat(x))))
 
     builtin "sum",
         alias       = summation, 
@@ -1307,17 +1309,18 @@ proc defineModule*(moduleName: string) =
             print sum 1..10           ; 55
         """:
             #=======================================================
-            var sum = I0.copyValue
-            if xKind==Range:
-                for item in items(x.rng):
-                    sum += item
-            else:
-                var i = 0
-                while i<x.a.len:
-                    sum += x.a[i]
-                    i += 1
-
-            push(sum)
+            dispatch:
+                Range(rng):
+                    var sum = I0.copyValue
+                    for item in items(rng): sum += item
+                    push(sum)
+                Block(items):
+                    var sum = I0.copyValue
+                    var i = 0
+                    while i < items.len:
+                        sum += items[i]
+                        i += 1
+                    push(sum)
 
     builtin "tan",
         alias       = unaliased, 
@@ -1382,7 +1385,8 @@ proc defineModule*(moduleName: string) =
             print select 1..10 => even?       ; 2 4 6 8 10
         """:
             #=======================================================
-            push(newLogical(x % I2 == I0))
+            dispatch:
+                Integer(_): push(newLogical(x % I2 == I0))
 
     builtin "infinite?",
         alias       = unaliased, 
@@ -1406,10 +1410,9 @@ proc defineModule*(moduleName: string) =
             infinite? b             ; false
         """:
             #=======================================================
-            if xKind == Floating and (x.f == Inf or x.f == NegInf):
-                push(VTRUE)
-            else:
-                push(VFALSE)
+            dispatch:
+                Floating(f): push(newLogical(f == Inf or f == NegInf))
+                _:           push(VFALSE)
 
     builtin "negative?",
         alias       = unaliased, 
@@ -1426,20 +1429,18 @@ proc defineModule*(moduleName: string) =
             negative? 6-7     ; => true 
         """:
             #=======================================================
-            if xKind==Integer:
-                if x.iKind==BigInteger:
-                    when defined(WEB):
-                        push(newLogical(x.bi < big(0)))
-                    elif defined(GMP):
-                        push(newLogical(negative(x.bi)))
-                else:
-                    push(newLogical(x < I0))
-            elif xKind==Floating:
-                push(newLogical(x.f < 0.0))
-            elif xKind==Rational:
-                push(newLogical(isNegative(x.rat)))
-            elif xKind==Complex:
-                push(newLogical(x.z.re < 0.0 or (x.z.re == 0.0 and x.z.im < 0.0)))
+            dispatch:
+                Integer(_):
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi < big(0)))
+                        elif defined(GMP):
+                            push(newLogical(negative(x.bi)))
+                    else:
+                        push(newLogical(x < I0))
+                Floating(f):   push(newLogical(f < 0.0))
+                Rational(rat): push(newLogical(isNegative(rat)))
+                Complex(z):    push(newLogical(z.re < 0.0 or (z.re == 0.0 and z.im < 0.0)))
 
     builtin "odd?",
         alias       = unaliased, 
@@ -1458,7 +1459,8 @@ proc defineModule*(moduleName: string) =
             print select 1..10 => odd?       ; 1 3 5 7 9
         """:
             #=======================================================
-            push(newLogical(x % I2 == I1))
+            dispatch:
+                Integer(_): push(newLogical(x % I2 == I1))
 
     builtin "positive?",
         alias       = unaliased, 
@@ -1475,20 +1477,18 @@ proc defineModule*(moduleName: string) =
             positive? 6-7     ; => false
         """:
             #=======================================================
-            if xKind==Integer:
-                if x.iKind==BigInteger:
-                    when defined(WEB):
-                        push(newLogical(x.bi > big(0)))
-                    elif defined(GMP):
-                        push(newLogical(positive(x.bi)))
-                else:
-                    push(newLogical(x > I0))
-            elif xKind==Floating:
-                push(newLogical(x.f > 0.0))
-            elif xKind==Rational:
-                push(newLogical(isPositive(x.rat)))
-            elif xKind==Complex:
-                push(newLogical(x.z.re > 0.0 or (x.z.re == 0.0 and x.z.im > 0.0)))
+            dispatch:
+                Integer(_):
+                    if x.iKind == BigInteger:
+                        when defined(WEB):
+                            push(newLogical(x.bi > big(0)))
+                        elif defined(GMP):
+                            push(newLogical(positive(x.bi)))
+                    else:
+                        push(newLogical(x > I0))
+                Floating(f):   push(newLogical(f > 0.0))
+                Rational(rat): push(newLogical(isPositive(rat)))
+                Complex(z):    push(newLogical(z.re > 0.0 or (z.re == 0.0 and z.im > 0.0)))
 
     builtin "prime?",
         alias       = unaliased, 
@@ -1513,13 +1513,15 @@ proc defineModule*(moduleName: string) =
             prime? (2^607)-1  ; => true
         """:
             #=======================================================
-            if x.iKind==NormalInteger:
-                push(newLogical(isPrime(x.i.uint64)))
-            else:
-                # TODO(Numbers\prime?) not working for Web builds
-                # labels: web,enhancement
-                when defined(GMP):
-                    push(newLogical(probablyPrime(x.bi,25)>0))
+            dispatch:
+                Integer(i):
+                    if x.iKind==NormalInteger:
+                        push(newLogical(isPrime(i.uint64)))
+                    else:
+                        # TODO(Numbers\prime?) not working for Web builds
+                        # labels: web,enhancement
+                        when defined(GMP):
+                            push(newLogical(probablyPrime(x.bi,25)>0))
 
     #----------------------------
     # Constants

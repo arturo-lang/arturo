@@ -99,20 +99,19 @@ proc defineModule*(moduleName: string) =
             ; 6
         """:
             #=======================================================
-            var prec = PrefixPrecedence
-            if (hadAttr("infix")):
-                prec = InfixPrecedence
+            bindAttrs:
+                infix: Logical
+
+            let prec = if infix: InfixPrecedence else: PrefixPrecedence
 
             var sym: VSymbol
-            if xKind==String:
-                sym = doParse(x.s, isFile=false).a[0].m
-            elif xKind==Block:
-                let elem {.cursor.} = x.a[0]
-                requireValue(elem, {Symbol, SymbolLiteral})
-
-                sym = elem.m
-            else:
-                sym = x.m
+            dispatch:
+                String(s): sym = doParse(s, isFile=false).a[0].m
+                Block(a):
+                    let elem {.cursor.} = a[0]
+                    requireValue(elem, {Symbol, SymbolLiteral})
+                    sym = elem.m
+                _: sym = x.m
 
             Aliases[sym] = AliasBinding(
                 precedence: prec,
@@ -205,15 +204,13 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
-            if checkAttr("external"):
+            bindAttrs:
+                externalLib(external): String = ""
+                expected(expect):      Type   = Nothing
+
+            if externalLib != "":
                 when not defined(WEB):
-                    let externalLibrary = aExternal.s
-
-                    var expected = Nothing
-                    if checkAttr("expect"):
-                        expected = aExpect.t
-
-                    push(execForeignMethod(externalLibrary, x.s, y.a, expected))
+                    push(execForeignMethod(externalLib, x.s, y.a, expected))
             else:
                 var fun: Value
 
@@ -486,11 +483,10 @@ proc defineModule*(moduleName: string) =
             ; issues, as 'pi in this example
         """:
             #=======================================================
-            var times = 1
-            var currentTime = 0
+            bindAttrs:
+                times: Integer = 1
 
-            if checkAttr("times"):
-                times = aTimes.i
+            var currentTime = 0
 
             var evaled: Translation
             if xKind != String:
@@ -565,15 +561,13 @@ proc defineModule*(moduleName: string) =
             ;        error |
         """:
             #=======================================================
-            
-            if checkAttr("that"):
-                execUnscoped(x)
-                if isFalse(stack.pop()):
-                    Error_AssertionFailed(x.codify(), aThat.s)
-            else:
-                execUnscoped(x)
-                if isFalse(stack.pop()):
-                    Error_AssertionFailed(x.codify())
+            bindAttrs:
+                msg(that): String = ""
+
+            execUnscoped(x)
+            if isFalse(stack.pop()):
+                if msg != "": Error_AssertionFailed(x.codify(), msg)
+                else:         Error_AssertionFailed(x.codify())
 
     builtin "export",
         alias       = unaliased, 
@@ -638,7 +632,8 @@ proc defineModule*(moduleName: string) =
         greet "Anonymous" ; Bye, bye, Anonymous!
         """:
             #=======================================================
-            let exportAll = hadAttr("all")
+            bindAttrs:
+                exportAll(all): Logical
 
             if xKind in {Module, Object}:
 
@@ -714,10 +709,15 @@ proc defineModule*(moduleName: string) =
             ; ]
         """:
             #=======================================================
+            bindAttrs:
+                pretty:    Logical
+                unwrapped: Logical
+                safe:      Logical
+
             push(newString(codify(x,
-                pretty = (hadAttr("pretty")), 
-                unwrapped = (hadAttr("unwrapped")), 
-                safeStrings = (hadAttr("safe"))
+                pretty = pretty,
+                unwrapped = unwrapped,
+                safeStrings = safe
             )))
 
     builtin "function",
@@ -815,22 +815,24 @@ proc defineModule*(moduleName: string) =
             ]
         """:
             #=======================================================
+            bindAttrs:
+                importBlock(`import`): Block = newSeq[Value]()
+                exportBlock(`export`): Block = newSeq[Value]()
+                memoize: Logical
+                inline:  Logical
+
             var imports: Value = nil
-            if checkAttr("import"):
+            if importBlock.len > 0:
                 var ret = initOrderedTable[string,Value]()
-                for item in aImport.a:
+                for item in importBlock:
                     requireAttrValue("import", item, {Word, Literal})
                     ret[item.s] = FetchSym(item.s)
                 imports = newDictionary(ret)
 
             var exports: Value = nil
-
-            if checkAttr("export"):
-                requireAttrValueBlock("export", aExport, {Word, Literal})
-                exports = aExport
-
-            var memoize = (hadAttr("memoize"))
-            var inline = (hadAttr("inline"))
+            if exportBlock.len > 0:
+                requireAttrValueBlock("export", newBlock(exportBlock), {Word, Literal})
+                exports = newBlock(exportBlock)
 
             let argBlock {.cursor.} =
                 if xKind == Block: 
@@ -937,11 +939,15 @@ proc defineModule*(moduleName: string) =
                 ]
             """:
                 #=======================================================
-                
-                var branch = "main"
-                let latest = hadAttr("latest")
-                let verbose = hadAttr("verbose")
-                let lean = hadAttr("lean")
+                bindAttrs:
+                    latest:  Logical
+                    verbose: Logical
+                    lean:    Logical
+                    isMin(min): Logical
+                    branchAttr(branch): String = "main"
+                    onlyBlock(only):    Block  = newSeq[Value]()
+
+                var branch = branchAttr
                 var importOnly: seq[string] = @[]
 
                 when defined(BUNDLE):
@@ -969,13 +975,10 @@ proc defineModule*(moduleName: string) =
                     let multiple = pkgs.len > 1
                     
                     if checkAttr("version"):
-                        verspec = (hadAttr("min"), aVersion.version)
+                        verspec = (isMin, aVersion.version)
 
-                    if checkAttr("branch"):
-                        branch = aBranch.s
-
-                    if checkAttr("only"):
-                        importOnly = aOnly.a.map((w) =>  w.s)
+                    if onlyBlock.len > 0:
+                        importOnly = onlyBlock.map((w) => w.s)
 
                     let verboseBefore = VerbosePackager
                     if verbose:
@@ -1195,8 +1198,9 @@ proc defineModule*(moduleName: string) =
         ; when running the above code from a file
         """:
             #=======================================================
-            let isDistinct = hadAttr("distinct")
-            let isPublic = hadAttr("public")
+            bindAttrs:
+                isDistinct(`distinct`): Logical
+                isPublic(public):       Logical
             
             let argBlock {.cursor.} =
                 if xKind == Block: 
@@ -1277,23 +1281,23 @@ proc defineModule*(moduleName: string) =
         ; ~~~~~~~~~~~~~~~ Example ~~~~~~~~~~~~~~~~
         """:
             #=======================================================
+            bindAttrs:
+                initUsing(`with`): Block = newSeq[Value]()
+
             var definitions: ValueDict = newOrderedTable[string,Value]()
             var inherits: Value = VNULL
             var super: ValueDict = newOrderedTable[string,Value]()
-            var initUsing: ValueArray = @[]
 
-            if checkAttr("with"):
-                initUsing = aWith.a
-
-            if xKind == Block:
-                if (let constructorMethod = generatedConstructor(x.a); not constructorMethod.isNil):
-                    definitions[$ConstructorM] = constructorMethod
-                else:
-                    for k,v in newDictionary(execDictionary(x)).d:
-                        definitions[k] = v
-            elif xKind == Dictionary:
-                for k,v in x.d:
-                    definitions[k] = copyValue(v)
+            dispatch:
+                Block(a):
+                    if (let constructorMethod = generatedConstructor(a); not constructorMethod.isNil):
+                        definitions[$ConstructorM] = constructorMethod
+                    else:
+                        for k,v in newDictionary(execDictionary(x)).d:
+                            definitions[k] = v
+                Dictionary(d):
+                    for k,v in d:
+                        definitions[k] = copyValue(v)
 
             # TODO(Core\module) should show error in case magic methods are included
             #  magic methods are of no use in that case
@@ -1356,22 +1360,26 @@ proc defineModule*(moduleName: string) =
             parse "[1 2 3]"     ; [1 2 3] (:block)
         """:
             #=======================================================
-            if xKind == String:
-                when defined(BUNDLE):
-                    let (src, _) = (getBundledResource(x.s)[0], FileData)
-                else:
-                    let (src, _) = getSource(x.s)
-                
-                let ret = doParse(src, isFile=false)
-                if unlikely(hadAttr("data")):
-                    push(parseDataBlock(ret))
-                else:
-                    push(ret.a[0])
-            else:
-                if unlikely(hadAttr("data")):
-                    push(parseDataBlock(x))
-                else:
-                    push(x)
+            bindAttrs:
+                data: Logical
+
+            dispatch:
+                String(s):
+                    when defined(BUNDLE):
+                        let (src, _) = (getBundledResource(s)[0], FileData)
+                    else:
+                        let (src, _) = getSource(s)
+
+                    let ret = doParse(src, isFile=false)
+                    if unlikely(data):
+                        push(parseDataBlock(ret))
+                    else:
+                        push(ret.a[0])
+                _:
+                    if unlikely(data):
+                        push(parseDataBlock(x))
+                    else:
+                        push(x)
 
     builtin "return",
         alias       = unaliased, 
@@ -1663,7 +1671,9 @@ proc defineModule*(moduleName: string) =
 
         """:
             #=======================================================
-            let withAny = (hadAttr("any"))
+            bindAttrs:
+                withAny(any): Logical
+
             var has: Value = nil
             if checkAttr("has"):
                 has = aHas

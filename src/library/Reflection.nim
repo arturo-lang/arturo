@@ -82,11 +82,11 @@ proc defineModule*(moduleName: string) =
             ; 30
         """:
             #=======================================================
-            let val = popAttr(x.s)
-            if val.isNil:
-                push(VNULL)
-            else:
-                push(val)
+            dispatch:
+                _:
+                    let val = popAttr(x.s)
+                    if val.isNil: push(VNULL)
+                    else:         push(val)
 
     builtin "attrs",
         alias       = unaliased, 
@@ -138,15 +138,20 @@ proc defineModule*(moduleName: string) =
             ; => 0.3237628936767578
         """:
             #=======================================================
-            let preevaled = evalOrGet(x)
-            if (hadAttr("get")):
-                let time = getBenchmark:
-                    execUnscoped(preevaled)
+            bindAttrs:
+                getTime(get): Logical
 
-                push newQuantity(toQuantity(time, parseAtoms("ms")))
-            else:
-                benchmark "":
-                    execUnscoped(preevaled)
+            dispatch:
+                _:
+                    let preevaled = evalOrGet(x)
+                    if getTime:
+                        let time = getBenchmark:
+                            execUnscoped(preevaled)
+
+                        push newQuantity(toQuantity(time, parseAtoms("ms")))
+                    else:
+                        benchmark "":
+                            execUnscoped(preevaled)
 
     when not defined(WEB):
 
@@ -195,27 +200,32 @@ proc defineModule*(moduleName: string) =
             ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
             """:
                 #=======================================================
+                bindAttrs:
+                    asDict(get): Logical
+
                 var searchable: string
                 var value: Value = nil
 
-                if xKind == SymbolLiteral:
-                    searchable = $(x.m)
-                    for (sym, binding) in pairs(Aliases):
-                        if sym == x.m:
-                            searchable = binding.name.s
-                            value = FetchSym(searchable)
-                            break
+                dispatch:
+                    SymbolLiteral(m):
+                        searchable = $(m)
+                        for (sym, binding) in pairs(Aliases):
+                            if sym == m:
+                                searchable = binding.name.s
+                                value = FetchSym(searchable)
+                                break
 
-                    if value.isNil:
-                        Error_AliasNotFound($(x.m))
-                elif xKind == PathLiteral:
-                    searchable = $(x.p[^1])
-                    value = FetchPathSym(x.p)
-                else:
-                    searchable = x.s
-                    value = FetchSym(x.s)
-                
-                if (hadAttr("get")):
+                        if value.isNil:
+                            Error_AliasNotFound($(m))
+                    _:
+                        if xKind == PathLiteral:
+                            searchable = $(x.p[^1])
+                            value = FetchPathSym(x.p)
+                        else:
+                            searchable = x.s
+                            value = FetchSym(x.s)
+
+                if asDict:
                     push(newDictionary(getInfo(searchable, value, Aliases)))
                 else:
                     printInfo(searchable, value, Aliases)
@@ -243,10 +253,13 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             when defined(WEB):
                 resetStdout()
-            let mutedOutput = (hadAttr("muted")) or NoColors
-            let compactOutput = hadAttr("compact")
-            let indexedOutput = hadAttr("index")
-            x.dump(0, false, muted=mutedOutput, compact=compactOutput, indexed=indexedOutput)
+
+            bindAttrs:
+                muted:   Logical
+                compact: Logical
+                index:   Logical
+
+            x.dump(0, false, muted=muted or NoColors, compact=compact, indexed=index)
 
     builtin "methods",
         alias       = unaliased,
@@ -274,17 +287,17 @@ proc defineModule*(moduleName: string) =
             ; => [init meow]
         """:
             #=======================================================
-            var s: seq[string]
-            if xkind == Object:
-                for k,v in x.o:
-                    if v.kind == Method:
-                        s.add(k)
-            else:
-                for k,v in x.singleton.o:
-                    if v.kind == Method:
-                        s.add(k)
-
-            push(newStringBlock(s))
+            dispatch:
+                Object(_):
+                    var s: seq[string]
+                    for k,v in x.o:
+                        if v.kind == Method: s.add(k)
+                    push(newStringBlock(s))
+                Module(m):
+                    var s: seq[string]
+                    for k,v in m.o:
+                        if v.kind == Method: s.add(k)
+                    push(newStringBlock(s))
 
     builtin "stack",
         alias       = unaliased, 
@@ -363,10 +376,10 @@ proc defineModule*(moduleName: string) =
             
         """:
             #=======================================================
-            if getAttr(x.s) != VNULL:
-                push(VTRUE)
-            else:
-                push(VFALSE)
+            dispatch:
+                _:
+                    if getAttr(x.s) != VNULL: push(VTRUE)
+                    else:                    push(VFALSE)
 
     builtin "standalone?",
         alias       = unaliased, 

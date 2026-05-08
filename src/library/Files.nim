@@ -21,7 +21,7 @@
 
 when not defined(WEB):
 
-    import os, sequtils, sugar, times
+    import os, sequtils, sugar, times, unicode
 
     import extras/miniz
  
@@ -82,17 +82,18 @@ proc defineModule*(moduleName: string) =
             ; copied whole folder
             """:
                 #=======================================================
-                var target = y.s
-                if (hadAttr("directory")): 
-                    try:
-                        copyDirWithPermissions(x.s, move target)
-                    except OSError:
-                        discard
-                else: 
-                    try:
-                        copyFileWithPermissions(x.s, move target)
-                    except OSError:
-                        discard
+                bindAttrs:
+                    directory: Logical
+
+                dispatch:
+                    (String(src), String(dst)):
+                        var target = dst
+                        if directory:
+                            try:    copyDirWithPermissions(src, move target)
+                            except OSError: discard
+                        else:
+                            try:    copyFileWithPermissions(src, move target)
+                            except OSError: discard
 
         builtin "delete",
             alias       = unaliased, 
@@ -111,13 +112,16 @@ proc defineModule*(moduleName: string) =
             ; file deleted
             """:
                 #=======================================================
-                if (hadAttr("directory")): 
-                    try:
-                        removeDir(x.s)
-                    except OSError:
-                        discard
-                else: 
-                    discard tryRemoveFile(x.s)
+                bindAttrs:
+                    directory: Logical
+
+                dispatch:
+                    String(s):
+                        if directory:
+                            try:    removeDir(s)
+                            except OSError: discard
+                        else:
+                            discard tryRemoveFile(s)
 
         builtin "move",
             alias       = unaliased, 
@@ -140,17 +144,18 @@ proc defineModule*(moduleName: string) =
             ; moved whole folder
             """:
                 #=======================================================
-                var target = y.s
-                if (hadAttr("directory")): 
-                    try:
-                        moveDir(x.s, move target)
-                    except OSError:
-                        discard
-                else: 
-                    try:
-                        moveFile(x.s, move target)
-                    except OSError:
-                        discard
+                bindAttrs:
+                    directory: Logical
+
+                dispatch:
+                    (String(src), String(dst)):
+                        var target = dst
+                        if directory:
+                            try:    moveDir(src, move target)
+                            except OSError: discard
+                        else:
+                            try:    moveFile(src, move target)
+                            except OSError: discard
 
         builtin "permissions",
             alias       = unaliased, 
@@ -189,45 +194,46 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 try:
-                    if (checkAttr("set")):
-                        var source = x.s
-                        var perms: set[FilePermission]
+                    dispatch:
+                        String(s):
+                            on set(setVal: Dictionary):
+                                var source = s
+                                var perms: set[FilePermission]
 
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
+                                if setVal.hasKey("user") and setVal["user"].d.hasKey("read"):    perms.incl(fpUserRead)
+                                if setVal.hasKey("user") and setVal["user"].d.hasKey("write"):   perms.incl(fpUserWrite)
+                                if setVal.hasKey("user") and setVal["user"].d.hasKey("execute"): perms.incl(fpUserExec)
 
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
+                                if setVal.hasKey("group") and setVal["group"].d.hasKey("read"):    perms.incl(fpGroupRead)
+                                if setVal.hasKey("group") and setVal["group"].d.hasKey("write"):   perms.incl(fpGroupWrite)
+                                if setVal.hasKey("group") and setVal["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
 
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+                                if setVal.hasKey("others") and setVal["others"].d.hasKey("read"):    perms.incl(fpOthersRead)
+                                if setVal.hasKey("others") and setVal["others"].d.hasKey("write"):   perms.incl(fpOthersWrite)
+                                if setVal.hasKey("others") and setVal["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
 
-                        setFilePermissions(move source, move perms)
-                    else:
-                        let perms = getFilePermissions(x.s)
-                        var permsDict: ValueDict = {
-                            "user": newDictionary({
-                                "read"      : newLogical(fpUserRead in perms),
-                                "write"     : newLogical(fpUserWrite in perms),
-                                "execute"   : newLogical(fpUserExec in perms)
-                            }.toOrderedTable),
-                            "group": newDictionary({
-                                "read"      : newLogical(fpGroupRead in perms),
-                                "write"     : newLogical(fpGroupWrite in perms),
-                                "execute"   : newLogical(fpGroupExec in perms)
-                            }.toOrderedTable),
-                            "others": newDictionary({
-                                "read"      : newLogical(fpOthersRead in perms),
-                                "write"     : newLogical(fpOthersWrite in perms),
-                                "execute"   : newLogical(fpOthersExec in perms)
-                            }.toOrderedTable)
-                        }.toOrderedTable
+                                setFilePermissions(move source, move perms)
+                            _:
+                                let perms = getFilePermissions(s)
+                                var permsDict: ValueDict = {
+                                    "user": newDictionary({
+                                        "read"      : newLogical(fpUserRead in perms),
+                                        "write"     : newLogical(fpUserWrite in perms),
+                                        "execute"   : newLogical(fpUserExec in perms)
+                                    }.toOrderedTable),
+                                    "group": newDictionary({
+                                        "read"      : newLogical(fpGroupRead in perms),
+                                        "write"     : newLogical(fpGroupWrite in perms),
+                                        "execute"   : newLogical(fpGroupExec in perms)
+                                    }.toOrderedTable),
+                                    "others": newDictionary({
+                                        "read"      : newLogical(fpOthersRead in perms),
+                                        "write"     : newLogical(fpOthersWrite in perms),
+                                        "execute"   : newLogical(fpOthersExec in perms)
+                                    }.toOrderedTable)
+                                }.toOrderedTable
 
-                        push(newDictionary(permsDict))
-
+                                push(newDictionary(permsDict))
                 except OSError:
                     push(VNULL)
 
@@ -286,55 +292,62 @@ proc defineModule*(moduleName: string) =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 #=======================================================
-                if (hadAttr("binary")):
-                    var f: File
-                    discard f.open(x.s)
-                    var b: seq[byte] = newSeq[byte](f.getFileSize())
-                    discard f.readBytes(b, 0, f.getFileSize())
+                bindAttrs:
+                    binary:      Logical
+                    file:        Logical
+                    lines:       Logical
+                    json:        Logical
+                    csv:         Logical
+                    asBytecode(bytecode): Logical
+                    asToml(toml):         Logical
+                    asMarkdown(markdown): Logical
+                    asHtml(html):         Logical
+                    asXml(xml):           Logical
+                    withHeaders:          Logical
+                    csvDelim(delimiter):  Char = Rune(0)
 
-                    f.close()
+                dispatch:
+                    String(path):
+                        if binary:
+                            var f: File
+                            discard f.open(path)
+                            var b: seq[byte] = newSeq[byte](f.getFileSize())
+                            discard f.readBytes(b, 0, f.getFileSize())
 
-                    push(newBinary(b))
-                else:
-                    when defined(BUNDLE):
-                        let (src, tp) = (getBundledResource(x.s)[0], FileData)
-                    else:
-                        let (src, tp) = getSource(x.s)
+                            f.close()
 
-                    if (hadAttr("file") and tp != FileData):
-                        Error_FileNotFound(src)
-
-                    if (hadAttr("lines")):
-                        push(newStringBlock(src.splitLines()))
-                    elif (hadAttr("json")):
-                        push(valueFromJson(src))
-                    elif (hadAttr("csv")):
-                        if checkAttr("delimiter"):
-                            let delimiter = aDelimiter.c.char()
-                            push(parseCsvInput(src, withHeaders=hadAttr("withHeaders"), withDelimiter=delimiter))
+                            push(newBinary(b))
                         else:
-                            push(parseCsvInput(src, (hadAttr("withHeaders"))))
-                    elif (hadAttr("bytecode")):
-                        let bcode = readBytecode(x.s)
-                        let parsed = doParse(bcode[0], isFile=false).a[0]
-                        push(newBytecode(Translation(constants: parsed.a, instructions: bcode[1])))
-                    else:
-                        when defined(PARSERS):
-                            if (hadAttr("toml")):
-                                push(parseTomlString(src))
-                            elif (hadAttr("markdown")):
-                                push(parseMarkdownInput(src))
-                            elif (hadAttr("html")):
-                                push(parseHtmlInput(src))
-                            elif (hadAttr("xml")):
-                                push(parseXMLInput(src))
+                            when defined(BUNDLE):
+                                let (src, tp) = (getBundledResource(path)[0], FileData)
                             else:
-                                push(newString(src))
-                        else:
-                            push(newString(src))
-                            
-                    # elif attrs.hasKey("xml"):
-                    #     push(parseXmlNode(parseXml(action(x.s))))
+                                let (src, tp) = getSource(path)
+
+                            if file and tp != FileData:
+                                Error_FileNotFound(src)
+
+                            if lines:
+                                push(newStringBlock(src.splitLines()))
+                            elif json:
+                                push(valueFromJson(src))
+                            elif csv:
+                                if csvDelim != Rune(0):
+                                    push(parseCsvInput(src, withHeaders=withHeaders, withDelimiter=csvDelim.char()))
+                                else:
+                                    push(parseCsvInput(src, withHeaders))
+                            elif asBytecode:
+                                let bcode = readBytecode(path)
+                                let parsed = doParse(bcode[0], isFile=false).a[0]
+                                push(newBytecode(Translation(constants: parsed.a, instructions: bcode[1])))
+                            else:
+                                when defined(PARSERS):
+                                    if asToml:       push(parseTomlString(src))
+                                    elif asMarkdown: push(parseMarkdownInput(src))
+                                    elif asHtml:     push(parseHtmlInput(src))
+                                    elif asXml:      push(parseXMLInput(src))
+                                    else:            push(newString(src))
+                                else:
+                                    push(newString(src))
 
         builtin "rename",
             alias       = unaliased, 
@@ -354,18 +367,19 @@ proc defineModule*(moduleName: string) =
             ; file renamed
             """:
                 #=======================================================
-                var source = x.s
-                var target = y.s
-                if (hadAttr("directory")): 
-                    try:
-                        moveDir(move source, move target)
-                    except OSError:
-                        discard
-                else: 
-                    try:
-                        moveFile(move source, move target)
-                    except OSError:
-                        discard
+                bindAttrs:
+                    directory: Logical
+
+                dispatch:
+                    (String(src), String(dst)):
+                        var source = src
+                        var target = dst
+                        if directory:
+                            try:    moveDir(move source, move target)
+                            except OSError: discard
+                        else:
+                            try:    moveFile(move source, move target)
+                            except OSError: discard
 
         builtin "symlink",
             alias       = unaliased,
@@ -392,15 +406,20 @@ proc defineModule*(moduleName: string) =
             ; to our desktop
             """:
                 #=======================================================
-                var source = x.s
-                var target = y.s
-                try:
-                    if (hadAttr("hard")):
-                        createHardlink(move source, move target)
-                    else:
-                        createSymlink(move source, move target)
-                except OSError:
-                    discard
+                bindAttrs:
+                    hard: Logical
+
+                dispatch:
+                    (String(src), String(dst)):
+                        var source = src
+                        var target = dst
+                        try:
+                            if hard:
+                                createHardlink(move source, move target)
+                            else:
+                                createSymlink(move source, move target)
+                        except OSError:
+                            discard
         
         builtin "timestamp",
             alias       = unaliased, 
@@ -420,14 +439,16 @@ proc defineModule*(moduleName: string) =
             ; => null
             """:
                 #=======================================================
-                try:
-                    push newDictionary({
-                        "created": newDate(local(getCreationTime(x.s))),
-                        "accessed": newDate(local(getLastAccessTime(x.s))),
-                        "modified": newDate(local(getLastModificationTime(x.s)))
-                    }.toOrderedTable)
-                except CatchableError:
-                    push VNULL
+                dispatch:
+                    String(s):
+                        try:
+                            push newDictionary({
+                                "created":  newDate(local(getCreationTime(s))),
+                                "accessed": newDate(local(getLastAccessTime(s))),
+                                "modified": newDate(local(getLastModificationTime(s)))
+                            }.toOrderedTable)
+                        except CatchableError:
+                            push VNULL
                         
         builtin "unzip",
             alias       = unaliased, 
@@ -444,7 +465,8 @@ proc defineModule*(moduleName: string) =
             unzip "folder" "archive.zip"
             """:
                 #=======================================================
-                miniz.unzip(y.s, x.s)
+                dispatch:
+                    (String(dst), String(src)): miniz.unzip(src, dst)
 
         builtin "volume",
             alias       = unaliased, 
@@ -462,7 +484,8 @@ proc defineModule*(moduleName: string) =
             ; (size in bytes)
             """:
                 #=======================================================
-                push newQuantity(toQuantity(int(getFileSize(x.s)), parseAtoms("B")))
+                dispatch:
+                    String(s): push newQuantity(toQuantity(int(getFileSize(s)), parseAtoms("B")))
 
         builtin "write",
             alias       = doublearrowright, 
@@ -492,25 +515,31 @@ proc defineModule*(moduleName: string) =
             write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
-                if xKind==Bytecode:
-                    let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
-                    let codeS = x.trans.instructions
-                    discard writeBytecode(dataS, codeS, y.s)
-                else:
-                    if (hadAttr("directory")):
-                        createDir(y.s)
-                    else:
-                        if (hadAttr("binary")):
-                            writeToFile(y.s, x.n, append = (hadAttr("append")))
-                        else:
-                            if (hadAttr("json")):
-                                let rez = jsonFromValue(x, pretty=(not hadAttr("compact")))
-                                if y.kind==String:
-                                    writeToFile(y.s, rez, append = (hadAttr("append")))
-                                else:
-                                    push(newString(rez))
+                bindAttrs:
+                    append:    Logical
+                    directory: Logical
+                    asJson(json): Logical
+                    compact:   Logical
+                    binary:    Logical
+
+                dispatch:
+                    Bytecode(t):
+                        let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
+                        let codeS = t.instructions
+                        discard writeBytecode(dataS, codeS, y.s)
+                    _:
+                        if directory:
+                            createDir(y.s)
+                        elif binary:
+                            writeToFile(y.s, x.n, append = append)
+                        elif asJson:
+                            let rez = jsonFromValue(x, pretty = not compact)
+                            if y.kind == String:
+                                writeToFile(y.s, rez, append = append)
                             else:
-                                writeToFile(y.s, x.s, append = (hadAttr("append")))
+                                push(newString(rez))
+                        else:
+                            writeToFile(y.s, x.s, append = append)
 
         builtin "zip",
             alias       = unaliased, 
@@ -527,8 +556,10 @@ proc defineModule*(moduleName: string) =
             zip "dest.zip" ["file1.txt" "img.png"]
             """:
                 #=======================================================
-                let files: seq[string] = y.a.map((z)=>z.s)
-                miniz.zip(files, x.s)
+                dispatch:
+                    (String(dst), Block(a)):
+                        let files: seq[string] = a.map((z)=>z.s)
+                        miniz.zip(files, dst)
 
     #----------------------------
     # Predicates
@@ -545,12 +576,13 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if directory? "src" [ 
-                print "directory exists!" 
+            if directory? "src" [
+                print "directory exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(dirExists(x.s))
+                dispatch:
+                    String(s): push newLogical(dirExists(s))
 
         builtin "exists?",
             alias       = unaliased, 
@@ -563,12 +595,13 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if exists? "somefile.txt" [ 
-                print "path exists!" 
+            if exists? "somefile.txt" [
+                print "path exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(fileExists(x.s) or dirExists(x.s) or symlinkExists(x.s))
+                dispatch:
+                    String(s): push newLogical(fileExists(s) or dirExists(s) or symlinkExists(s))
 
         builtin "file?",
             alias       = unaliased, 
@@ -581,12 +614,13 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if file? "somefile.txt" [ 
-                print "file exists!" 
+            if file? "somefile.txt" [
+                print "file exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(fileExists(x.s))
+                dispatch:
+                    String(s): push newLogical(fileExists(s))
 
         builtin "hidden?",
             alias       = unaliased, 
@@ -603,7 +637,8 @@ proc defineModule*(moduleName: string) =
             hidden? ".git"          ; => true
             """:
                 #=======================================================
-                push newLogical(isHidden(x.s))
+                dispatch:
+                    String(s): push newLogical(isHidden(s))
 
         builtin "symlink?",
             alias       = unaliased, 
@@ -616,9 +651,10 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Logical},
             example     = """
-            if symlink? "somefile" [ 
-                print "symlink exists!" 
+            if symlink? "somefile" [
+                print "symlink exists!"
             ]
             """:
                 #=======================================================
-                push newLogical(symlinkExists(x.s))
+                dispatch:
+                    String(s): push newLogical(symlinkExists(s))

@@ -61,10 +61,12 @@ proc defineModule*(moduleName: string) =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
-                let relativePath = joinPath(currentFrame().folder, x.s)
-                let fullPath = joinPath(getCurrentDir(), relativePath)
-                
-                push(newString(normalizedPath(fullPath)))
+                dispatch:
+                    String(s):
+                        let relativePath = joinPath(currentFrame().folder, s)
+                        let fullPath = joinPath(getCurrentDir(), relativePath)
+
+                        push(newString(normalizedPath(fullPath)))
 
         # TODO(Paths\extract) implement for Web/JS builds
         #  labels: library,enhancement,web
@@ -138,81 +140,70 @@ proc defineModule*(moduleName: string) =
             ; => 300
             """:
                 #=======================================================
-                if xKind==Color:
-                    if (hadAttr("red")):
-                        push newInteger(RGBfromColor(x.l).r)
-                    elif (hadAttr("green")):
-                        push newInteger(RGBfromColor(x.l).g)
-                    elif (hadAttr("blue")):
-                        push newInteger(RGBfromColor(x.l).b)
-                    elif (hadAttr("alpha")):
-                        push newInteger(RGBfromColor(x.l).a)
-                    elif (hadAttr("hsl")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newDictionary({
-                            "hue"       : newInteger(hsl.h),
-                            "saturation": newFloating(hsl.s),
-                            "luminosity": newFloating(hsl.l)
-                        }.toOrderedTable)
-                    elif (hadAttr("hsv")):
-                        let hsv = RGBtoHSV(x.l)
-                        push newDictionary({
-                            "hue"       : newInteger(hsv.h),
-                            "saturation": newFloating(hsv.s),
-                            "value"     : newFloating(hsv.v)
-                        }.toOrderedTable)
-                    elif (hadAttr("hue")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newInteger(hsl.h)
-                    elif (hadAttr("saturation")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newFloating(hsl.s)
-                    elif (hadAttr("luminosity")):
-                        let hsl = RGBtoHSL(x.l)
-                        push newFloating(hsl.l)
-                    else:
-                        let rgb = RGBfromColor(x.l)
-                        push newDictionary({
-                            "red"   : newInteger(rgb.r),
-                            "green" : newInteger(rgb.g),
-                            "blue"  : newInteger(rgb.b),
-                            "alpha" : newInteger(rgb.a)
-                        }.toOrderedTable)
-                else:
-                    if isUrl(x.s):
-                        let details = parseUrlComponents(x.s)
+                bindAttrs:
+                    asScheme(scheme):       Logical
+                    asHost(host):           Logical
+                    asPort(port):           Logical
+                    asUser(user):           Logical
+                    asPassword(password):   Logical
+                    asPath(path):           Logical
+                    asQuery(query):         Logical
+                    asAnchor(anchor):       Logical
+                    asDirectory(directory): Logical
+                    asBasename(basename):   Logical
+                    asFilename(filename):   Logical
+                    asExtension(extension): Logical
 
-                        if (hadAttr("scheme")):
-                            push(details["scheme"])
-                        elif (hadAttr("host")):
-                            push(details["host"])
-                        elif (hadAttr("port")):
-                            push(details["port"])
-                        elif (hadAttr("user")):
-                            push(details["user"])
-                        elif (hadAttr("password")):
-                            push(details["password"])
-                        elif (hadAttr("path")):
-                            push(details["path"])
-                        elif (hadAttr("query")):
-                            push(details["query"])
-                        elif (hadAttr("anchor")):
-                            push(details["anchor"])
+                dispatch:
+                    Color(c):
+                        on red:        push newInteger(RGBfromColor(c).r)
+                        on green:      push newInteger(RGBfromColor(c).g)
+                        on blue:       push newInteger(RGBfromColor(c).b)
+                        on alpha:      push newInteger(RGBfromColor(c).a)
+                        on hsl:
+                            let hsl = RGBtoHSL(c)
+                            push newDictionary({
+                                "hue"       : newInteger(hsl.h),
+                                "saturation": newFloating(hsl.s),
+                                "luminosity": newFloating(hsl.l)
+                            }.toOrderedTable)
+                        on hsv:
+                            let hsv = RGBtoHSV(c)
+                            push newDictionary({
+                                "hue"       : newInteger(hsv.h),
+                                "saturation": newFloating(hsv.s),
+                                "value"     : newFloating(hsv.v)
+                            }.toOrderedTable)
+                        on hue:        push newInteger(RGBtoHSL(c).h)
+                        on saturation: push newFloating(RGBtoHSL(c).s)
+                        on luminosity: push newFloating(RGBtoHSL(c).l)
+                        _:
+                            let rgb = RGBfromColor(c)
+                            push newDictionary({
+                                "red"   : newInteger(rgb.r),
+                                "green" : newInteger(rgb.g),
+                                "blue"  : newInteger(rgb.b),
+                                "alpha" : newInteger(rgb.a)
+                            }.toOrderedTable)
+                    String(s):
+                        if isUrl(s):
+                            let details = parseUrlComponents(s)
+                            if   asScheme:   push(details["scheme"])
+                            elif asHost:     push(details["host"])
+                            elif asPort:     push(details["port"])
+                            elif asUser:     push(details["user"])
+                            elif asPassword: push(details["password"])
+                            elif asPath:     push(details["path"])
+                            elif asQuery:    push(details["query"])
+                            elif asAnchor:   push(details["anchor"])
+                            else:            push(newDictionary(details))
                         else:
-                            push(newDictionary(details))
-                    else:
-                        let details = parsePathComponents(x.s)
-
-                        if (hadAttr("directory")):
-                            push(details["directory"])
-                        elif (hadAttr("basename")):
-                            push(details["basename"])
-                        elif (hadAttr("filename")):
-                            push(details["filename"])
-                        elif (hadAttr("extension")):
-                            push(details["extension"])
-                        else:
-                            push(newDictionary(details))
+                            let details = parsePathComponents(s)
+                            if   asDirectory: push(details["directory"])
+                            elif asBasename:  push(details["basename"])
+                            elif asFilename:  push(details["filename"])
+                            elif asExtension: push(details["extension"])
+                            else:             push(newDictionary(details))
 
         builtin "list",
             alias       = unaliased, 
@@ -237,18 +228,20 @@ proc defineModule*(moduleName: string) =
             ; data.txt
             """:
                 #=======================================================
-                let recursive = (hadAttr("recursive"))
-                let relative = (hadAttr("relative"))
-                let path = x.s
+                bindAttrs:
+                    recursive: Logical
+                    relative:  Logical
 
-                var contents: seq[string]
+                dispatch:
+                    String(path):
+                        var contents: seq[string]
 
-                if recursive:
-                    contents = toSeq(walkDirRec(path, relative = relative))
-                else:
-                    contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
+                        if recursive:
+                            contents = toSeq(walkDirRec(path, relative = relative))
+                        else:
+                            contents = toSeq(walkDir(path, relative = relative)).map((x) => x[1])
 
-                push(newStringBlock(contents))
+                        push(newStringBlock(contents))
 
         builtin "normalize",
             alias       = unaliased, 
@@ -280,31 +273,24 @@ proc defineModule*(moduleName: string) =
             ; => ./myscript          
             """:
                 #=======================================================
-                if (hadAttr("executable")):
-                    if xKind in {Literal,PathLiteral}:
-                        ensureInPlaceAny()
-                        if (hadAttr("tilde")):
-                            InPlaced.s = InPlaced.s.expandTilde()
-                        InPlaced.s.normalizeExe()
-                    else:
-                        var ret: string
-                        if (hadAttr("tilde")):
-                            ret = x.s.expandTilde()
-                        else:
-                            ret = x.s
-                        ret.normalizeExe()
-                        push(newString(ret))
-                else:
-                    if xKind in {Literal,PathLiteral}:
-                        ensureInPlaceAny()
-                        if (hadAttr("tilde")):
-                            InPlaced.s = InPlaced.s.expandTilde()
-                        InPlaced.s.normalizePath()
-                    else:
-                        if (hadAttr("tilde")):
-                            push(newString(normalizedPath(x.s.expandTilde())))
-                        else:
-                            push(newString(normalizedPath(x.s)))
+                bindAttrs:
+                    executable: Logical
+                    tilde:      Logical
+
+                dispatchWithLiteral:
+                    String(s):
+                        value:
+                            var ret = if tilde: s.expandTilde() else: s
+                            if executable:
+                                ret.normalizeExe()
+                                push(newString(ret))
+                            else:
+                                push(newString(normalizedPath(ret)))
+                        inplace:
+                            if tilde:
+                                s = s.expandTilde()
+                            if executable: s.normalizeExe()
+                            else:          s.normalizePath()
 
         builtin "relative",
             alias       = dotslash, 
@@ -323,7 +309,8 @@ proc defineModule*(moduleName: string) =
             ; /Users/admin/Desktop/test.txt
             """:
                 #=======================================================
-                push(newString(joinPath(currentFrame().folder, x.s)))
+                dispatch:
+                    String(s): push(newString(joinPath(currentFrame().folder, s)))
 
     #----------------------------
     # Predicates
@@ -346,4 +333,5 @@ proc defineModule*(moduleName: string) =
             absolute? "usr/bin"         ; => false
             """:
                 #=======================================================
-                push(newLogical(isAbsolute(x.s)))
+                dispatch:
+                    String(s): push(newLogical(isAbsolute(s)))

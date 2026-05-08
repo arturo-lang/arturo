@@ -87,48 +87,42 @@ proc defineModule*(moduleName: string) =
             print color #red.bold "Some text"          ; Some text (in red/bold)
         """:
             #=======================================================
-            var color = ""
+            bindAttrs:
+                isBold(bold):           Logical
+                isUnderline(underline): Logical
+                keep:                   Logical
 
-            case x.l:
-                of clBlack:
-                    color = blackColor
-                of clRed:
-                    color = redColor
-                of clGreen:
-                    color = greenColor
-                of clYellow:
-                    color = yellowColor
-                of clBlue:
-                    color = blueColor
-                of clMagenta:
-                    color = magentaColor
-                of clOrange:
-                    color = rgb("208")
-                of clCyan:
-                    color = cyanColor
-                of clWhite:
-                    color = whiteColor
-                of clGray:
-                    color = grayColor
-                else:
-                    let rgba = RGBfromColor(x.l)
-                    color = rgb((rgba.r, rgba.g, rgba.b))
+            dispatch:
+                (Color(c), String(s)):
+                    var color = ""
 
-            var finalColor: string
+                    case c:
+                        of clBlack:   color = blackColor
+                        of clRed:     color = redColor
+                        of clGreen:   color = greenColor
+                        of clYellow:  color = yellowColor
+                        of clBlue:    color = blueColor
+                        of clMagenta: color = magentaColor
+                        of clOrange:  color = rgb("208")
+                        of clCyan:    color = cyanColor
+                        of clWhite:   color = whiteColor
+                        of clGray:    color = grayColor
+                        else:
+                            let rgba = RGBfromColor(c)
+                            color = rgb((rgba.r, rgba.g, rgba.b))
 
-            if (hadAttr("bold")):
-                finalColor = bold(color)
-            elif (hadAttr("underline")):
-                finalColor = underline(color)
-            else:
-                finalColor = fg(color)
+                    var finalColor: string
 
-            var res = finalColor & y.s
+                    if isBold:        finalColor = bold(color)
+                    elif isUnderline: finalColor = underline(color)
+                    else:             finalColor = fg(color)
 
-            if not hadAttr("keep"):
-                res &= resetColor
+                    var res = finalColor & s
 
-            push(newString(res))
+                    if not keep:
+                        res &= resetColor
+
+                    push(newString(res))
     
     when not defined(WEB):
         builtin "cursor",
@@ -146,10 +140,10 @@ proc defineModule*(moduleName: string) =
             cursor true     ; (shows the cursor)
             """:
                 #=======================================================
-                if isTrue(x):
-                    stdout.showCursor()
-                else:
-                    stdout.hideCursor()
+                dispatch:
+                    Logical(_):
+                        if isTrue(x): stdout.showCursor()
+                        else:         stdout.hideCursor()
 
         builtin "goto",
             alias       = unaliased, 
@@ -167,19 +161,14 @@ proc defineModule*(moduleName: string) =
             goto 10 ø       ; (move cursor to column 10, same line)
             """:
                 #=======================================================
-                if xKind==Null:
-                    if yKind==Null:
-                        discard
-                    else:
-                        when defined(windows):
-                            stdout.setCursorYPos(y.i)
-                        else:
-                            discard
-                else:
-                    if yKind==Null:
-                        stdout.setCursorXPos(x.i)
-                    else:
-                        stdout.setCursorPos(x.i, y.i)
+                dispatch:
+                    Integer(a):
+                        if yKind == Null: stdout.setCursorXPos(a)
+                        else:             stdout.setCursorPos(a, y.i)
+                    _:
+                        if yKind != Null:
+                            when defined(windows): stdout.setCursorYPos(y.i)
+                            else:                  discard
 
         builtin "input",
             alias       = unaliased, 
@@ -224,25 +213,20 @@ proc defineModule*(moduleName: string) =
             ; A
             """:
                 #=======================================================
-                if (hadAttr("repl")):
+                bindAttrs:
+                    repl:                Logical
+                    historyPath(history): String     = ""
+                    completionsArray(complete): Block = newSeq[Value]()
+                    hintsTable(hint):    Dictionary  = default(ValueDict)
+
+                if repl:
                     # when defined(windows):
                     #     stdout.write(x.s)
                     #     stdout.flushFile()
                     #     push(newString(stdin.readLine()))
                     # else:
-                    var historyPath: string
-                    var completionsArray: ValueArray
-                    var hintsTable: ValueDict = initOrderedTable[string,Value]()
-
-                    if checkAttr("history"):
-                        historyPath = aHistory.s
-
-                    if checkAttr("complete"):
-                        requireAttrValueBlock("complete", aComplete, {String,Word,Literal})
-                        completionsArray = aComplete.a
-
-                    if checkAttr("hint"):
-                        hintsTable = aHint.d
+                    for it in completionsArray:
+                        requireAttrValue("complete", it, {String,Word,Literal})
 
                     IsRepl = true
                     let (str, hasToKill) = replInput(x.s, historyPath, completionsArray, hintsTable)
@@ -254,12 +238,12 @@ proc defineModule*(moduleName: string) =
                     else:
                         push(newString(str))
                 else:
-                    if xKind == Null:
-                        push(newChar(getch()))
-                    else:
-                        stdout.write(x.s)
-                        stdout.flushFile()
-                        push(newString(stdin.readLine()))
+                    dispatch:
+                        String(s):
+                            stdout.write(s)
+                            stdout.flushFile()
+                            push(newString(stdin.readLine()))
+                        _: push(newChar(getch()))
 
     builtin "print",
         alias       = unaliased, 
@@ -277,29 +261,30 @@ proc defineModule*(moduleName: string) =
             print "Hello world!"          ; Hello world!
         """:
             #=======================================================
-            if xKind==Block:
-                when defined(WEB):
-                    stdout = ""
+            bindAttrs:
+                inLines(lines): Logical
 
-                let inLines = (hadAttr("lines"))
+            dispatch:
+                Block(b):
+                    when defined(WEB):
+                        stdout = ""
 
-                let xblock = doEval(x)
-                let stop = SP
-                execUnscoped(xblock)
+                    let xblock = doEval(x)
+                    let stop = SP
+                    execUnscoped(xblock)
 
-                var res: ValueArray
-                while SP>stop:
-                    res.add(stack.pop())
+                    var res: ValueArray
+                    while SP>stop:
+                        res.add(stack.pop())
 
-                for r in res.reversed:
-                    stdout.write($(r))
-                    if not inLines: stdout.write(" ")
-                    else: stdout.write("\n")
+                    for r in res.reversed:
+                        stdout.write($(r))
+                        if not inLines: stdout.write(" ")
+                        else: stdout.write("\n")
 
-                if not inLines: stdout.write("\n")
-                stdout.flushFile()
-            else:
-                echo $(x)
+                    if not inLines: stdout.write("\n")
+                    stdout.flushFile()
+                _: echo $(x)
 
     builtin "prints",
         alias       = unaliased,
@@ -322,23 +307,24 @@ proc defineModule*(moduleName: string) =
             when defined(WEB):
                 stdout = ""
 
-            if xKind==Block:
-                let xblock = doEval(x)
-                let stop = SP
-                execUnscoped(xblock)
+            dispatch:
+                Block(b):
+                    let xblock = doEval(x)
+                    let stop = SP
+                    execUnscoped(xblock)
 
-                var res: ValueArray
-                while SP>stop:
-                    res.add(stack.pop())
+                    var res: ValueArray
+                    while SP>stop:
+                        res.add(stack.pop())
 
-                for r in res.reversed:
-                    stdout.write($(r))
-                    stdout.write(" ")
+                    for r in res.reversed:
+                        stdout.write($(r))
+                        stdout.write(" ")
 
-                stdout.flushFile()
-            else:
-                stdout.write($(x))
-                stdout.flushFile()
+                    stdout.flushFile()
+                _:
+                    stdout.write($(x))
+                    stdout.flushFile()
 
     when not defined(WEB):
         builtin "terminal",

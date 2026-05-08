@@ -65,37 +65,33 @@ proc defineModule*(moduleName: string) =
             ; 2021-04-05T11:25:42+02:00
         """:
             #=======================================================
-            var nanoseconds, milliseconds, seconds,
-                minutes, hours, days, weeks,
-                months, years = 0
-
-            if checkAttr("nanoseconds"):      nanoseconds = aNanoseconds.i
-            if checkAttr("milliseconds"):   milliseconds = aMilliseconds.i
-            if checkAttr("seconds"):                  seconds = aSeconds.i
-            if checkAttr("minutes"):                  minutes = aMinutes.i
-            if checkAttr("hours"):                        hours = aHours.i
-            if checkAttr("days"):                           days = aDays.i
-            if checkAttr("weeks"):                        weeks = aWeeks.i
-            if checkAttr("months"):                     months = aMonths.i
-            if checkAttr("years"):                        years = aYears.i
+            bindAttrs:
+                nanoseconds:  Integer = 0
+                milliseconds: Integer = 0
+                seconds:      Integer = 0
+                minutes:      Integer = 0
+                hours:        Integer = 0
+                days:         Integer = 0
+                weeks:        Integer = 0
+                months:       Integer = 0
+                years:        Integer = 0
 
             let ti = initTimeInterval(
-                nanoseconds=nanoseconds, 
-                milliseconds=milliseconds,
-                seconds=seconds,
-                minutes=minutes,
-                hours=hours,
-                days=days,
-                weeks=weeks,
-                months=months,
-                years=years
+                nanoseconds  = nanoseconds,
+                milliseconds = milliseconds,
+                seconds      = seconds,
+                minutes      = minutes,
+                hours        = hours,
+                days         = days,
+                weeks        = weeks,
+                months       = months,
+                years        = years
             )
-            
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newDate(InPlaced.eobj + ti))
-            else:
-                push(newDate(x.eobj + ti))
+
+            dispatchWithLiteral:
+                Date(d):
+                    value:   push(newDate(d + ti))
+                    inplace: SetInPlaceAny(newDate(d + ti))
 
     builtin "before",
         alias       = unaliased, 
@@ -128,37 +124,33 @@ proc defineModule*(moduleName: string) =
             ; 2020-03-22T11:27:23+01:00
         """:
             #=======================================================
-            var nanoseconds, milliseconds, seconds,
-                minutes, hours, days, weeks,
-                months, years = 0
-
-            if checkAttr("nanoseconds"):      nanoseconds = aNanoseconds.i
-            if checkAttr("milliseconds"):   milliseconds = aMilliseconds.i
-            if checkAttr("seconds"):                  seconds = aSeconds.i
-            if checkAttr("minutes"):                  minutes = aMinutes.i
-            if checkAttr("hours"):                        hours = aHours.i
-            if checkAttr("days"):                           days = aDays.i
-            if checkAttr("weeks"):                        weeks = aWeeks.i
-            if checkAttr("months"):                     months = aMonths.i
-            if checkAttr("years"):                        years = aYears.i
+            bindAttrs:
+                nanoseconds:  Integer = 0
+                milliseconds: Integer = 0
+                seconds:      Integer = 0
+                minutes:      Integer = 0
+                hours:        Integer = 0
+                days:         Integer = 0
+                weeks:        Integer = 0
+                months:       Integer = 0
+                years:        Integer = 0
 
             let ti = initTimeInterval(
-                nanoseconds=nanoseconds, 
-                milliseconds=milliseconds,
-                seconds=seconds,
-                minutes=minutes,
-                hours=hours,
-                days=days,
-                weeks=weeks,
-                months=months,
-                years=years
+                nanoseconds  = nanoseconds,
+                milliseconds = milliseconds,
+                seconds      = seconds,
+                minutes      = minutes,
+                hours        = hours,
+                days         = days,
+                weeks        = weeks,
+                months       = months,
+                years        = years
             )
-            
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newDate(InPlaced.eobj - ti))
-            else:
-                push(newDate(x.eobj - ti))
+
+            dispatchWithLiteral:
+                Date(d):
+                    value:   push(newDate(d - ti))
+                    inplace: SetInPlaceAny(newDate(d - ti))
 
     builtin "now",
         alias       = unaliased, 
@@ -210,7 +202,8 @@ proc defineModule*(moduleName: string) =
             print friday? now       ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dFri))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dFri))
 
     builtin "future?",
         alias       = unaliased, 
@@ -229,7 +222,8 @@ proc defineModule*(moduleName: string) =
             print future? futureDate    ; true
         """:
             #=======================================================
-            push(newLogical(x.eobj > now()))
+            dispatch:
+                Date(d): push(newLogical(d > now()))
 
     builtin "leap?",
         alias       = unaliased, 
@@ -248,10 +242,9 @@ proc defineModule*(moduleName: string) =
             ; false true false
         """:
             #=======================================================
-            if xKind==Integer:
-                push(newLogical(isLeapYear(x.i)))
-            else:
-                push(newLogical(isLeapYear(x.e["year"].i)))
+            dispatch:
+                Integer(i): push(newLogical(isLeapYear(i)))
+                Date(d):    push(newLogical(isLeapYear(d.year)))
 
     builtin "monday?",
         alias       = unaliased, 
@@ -267,7 +260,8 @@ proc defineModule*(moduleName: string) =
             print sunday? now       ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dMon))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dMon))
 
     builtin "past?",
         alias       = unaliased, 
@@ -289,7 +283,8 @@ proc defineModule*(moduleName: string) =
             print past? now             ; true ("now" has already become past...)
         """:
             #=======================================================
-            push(newLogical(now() > x.eobj))
+            dispatch:
+                Date(d): push(newLogical(now() > d))
 
     builtin "saturday?",
         alias       = unaliased, 
@@ -305,7 +300,8 @@ proc defineModule*(moduleName: string) =
             print saturday? now     ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dSat))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dSat))
 
     builtin "sunday?",
         alias       = unaliased,
@@ -321,7 +317,8 @@ proc defineModule*(moduleName: string) =
             print sunday? now       ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dSun))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dSun))
 
     builtin "thursday?",
         alias       = unaliased, 
@@ -337,7 +334,8 @@ proc defineModule*(moduleName: string) =
             print thursday? now     ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dThu))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dThu))
 
     builtin "today?",
         alias       = unaliased,
@@ -356,9 +354,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let rightNow = now()
-
-            push(newLogical(x.eobj.year == rightNow.year and
-                            x.eobj.yearday == rightNow.yearday))
+            dispatch:
+                Date(d): push(newLogical(d.year == rightNow.year and
+                                         d.yearday == rightNow.yearday))
 
     builtin "tuesday?",
         alias       = unaliased, 
@@ -374,7 +372,8 @@ proc defineModule*(moduleName: string) =
             print tuesday? now      ; true
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dTue))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dTue))
 
     builtin "wednesday?",
         alias       = unaliased, 
@@ -390,4 +389,5 @@ proc defineModule*(moduleName: string) =
             print wednesday? now    ; false
         """:
             #=======================================================
-            push(newLogical(x.eobj.weekday == dWed))
+            dispatch:
+                Date(d): push(newLogical(d.weekday == dWed))
