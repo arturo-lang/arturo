@@ -732,18 +732,18 @@ when not defined(WEB):
 
     # convenience: turn a piece of Arturo source into a pending `:task` value.
     # used by `.async` branches across the stdlib.
-    proc spawnAsTask*(src: string): Value =
+    proc spawnAsTask*(src: string, name: string = ""): Value =
         # the VTask has to exist before `runInChildProcess` runs so it can
         # publish the `Process` handle onto it for `cancel` to reach
-        let tsk = VTask(state: taskPending)
+        let tsk = VTask(state: taskPending, name: name)
         tsk.future = runInChildProcess(tsk, src)
         result = newTask(tsk)
 
     # convenience: turn a shell command into a pending `:task`. used by
     # `execute.async`. `withCode` toggles the resolved-value shape between
     # bare output string and `#[output: code:]` dict (mirrors `execute.code`).
-    proc spawnShellAsTask*(fullCmd: string, withCode: bool): Value =
-        let tsk = VTask(state: taskPending)
+    proc spawnShellAsTask*(fullCmd: string, withCode: bool, name: string = ""): Value =
+        let tsk = VTask(state: taskPending, name: name)
         tsk.future = runShellInChildProcess(tsk, fullCmd, withCode)
         result = newTask(tsk)
 
@@ -763,8 +763,8 @@ when not defined(WEB):
     # rather than the generic "exited with code N" of the subprocess
     # path. Returns immediately; the fiber actually executes when the
     # scheduler is driven (e.g. via `wait`).
-    proc spawnInProcessDoBlock*(blk: Value): Value =
-        let tsk = VTask(state: taskPending)
+    proc spawnInProcessDoBlock*(blk: Value, name: string = ""): Value =
+        let tsk = VTask(state: taskPending, name: name)
         let fut = newFuture[Value]("do.async")
         tsk.future = fut
 
@@ -994,10 +994,29 @@ when not defined(WEB):
     proc spawnAsyncRequest*(client: AsyncHttpClient, url: string, meth: HttpMethod,
                             body: string, multipart: MultipartData,
                             buildResponse: proc(version, body, status: string,
-                                                headers: HttpHeaders): Value
+                                                headers: HttpHeaders): Value,
+                            timeoutMs: int = -1
                            ): Value =
         let tsk = VTask(state: taskPending)
-        tsk.future = requestAsync(client, url, meth, body, multipart, buildResponse)
+        let inner = requestAsync(client, url, meth, body, multipart, buildResponse)
+        # `AsyncHttpClient` doesn't expose a per-request timeout the way
+        # the sync `HttpClient` does, so we race the request against
+        # `sleepAsync(timeoutMs)`. Timer winning → close the client to
+        # abort the in-flight request, then fail the future. The
+        # downstream `:error` carries the timeout message; `wait` /
+        # `on.failed` see it as a regular failure.
+        if timeoutMs > 0:
+            proc gated(): Future[Value] {.async.} =
+                let inTime = await withTimeout(inner, timeoutMs)
+                if not inTime:
+                    try: client.close()
+                    except CatchableError: discard
+                    raise newException(CatchableError,
+                        "request.async timed out after " & $timeoutMs & "ms")
+                return inner.read
+            tsk.future = gated()
+        else:
+            tsk.future = inner
         tsk.cancelHandle = proc() =
             try: client.close()
             except CatchableError: discard

@@ -349,7 +349,7 @@ proc defineModule*(moduleName: string) =
                                          hdrs: HttpHeaders): Value =
                         httpResponseToValue(version, bodyStr, status, hdrs, raw)
                     push spawnAsyncRequest(asyncClient, url, meth, body,
-                                           multipart, buildResp)
+                                           multipart, buildResp, timeout)
                     return
 
                 var client: HttpClient
