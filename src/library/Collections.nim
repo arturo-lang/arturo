@@ -1471,13 +1471,13 @@ proc defineModule*(moduleName: string) =
             dispatchWithLiteral:
                 (String(s), _):
                     value:   push(removeFromString(s))
-                    inplace: SetInPlaceAny(removeFromString(s))
+                    inplace: s = removeFromString(s).s
                 (Block(a), _):
                     value:   push(removeFromBlock(a))
-                    inplace: SetInPlaceAny(removeFromBlock(a))
+                    inplace: a = removeFromBlock(a).a
                 (Dictionary(d), _):
                     value:   push(removeFromDict(d))
-                    inplace: SetInPlaceAny(removeFromDict(d))
+                    inplace: d = removeFromDict(d).d
 
     builtin "repeat",
         alias       = unaliased,
