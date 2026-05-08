@@ -493,8 +493,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
         of Database     :
             when defined(SQLITE):
-                if v.dbKind==SqliteDatabase: stdoutWrite fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
-                #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[uint](v.mysqldb):#X}")
+                if v.dbKind==SqliteDatabase:
+                    dumpPrimitive(fmt("[sqlite] {cast[uint](v.sqlitedb):#X}"), v)
+                #elif v.dbKind==MysqlDatabase:
+                #    dumpPrimitive(fmt("[mysql] {cast[uint](v.mysqldb):#X}"), v)
 
         of Socket       :
             when not defined(WEB):
