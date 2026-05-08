@@ -15,6 +15,7 @@
 when not defined(WEB):
     import asyncdispatch, asyncfile, asynchttpserver, httpclient, httpcore
     import os, osproc
+    import std/tempfiles
     import streams, strtabs, strutils, times
     when defined(ssl):
         # std/net has to be qualified — there's a sibling `helpers/net.nim`
@@ -515,17 +516,20 @@ when not defined(WEB):
     # result hand-off. capturing stdout would swallow user prints.
     proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
         let arturoBin = getAppFilename()
-        let resFile = getTempDir() / ("arturo-task-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        # `genTempPath` mixes in OS-supplied random bytes — a real
+        # unique path, unlike the old `pid + epochTime` recipe which
+        # could collide under fast successive spawns.
+        let resFile = genTempPath("arturo-task-", ".art")
         # Cross-process emit channel — child appends one
         # `[name payload]` record per `emit`, parent tails. Created
         # empty so the child's append open succeeds immediately.
-        let evtFile = getTempDir() / ("arturo-evt-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        let evtFile = genTempPath("arturo-evt-", ".art")
         writeFile(evtFile, "")
         # Inbound channel — parent writes here, child tails it. Pair
         # to `evtFile` (the outbound channel). Child receives parent's
         # `emit` records on `inboundFile` and dispatches them into its
         # own subscriber table.
-        let inboundFile = getTempDir() / ("arturo-inb-" & $getCurrentProcessId() & "-" & $epochTime() & ".art")
+        let inboundFile = genTempPath("arturo-inb-", ".art")
         writeFile(inboundFile, "")
         registerChildInbound(inboundFile)
         var childEnv = newStringTable(modeCaseSensitive)
