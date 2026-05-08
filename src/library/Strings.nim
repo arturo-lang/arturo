@@ -445,17 +445,16 @@ proc defineModule*(moduleName: string) =
                     doNamed(named):     Logical
                     doBounds(bounds):   Logical
                     doFull(full):       Logical
-                    inRange(`in`):      Range = nil
 
                 var iFrom = 0
                 var iTo = int.high
 
-                if not inRange.isNil:
-                    iFrom = inRange.start
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
                     if iFrom < 0:
                         iFrom = 0
 
-                    iTo = inRange.stop
+                    iTo = aIn.rng.stop
                     if iTo >= x.s.len:
                         iTo = x.s.len-1
 
@@ -1016,18 +1015,15 @@ proc defineModule*(moduleName: string) =
                     if yKind==Regex: y.rx
                     else: newRegex(y.s).rx
 
-                bindAttrs:
-                    inRange(`in`): Range = nil
-
                 var iFrom = 0
                 var iTo = int.high
 
-                if not inRange.isNil:
-                    iFrom = inRange.start
+                if checkAttr("in"):
+                    iFrom = aIn.rng.start
                     if iFrom < 0:
                         iFrom = 0
 
-                    iTo = inRange.stop
+                    iTo = aIn.rng.stop
                     if iTo >= x.s.len:
                         iTo = x.s.len-1
 
