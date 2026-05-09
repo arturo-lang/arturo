@@ -80,7 +80,8 @@ proc defineModule*(moduleName: string) =
             attrs       = {
                 "all"     : ({Logical},"wait for all tasks in the given block to settle and return their results in order"),
                 "first"   : ({Logical},"wait for the first task in the given block to settle and return its result; the others are left running"),
-                "cancel"  : ({Logical},"with `.first`: cancel the remaining (still-pending) tasks once the winner settles"),
+                "any"     : ({Integer},"wait for the first N tasks in the given block to settle and return their results in completion order"),
+                "cancel"  : ({Logical},"with `.first` or `.any`: cancel the remaining (still-pending) tasks once enough have settled"),
                 "timeout" : ({Integer,Quantity},"give up waiting after the given duration (ms by default; accepts time `:quantity` like `2:s`); returns an `:error` value on timeout")
             },
             returns     = {Any,Block},
@@ -95,6 +96,14 @@ proc defineModule*(moduleName: string) =
                 request.async ~"https://api.example.com/users/|name|" #[]
             ]
             results: wait.all tasks
+            ..........
+            ; settle for the first 3 of 5 mirrors that respond — useful
+            ; for redundant-fetch patterns. results come back in
+            ; completion order (NOT input order), unlike `wait.all`.
+            mirrors: map mirror-urls 'u [request.async u #[]]
+            top3: wait.any: 3 mirrors                ; block of 3 results
+            ; pair with `.cancel` to abort the remaining 2 once we have 3:
+            top3: wait.any.cancel: 3 mirrors
             """:
                 #=======================================================
                 if (hadAttr("all")):
@@ -190,6 +199,55 @@ proc defineModule*(moduleName: string) =
                         if t.tsk.state == taskPending and killLosers:
                             cancelTask(t)
                     push res
+                elif (checkAttr("any")):
+                    # accept a block of tasks; block until the first N
+                    # settle and return their values in COMPLETION order
+                    # (the fastest one ends up at index 0). Failed slots
+                    # surface as `:error`, cancelled as `:null` —
+                    # matching the rest of the `wait` family.
+                    let target = aAny.i
+                    if target < 1:
+                        Error_OperationNotPermitted("`wait.any` count must be >= 1")
+                    if target > x.a.len:
+                        Error_OperationNotPermitted("`wait.any` count exceeds number of tasks")
+                    for t in x.a:
+                        if unlikely(t.kind != Task):
+                            Error_OperationNotPermitted("`wait.any` expects a block of :task values")
+                    var collected: ValueArray = @[]
+                    let sentinel = newFuture[Value]("Tasks.waitAny")
+                    for t in x.a:
+                        let cap = t
+                        cap.tsk.future.addCallback(proc(fin: Future[Value]) {.gcsafe.} =
+                            {.cast(gcsafe).}:
+                                if sentinel.finished: return
+                                var resolved: Value
+                                if fin.failed:
+                                    if cap.tsk.state == taskCancelled:
+                                        resolved = VNULL
+                                    else:
+                                        cap.tsk.state = taskFailed
+                                        # Same `VError`-preservation as
+                                        # `.first` / `.all`: in-process
+                                        # fibers carry the real kind+hint;
+                                        # subprocess fall back to `RuntimeErr`.
+                                        let err = fin.error
+                                        resolved =
+                                            if err of VError: newError(VError(err))
+                                            else:             newError(RuntimeErr, err.msg)
+                                else:
+                                    if cap.tsk.state == taskPending:
+                                        cap.tsk.state = taskDone
+                                    resolved = fin.read()
+                                collected.add(resolved)
+                                if collected.len >= target:
+                                    sentinel.complete(VNULL)
+                        )
+                    discard ParallelismHelper.coopWait sentinel
+                    let killLosers = hadAttr("cancel")
+                    for t in x.a:
+                        if t.tsk.state == taskPending and killLosers:
+                            cancelTask(t)
+                    push newBlock(collected)
                 elif x.tsk.state == taskCancelled:
                     push VNULL
                 else:
