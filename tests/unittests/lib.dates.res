@@ -1,6 +1,0 @@
-
->> after
-[+] passed!
-
->> before
-[+] passed!
