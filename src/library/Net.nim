@@ -132,8 +132,13 @@ proc defineModule*(moduleName: string) =
                 else:
                     target = extractFilename(path)
 
-                if hadAttr("async"):
-                    push spawnAsyncDownload(path, target)
+                let explicitAsync = hadAttr("async")
+                if explicitAsync or not onMainFiber():
+                    let asyncTask = spawnAsyncDownload(path, target)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
                     return
 
                 var client = newHttpClient()
@@ -310,11 +315,17 @@ proc defineModule*(moduleName: string) =
                         elif yKind==String:
                             url &= "?" & y.s
 
-                if hadAttr("async"):
+                let explicitAsync = hadAttr("async")
+                if explicitAsync or not onMainFiber():
                     # in-process async request: build an `AsyncHttpClient`
                     # mirroring the sync setup, hand it off to `spawnAsyncRequest`,
                     # which awaits the response and runs our `buildResp` closure
                     # to produce a Value identical to the sync builtin's output.
+                    #
+                    # implicit-fiber routing: when called from inside a fiber
+                    # (`do.async` / `map.parallel` / etc.), we transparently
+                    # take the async path and cooperatively wait — otherwise
+                    # the fiber would block the C stack and starve siblings.
                     var asyncClient: AsyncHttpClient
                     if checkAttr("certificate"):
                         when defined(ssl):
@@ -348,8 +359,12 @@ proc defineModule*(moduleName: string) =
                     let buildResp = proc(version, bodyStr, status: string,
                                          hdrs: HttpHeaders): Value =
                         httpResponseToValue(version, bodyStr, status, hdrs, raw)
-                    push spawnAsyncRequest(asyncClient, url, meth, body,
-                                           multipart, buildResp, timeout)
+                    let asyncTask = spawnAsyncRequest(asyncClient, url, meth, body,
+                                                      multipart, buildResp, timeout)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
                     return
 
                 var client: HttpClient
