@@ -290,28 +290,36 @@ proc defineModule*(moduleName: string) =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 #=======================================================
-                if hadAttr("async"):
+                let explicitAsync = hadAttr("async")
+                # implicit-fiber routing: from inside a fiber (`do.async`,
+                # `map.parallel`, etc.) we transparently take the in-process
+                # async path so siblings aren't starved by a blocked C stack.
+                # `.bytecode` keeps subprocess semantics and only triggers
+                # on explicit `.async`.
+                if explicitAsync and hadAttr("bytecode"):
                     # `.bytecode` keeps the subprocess path: it uses a custom
                     # on-disk format via `readBytecode` that doesn't fit the
-                    # plain "read bytes, post-process" shape below.
-                    if hadAttr("bytecode"):
-                        var attrSuffix = ""
-                        if hadAttr("lines"):       attrSuffix &= ".lines"
-                        if hadAttr("json"):        attrSuffix &= ".json"
-                        if hadAttr("csv"):         attrSuffix &= ".csv"
-                        if hadAttr("withHeaders"): attrSuffix &= ".withHeaders"
-                        if hadAttr("bytecode"):    attrSuffix &= ".bytecode"
-                        if hadAttr("binary"):      attrSuffix &= ".binary"
-                        if hadAttr("file"):        attrSuffix &= ".file"
-                        when defined(PARSERS):
-                            if hadAttr("html"):     attrSuffix &= ".html"
-                            if hadAttr("xml"):      attrSuffix &= ".xml"
-                            if hadAttr("markdown"): attrSuffix &= ".markdown"
-                            if hadAttr("toml"):     attrSuffix &= ".toml"
-                        if checkAttr("delimiter"): attrSuffix &= ".delimiter:" & codify(aDelimiter)
-                        push spawnAsTask("read" & attrSuffix & " " & codify(x))
-                        return
+                    # plain "read bytes, post-process" shape below. only
+                    # triggers on explicit `.async` — implicit fiber routing
+                    # falls through to the sync `.bytecode` path.
+                    var attrSuffix = ""
+                    if hadAttr("lines"):       attrSuffix &= ".lines"
+                    if hadAttr("json"):        attrSuffix &= ".json"
+                    if hadAttr("csv"):         attrSuffix &= ".csv"
+                    if hadAttr("withHeaders"): attrSuffix &= ".withHeaders"
+                    if hadAttr("bytecode"):    attrSuffix &= ".bytecode"
+                    if hadAttr("binary"):      attrSuffix &= ".binary"
+                    if hadAttr("file"):        attrSuffix &= ".file"
+                    when defined(PARSERS):
+                        if hadAttr("html"):     attrSuffix &= ".html"
+                        if hadAttr("xml"):      attrSuffix &= ".xml"
+                        if hadAttr("markdown"): attrSuffix &= ".markdown"
+                        if hadAttr("toml"):     attrSuffix &= ".toml"
+                    if checkAttr("delimiter"): attrSuffix &= ".delimiter:" & codify(aDelimiter)
+                    push spawnAsTask("read" & attrSuffix & " " & codify(x))
+                    return
 
+                if (explicitAsync or not onMainFiber()) and not hadAttr("bytecode"):
                     # in-process async: `asyncfile` for local paths,
                     # `AsyncHttpClient` for URLs. either way we get raw bytes
                     # then run the same sync `post` closure (CSV/JSON/parsers
@@ -346,10 +354,13 @@ proc defineModule*(moduleName: string) =
                             if asHtml: return parseHtmlInput(src)
                             if asXml: return parseXMLInput(src)
                         return newString(src)
-                    if x.s.isUrl():
-                        push spawnAsyncReadUrl(x.s, post)
+                    let asyncTask =
+                        if x.s.isUrl(): spawnAsyncReadUrl(x.s, post)
+                        else:           spawnAsyncRead(x.s, post)
+                    if explicitAsync:
+                        push asyncTask
                     else:
-                        push spawnAsyncRead(x.s, post)
+                        push coopWait(asyncTask.tsk.future)
                     return
 
                 if (hadAttr("binary")):
@@ -559,22 +570,24 @@ proc defineModule*(moduleName: string) =
             write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
-                if hadAttr("async"):
-                    # bytecode + `.directory` paths are non-trivial filesystem
-                    # operations (multi-file write / mkdir), so keep those on
-                    # the subprocess path. plain text/binary/json writes flow
-                    # through `asyncfile` in-process.
-                    if xKind == Bytecode or hadAttr("directory") or y.kind == Null:
-                        var attrSuffix = ""
-                        if hadAttr("append"):    attrSuffix &= ".append"
-                        if hadAttr("directory"): attrSuffix &= ".directory"
-                        if hadAttr("json"):      attrSuffix &= ".json"
-                        if hadAttr("compact"):   attrSuffix &= ".compact"
-                        if hadAttr("binary"):    attrSuffix &= ".binary"
-                        let pathSrc = if y.kind == Null: "null" else: codify(y)
-                        push spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
-                        return
+                let explicitAsync = hadAttr("async")
+                # implicit-fiber routing: in-process async path triggers from
+                # inside a fiber so siblings keep running. subprocess-bound
+                # variants (bytecode / `.directory` / null path) stay on
+                # explicit `.async` only — too heavy to fire implicitly.
+                if explicitAsync and (xKind == Bytecode or hadAttr("directory") or y.kind == Null):
+                    var attrSuffix = ""
+                    if hadAttr("append"):    attrSuffix &= ".append"
+                    if hadAttr("directory"): attrSuffix &= ".directory"
+                    if hadAttr("json"):      attrSuffix &= ".json"
+                    if hadAttr("compact"):   attrSuffix &= ".compact"
+                    if hadAttr("binary"):    attrSuffix &= ".binary"
+                    let pathSrc = if y.kind == Null: "null" else: codify(y)
+                    push spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
+                    return
 
+                if (explicitAsync or not onMainFiber()) and
+                   xKind != Bytecode and not hadAttr("directory") and y.kind != Null:
                     let path = y.s
                     let append = hadAttr("append")
                     let payload =
@@ -586,7 +599,11 @@ proc defineModule*(moduleName: string) =
                             jsonFromValue(x, pretty=(not hadAttr("compact")))
                         else:
                             x.s
-                    push spawnAsyncWrite(path, payload, append)
+                    let asyncTask = spawnAsyncWrite(path, payload, append)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
                     return
 
                 if xKind==Bytecode:
