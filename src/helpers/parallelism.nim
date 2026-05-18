@@ -1068,10 +1068,24 @@ when not defined(WEB):
     # surface as `:error` (preserving the real `VError` for in-process
     # fibers, falling back to `RuntimeErr` for subprocess tasks);
     # cancellation surfaces as `:null`.
-    proc drainTask*(tsk: VTask): Value =
+    proc timeoutMsOf*(v: Value): int =
+        ## Read a `.timeout:` attr value (Integer = ms, Quantity = converted to ms).
+        case v.kind
+        of Integer:  v.i
+        of Quantity: toInt((v.q.convertTo(parseAtoms("ms"))).original)
+        else:        0
+
+    proc drainTask*(tsk: VTask, timeoutMs: int = -1): Value =
         if tsk.state == taskCancelled:
             return VNULL
         try:
+            if timeoutMs >= 0:
+                # race the task's future against a sleep timer. on timeout
+                # return `:error` and leave the task pending (timeout is a
+                # drain-side concept — the work itself isn't broken; the
+                # user can `do task` / `wait task` again).
+                if not coopWait withTimeout(tsk.future, timeoutMs):
+                    return newError(RuntimeErr, "do timed out")
             result = coopWait tsk.future
             if tsk.state == taskPending:
                 tsk.state = taskDone

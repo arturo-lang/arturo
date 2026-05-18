@@ -42,12 +42,7 @@ when not defined(WEB):
 #=======================================
 
 when not defined(WEB):
-    proc timeoutMsOf(v: Value): int =
-        ## Read a `.timeout:` attr value (Integer = ms, Quantity = converted to ms).
-        case v.kind
-        of Integer:  v.i
-        of Quantity: toInt((v.q.convertTo(parseAtoms("ms"))).original)
-        else:        0
+    template timeoutMsOf(v: Value): int = ParallelismHelper.timeoutMsOf(v)
 
     proc cancelTask(tsk: Value) =
         ## Move a `:task` value to the cancelled state and tear down its

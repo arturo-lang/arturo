@@ -445,7 +445,8 @@ proc defineModule*(moduleName: string) =
             "times"    : ({Integer},"repeat block execution given number of times"),
             "async"    : ({Logical},"evaluate concurrently and return a `:task`"),
             "isolated" : ({Logical},"with `.async`: run in a fresh child process instead of an in-VM fiber (slower spawn, no closure capture, full process isolation)"),
-            "as"       : ({String},"with `.async`: tag the resulting `:task` with a symbolic name (shown in `print` / `inspect` for debugging)")
+            "as"       : ({String},"with `.async`: tag the resulting `:task` with a symbolic name (shown in `print` / `inspect` for debugging)"),
+            "timeout"  : ({Integer,Quantity},"with a `:task` arg: give up draining after the given duration (ms by default; accepts time `:quantity` like `2:s`); returns an `:error` value on timeout and leaves the task pending")
         },
         returns     = {Any,Task},
         example     = """
@@ -566,10 +567,15 @@ proc defineModule*(moduleName: string) =
                         push ParallelismHelper.spawnAsTask(src, taskName)
                     return
 
-            # `do task` is sugar for `wait task` - drain the future once
+            # `do task` is sugar for `wait task` - drain the future once.
+            # Honors `.timeout` the same way `wait` does: on timeout we
+            # return a `:error` value and leave the task pending.
             if xKind == Task:
                 when not defined(WEB):
-                    push ParallelismHelper.drainTask(x.tsk)
+                    let timeoutMs =
+                        if checkAttr("timeout"): ParallelismHelper.timeoutMsOf(aTimeout)
+                        else: -1
+                    push ParallelismHelper.drainTask(x.tsk, timeoutMs)
                 return
 
             var evaled: Translation
