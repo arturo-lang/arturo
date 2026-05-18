@@ -35,6 +35,8 @@ when not defined(WEB):
     import helpers/datasource
     import helpers/io
     import helpers/jsonobject
+    import helpers/parallelism
+    import helpers/url
 
     import vm/lib
     import vm/[bytecode, errors, parse]
@@ -244,8 +246,8 @@ proc defineModule*(moduleName: string) =
             args        = {
                 "file"  : {String}
             },
-            attrs       = 
-                when defined(PARSERS): 
+            attrs       =
+                when defined(PARSERS):
                     {
                         "lines"         : ({Logical},"read file lines into block"),
                         "json"          : ({Logical},"read Json into value"),
@@ -258,7 +260,8 @@ proc defineModule*(moduleName: string) =
                         "toml"          : ({Logical},"read TOML into value"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
-                        "file"          : ({Logical},"read as file (throws an error if not valid)")
+                        "file"          : ({Logical},"read as file (throws an error if not valid)"),
+                        "async"         : ({Logical},"read asynchronously and return a `:task`")
                     }
                 else:
                     {
@@ -269,9 +272,10 @@ proc defineModule*(moduleName: string) =
                         "withHeaders"   : ({Logical},"read CSV headers"),
                         "bytecode"      : ({Logical},"read file as Arturo bytecode"),
                         "binary"        : ({Logical},"read as binary"),
-                        "file"          : ({Logical},"read as file (throws an error if not valid)")
+                        "file"          : ({Logical},"read as file (throws an error if not valid)"),
+                        "async"         : ({Logical},"read asynchronously and return a `:task`")
                     },
-            returns     = {String,Block,Binary},
+            returns     = {String,Block,Binary,Task},
             example     = """
             ; reading a simple local file
             str: read "somefile.txt"
@@ -286,6 +290,79 @@ proc defineModule*(moduleName: string) =
             html: read.markdown "## Hello"     ; "<h2>Hello</h2>"
             """:
                 #=======================================================
+                let explicitAsync = hadAttr("async")
+                # implicit-fiber routing: from inside a fiber (`do.async`,
+                # `map.parallel`, etc.) we transparently take the in-process
+                # async path so siblings aren't starved by a blocked C stack.
+                # `.bytecode` keeps subprocess semantics and only triggers
+                # on explicit `.async`.
+                if explicitAsync and hadAttr("bytecode"):
+                    # `.bytecode` keeps the subprocess path: it uses a custom
+                    # on-disk format via `readBytecode` that doesn't fit the
+                    # plain "read bytes, post-process" shape below. only
+                    # triggers on explicit `.async` — implicit fiber routing
+                    # falls through to the sync `.bytecode` path.
+                    var attrSuffix = ""
+                    if hadAttr("lines"):       attrSuffix &= ".lines"
+                    if hadAttr("json"):        attrSuffix &= ".json"
+                    if hadAttr("csv"):         attrSuffix &= ".csv"
+                    if hadAttr("withHeaders"): attrSuffix &= ".withHeaders"
+                    if hadAttr("bytecode"):    attrSuffix &= ".bytecode"
+                    if hadAttr("binary"):      attrSuffix &= ".binary"
+                    if hadAttr("file"):        attrSuffix &= ".file"
+                    when defined(PARSERS):
+                        if hadAttr("html"):     attrSuffix &= ".html"
+                        if hadAttr("xml"):      attrSuffix &= ".xml"
+                        if hadAttr("markdown"): attrSuffix &= ".markdown"
+                        if hadAttr("toml"):     attrSuffix &= ".toml"
+                    if checkAttr("delimiter"): attrSuffix &= ".delimiter:" & codify(aDelimiter)
+                    push spawnAsTask("read" & attrSuffix & " " & codify(x))
+                    return
+
+                if (explicitAsync or not onMainFiber()) and not hadAttr("bytecode"):
+                    # in-process async: `asyncfile` for local paths,
+                    # `AsyncHttpClient` for URLs. either way we get raw bytes
+                    # then run the same sync `post` closure (CSV/JSON/parsers
+                    # are pure CPU work — no benefit from offloading).
+                    let asLines       = hadAttr("lines")
+                    let asJson        = hadAttr("json")
+                    let asCsv         = hadAttr("csv")
+                    let asWithHeaders = hadAttr("withHeaders")
+                    let asBinary      = hadAttr("binary")
+                    let hasDelim      = checkAttr("delimiter")
+                    let delim         = if hasDelim: aDelimiter.c.char() else: ','
+                    when defined(PARSERS):
+                        let asHtml     = hadAttr("html")
+                        let asXml      = hadAttr("xml")
+                        let asMarkdown = hadAttr("markdown")
+                        let asToml     = hadAttr("toml")
+                    let post = proc(src: string): Value =
+                        if asBinary:
+                            var bs: seq[byte] = newSeq[byte](src.len)
+                            if src.len > 0: copyMem(addr bs[0], unsafeAddr src[0], src.len)
+                            return newBinary(bs)
+                        if asLines: return newStringBlock(src.splitLines())
+                        if asJson: return valueFromJson(src)
+                        if asCsv:
+                            if hasDelim:
+                                return parseCsvInput(src, withHeaders=asWithHeaders, withDelimiter=delim)
+                            else:
+                                return parseCsvInput(src, asWithHeaders)
+                        when defined(PARSERS):
+                            if asToml: return parseTomlString(src)
+                            if asMarkdown: return parseMarkdownInput(src)
+                            if asHtml: return parseHtmlInput(src)
+                            if asXml: return parseXMLInput(src)
+                        return newString(src)
+                    let asyncTask =
+                        if x.s.isUrl(): spawnAsyncReadUrl(x.s, post)
+                        else:           spawnAsyncRead(x.s, post)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
+                    return
+
                 if (hadAttr("binary")):
                     var f: File
                     discard f.open(x.s)
@@ -478,9 +555,10 @@ proc defineModule*(moduleName: string) =
                 "directory"     : ({Logical},"create directory at path"),
                 "json"          : ({Logical},"write value as Json"),
                 "compact"       : ({Logical},"produce compact, non-prettified Json code"),
-                "binary"        : ({Logical},"write as binary")
+                "binary"        : ({Logical},"write as binary"),
+                "async"         : ({Logical},"write in a child process and return a `:task`")
             },
-            returns     = {Nothing},
+            returns     = {Nothing,Task},
             example     = """
             ; write some string data to given file path
             write "Hello world!" "somefile.txt"
@@ -492,6 +570,42 @@ proc defineModule*(moduleName: string) =
             write.append "Yes, Hello again!" "somefile.txt"
             """:
                 #=======================================================
+                let explicitAsync = hadAttr("async")
+                # implicit-fiber routing: in-process async path triggers from
+                # inside a fiber so siblings keep running. subprocess-bound
+                # variants (bytecode / `.directory` / null path) stay on
+                # explicit `.async` only — too heavy to fire implicitly.
+                if explicitAsync and (xKind == Bytecode or hadAttr("directory") or y.kind == Null):
+                    var attrSuffix = ""
+                    if hadAttr("append"):    attrSuffix &= ".append"
+                    if hadAttr("directory"): attrSuffix &= ".directory"
+                    if hadAttr("json"):      attrSuffix &= ".json"
+                    if hadAttr("compact"):   attrSuffix &= ".compact"
+                    if hadAttr("binary"):    attrSuffix &= ".binary"
+                    let pathSrc = if y.kind == Null: "null" else: codify(y)
+                    push spawnAsTask("write" & attrSuffix & " " & codify(x) & " " & pathSrc)
+                    return
+
+                if (explicitAsync or not onMainFiber()) and
+                   xKind != Bytecode and not hadAttr("directory") and y.kind != Null:
+                    let path = y.s
+                    let append = hadAttr("append")
+                    let payload =
+                        if hadAttr("binary"):
+                            var s = newString(x.n.len)
+                            if x.n.len > 0: copyMem(addr s[0], unsafeAddr x.n[0], x.n.len)
+                            s
+                        elif hadAttr("json"):
+                            jsonFromValue(x, pretty=(not hadAttr("compact")))
+                        else:
+                            x.s
+                    let asyncTask = spawnAsyncWrite(path, payload, append)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
+                    return
+
                 if xKind==Bytecode:
                     let dataS = codify(newBlock(y.trans.constants), unwrapped=true, safeStrings=true)
                     let codeS = x.trans.instructions

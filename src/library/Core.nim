@@ -26,6 +26,9 @@ import algorithm, hashes, options
 import sequtils, sugar
 
 when not defined(WEB):
+    import helpers/parallelism as ParallelismHelper
+
+when not defined(WEB):
     import oids, os
 
     import helpers/ffi
@@ -436,12 +439,16 @@ proc defineModule*(moduleName: string) =
         rule        = PrefixPrecedence,
         description = "evaluate and execute given code",
         args        = {
-            "code"  : {String,Block,Bytecode}
+            "code"  : {String,Block,Bytecode,Task}
         },
         attrs       = {
-            "times" : ({Integer},"repeat block execution given number of times")
+            "times"    : ({Integer},"repeat block execution given number of times"),
+            "async"    : ({Logical},"evaluate concurrently and return a `:task`"),
+            "isolated" : ({Logical},"with `.async`: run in a fresh child process instead of an in-VM fiber (slower spawn, no closure capture, full process isolation)"),
+            "as"       : ({String},"with `.async`: tag the resulting `:task` with a symbolic name (shown in `print` / `inspect` for debugging)"),
+            "timeout"  : ({Integer,Quantity},"with a `:task` arg: give up draining after the given duration (ms by default; accepts time `:quantity` like `2:s`); returns an `:error` value on timeout and leaves the task pending")
         },
-        returns     = {Any},
+        returns     = {Any,Task},
         example     = """
             do "print 123"                ; 123
             ..........
@@ -479,11 +486,45 @@ proc defineModule*(moduleName: string) =
                 hello "John Doe"
                 ; Hello John Doe
             ]
-    
+
             ; Note: always use imported functions inside a 'do block
             ; since they need to be evaluated beforehand.
             ; On the other hand, simple variables can be used without
             ; issues, as 'pi in this example
+            ..........
+            ; concurrent evaluation — returns a `:task` immediately;
+            ; the body runs in a cooperative fiber inside this same VM.
+            ; closures are captured (parent symbols shallow-copied at
+            ; spawn time) and real `:error` values are preserved.
+            x: 10
+            t: do.async [ x + 32 ]
+            print wait t
+            ; 42
+            ..........
+            ; ⚠ closure capture is SHALLOW-COPY: the spawned block sees
+            ; parent symbols at spawn time, but writes do NOT leak back
+            ; to the parent. Each `do.async` (and each `.parallel` body)
+            ; gets its own private copy of the symbol table.
+            u: 1
+            wait do.async [ u: 99 ]
+            print u
+            ; 1
+            ; (parent's `u` untouched — fiber's copy was incremented)
+            ;
+            ; if you want results back, return them and use `wait`:
+            new-u: wait do.async [ 99 ]
+            ; or accumulate via `map.parallel` + reduce:
+            results: map.parallel 1..10 'i [ i * 2 ]
+            print sum results
+            ..........
+            ; opt-in subprocess flavor: fresh VM, no closure capture,
+            ; true OS-process isolation. Use this when you want a
+            ; sandboxed evaluation, when the spawned code may stomp
+            ; global state, or when you genuinely need OS-scheduler
+            ; parallelism for CPU-bound work.
+            t: do.async.isolated [ print "fresh VM" ]
+            wait t
+            ; fresh VM
         """:
             #=======================================================
             var times = 1
@@ -491,6 +532,51 @@ proc defineModule*(moduleName: string) =
 
             if checkAttr("times"):
                 times = aTimes.i
+
+            # `do.async <code>` — default is in-process: a cooperative
+            # fiber inside this VM. Sub-ms spawn, parent `Syms` shallow-
+            # copied at spawn time, real `VMError`s preserved.
+            #
+            # `.isolated` opts back into the subprocess path (fresh
+            # VM, full process isolation, no closure capture). Same
+            # behavior as `do.async` had before in-VM spawn landed —
+            # kept reachable for sandboxing / globally-stomping
+            # bytecode walkers / true OS-scheduler parallelism.
+            #
+            # `:string` input is always routed to the subprocess path.
+            # The in-process spawn doesn't fetch URLs and the parser
+            # belongs there too; strings keep subprocess for v1.
+            when not defined(WEB):
+                if hadAttr("async"):
+                    let isolated = hadAttr("isolated")
+                    let taskName =
+                        if checkAttr("as"): aAs.s
+                        else: ""
+                    if (not isolated) and xKind in {Block, Bytecode}:
+                        push ParallelismHelper.spawnInProcessDoBlock(x, taskName)
+                    else:
+                        # `codify` gives source-faithful Arturo code
+                        # (preserving Label colons, Literal quotes, …);
+                        # the wrapper inside `runInChildProcess` injects
+                        # a leading `null` for void-safety
+                        let src =
+                            case xKind
+                                of Block, Bytecode: codify(x)
+                                of String:          x.s
+                                else:               ""
+                        push ParallelismHelper.spawnAsTask(src, taskName)
+                    return
+
+            # `do task` is sugar for `wait task` - drain the future once.
+            # Honors `.timeout` the same way `wait` does: on timeout we
+            # return a `:error` value and leave the task pending.
+            if xKind == Task:
+                when not defined(WEB):
+                    let timeoutMs =
+                        if checkAttr("timeout"): ParallelismHelper.timeoutMsOf(aTimeout)
+                        else: -1
+                    push ParallelismHelper.drainTask(x.tsk, timeoutMs)
+                return
 
             var evaled: Translation
             if xKind != String:

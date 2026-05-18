@@ -205,6 +205,30 @@ const
 func toError*(kind: VErrorKind, msg: string, hint: string = "", errCode: int = EPERM): VError =
     VError(kind: kind, name: cstring($errCode), msg: msg, hint: hint)
 
+func kindByLabel*(label: string): VErrorKind =
+    ## Resolve a `VErrorKind` from its `label` string. Used when
+    ## reconstructing an error shipped across processes (the
+    ## `do.async.isolated` error channel ships kinds as labels). Falls
+    ## back to `RuntimeErr` for unknown labels.
+    case label
+    of "Runtime Error":     RuntimeErr
+    of "Syntax Error":      SyntaxErr
+    of "Command-line Error":CmdlineErr
+    of "Program Error":     ProgramErr
+    of "System Error":      SystemErr
+    of "VM Error":          VMErr
+    of "Arithmetic Error":  ArithmeticErr
+    of "Assertion Error":   AssertionErr
+    of "Conversion Error":  ConversionErr
+    of "Index Error":       IndexErr
+    of "Package Error":     PackageErr
+    of "Library Error":     LibraryErr
+    of "Name Error":        NameErr
+    of "Value Error":       ValueErr
+    of "Type Error":        TypeErr
+    of "UI Error":          UIErr
+    else:                   RuntimeErr
+
 #=======================================
 # Overloads
 #=======================================

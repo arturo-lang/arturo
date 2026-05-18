@@ -50,6 +50,8 @@ when not defined(WEB):
     import httpclient, httpcore, std/net, os
     import sequtils, strformat, strutils
     import terminal, times, uri
+    # aliased — `Request` would collide with too many other things.
+    import std/asynchttpserver as ahs
 
     when defined(ssl):
         import extras/smtp
@@ -57,6 +59,8 @@ when not defined(WEB):
 
     import helpers/benchmark
     import helpers/jsonobject
+    import helpers/net as netHelper
+    import helpers/parallelism
     import helpers/servers
     import helpers/strings
     import helpers/terminal
@@ -105,16 +109,17 @@ proc defineModule*(moduleName: string) =
                 "url"   : {String}
             },
             attrs       = {
-                "as"    : ({String},"set target file")
+                "as"    : ({String},"set target file"),
+                "async" : ({Logical},"download asynchronously and return a `:task`")
             },
-            returns     = {Nothing},
+            returns     = {Nothing,Task},
             example     = """
             download "https://github.com/arturo-lang/arturo/raw/master/logo.png"
             ; (downloads file as "logo.png")
             ..........
             download.as:"arturoLogo.png"
                         "https://github.com/arturo-lang/arturo/raw/master/logo.png"
-            
+
             ; (downloads file with a different name)
             """:
                 #=======================================================
@@ -126,6 +131,15 @@ proc defineModule*(moduleName: string) =
                     target = aAs.s
                 else:
                     target = extractFilename(path)
+
+                let explicitAsync = hadAttr("async")
+                if explicitAsync or not onMainFiber():
+                    let asyncTask = spawnAsyncDownload(path, target)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
+                    return
 
                 var client = newHttpClient()
                 client.downloadFile(path,target)
@@ -142,16 +156,17 @@ proc defineModule*(moduleName: string) =
                     "message"   : {String}
                 },
                 attrs       = {
-                    "using"     : ({Dictionary},"use given configuration")
+                    "using"     : ({Dictionary},"use given configuration"),
+                    "async"     : ({Logical},"send asynchronously and return a `:task`")
                 },
-                returns     = {Nothing},
+                returns     = {Nothing,Task},
                 example     = """
                 mail .using: #[
                         server: "mymailserver.com"
                         username: "myusername"
                         password: "mypass123"
                     ]
-                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"                
+                    "recipient@somemail.com" "Hello from Arturo" "Arturo rocks!"
                 """:
                     #=======================================================
                     let recipient = x.s
@@ -160,7 +175,7 @@ proc defineModule*(moduleName: string) =
 
                     if checkAttr("using"):
                         discard
-                    
+
                     retrieveConfig("mail", "using")
 
                     # TODO(Net\mail) raise error, if there is no configuration provided whatsoever
@@ -168,6 +183,19 @@ proc defineModule*(moduleName: string) =
                     #  labels: library, bug
 
                     var mesg = createMessage(subject, message, sender=config["username"].s, mTo= @[recipient])
+
+                    if hadAttr("async"):
+                        push spawnAsyncMail(
+                            server   = config["server"].s,
+                            port     = 465,
+                            username = config["username"].s,
+                            password = config["password"].s,
+                            fromAddr = config["username"].s,
+                            toAddrs  = @[recipient],
+                            msgStr   = $mesg
+                        )
+                        return
+
                     let smtpConn = newSmtp(useSsl = true, debug=true)
                     smtpConn.connect(config["server"].s, Port 465)
                     smtpConn.auth(config["username"].s, config["password"].s)
@@ -198,9 +226,10 @@ proc defineModule*(moduleName: string) =
                 "timeout"       : ({Integer},"set a timeout"),
                 "proxy"         : ({String},"use given proxy url"),
                 "certificate"   : ({String},"use SSL certificate at given path"),
-                "raw"           : ({Logical},"return raw response without processing")
+                "raw"           : ({Logical},"return raw response without processing"),
+                "async"         : ({Logical},"perform request asynchronously and return a `:task`")
             },
-            returns     = {Dictionary,Null},
+            returns     = {Dictionary,Null,Task},
             example     = """
             print request "https://httpbin.org/get" #[some:"arg" another: 123]
             ; [version:1.1 body:{
@@ -236,7 +265,7 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 var url = x.s
-                var meth: HttpMethod = HttpGet 
+                var meth: HttpMethod = HttpGet
 
                 if (hadAttr("get")): discard
                 if (hadAttr("post")): meth = HttpPost
@@ -262,7 +291,7 @@ proc defineModule*(moduleName: string) =
                 var proxy: Proxy = nil
                 if checkAttr("proxy"):
                     proxy = newProxy(aProxy.s)
- 
+
                 var body: string
                 var multipart: MultipartData = nil
                 if meth != HttpGet:
@@ -286,6 +315,58 @@ proc defineModule*(moduleName: string) =
                         elif yKind==String:
                             url &= "?" & y.s
 
+                let explicitAsync = hadAttr("async")
+                if explicitAsync or not onMainFiber():
+                    # in-process async request: build an `AsyncHttpClient`
+                    # mirroring the sync setup, hand it off to `spawnAsyncRequest`,
+                    # which awaits the response and runs our `buildResp` closure
+                    # to produce a Value identical to the sync builtin's output.
+                    #
+                    # implicit-fiber routing: when called from inside a fiber
+                    # (`do.async` / `map.parallel` / etc.), we transparently
+                    # take the async path and cooperatively wait — otherwise
+                    # the fiber would block the C stack and starve siblings.
+                    var asyncClient: AsyncHttpClient
+                    if checkAttr("certificate"):
+                        when defined(ssl):
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                sslContext = newContext(certFile=aCertificate.s),
+                                proxy = proxy,
+                                headers = headers
+                            )
+                        else:
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                proxy = proxy,
+                                headers = headers
+                            )
+                    else:
+                        when defined(ssl):
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                sslContext = newContext(verifyMode = CVerifyNone),
+                                proxy = proxy,
+                                headers = headers
+                            )
+                        else:
+                            asyncClient = newAsyncHttpClient(
+                                userAgent = agent,
+                                proxy = proxy,
+                                headers = headers
+                            )
+                    let raw = hadAttr("raw")
+                    let buildResp = proc(version, bodyStr, status: string,
+                                         hdrs: HttpHeaders): Value =
+                        httpResponseToValue(version, bodyStr, status, hdrs, raw)
+                    let asyncTask = spawnAsyncRequest(asyncClient, url, meth, body,
+                                                      multipart, buildResp, timeout)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
+                    return
+
                 var client: HttpClient
 
                 if checkAttr("certificate"):
@@ -293,21 +374,21 @@ proc defineModule*(moduleName: string) =
                         client = newHttpClient(
                             userAgent = agent,
                             sslContext = newContext(certFile=aCertificate.s),
-                            proxy = proxy, 
+                            proxy = proxy,
                             timeout = timeout,
                             headers = headers
                         )
                     else:
                         client = newHttpClient(
                             userAgent = agent,
-                            proxy = proxy, 
+                            proxy = proxy,
                             timeout = timeout,
                             headers = headers
                         )
                 else:
                     client = newHttpClient(
                         userAgent = agent,
-                        proxy = proxy, 
+                        proxy = proxy,
                         timeout = timeout,
                         headers = headers
                     )
@@ -317,52 +398,9 @@ proc defineModule*(moduleName: string) =
                                                 httpMethod = meth,
                                                 body = body,
                                                 multipart = multipart)
-
-                    var ret: ValueDict = initOrderedTable[string,Value]()
-                    ret["version"] = newString(response.version)
-                    
-                    ret["body"] = newString(response.body)
-                    ret["headers"] = newDictionary()
-
-                    if (hadAttr("raw")):
-                        ret["status"] = newString(response.status)
-
-                        for k,v in response.headers.table:
-                            ret["headers"].d[k] = newStringBlock(v)
-                    else:
-                        try:
-                            let respStatus = (response.status.splitWhitespace())[0]
-                            ret["status"] = newInteger(respStatus)
-                        except CatchableError:
-                            ret["status"] = newString(response.status)
-
-                        for k,v in response.headers.table:
-                            var val: Value
-                            if v.len==1:
-                                case k
-                                    of "age","content-length": 
-                                        try:
-                                            val = newInteger(v[0])
-                                        except CatchableError:
-                                            val = newString(v[0])
-                                    of "access-control-allow-credentials":
-                                        val = newLogical(v[0])
-                                    of "date", "expires", "last-modified":
-                                        let dateParts = v[0].splitWhitespace()
-                                        let cleanDate = (dateParts[0..(dateParts.len-2)]).join(" ")
-                                        var dateFormat = "ddd, dd MMM YYYY HH:mm:ss"
-                                        let timeFormat = initTimeFormat(dateFormat)
-                                        try:
-                                            val = newDate(parse(cleanDate, timeFormat))
-                                        except CatchableError:
-                                            val = newString(v[0])
-                                    else:
-                                        val = newString(v[0])
-                            else:
-                                val = newStringBlock(v)
-                            ret["headers"].d[k] = val
-                
-                    push newDictionary(ret)
+                    push httpResponseToValue(response.version, response.body,
+                                             response.status, response.headers,
+                                             hadAttr("raw"))
                 except CatchableError:
                     push(VNULL)
 
@@ -377,9 +415,10 @@ proc defineModule*(moduleName: string) =
             attrs       = {
                 "port"      : ({Integer},"use given port. Default: 18966"),
                 "silent"    : ({Logical},"don't print info log"),
-                "chrome"    : ({Logical},"open in Chrome windows as an app")
+                "chrome"    : ({Logical},"open in Chrome windows as an app"),
+                "async"     : ({Logical},"serve in a child process and return a `:task` (cancel to stop)")
             },
-            returns     = {Nothing},
+            returns     = {Nothing,Task},
             example     = """
             serve .port: 9000 [
 
@@ -450,7 +489,114 @@ proc defineModule*(moduleName: string) =
                 var verbose = not (hadAttr("silent"))
                 if checkAttr("port"):
                     port = aPort.i
-            
+
+                if hadAttr("async"):
+                    # in-process async serve via `asynchttpserver`. the handler
+                    # mirrors the sync one below but uses asynchttpserver's
+                    # Request API and `await req.respond(...)` rather than
+                    # httpx's blocking send. cancel works (the helper closes
+                    # the server, freeing the port).
+                    if hadAttr("chrome"):
+                        openChromeWindow(port)
+
+                    if routes.kind != Function:
+                        execInternal("Net/serve")
+                        callInternal("initServerInternal", getValue=false, routes)
+
+                    proc asyncHandler(req: ahs.Request): Future[void] {.async, gcsafe.} =
+                        {.cast(gcsafe).}:
+                            let reqAction = req.reqMethod
+                            let reqBody = req.body
+                            let reqHeaders = req.headers.table
+                            let initialReqPath =
+                                if req.url.query.len > 0: req.url.path & "?" & req.url.query
+                                else: req.url.path
+                            let reqPath = decodeUrl(req.url.path)
+                            var reqQuery = initOrderedTable[string, Value]()
+                            if req.url.query.len > 0:
+                                for k, v in decodeQuery(req.url.query):
+                                    reqQuery[k] = newString(v)
+
+                            var reqBodyV: Value
+                            if reqAction != HttpGet:
+                                try:
+                                    reqBodyV = valueFromJson(reqBody)
+                                except CatchableError:
+                                    reqBodyV = newDictionary()
+                                    for k, v in decodeQuery(reqBody):
+                                        reqBodyV.d[k] = newString(v)
+                            else:
+                                reqBodyV = newString(reqBody)
+
+                            let requestDict = newDictionary({
+                                    "method": newString($(reqAction)),
+                                    "path": newString(reqPath),
+                                    "uri": newString(initialReqPath),
+                                    "body": reqBodyV,
+                                    "query": newDictionary(reqQuery),
+                                    "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
+                                    "ip": newString(req.hostname)
+                                }.toOrderedTable)
+
+                            var responseDict: ValueDict = {
+                                "body": newString(""),
+                                "status": newInteger(200),
+                                "headers": newDictionary()
+                            }.toOrderedTable
+
+                            var resp: Value
+                            if routes.kind == Function:
+                                let timeTaken = getBenchmark:
+                                    try:
+                                        callFunction(routes, "<closure>", @[requestDict])
+                                        resp = stack.pop()
+                                        if resp.kind == String:
+                                            responseDict["body"] = resp
+                                        else:
+                                            for k, v in resp.d.pairs:
+                                                responseDict[k] = v
+                                    except VError as e:
+                                        showError(e)
+                                        responseDict["status"] = newInteger(500)
+                                    except CatchableError, Defect:
+                                        let e = getCurrentException()
+                                        showError(VError(e))
+                                        responseDict["status"] = newInteger(500)
+                                responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
+                            else:
+                                responseDict = callInternal("serveInternal", getValue=true,
+                                    requestDict
+                                ).d
+                                if not responseDict["headers"].d.hasKey("Content-Type"):
+                                    responseDict["headers"].d["Content-Type"] = newString("text/html")
+
+                            var respHeaders = newHttpHeaders()
+                            for k, v in responseDict["headers"].d.pairs:
+                                respHeaders.add(k, v.s)
+
+                            let bodyStr =
+                                if responseDict["body"].kind == Binary:
+                                    var s = newString(responseDict["body"].n.len)
+                                    if s.len > 0:
+                                        copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
+                                    s
+                                else:
+                                    responseDict["body"].s
+
+                            if verbose:
+                                let status = responseDict["status"].i
+                                echo "[" & $(now()) & "] " & ($(reqAction)).toUpperAscii() &
+                                     " " & initialReqPath & " -> " & $(status)
+
+                            await req.respond(HttpCode(responseDict["status"].i),
+                                              bodyStr, respHeaders)
+
+                    if verbose:
+                        echo " :: Starting server on port " & $(port) & "...\n"
+
+                    push spawnAsyncServe(port, asyncHandler)
+                    return
+
                 if hadAttr("chrome"):
                     openChromeWindow(port)
 

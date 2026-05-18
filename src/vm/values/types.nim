@@ -14,6 +14,9 @@
 
 import std/[tables, times, unicode, setutils]
 
+when not defined(WEB):
+    import std/asyncfutures, std/osproc
+
 when defined(SQLITE):
     import extras/db_connector/db_sqlite as sqlite
 
@@ -24,7 +27,7 @@ when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 import vm/values/flags
 
 when not defined(WEB):
@@ -101,9 +104,11 @@ type
         Database        = 37
         Socket          = 38    
         Bytecode        = 39
+        Task            = 40
+        Event           = 41
 
-        Nothing         = 40
-        Any             = 41
+        Nothing         = 42
+        Any             = 43
 
     ValueSpec* = set[ValueKind]
 
@@ -255,6 +260,14 @@ type
             else:
                 discard
 
+    VTask* = ref object
+        state*       : VTaskState        # bookkeeping for `done?` / `cancel`
+        name*        : string            # optional symbolic name (`do.async.as: "fetch-1"`); shown in print/inspect for debugging. empty = unnamed
+        when not defined(WEB):
+            future*  : Future[Value]    # the actual handle a producer (e.g. `request.async`) feeds
+            process* : Process          # the underlying OS process (for subprocess-backed tasks); nil otherwise
+            cancelHandle* : proc() {.closure.}  # invoked by `cancel` for in-process tasks; closes the live handle (file, http client, …) so the future actually unwinds. nil for subprocess-backed tasks.
+
     Value* {.final,acyclic.} = ref object
         info*   : ValueInfo
 
@@ -346,6 +359,10 @@ type
                     sock*: VSocket
             of Bytecode:
                 trans*: Translation
+            of Task:
+                tsk*: VTask
+            of Event:
+                evt*: VEvent
 
     ValueObj = typeof(Value()[])
 

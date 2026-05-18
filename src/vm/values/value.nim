@@ -34,7 +34,7 @@ when (not defined(GMP)) and (not defined(WEB)):
 
 import vm/opcodes
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 
 when not defined(WEB):
     import vm/values/custom/[vsocket]
@@ -855,6 +855,32 @@ func newBytecode*(t: sink Translation): Value {.inline.} =
     ## create Bytecode value from Translation
     Value(kind: Bytecode, trans: t)
 
+proc newTask*(tsk: VTask): Value {.inline.} =
+    ## create Task value from VTask
+    Value(kind: Task, tsk: tsk)
+    
+proc initTask*(): VTask {.inline.} =
+    ## create a fresh, pending VTask
+    VTask(state: taskPending)
+
+proc hash*(t: VTask): Hash {.inline.} =
+    cast[Hash](cast[uint](t))
+
+func `$`*(t: VTask): string =
+    case t.state
+        of taskPending  : "<task:pending>"
+        of taskDone     : "<task:done>"
+        of taskFailed   : "<task:failed>"
+        of taskCancelled: "<task:cancelled>"
+
+proc newEvent*(evt: VEvent): Value {.inline.} =
+    ## create Event value from VEvent
+    Value(kind: Event, evt: evt)
+
+proc newEvent*(name: string): Value {.inline.} =
+    ## create Event value from a name string
+    Value(kind: Event, evt: VEvent(name: name))
+
 func newInline*(a: sink ValueArray = @[]): Value {.inline.} =
     ## create Inline value from ValueArray
     Value(kind: Inline, a: a)
@@ -1031,6 +1057,12 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Bytecode:
             result = newBytecode(v.trans)
+
+        of Task:
+            result = newTask(v.tsk)
+
+        of Event:
+            result = newEvent(v.evt)
 
         of Nothing, Any:
             discard
@@ -1317,6 +1349,12 @@ func hash*(v: Value): Hash {.inline.} =
 
         of Bytecode:
             result = result !& cast[Hash](unsafeAddr v)
+
+        of Task:
+            result = result !& hash(v.tsk)
+
+        of Event:
+            result = result !& hash(v.evt)
 
         of Nothing      : discard
         of ANY          : discard

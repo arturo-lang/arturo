@@ -28,19 +28,11 @@ when not defined(WEB):
         import std/posix_utils
 
 when not defined(WEB):
+    import helpers/parallelism
     import helpers/stores
 
 import vm/lib
 import vm/[env, errors]
-
-#=======================================
-# Variables
-#=======================================
-
-when not defined(WEB):
-
-    var
-        ActiveProcesses = initOrderedTable[int, Process]()
 
 #=======================================
 # Definitions
@@ -187,11 +179,11 @@ proc defineModule*(moduleName: string) =
             },
             attrs       = {
                 "args"      : ({Block},"use given command arguments"),
-                "async"     : ({Logical},"execute asynchronously as a process and return id"),
+                "async"     : ({Logical},"execute asynchronously and return a :task"),
                 "code"      : ({Logical},"return process exit code"),
-                "directly"  : ({Logical},"execute command directly, as a shell command")  
+                "directly"  : ({Logical},"execute command directly, as a shell command")
             },
-            returns     = {String, Dictionary},
+            returns     = {String, Dictionary, Task},
             example     = """
             print execute "pwd"
             ; /Users/admin/Desktop
@@ -243,18 +235,25 @@ proc defineModule*(moduleName: string) =
                 let code = (hadAttr("code"))
                 let directly = (hadAttr("directly"))
 
-                # TODO(System\execute) Fix handling of `.async`
-                #  It currently "works" but in a very - very - questionable way.
-                #  This has to be implemented properly.
-                #  Also: having a globally-available array of "processes" makes things looking even worse.
-                #  labels: library, enhancement, windows, linux, macos
-
-                if (hadAttr("async")):
-                    let newProcess = startProcess(command = cmd, args = args)
-                    let pid = processID(newProcess)
-                    
-                    ActiveProcesses[pid] = newProcess
-                    push newInteger(pid)
+                let explicitAsync = hadAttr("async")
+                # implicit-fiber routing: route the capturing `execCmdEx`
+                # path through `spawnShellAsTask` when called from inside a
+                # fiber, so the C stack doesn't block. `.directly` keeps
+                # sync semantics (no output capture, parent stdio).
+                if explicitAsync or (not directly and not onMainFiber()):
+                    # build the full shell command (args appended, quoted)
+                    # so `runShellInChildProcess` can pass it through the
+                    # system shell — same semantics as the sync `execCmdEx`
+                    # path below, just non-blocking and `:task`-wrapped.
+                    var fullCmd = cmd
+                    for i in 0..high(args):
+                        fullCmd.add(' ')
+                        fullCmd.add(quoteShell(args[i]))
+                    let asyncTask = spawnShellAsTask(fullCmd, code)
+                    if explicitAsync:
+                        push asyncTask
+                    else:
+                        push coopWait(asyncTask.tsk.future)
                 else:
                     # add arguments, if any
                     for i in 0..high(args):
@@ -380,9 +379,9 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if xKind == Integer:
-                    sleep(x.i)
+                    cooperativePause(x.i)
                 else:
-                    sleep(toInt((x.q.convertTo(parseAtoms("ms"))).original))
+                    cooperativePause(toInt((x.q.convertTo(parseAtoms("ms"))).original))
 
         builtin "process",
             alias       = unaliased, 
@@ -543,41 +542,30 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Nothing},
             example     = """
-                ; start process
-                pid: execute.async "someProcessThatDoesSomethingInTheBackground"
+                ; terminate an external process by PID
+                terminate 12345
 
-                ; wait for 5 seconds
+                ; for tasks spawned via `execute.async`, prefer `cancel`:
+                t: execute.async "someLongRunningCommand"
                 pause 5000
-
-                ; terminate background process
-                terminate pid
+                cancel t
             """:
                 #=======================================================
                 let pid = x.i
 
-                # check if it's a process that has been
-                # created by us
-                if (let activeProcess = ActiveProcesses.getOrDefault(pid, nil); not activeProcess.isNil()):
-                    # terminate the process
-                    terminate(activeProcess)
-
-                    # close it
-                    close(activeProcess)
-
-                    # and remove it from the table
-                    ActiveProcesses.del(pid)
+                # send SIGTERM (POSIX) / TerminateProcess (Windows) to the
+                # given PID. for processes spawned by `execute.async`, prefer
+                # `cancel` on the returned `:task` instead — that handle owns
+                # the lifecycle.
+                when defined(windows):
+                    # TerminateProcess needs a HANDLE, not a PID
+                    let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
+                    if hProc != 0:
+                        discard terminateProcess(hProc, DWORD(QuitSuccess))
+                        discard closeHandle(hProc)
                 else:
-                    # if it's an external process,
-                    # proceed with its termination
-                    when defined(windows):
-                        # TerminateProcess needs a HANDLE, not a PID
-                        let hProc = openProcess(PROCESS_TERMINATE, WINBOOL(0), DWORD(pid))
-                        if hProc != 0:
-                            discard terminateProcess(hProc, DWORD(QuitSuccess))
-                            discard closeHandle(hProc)
-                    else:
-                        # send SIGTERM; signal 0 would only probe existence
-                        sendSignal(int32(pid), 15)
+                    # send SIGTERM; signal 0 would only probe existence
+                    sendSignal(int32(pid), 15)
 
     #----------------------------
     # Predicates

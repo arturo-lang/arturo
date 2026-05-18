@@ -26,7 +26,7 @@ import helpers/terminal as TerminalHelper
 import vm/[globals, opcodes, stack]
 import vm/values/value
 
-import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vtask, vversion]
 
 when not defined(WEB):
     import vm/values/custom/[vsocket]
@@ -207,7 +207,16 @@ proc `$`*(v: Value): string {.inline.} =
 
         of Bytecode:
             result = "<bytecode>" & "(" & fmt("{cast[uint](v):#X}") & ")"
-            
+
+        of Task:
+            if v.tsk.name.len > 0:
+                result = "<task:" & v.tsk.name & ">" & "(" & fmt("{cast[uint](v.tsk):#X}") & ")"
+            else:
+                result = "<task>" & "(" & fmt("{cast[uint](v.tsk):#X}") & ")"
+
+        of Event:
+            result = "<event>" & "(" & v.evt.name & ")"
+
         of Nothing: discard
         of ANY: discard
 
@@ -487,12 +496,27 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
         of Database     :
             when defined(SQLITE):
-                if v.dbKind==SqliteDatabase: stdoutWrite fmt("[sqlite db] {cast[uint](v.sqlitedb):#X}")
-                #elif v.dbKind==MysqlDatabase: stdout.write fmt("[mysql db] {cast[uint](v.mysqldb):#X}")
+                if v.dbKind==SqliteDatabase:
+                    dumpPrimitive(fmt("[sqlite] {cast[uint](v.sqlitedb):#X}"), v)
+                #elif v.dbKind==MysqlDatabase:
+                #    dumpPrimitive(fmt("[mysql] {cast[uint](v.mysqldb):#X}"), v)
 
-        of Socket       : 
+        of Socket       :
             when not defined(WEB):
                 dumpPrimitive($(v.sock), v)
+
+        of Task         :
+            let tag =
+                case v.tsk.state
+                    of taskPending  : "pending"
+                    of taskDone     : "done"
+                    of taskFailed   : "failed"
+                    of taskCancelled: "cancelled"
+            let nameTag = if v.tsk.name.len > 0: " " & v.tsk.name else: ""
+            dumpPrimitive(fmt("[{tag}]{nameTag} {cast[uint](v.tsk):#X}"), v)
+
+        of Event        :
+            dumpPrimitive(v.evt.name, v)
 
         of Bytecode     : 
             dumpBlockStart(v)
@@ -669,6 +693,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if keys.len > 0:
 
                 for k,v in pairs(v.d):
+                    # under `safeStrings`, quote keys so dicts with non-identifier
+                    # keys (e.g. `content-length`) can round-trip through the parser
+                    let keyStr =
+                        if safeStrings: "\"" & k & "\""
+                        else:           k
                     if pretty:
                         if not (unwrapped):
                             for i in 0..level: result &= INDENT
@@ -676,7 +705,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                             for i in 0..level-1: result &= INDENT
                         result &= k & ":"
                     else:
-                        result &= k & ": "
+                        result &= keyStr & ": "
 
                     result &= codify(v,pretty,unwrapped,level+1, false, isKeyVal=true, safeStrings=safeStrings) 
 

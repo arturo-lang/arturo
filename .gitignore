@@ -17,3 +17,4 @@ docs/website/data/*.art
 docs/website/pages/documentation/library/**/*.art
 !docs/website/pages/documentation/library/**/_index.art
 PW
+.claude/settings.local.json

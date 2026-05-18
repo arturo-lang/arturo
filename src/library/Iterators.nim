@@ -28,6 +28,12 @@
 
 import algorithm, sequtils, sugar, unicode
 
+when not defined(WEB):
+    import asyncdispatch
+    import times
+    import helpers/parallelism as ParallelismHelper
+    import vm/values/custom/[vtask, verror]
+
 import helpers/dictionaries
 import helpers/objects
 import helpers/ranges
@@ -40,10 +46,46 @@ import vm/values/custom/vrange
 #=======================================
 # Definitions
 #=======================================
+# `tParallel` (set of accepted kinds for `.parallel`) is auto-injected
+# per-builtin by the `attrTypes` macro in `vm/lib.nim` whenever a
+# builtin declares a `"parallel"` attr. The dirty templates below pick
+# it up from the surrounding scope.
+
+type IterCap* = enum
+    ## Compile-time capability flags for `doIterate`. Each bit toggles
+    ## a piece of the iteration shape:
+    ##
+    ## * `AcceptsLit` — first arg may be a `'literal`; result is written
+    ##                  back via `RawInPlaced` when so.
+    ## * `WithCap`    — `act` exposes a `captured` symbol holding the
+    ##                  current item(s).
+    ## * `WithCounter`— `act` exposes a `cntr` running counter.
+    ## * `IsRolling`  — fold-style rolling iteration; `iterate*WithParams`
+    ##                  feeds `res` back as the rolling accumulator.
+    AcceptsLit
+    WithCap
+    WithCounter
+    IsRolling
+
+#---------------------------------------
+# Low-level loop primitives
+#---------------------------------------
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
-    var keepGoing: bool = true
-    while keepGoing:
+    var keepGoing {.inject, used.}: bool = true
+    when forever:
+        while keepGoing:
+            before
+
+            var indx = 0
+            var run = 0
+            while indx+(when justLiteral: 1 else: loopStep)<=collectionLen:
+                handleBranching:
+                    body
+                do:
+                    run += 1
+                    indx += (when justLiteral: 1 else: loopStep)
+    else:
         before
 
         var indx = 0
@@ -54,9 +96,6 @@ template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: u
             do:
                 run += 1
                 indx += (when justLiteral: 1 else: loopStep)
-
-        if not forever:
-            keepGoing = false
 
 template prepareRange(rng: VRange) {.dirty.} =
     let numeric = rng.numeric
@@ -270,6 +309,10 @@ template iterateBlockWithParams(
 
     finalizeLeakless()
 
+#---------------------------------------
+# Iteration setup
+#---------------------------------------
+
 template fetchParamsBlock() {.dirty.} =
     var params: seq[string]
     if hasIndex: params.add(withIndex.s)
@@ -308,22 +351,24 @@ template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.d
             of Object:
                 iterable.o.flattenedObject()
             of String:
-                toSeq(runes(iterable.s)).map((w) => newChar(w))
+                var acc = newSeqOfCap[Value](iterable.s.len)
+                for r in runes(iterable.s): acc.add(newChar(r))
+                acc
             of Integer:
-                (toSeq(1..iterable.i)).map((w) => newInteger(w))
+                var acc = newSeqOfCap[Value](iterable.i)
+                for i in 1..iterable.i: acc.add(newInteger(i))
+                acc
             else: # won't ever reach here
                 @[VNULL]
 
-    if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true): 
-        when doesAcceptLiterals:
-            when not (defaultReturn is typeof(nil)):
-                if unlikely(inPlace): RawInPlaced = defaultReturn
-                else: push(defaultReturn)
-        else:
-            when not (defaultReturn is typeof(nil)):
-                push(defaultReturn)
-
+    if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true):
+        when not (defaultReturn is typeof(nil)):
+            pushResult(defaultReturn)
         return
+
+#---------------------------------------
+# Param-shape dispatch (sync)
+#---------------------------------------
 
 template iterateRange(withCap:bool, withInf:bool, withCounter:bool, rolling:bool, act: untyped) {.dirty.} =
     ## Main iteration helper for Range values
@@ -382,26 +427,259 @@ template iterateBlock(withCap:bool, withInf:bool, withCounter:bool, rolling:bool
         when withCounter:
             res.setLen(cntr)
 
-template doIterate(
-    itLit:bool,         # does the iterator support in-place literals?
-    itCap:bool,         # do we need to actually capture iterated elements?
-    itInf:bool,         # is there a possibility that the iteration may be infinite?
-    itCounter:bool,     # do we need to keep track of the element counter? 
-    itRolling:bool,     # is it a fold-type rolling iteration?
+#---------------------------------------
+# Parallel iteration helpers
+#---------------------------------------
 
-    itDefVal:untyped,   # default value to return if given block is empty
-    itPre:untyped,      # code to execute before the iteration
-    itAct:untyped,      # code to execute for each iteration
-    itPost:untyped      # code to execute after the iteration
+template fetchIterableItemsForParallel(defaultReturn: untyped) {.dirty.} =
+    ## Materialize any supported iterable kind (incl. Range) into a
+    ## flat `ValueArray` named `blo`. Used by the parallel iteration
+    ## path, which spawns one fiber per item and so doesn't benefit
+    ## from the Range fast-path.
+    var blo =
+        case iterable.kind:
+            of Block,Inline:    iterable.a
+            of Range:           toSeq(iterable.rng.items)
+            of Dictionary:      iterable.d.flattenedDictionary()
+            of Object:          iterable.o.flattenedObject()
+            of String:          toSeq(runes(iterable.s)).map((w) => newChar(w))
+            of Integer:         (toSeq(1..iterable.i)).map((w) => newInteger(w))
+            else:               @[]
+
+    if blo.len == 0:
+        when not (defaultReturn is typeof(nil)):
+            pushResult(defaultReturn)
+        return
+
+template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.dirty.} =
+    ## Parallel sibling of `iterateBlock` — each item runs in its own
+    ## cooperative fiber. Drains in input order via a sliding-window
+    ## semaphore (`.parallel: N` caps in-flight; bare `.parallel` is
+    ## unbounded). For each drained fiber the resolved value (or
+    ## `:error` / `:null` for failed/cancelled) is pushed on the stack
+    ## before `act` runs, so callers reuse the exact `act` they pass
+    ## to `iterateBlock` (e.g. `res[cntr] = stack.pop()`).
+    when withCounter:
+        var cntr = 0
+    when withCap:
+        var captured: Value
+
+    if unlikely(yKind != Literal):
+        Error_OperationNotPermitted("`.parallel` requires a single literal param (e.g. `'x`)")
+    if unlikely(hasIndex):
+        Error_OperationNotPermitted("`.parallel` cannot combine with `.with` index")
+
+    let pName = y.s
+    let pBody = z.a
+    let pCap =
+        if aParallel.kind == Integer:
+            if aParallel.i < 1:
+                Error_OperationNotPermitted("`.parallel:` expects a positive integer")
+            aParallel.i
+        else:
+            blo.len
+
+    var pTasks: seq[Value] = newSeq[Value](blo.len)
+    var pSpawn = 0
+    var pDrain = 0
+    while pDrain < blo.len:
+        while pSpawn < blo.len and (pSpawn - pDrain) < pCap:
+            let wrapper = newBlock(@[newLabel(pName), blo[pSpawn]] & pBody)
+            pTasks[pSpawn] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
+            pSpawn += 1
+        let pT = pTasks[pDrain]
+        var pSlot: Value
+        try:
+            pSlot = ParallelismHelper.coopWait pT.tsk.future
+            if pT.tsk.state == taskPending:
+                pT.tsk.state = taskDone
+        except CatchableError as pe:
+            if pT.tsk.state == taskCancelled:
+                pSlot = VNULL
+            else:
+                pT.tsk.state = taskFailed
+                pSlot =
+                    if pe of VError: newError(VError(pe))
+                    else:            newError(RuntimeErr, pe.msg)
+        # Body-result-on-stack convention mirrors the sync iteration
+        # path: the resolved value is pushed before `act` runs so that
+        # acts written for sync (`stack.pop()`) work unchanged. After
+        # `act` we truncate any residue back to the pre-iteration
+        # baseline — handles the case where `act` is `discard` (e.g.
+        # `loop`) and would otherwise leak a slot per iteration.
+        when withCap:
+            captured = blo[pDrain]
+        let preSP = SP
+        push(pSlot)
+        # Aliases mirror the sync `iteratorLoop` locals so that an `act`
+        # written for either path can reference `indx` / `keepGoing`
+        # without a compile error. Parallel iteration drains in input
+        # order and never breaks early, so `indx == pDrain` and
+        # `keepGoing` is a write-only no-op.
+        let indx {.inject, used.} = pDrain
+        var keepGoing {.inject, used.} = true
+        act
+        if SP > preSP:
+            SP = preSP
+        when withCounter:
+            cntr += 1
+        pDrain += 1
+
+template parallelShortCircuit(answerOnHit: Value, defaultAnswer: Value, hitWhen: untyped) {.dirty.} =
+    ## Short-circuit parallel evaluation, used by `every?.parallel` /
+    ## `some?.parallel`. Spawns one fiber per item (up to `pCap` in
+    ## flight); the first fiber whose body's result satisfies
+    ## `hitWhen` (`pBodyResult` is the popped body value) decides the
+    ## answer. All remaining in-flight fibers are cancelled. If no
+    ## fiber hits, the iteration completes with `defaultAnswer`.
+    if unlikely(yKind != Literal):
+        Error_OperationNotPermitted("`.parallel` requires a single literal param (e.g. `'x`)")
+    if unlikely(hasIndex):
+        Error_OperationNotPermitted("`.parallel` cannot combine with `.with` index")
+
+    let pName = y.s
+    let pBody = z.a
+    let pCap =
+        if aParallel.kind == Integer:
+            if aParallel.i < 1:
+                Error_OperationNotPermitted("`.parallel:` expects a positive integer")
+            aParallel.i
+        else:
+            blo.len
+
+    var pTasks: seq[Value] = newSeq[Value](blo.len)
+    var pSpawn = 0
+    var pSettled = 0
+    let pWinner = newFuture[Value]("Iterators.shortCircuit")
+
+    proc pSpawnOne() {.gcsafe.} =
+        {.cast(gcsafe).}:
+            if pSpawn >= blo.len or pWinner.finished: return
+            let pIdx = pSpawn
+            let pWrap = newBlock(@[newLabel(pName), blo[pIdx]] & pBody)
+            let pT = ParallelismHelper.spawnInProcessDoBlock(pWrap)
+            pTasks[pIdx] = pT
+            pSpawn += 1
+            pT.tsk.future.addCallback(proc(fin: Future[Value]) {.gcsafe.} =
+                {.cast(gcsafe).}:
+                    if pWinner.finished: return
+                    pSettled += 1
+                    if not fin.failed:
+                        let pBodyResult {.inject.} = fin.read()
+                        if hitWhen:
+                            pWinner.complete(answerOnHit)
+                            return
+                    if pSpawn < blo.len:
+                        pSpawnOne()
+                    elif pSettled >= blo.len:
+                        pWinner.complete(defaultAnswer)
+            )
+
+    let pInitial = min(pCap, blo.len)
+    for _ in 0 ..< pInitial: pSpawnOne()
+
+    let pResult = ParallelismHelper.coopWait pWinner
+    for pT in pTasks:
+        if (not pT.isNil) and pT.tsk.state == taskPending and (not pT.tsk.cancelHandle.isNil):
+            try: pT.tsk.cancelHandle()
+            except CatchableError: discard
+            pT.tsk.state = taskCancelled
+    push(pResult)
+    return
+
+#---------------------------------------
+# High-level helpers
+#---------------------------------------
+
+template pushResult(value: untyped) {.dirty.} =
+    ## Send the iteration's final value out: write back in-place when
+    ## the calling builtin's first arg was a `'literal`, otherwise push
+    ## on the stack. Falls back to `push` for builtins that don't
+    ## accept literals (no `inPlace` symbol declared).
+    when declared(inPlace):
+        if unlikely(inPlace): RawInPlaced = value
+        else: push(value)
+    else:
+        push(value)
+
+template runParallelBranch(
+    itCap: bool,
+    itCounter: bool,
+    itDefVal: untyped,
+    parallelInit: untyped,
+    parallelAct: untyped,
+    parallelPost: untyped
 ) {.dirty.} =
-    ## The main iterator helper for every method 
-    ## that doesn't require any special handling, 
+    ## Wrap the `.parallel` attr handling pattern. Caller declares
+    ## `let aParallel = popAttr("parallel")` and runs `prepareIteration`
+    ## first. If `aParallel` is set, this validates → materializes →
+    ## runs `parallelInit` → spawns/drains fibers running `parallelAct`
+    ## → runs `parallelPost` → returns from the surrounding builtin.
+    when not defined(WEB):
+        if not aParallel.isNil:
+            if aParallel.kind notin tParallel:
+                Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+            fetchIterableItemsForParallel(itDefVal)
+            parallelInit
+            parallelIterateBlock(withCap=itCap, withCounter=itCounter):
+                parallelAct
+            parallelPost
+            return
+
+template doIterate(
+    caps: static set[IterCap],  # iteration capability flags (compile-time)
+    itInf: bool,                # runtime: may the iteration loop forever?
+    itDefVal: untyped,          # value to push when the input is empty
+    itPre: untyped,             # code to run once before iteration
+    itAct: untyped,             # code to run per iteration
+    itPost: untyped             # code to run once after iteration
+) {.dirty.} =
+    ## The main iterator helper for every method
+    ## that doesn't require any special handling,
     ## e.g. for Range and Block values
+    ##
+    ## Builtins that opt into `.parallel` declare a local
+    ## `let aParallel = popAttr("parallel")` *before* calling this
+    ## template. The dirty-template lookup picks it up from the
+    ## surrounding scope; sync-only builtins simply don't declare
+    ## the symbol, so `when declared(aParallel)` short-circuits and
+    ## the parallel branch is never compiled in.
+    ##
+    ## `itPre` runs once *inside* the chosen path (parallel /
+    ## Range-sync / Block-sync) so it can size buffers via the
+    ## injected `sourceLen` (= the iteration's known item count).
+    const itLit     {.used.} = AcceptsLit  in caps
+    const itCap     {.used.} = WithCap     in caps
+    const itCounter {.used.} = WithCounter in caps
+    const itRolling {.used.} = IsRolling   in caps
 
     prepareIteration(doesAcceptLiterals=itLit)
 
+    when not defined(WEB):
+        when declared(aParallel):
+            runParallelBranch(itCap, itCounter, itDefVal):
+                let sourceLen {.inject, used.} = blo.len
+                template reverseSrc() {.inject, used.} =
+                    blo = blo.reversed()
+                template tailFrom(idx: int): ValueArray {.inject, used.} =
+                    blo[idx..^1]
+                template firstSrcElem(): Value {.inject, used.} =
+                    blo[0]
+                itPre
+            do:
+                itAct
+            do:
+                itPost
+
     if iterable.kind==Range:
         fetchIterableRange()
+        let sourceLen {.inject, used.} = rang.len
+        template reverseSrc() {.inject, used.} =
+            rang = rang.reversed(safe=true)
+        template tailFrom(idx: int): ValueArray {.inject, used.} =
+            rang[idx..rang.len-1]
+        template firstSrcElem(): Value {.inject, used.} =
+            rang[0]
 
         itPre
         iterateRange(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
@@ -411,6 +689,13 @@ template doIterate(
     else:
         fetchIterableItems(doesAcceptLiterals=itLit):
             itDefVal
+        let sourceLen {.inject, used.} = blo.len
+        template reverseSrc() {.inject, used.} =
+            blo = blo.reversed()
+        template tailFrom(idx: int): ValueArray {.inject, used.} =
+            blo[idx..^1]
+        template firstSrcElem(): Value {.inject, used.} =
+            blo[0]
 
         itPre
         iterateBlock(withCap=itCap, withInf=itInf, withCounter=itCounter, rolling=itRolling):
@@ -440,7 +725,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"          : ({Literal}, "use given index"),
-            "descending"    : ({Logical}, "sort in descending order")
+            "descending"    : ({Logical}, "sort in descending order"),
+            "parallel"      : ({Logical,Integer}, "extract sort keys concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -456,7 +742,8 @@ proc defineModule*(moduleName: string) =
             if hadAttr("descending"):
                 useOrder = SortOrder.Descending
 
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            let aParallel = popAttr("parallel")
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 var unsorted: seq[(ValueArray,Value)]
             do:
                 let popped = stack.pop()
@@ -475,16 +762,14 @@ proc defineModule*(moduleName: string) =
                         w[0][0]
                     )
 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
                 else:
                     let res = unsorted.map((w) => 
                         newBlock(w[0])
                     )
 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
     builtin "chunk",
         alias       = unaliased,
@@ -515,7 +800,7 @@ proc defineModule*(moduleName: string) =
             ; => [[1 7] [5 4 3 6] [8 2]]
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 let showValue = hadAttr("value")
                 
                 var res: ValueArray
@@ -537,8 +822,7 @@ proc defineModule*(moduleName: string) =
                     if showValue: res.add(newBlock(@[state, newBlock(currentSet)]))
                     else: res.add(newBlock(currentSet))
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                pushResult(newBlock(res))
 
     builtin "cluster",
         alias       = unaliased,
@@ -578,7 +862,7 @@ proc defineModule*(moduleName: string) =
             ; => [["one" "three" "five"] ["two" "four" "six"]]
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 let showValue = hadAttr("value")
 
                 var res: ValueArray
@@ -596,8 +880,7 @@ proc defineModule*(moduleName: string) =
                     for v in sets.values:
                         res.add(newBlock(v))
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                pushResult(newBlock(res))
 
     builtin "collect",
         alias       = unaliased,
@@ -629,43 +912,21 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if hadAttr("after"):
-                prepareIteration()
-
-                var stoppedAt = -1
-                var res: ValueArray
-                
-                if iterable.kind==Range:
-                    fetchIterableRange()
-                
-                    iterateRange(withCap=false, withInf=false, withCounter=false, rolling=false):
+                doIterate({AcceptsLit}, false, newBlock()):
+                    var stoppedAt = -1
+                    var res: ValueArray
+                do:
+                    if isTrue(stack.pop()):
                         stoppedAt = indx
-                        if isTrue(stack.pop()):
-                            keepGoing = false
-                            break
-
-                    if stoppedAt < rang.len:
-                        res = rang[stoppedAt..rang.len-1]
-
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
-                else:
-                    fetchIterableItems(doesAcceptLiterals=true):
-                        newBlock()
-                    
-                    iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=false):
-                        stoppedAt = indx
-                        if isTrue(stack.pop()):
-                            keepGoing = false
-                            break
-
-                    if stoppedAt < blo.len:
-                        res = blo[stoppedAt..^1]
-
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                        keepGoing = false
+                        break
+                do:
+                    if stoppedAt >= 0 and stoppedAt < sourceLen:
+                        res = tailFrom(stoppedAt)
+                    pushResult(newBlock(res))
 
             else:
-                doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newBlock()):
+                doIterate({AcceptsLit, WithCap}, false, newBlock()):
                     var res: ValueArray
                 do:
                     if isTrue(stack.pop()):
@@ -673,9 +934,8 @@ proc defineModule*(moduleName: string) =
                     else:
                         keepGoing = false
                         break
-                do: 
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                do:
+                    pushResult(newBlock(res))
 
     builtin "enumerate",
         alias       = unaliased,
@@ -688,18 +948,20 @@ proc defineModule*(moduleName: string) =
             "condition"     : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Integer},
         example     = """
-            enumerate 1..10000000 => odd? 
+            enumerate 1..10000000 => odd?
             ; => 5000000
             ..........
             enumerate.with:'i ["one" "two" "three" "four"] 'x -> i < 3
             ; => 3
         """:
             #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, I0.copyValue):
+            let aParallel = popAttr("parallel")
+            doIterate(set[IterCap]({}), false, I0.copyValue):
                 var cntr = 0
             do:
                 if isTrue(stack.pop()):
@@ -720,7 +982,8 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "with"      : ({Literal},"use given index"),
             "first"     : ({Logical,Integer},"only filter first element/s"),
-            "last"      : ({Logical,Integer},"only filter last element/s")
+            "last"      : ({Logical,Integer},"only filter last element/s"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Any,Nothing},
         example     = """
@@ -753,92 +1016,58 @@ proc defineModule*(moduleName: string) =
             => [1 2 3 4 6 8 10]
         """:
             #=======================================================
-            prepareIteration()
+            let aParallel = popAttr("parallel")
+
+            when not defined(WEB):
+                if not aParallel.isNil:
+                    if (getAttr("first") != VNULL) or (getAttr("last") != VNULL):
+                        Error_OperationNotPermitted("`.parallel` cannot combine with `.first` / `.last`")
 
             var elemLimit = -1
-            
-            let onlyFirst = 
+
+            let onlyFirst =
                 if checkAttr("first"):
                     if isTrue(aFirst): elemLimit = 1
                     else: elemLimit = aFirst.i
                     true
                 else: false
 
-            let onlyLast = 
+            let onlyLast =
                 if checkAttr("last"):
                     if isTrue(aLast): elemLimit = 1
                     else: elemLimit = aLast.i
                     true
                 else: false
-                
+
             var stoppedAt = -1
             var filteredItems = 0
 
-            if iterable.kind==Range:
-                fetchIterableRange()
-
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 var res: ValueArray
+                if onlyLast: reverseSrc()
+            do:
+                let popped = stack.pop()
+                if isFalse(popped):
+                    res.add(captured)
+                else:
+                    if onlyFirst or onlyLast:
+                        when captured is Value:
+                            filteredItems += 1
+                        else:
+                            filteredItems += captured.len
 
-                if onlyLast:
-                    rang = rang.reversed(safe=true)
-                
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = stack.pop()
-                    if isFalse(popped):
-                        res.add(captured)
-                    else:
-                        if onlyFirst or onlyLast:
-                            when captured is Value:
-                                filteredItems += 1
-                            else:
-                                filteredItems += captured.len
-
-                            if elemLimit == filteredItems:
-                                stoppedAt = indx+1
-                                keepGoing = false
-                                break
-
-                if (onlyFirst or onlyLast) and stoppedAt < rang.len and stoppedAt != -1:
-                    res.add(rang[stoppedAt..rang.len-1])
-                
-                if onlyLast:
-                    res.reverse()
-
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
-                if onlyLast:
-                    blo = blo.reversed()
-
-                var res: ValueArray
-
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    let popped = stack.pop()
-                    if isFalse(popped):
-                        res.add(captured)
-                    else:
-                        if onlyFirst or onlyLast:
-                            when captured is Value:
-                                filteredItems += 1
-                            else:
-                                filteredItems += captured.len
-
-                            if elemLimit == filteredItems:
-                                stoppedAt = indx+1
-                                keepGoing = false
-                                break
-
-                if (onlyFirst or onlyLast) and stoppedAt < blo.len and stoppedAt != -1:
-                    res.add(blo[stoppedAt..^1])
+                        if elemLimit == filteredItems:
+                            stoppedAt = indx+1
+                            keepGoing = false
+                            break
+            do:
+                if (onlyFirst or onlyLast) and stoppedAt < sourceLen and stoppedAt != -1:
+                    res.add(tailFrom(stoppedAt))
 
                 if onlyLast:
                     res.reverse()
 
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+                pushResult(newBlock(res))
 
     builtin "fold",
         alias       = unaliased,
@@ -900,57 +1129,25 @@ proc defineModule*(moduleName: string) =
             ; => 188
         """:
             #=======================================================
-            prepareIteration()
-
             let rollingRight = hadAttr("right")
             let hasSeed = checkAttr("seed")
 
-            if iterable.kind==Range:
-                fetchIterableRange()
-
+            doIterate({IsRolling}, false, newBlock()):
                 var res: Value
-
-                if rollingRight:
-                    rang = rang.reversed(safe=true)
-
+                if rollingRight: reverseSrc()
                 if hasSeed:
                     res = aSeed
                 else:
-                    let firstElem {.cursor.} = rang[0]
-                    res = case firstElem.kind
-                        of Char    : newString("")
-                        of Floating: newFloating(0.0)
-                        else       : I0
-               
-                iterateRange(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = stack.pop()
-
-                if unlikely(inPlace): RawInPlaced = res
-                else: push(res)
-            else:
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
-                var res: Value
-
-                if rollingRight:
-                    blo = blo.reversed()
-
-                if hasSeed:
-                    res = aSeed
-                else:
-                    let firstElem {.cursor.} = blo[0]
+                    let firstElem {.cursor.} = firstSrcElem()
                     res = case firstElem.kind
                         of Char, String: newString("")
                         of Floating    : newFloating(0.0)
                         of Block       : newBlock()
                         else           : I0
-
-                iterateBlock(withCap=false, withInf=false, withCounter=false, rolling=true):
-                    res = stack.pop()
-
-                if unlikely(inPlace): RawInPlaced = res
-                else: push(res)
+            do:
+                res = stack.pop()
+            do:
+                pushResult(res)
 
     builtin "gather",
         alias       = unaliased,
@@ -963,7 +1160,8 @@ proc defineModule*(moduleName: string) =
             "action"        : {Block,Bytecode}
         },
         attrs       = {
-            "with"  : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"compute keys concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Dictionary,Nothing},
         example     = """
@@ -981,15 +1179,15 @@ proc defineModule*(moduleName: string) =
             ; [0:[one three] 1:[two four]]
         """:
             #=======================================================
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, newDictionary()):
+            let aParallel = popAttr("parallel")
+            doIterate({AcceptsLit, WithCap}, false, newDictionary()):
                 var res = initOrderedTable[string,Value]()
             do:
                 let popped = $(stack.pop())
                 discard res.hasKeyOrPut(popped, newBlock())
                 res[popped].a.add(captured)
             do:
-                if unlikely(inPlace): RawInPlaced = newDictionary(res)
-                else: push(newDictionary(res))
+                pushResult(newDictionary(res))
 
     builtin "loop",
         alias       = unaliased,
@@ -1003,7 +1201,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "forever"   : ({Logical},"cycle through collection infinitely")
+            "forever"   : ({Logical},"cycle through collection infinitely"),
+            "parallel"  : ({Logical,Integer},"run each item in its own cooperative fiber; integer caps the number of in-flight fibers")
         },
         returns     = {Nothing},
         example     = """
@@ -1051,12 +1250,24 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let doForever = hadAttr("forever")
-            doIterate(itLit=false, itCap=false, itInf=doForever, itCounter=false, itRolling=false, VNULL):
-                discard
-            do:
-                discard
-            do:
-                discard
+            let aParallel = popAttr("parallel")
+            when not defined(WEB):
+                if doForever and (not aParallel.isNil):
+                    Error_OperationNotPermitted("`.parallel` cannot combine with `.forever`")
+            if doForever:
+                doIterate(set[IterCap]({}), true, VNULL):
+                    discard
+                do:
+                    discard
+                do:
+                    discard
+            else:
+                doIterate(set[IterCap]({}), false, VNULL):
+                    discard
+                do:
+                    discard
+                do:
+                    discard
 
     builtin "map",
         alias       = unaliased,
@@ -1069,7 +1280,8 @@ proc defineModule*(moduleName: string) =
             "action"        : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"run each item in its own cooperative fiber; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1096,31 +1308,23 @@ proc defineModule*(moduleName: string) =
                 (even? i)? -> upper x -> x
             ]
             ; => ["ONE" "two" "THREE" "four"]
+            ..........
+            ; .parallel — fan out one cooperative fiber per item.
+            ; Bare flag = unbounded; integer = sliding-window cap.
+            results: map.parallel 1..5 'x [ pause 100 x*2 ]
+            ; 5 fibers run concurrently; ~100ms total instead of ~500ms
+            ; ⚠ each fiber gets a SHALLOW COPY of parent symbols —
+            ; writes don't leak back. Return values; don't mutate
+            ; outer state inside the body.
         """:
             #=======================================================
-            prepareIteration()
-
-            if iterable.kind==Range:
-                fetchIterableRange()
-
-                var res: ValueArray = newSeq[Value](rang.len)
-                
-                iterateRange(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = stack.pop()
-
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
-                var res: ValueArray = newSeq[Value](blo.len)
-
-                iterateBlock(withCap=false, withInf=false, withCounter=true, rolling=false):
-                    res[cntr] = stack.pop()
-
-                if unlikely(inPlace): RawInPlaced = newBlock(res)
-                else: push(newBlock(res))
+            let aParallel = popAttr("parallel")
+            doIterate({AcceptsLit, WithCounter}, false, newBlock()):
+                var res: ValueArray = newSeq[Value](sourceLen)
+            do:
+                res[cntr] = stack.pop()
+            do:
+                pushResult(newBlock(res))
 
     builtin "maximum",
         alias       = unaliased,
@@ -1134,7 +1338,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "value"     : ({Logical},"also include predicate values")
+            "value"     : ({Logical},"also include predicate values"),
+            "parallel"  : ({Logical,Integer},"extract keys concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1148,8 +1353,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let withValue = hadAttr("value")
+            let aParallel = popAttr("parallel")
 
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
+            doIterate({AcceptsLit, WithCap}, false, VNULL):
                 var selected: ValueArray
                 var maxVal: Value = VNULL
             do:
@@ -1163,18 +1369,14 @@ proc defineModule*(moduleName: string) =
             do:
                 if selected.len == 1:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[selected[0], maxVal])
-                        else: push(newBlock(@[selected[0], maxVal]))
+                        pushResult(newBlock(@[selected[0], maxVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = selected[0]
-                        else: push(selected[0])
+                        pushResult(selected[0])
                 else:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[newBlock(selected), maxVal])
-                        else: push(newBlock(@[newBlock(selected), maxVal]))
+                        pushResult(newBlock(@[newBlock(selected), maxVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = newBlock(selected)
-                        else: push(newBlock(selected))
+                        pushResult(newBlock(selected))
 
     builtin "minimum",
         alias       = unaliased,
@@ -1188,7 +1390,8 @@ proc defineModule*(moduleName: string) =
         },
         attrs       = {
             "with"      : ({Literal},"use given index"),
-            "value"     : ({Logical},"also include predicate values")
+            "value"     : ({Logical},"also include predicate values"),
+            "parallel"  : ({Logical,Integer},"extract keys concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Nothing},
         example     = """
@@ -1202,8 +1405,9 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let withValue = hadAttr("value")
+            let aParallel = popAttr("parallel")
 
-            doIterate(itLit=true, itCap=true, itInf=false, itCounter=false, itRolling=false, VNULL):
+            doIterate({AcceptsLit, WithCap}, false, VNULL):
                 var selected: ValueArray
                 var minVal: Value = VNULL
             do:
@@ -1217,18 +1421,14 @@ proc defineModule*(moduleName: string) =
             do:
                 if selected.len == 1:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[selected[0], minVal])
-                        else: push(newBlock(@[selected[0], minVal]))
+                        pushResult(newBlock(@[selected[0], minVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = selected[0]
-                        else: push(selected[0])
+                        pushResult(selected[0])
                 else:
                     if withValue:
-                        if unlikely(inPlace): RawInPlaced = newBlock(@[newBlock(selected), minVal])
-                        else: push(newBlock(@[newBlock(selected), minVal]))
+                        pushResult(newBlock(@[newBlock(selected), minVal]))
                     else:
-                        if unlikely(inPlace): RawInPlaced = newBlock(selected)
-                        else: push(newBlock(selected))
+                        pushResult(newBlock(selected))
 
     # TODO(Iterators\select) should `.first` & `.last` return just one element?
     #  Right now, they both return a block with this one element inside. 
@@ -1256,7 +1456,8 @@ proc defineModule*(moduleName: string) =
             "with"      : ({Literal},"use given index"),
             "first"     : ({Logical,Integer},"only return first element/s"),
             "last"      : ({Logical,Integer},"only return last element/s"),
-            "n"         : ({Integer},"only return n-th element")
+            "n"         : ({Integer},"only return n-th element"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; integer caps the number of in-flight fibers")
         },
         returns     = {Block,Any,Nothing},
         example     = """
@@ -1289,18 +1490,23 @@ proc defineModule*(moduleName: string) =
             => [5 7 9]
         """:
             #=======================================================
-            prepareIteration()
+            let aParallel = popAttr("parallel")
+
+            when not defined(WEB):
+                if not aParallel.isNil:
+                    if (getAttr("first") != VNULL) or (getAttr("last") != VNULL) or (getAttr("n") != VNULL):
+                        Error_OperationNotPermitted("`.parallel` cannot combine with `.first` / `.last` / `.n`")
 
             var elemLimit = -1
-                
-            let onlyFirst = 
+
+            let onlyFirst =
                 if checkAttr("first"):
                     if isTrue(aFirst): elemLimit = 1
                     else: elemLimit = aFirst.i
                     true
                 else: false
 
-            let onlyLast = 
+            let onlyLast =
                 if checkAttr("last"):
                     if isTrue(aLast): elemLimit = 1
                     else: elemLimit = aLast.i
@@ -1308,7 +1514,7 @@ proc defineModule*(moduleName: string) =
                 else: false
 
             var nth = -1
-            let onlyN = 
+            let onlyN =
                 if checkAttr("n"):
                     nth = aN.i
                     true
@@ -1316,79 +1522,36 @@ proc defineModule*(moduleName: string) =
 
             var found: int = 0
 
-            if iterable.kind==Range:
-                fetchIterableRange()
-
+            doIterate({AcceptsLit, WithCap}, false, newBlock()):
                 var res: ValueArray
+                if onlyLast: reverseSrc()
+            do:
+                if isTrue(stack.pop()):
+                    if likely(not onlyN):
+                        res.add(captured)
 
-                if onlyLast:
-                    rang = rang.reversed(safe=true)
-                
-                iterateRange(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(stack.pop()):
-                        if likely(not onlyN):
-                            res.add(captured)
-
-                            if onlyFirst or onlyLast:
-                                if elemLimit == res.len:
-                                    keepGoing = false
-                                    break
-                        else:
-                            found += 1
-                            if found == nth:
-                                when captured is ValueArray:
-                                    if captured.len == 1:
-                                        push(captured[0])
-                                    else:
-                                        push(newBlock(captured))
+                        if onlyFirst or onlyLast:
+                            if elemLimit == res.len:
+                                keepGoing = false
+                                break
+                    else:
+                        found += 1
+                        if found == nth:
+                            when captured is ValueArray:
+                                if captured.len == 1:
+                                    push(captured[0])
                                 else:
-                                    push(captured)
-                                return
-                
+                                    push(newBlock(captured))
+                            else:
+                                push(captured)
+                            return
+            do:
                 if onlyLast:
                     res.reverse()
-                
+
                 if unlikely(onlyN): push(VNULL)
                 else:
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
-            else: 
-                fetchIterableItems(doesAcceptLiterals=true):
-                    newBlock()
-
-                if onlyLast:
-                    blo = blo.reversed()
-
-                var res: ValueArray
-
-                iterateBlock(withCap=true, withInf=false, withCounter=false, rolling=false):
-                    if isTrue(stack.pop()):
-                        if likely(not onlyN):
-                            res.add(captured)
-
-                            if onlyFirst or onlyLast:
-                                if elemLimit == res.len:
-                                    keepGoing = false
-                                    break
-                        else:
-                            found += 1
-                            if found == nth:
-                                when captured is ValueArray:
-                                    if captured.len == 1:
-                                        push(captured[0])
-                                    else:
-                                        push(newBlock(captured))
-                                else:
-                                    push(captured)
-                                return
-                
-                if onlyLast:
-                    res.reverse()
-                
-                if unlikely(onlyN): push(VNULL)
-                else:
-                    if unlikely(inPlace): RawInPlaced = newBlock(res)
-                    else: push(newBlock(res))
+                    pushResult(newBlock(res))
 
     #----------------------------
     # Predicates
@@ -1405,7 +1568,8 @@ proc defineModule*(moduleName: string) =
             "condition"     : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; first `false` decides and cancels the rest. integer caps the number of in-flight fibers")
         },
         returns     = {Logical},
         example     = """
@@ -1426,7 +1590,18 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VTRUE):
+            when not defined(WEB):
+                block:
+                    let aParallel = popAttr("parallel")
+                    if not aParallel.isNil:
+                        if aParallel.kind notin tParallel:
+                            Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                        prepareIteration(doesAcceptLiterals=false)
+                        fetchIterableItemsForParallel(VTRUE)
+                        parallelShortCircuit( answerOnHit=VFALSE, defaultAnswer=VTRUE):
+                            isFalse(pBodyResult)
+
+            doIterate(set[IterCap]({}), false, VTRUE):
                 discard
             do:
                 if isFalse(stack.pop()):
@@ -1446,7 +1621,8 @@ proc defineModule*(moduleName: string) =
             "condition"     : {Block,Bytecode}
         },
         attrs       = {
-            "with"      : ({Literal},"use given index")
+            "with"      : ({Literal},"use given index"),
+            "parallel"  : ({Logical,Integer},"evaluate the predicate concurrently; first `true` decides and cancels the rest. integer caps the number of in-flight fibers")
         },
         returns     = {Logical},
         example     = """
@@ -1470,7 +1646,18 @@ proc defineModule*(moduleName: string) =
             ; true
         """:
             #=======================================================
-            doIterate(itLit=false, itCap=false, itInf=false, itCounter=false, itRolling=false, VFALSE):
+            when not defined(WEB):
+                block:
+                    let aParallel = popAttr("parallel")
+                    if not aParallel.isNil:
+                        if aParallel.kind notin tParallel:
+                            Error_OperationNotPermitted("`.parallel` expects a logical flag or a positive integer")
+                        prepareIteration(doesAcceptLiterals=false)
+                        fetchIterableItemsForParallel(VFALSE)
+                        parallelShortCircuit( answerOnHit=VTRUE, defaultAnswer=VFALSE):
+                            isTrue(pBodyResult)
+
+            doIterate(set[IterCap]({}), false, VFALSE):
                 discard
             do:
                 if isTrue(stack.pop()):
