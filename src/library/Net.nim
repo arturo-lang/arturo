@@ -50,8 +50,6 @@ when not defined(WEB):
     import httpclient, httpcore, std/net, os
     import sequtils, strformat, strutils
     import terminal, times, uri
-    # aliased — `Request` would collide with too many other things.
-    import std/asynchttpserver as ahs
 
     when defined(ssl):
         import extras/smtp
@@ -491,110 +489,34 @@ proc defineModule*(moduleName: string) =
                     port = aPort.i
 
                 if hadAttr("async"):
-                    # in-process async serve via `asynchttpserver`. the handler
-                    # mirrors the sync one below but uses asynchttpserver's
-                    # Request API and `await req.respond(...)` rather than
-                    # httpx's blocking send. cancel works (the helper closes
-                    # the server, freeing the port).
+                    # `.async` spins up a child process that runs sync `serve`
+                    # blockingly. routes are codified back to source and embedded
+                    # in the child's command. this isolates the server from the
+                    # parent's dispatcher — so combinations like `serve.async`
+                    # followed by `webview` (which blocks the parent's main loop)
+                    # work cleanly: the child has its own dispatcher and the
+                    # parent is free to enter native event loops.
+                    #
+                    # cancel works via the standard subprocess path
+                    # (`spawnAsTask` → `runInChildProcess` → process-group kill),
+                    # which frees the port. function-form routes (`$[req][...]`)
+                    # aren't supported: closures don't round-trip through
+                    # `codify` faithfully and couldn't capture parent symbols
+                    # across processes anyway. error early with a clear pointer.
+                    if routes.kind == Function:
+                        Error_UnsupportedFeature(
+                            "serve.async with function-form routes",
+                            "subprocess execution — use block-form routes (e.g. `[GET \"/\" -> \"ok\"]`) or drop `.async` for sync mode"
+                        )
+
                     if hadAttr("chrome"):
                         openChromeWindow(port)
 
-                    if routes.kind != Function:
-                        execInternal("Net/serve")
-                        callInternal("initServerInternal", getValue=false, routes)
+                    var attrParts = "serve.port: " & $port
+                    if not verbose: attrParts &= " .silent"
+                    let childSrc = attrParts & " " & codify(routes)
 
-                    proc asyncHandler(req: ahs.Request): Future[void] {.async, gcsafe.} =
-                        {.cast(gcsafe).}:
-                            let reqAction = req.reqMethod
-                            let reqBody = req.body
-                            let reqHeaders = req.headers.table
-                            let initialReqPath =
-                                if req.url.query.len > 0: req.url.path & "?" & req.url.query
-                                else: req.url.path
-                            let reqPath = decodeUrl(req.url.path)
-                            var reqQuery = initOrderedTable[string, Value]()
-                            if req.url.query.len > 0:
-                                for k, v in decodeQuery(req.url.query):
-                                    reqQuery[k] = newString(v)
-
-                            var reqBodyV: Value
-                            if reqAction != HttpGet:
-                                try:
-                                    reqBodyV = valueFromJson(reqBody)
-                                except CatchableError:
-                                    reqBodyV = newDictionary()
-                                    for k, v in decodeQuery(reqBody):
-                                        reqBodyV.d[k] = newString(v)
-                            else:
-                                reqBodyV = newString(reqBody)
-
-                            let requestDict = newDictionary({
-                                    "method": newString($(reqAction)),
-                                    "path": newString(reqPath),
-                                    "uri": newString(initialReqPath),
-                                    "body": reqBodyV,
-                                    "query": newDictionary(reqQuery),
-                                    "headers": newStringDictionary(reqHeaders, collapseBlocks=true),
-                                    "ip": newString(req.hostname)
-                                }.toOrderedTable)
-
-                            var responseDict: ValueDict = {
-                                "body": newString(""),
-                                "status": newInteger(200),
-                                "headers": newDictionary()
-                            }.toOrderedTable
-
-                            var resp: Value
-                            if routes.kind == Function:
-                                let timeTaken = getBenchmark:
-                                    try:
-                                        callFunction(routes, "<closure>", @[requestDict])
-                                        resp = stack.pop()
-                                        if resp.kind == String:
-                                            responseDict["body"] = resp
-                                        else:
-                                            for k, v in resp.d.pairs:
-                                                responseDict[k] = v
-                                    except VError as e:
-                                        showError(e)
-                                        responseDict["status"] = newInteger(500)
-                                    except CatchableError, Defect:
-                                        let e = getCurrentException()
-                                        showError(VError(e))
-                                        responseDict["status"] = newInteger(500)
-                                responseDict["benchmark"] = newQuantity(toQuantity(timeTaken, parseAtoms("ms")))
-                            else:
-                                responseDict = callInternal("serveInternal", getValue=true,
-                                    requestDict
-                                ).d
-                                if not responseDict["headers"].d.hasKey("Content-Type"):
-                                    responseDict["headers"].d["Content-Type"] = newString("text/html")
-
-                            var respHeaders = newHttpHeaders()
-                            for k, v in responseDict["headers"].d.pairs:
-                                respHeaders.add(k, v.s)
-
-                            let bodyStr =
-                                if responseDict["body"].kind == Binary:
-                                    var s = newString(responseDict["body"].n.len)
-                                    if s.len > 0:
-                                        copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
-                                    s
-                                else:
-                                    responseDict["body"].s
-
-                            if verbose:
-                                let status = responseDict["status"].i
-                                echo "[" & $(now()) & "] " & ($(reqAction)).toUpperAscii() &
-                                     " " & initialReqPath & " -> " & $(status)
-
-                            await req.respond(HttpCode(responseDict["status"].i),
-                                              bodyStr, respHeaders)
-
-                    if verbose:
-                        echo " :: Starting server on port " & $(port) & "...\n"
-
-                    push spawnAsyncServe(port, asyncHandler)
+                    push spawnAsTask(childSrc)
                     return
 
                 if hadAttr("chrome"):
