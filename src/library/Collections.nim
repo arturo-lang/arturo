@@ -2287,8 +2287,8 @@ proc defineModule*(moduleName: string) =
                             SetInPlaceAny(newStringBlock(toSeq(
                                     InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                     elif checkAttr("at"):
-                        SetInPlaceAny(newStringBlock(@[InPlaced.s[0..aAt.i-1],
-                                InPlaced.s[aAt.i..^1]]))
+                        SetInPlaceAny(newStringBlock(@[runeSubStr(InPlaced.s, 0, aAt.i),
+                                runeSubStr(InPlaced.s, aAt.i)]))
                     elif checkAttr("every"):
                         var ret: seq[string]
                         var length = InPlaced.s.len
@@ -2349,7 +2349,7 @@ proc defineModule*(moduleName: string) =
                     else:
                         push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                 elif checkAttr("at"):
-                    push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
+                    push(newStringBlock(@[runeSubStr(x.s, 0, aAt.i), runeSubStr(x.s, aAt.i)]))
                 elif checkAttr("every"):
                     var ret: seq[string]
                     var length = x.s.len
