@@ -21,6 +21,26 @@ import vm/values/value
 #=======================================
 
 when defined(PARSERS):
+    proc unescapeHtmlEntities*(s: string): string =
+        result = newStringOfCap(s.len)
+        var i = 0
+        while i < s.len:
+            if s[i] == '&':
+                var j = i + 1
+                while j < s.len and j - i < 12 and s[j] != ';':
+                    inc j
+                if j < s.len and s[j] == ';' and j > i + 1:
+                    let decoded = entityToUtf8(s[i+1 ..< j])
+                    if decoded.len > 0:
+                        result.add(decoded)
+                        i = j + 1
+                        continue
+                result.add('&')
+                inc i
+            else:
+                result.add(s[i])
+                inc i
+
     proc parseHtmlNode(node: XmlNode): Value =
         result = newDictionary()
         case node.kind:
