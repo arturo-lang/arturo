@@ -21,6 +21,21 @@ import vm/values/value
 #=======================================
 
 when defined(PARSERS):
+    # TODO(Helpers/html) consider replacing the underlying HTML parser with lexbor
+    #  The current parser (vendored from Nim's stdlib at `extras/htmlparser`) is
+    #  SGML/XML-ish, not HTML5-spec. It handles cleanish HTML fine but struggles
+    #  with worst tag soup: unclosed `<li>` cascades, `<script>` raw-text edge
+    #  cases, foreign content (inline SVG/MathML), implicit `<tbody>`, etc.
+    #
+    #  For real-web HTML5 parity, a future option is to vendor lexbor (C, ~600KB
+    #  static lib for the HTML+DOM subset, no external deps, very fast) under
+    #  `extras/lexbor/` and expose a drop-in `parseHtml` returning the same
+    #  XmlNode shape, gated behind a `--define:LEXBOR` build flag. The Arturo
+    #  tree shape produced by `parseHtmlInput` would not change, so external
+    #  packages built on `read.html` would gain HTML5 conformance transparently.
+    #
+    #  Alternative: gumbo (Google's HTML5 parser; archived since 2016 but works).
+    #  labels: helpers, library, enhancement, open discussion
     proc unescapeHtmlEntities*(s: string): string =
         result = newStringOfCap(s.len)
         var i = 0
