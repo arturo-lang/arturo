@@ -2218,10 +2218,6 @@ proc defineModule*(moduleName: string) =
                                         cmp(x[0], y[0])
                                     , order = sortOrdering)
 
-    # TODO(Collections\split) Add better support for unicode strings
-    #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
-    #  labels: library,bug 
-
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
