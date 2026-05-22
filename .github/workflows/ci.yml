@@ -186,17 +186,30 @@ jobs:
                 node-version: '20'
 
             - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
-              name: Install uglify-js
-              run: npm install -g uglify-js
-
-            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Build web target
               run: |
                 cd $GITHUB_WORKSPACE/arturo
                 ./build.nims --mode web
 
             - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
-              name: Run web tester
+              name: Run web smoke tests
+              timeout-minutes: 10
               run: |
                 cd $GITHUB_WORKSPACE/arturo
-                arturo tools/tester.web.art
+                fails=0
+                for art in tests/web/*.art; do
+                    res="${art%.art}.res"
+                    [ -f "$res" ] || continue
+                    echo "--- $art"
+                    actual=$(node tools/run.js "$art")
+                    expected=$(cat "$res")
+                    if [ "$actual" = "$expected" ]; then
+                        echo "OK"
+                    else
+                        echo "FAIL"
+                        echo "expected: $expected"
+                        echo "actual:   $actual"
+                        fails=$((fails + 1))
+                    fi
+                done
+                exit $fails
