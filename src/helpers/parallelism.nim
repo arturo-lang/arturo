@@ -13,7 +13,7 @@
 #=======================================
 
 when not defined(WEB):
-    import asyncdispatch, asyncfile, asynchttpserver, httpclient, httpcore
+    import asyncdispatch, asyncfile, httpclient, httpcore
     import os, osproc
     import std/tempfiles
     import streams, strtabs, strutils, times
@@ -1035,31 +1035,6 @@ when not defined(WEB):
         tsk.future = downloadFileAsync(client, url, target)
         tsk.cancelHandle = proc() =
             try: client.close()
-            except CatchableError: discard
-        result = newTask(tsk)
-
-    # in-process async HTTP server via Nim's `asynchttpserver`. the caller
-    # provides a `handler` closure that processes each request; we own the
-    # server lifecycle so `cancel` can `close()` it and free the port.
-    proc spawnAsyncServe*(port: int,
-                          handler: proc(req: Request): Future[void] {.async, gcsafe.}
-                         ): Value =
-        let server = newAsyncHttpServer()
-        proc go(): Future[Value] {.async.} =
-            # let CatchableError escape — `wait` classifies it (cancel → :null,
-            # otherwise → :error, e.g. EADDRINUSE on bind). cancellation
-            # closes the server and surfaces here as an exception, filtered
-            # out downstream via task state.
-            try:
-                await server.serve(Port(port), handler)
-                result = VNULL
-            finally:
-                try: server.close()
-                except CatchableError: discard
-        let tsk = VTask(state: taskPending)
-        tsk.future = go()
-        tsk.cancelHandle = proc() =
-            try: server.close()
             except CatchableError: discard
         result = newTask(tsk)
 
