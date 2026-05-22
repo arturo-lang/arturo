@@ -55,6 +55,11 @@ when defined(PARSERS):
         result.d["kind"] = newLiteral("document")
         var children = newBlock()
         if root.kind == xnElement and root.tag == "document":
+            if root.attrsLen() > 0 and root.attrs().hasKey("_doctype"):
+                let dt = newDictionary()
+                dt.d["kind"] = newLiteral("doctype")
+                dt.d["value"] = newString(root.attrs()["_doctype"])
+                children.a.add(dt)
             for sub in items(root):
                 children.a.add(parseHtmlNode(sub))
         else:
