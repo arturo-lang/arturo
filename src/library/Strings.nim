@@ -212,54 +212,6 @@ proc defineModule*(moduleName: string) =
                 else:
                     push(newString(strutils.escape(x.s)))
 
-    builtin "unescape",
-        alias       = unaliased,
-        op          = opNop,
-        rule        = PrefixPrecedence,
-        description = "unescape given string",
-        args        = {
-            "string": {String,Literal,PathLiteral}
-        },
-        attrs       = {
-            "json"  : ({Logical},"from a JSON-escaped string"),
-            "xml"   : ({Logical},"from an XML document"),
-            "html"  : ({Logical},"from an HTML document")
-        },
-        returns     = {String,Nothing},
-        example     = """
-            print unescape "a\\nb\\tc"
-            ; a
-            ; b   c
-            ..........
-            print unescape.json {a \"b\" c}
-            ; a "b" c
-            ..........
-            print unescape.html "a &amp; b &lt; c &#65;"
-            ; a & b < c A
-        """:
-            #=======================================================
-            proc doUnescape(s: string): string =
-                if (hadAttr("json")):
-                    result = parseJson("\"" & s & "\"").getStr()
-                elif (hadAttr("xml")):
-                    when defined(PARSERS):
-                        result = unescapeXmlEntities(s)
-                    else:
-                        result = s
-                elif (hadAttr("html")):
-                    when defined(PARSERS):
-                        result = unescapeHtmlEntities(s)
-                    else:
-                        result = s
-                else:
-                    result = strutils.unescape(s, prefix="", suffix="")
-
-            if xKind in {Literal, PathLiteral}:
-                ensureInPlaceAny()
-                SetInPlaceAny(newString(doUnescape(InPlaced.s)))
-            else:
-                push(newString(doUnescape(x.s)))
-
     builtin "indent",
         alias       = unaliased, 
         op          = opNop,
@@ -965,6 +917,54 @@ proc defineModule*(moduleName: string) =
                 else: 
                     ensureInPlaceAny()
                     InPlaced.s = truncate(InPlaced.s, y.i, with)
+
+    builtin "unescape",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "unescape given string",
+        args        = {
+            "string": {String,Literal,PathLiteral}
+        },
+        attrs       = {
+            "json"  : ({Logical},"from a JSON-escaped string"),
+            "xml"   : ({Logical},"from an XML document"),
+            "html"  : ({Logical},"from an HTML document")
+        },
+        returns     = {String,Nothing},
+        example     = """
+            print unescape "a\\nb\\tc"
+            ; a
+            ; b   c
+            ..........
+            print unescape.json {a \"b\" c}
+            ; a "b" c
+            ..........
+            print unescape.html "a &amp; b &lt; c &#65;"
+            ; a & b < c A
+        """:
+            #=======================================================
+            proc doUnescape(s: string): string =
+                if (hadAttr("json")):
+                    result = parseJson("\"" & s & "\"").getStr()
+                elif (hadAttr("xml")):
+                    when defined(PARSERS):
+                        result = unescapeXmlEntities(s)
+                    else:
+                        result = s
+                elif (hadAttr("html")):
+                    when defined(PARSERS):
+                        result = unescapeHtmlEntities(s)
+                    else:
+                        result = s
+                else:
+                    result = strutils.unescape(s, prefix="", suffix="")
+
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(doUnescape(InPlaced.s)))
+            else:
+                push(newString(doUnescape(x.s)))
 
     builtin "upper",
         alias       = unaliased, 
