@@ -124,3 +124,56 @@ jobs:
                         exit 1
                     fi
                 fi
+
+    WebTest:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Arturo sources
+              uses: actions/checkout@v4
+              with:
+                submodules: recursive
+                fetch-depth: 0
+
+            - name: Check if tests should be skipped
+              id: check_skip
+              shell: bash
+              run: |
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
+                else
+                    COMMIT_MSG=$(git log -1 --pretty=%B HEAD)
+                fi
+
+                if echo "$COMMIT_MSG" | grep -q "\[skip tests\]"; then
+                    echo "skip=true" >> "$GITHUB_OUTPUT"
+                else
+                    echo "skip=false" >> "$GITHUB_OUTPUT"
+                fi
+
+            - if: steps.check_skip.outputs.skip != 'true'
+              name: Setup Nim
+              uses: jiro4989/setup-nim-action@v2
+              with:
+                nim-version: '2.2.x'
+
+            - if: steps.check_skip.outputs.skip != 'true'
+              name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                node-version: '20'
+
+            - if: steps.check_skip.outputs.skip != 'true'
+              name: Install uglify-js
+              run: npm install -g uglify-js
+
+            - if: steps.check_skip.outputs.skip != 'true'
+              name: Build native runner (mini)
+              run: ./build.nims --mode mini
+
+            - if: steps.check_skip.outputs.skip != 'true'
+              name: Build web target
+              run: ./build.nims --mode web
+
+            - if: steps.check_skip.outputs.skip != 'true'
+              name: Run web tester
+              run: bin/arturo tools/tester.web.art
