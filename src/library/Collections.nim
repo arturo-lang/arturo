@@ -2218,10 +2218,6 @@ proc defineModule*(moduleName: string) =
                                         cmp(x[0], y[0])
                                     , order = sortOrdering)
 
-    # TODO(Collections\split) Add better support for unicode strings
-    #  Currently, simple split works fine - but using different attributes (at, every, by, etc) doesn't
-    #  labels: library,bug 
-
     builtin "split",
         alias       = unaliased,
         op          = opSplit,
@@ -2287,20 +2283,16 @@ proc defineModule*(moduleName: string) =
                             SetInPlaceAny(newStringBlock(toSeq(
                                     InPlaced.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                     elif checkAttr("at"):
-                        SetInPlaceAny(newStringBlock(@[InPlaced.s[0..aAt.i-1],
-                                InPlaced.s[aAt.i..^1]]))
+                        SetInPlaceAny(newStringBlock(@[runeSubStr(InPlaced.s, 0, aAt.i),
+                                runeSubStr(InPlaced.s, aAt.i)]))
                     elif checkAttr("every"):
                         var ret: seq[string]
-                        var length = InPlaced.s.len
+                        var length = runeLen(InPlaced.s)
                         var i = 0
-                        
+
                         while i < length:
-                            if i + aEvery.i <= length:
-                                ret.add(InPlaced.s[i..i+aEvery.i-1])
-                                i += aEvery.i
-                            else:
-                                ret.add(InPlaced.s[i..^1])
-                                i += aEvery.i
+                            ret.add(runeSubStr(InPlaced.s, i, aEvery.i))
+                            i += aEvery.i
 
                         SetInPlaceAny(newStringBlock(ret))
 
@@ -2349,19 +2341,15 @@ proc defineModule*(moduleName: string) =
                     else:
                         push(newStringBlock(toSeq(x.s.tokenize(aBy.a.map((k)=>(requireAttrValue("by",k,{String});k.s))))))
                 elif checkAttr("at"):
-                    push(newStringBlock(@[x.s[0..aAt.i-1], x.s[aAt.i..^1]]))
+                    push(newStringBlock(@[runeSubStr(x.s, 0, aAt.i), runeSubStr(x.s, aAt.i)]))
                 elif checkAttr("every"):
                     var ret: seq[string]
-                    var length = x.s.len
+                    var length = runeLen(x.s)
                     var i = 0
 
                     while i < length:
-                        if i + aEvery.i <= length:
-                            ret.add(x.s[i..i+aEvery.i-1])
-                            i += aEvery.i
-                        else:
-                            ret.add(x.s[i..^1])
-                            i += aEvery.i
+                        ret.add(runeSubStr(x.s, i, aEvery.i))
+                        i += aEvery.i
 
                     push(newStringBlock(ret))
                 
