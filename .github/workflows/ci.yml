@@ -132,12 +132,41 @@ jobs:
               uses: actions/checkout@v4
               with:
                 submodules: recursive
+                path: arturo
+                ref: ${{ github.ref }}
                 fetch-depth: 0
+
+            - name: Prepare artifact version
+              id: version
+              shell: bash
+              run: |
+                cd arturo
+                git_hash=$(git rev-parse --short HEAD)
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    version="pr${{ github.event.pull_request.number }}.${git_hash}"
+                else
+                    version="${{ github.ref_name }}.${git_hash}"
+                fi
+                echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+
+            - name: Install Arturo (native runner)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: amd64
+                mode: mini
+                src: ${{ github.ref }}
+                metadata: ${{ steps.version.outputs.VERSION }}
+                create_artifact: 'false'
+                artifact_version: ${{ steps.version.outputs.VERSION }}
 
             - name: Check if tests should be skipped
               id: check_skip
               shell: bash
               run: |
+                cd $GITHUB_WORKSPACE/arturo
                 if [ "${{ github.event_name }}" = "pull_request" ]; then
                     COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
                 else
@@ -150,30 +179,24 @@ jobs:
                     echo "skip=false" >> "$GITHUB_OUTPUT"
                 fi
 
-            - if: steps.check_skip.outputs.skip != 'true'
-              name: Setup Nim
-              uses: jiro4989/setup-nim-action@v2
-              with:
-                nim-version: '2.2.x'
-
-            - if: steps.check_skip.outputs.skip != 'true'
+            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Setup Node
               uses: actions/setup-node@v4
               with:
                 node-version: '20'
 
-            - if: steps.check_skip.outputs.skip != 'true'
+            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Install uglify-js
               run: npm install -g uglify-js
 
-            - if: steps.check_skip.outputs.skip != 'true'
-              name: Build native runner (mini)
-              run: ./build.nims --mode mini
-
-            - if: steps.check_skip.outputs.skip != 'true'
+            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Build web target
-              run: ./build.nims --mode web
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                ./build.nims --mode web
 
-            - if: steps.check_skip.outputs.skip != 'true'
+            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Run web tester
-              run: bin/arturo tools/tester.web.art
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                arturo tools/tester.web.art
