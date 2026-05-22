@@ -21,27 +21,33 @@ import vm/values/value
 #=======================================
 
 when defined(PARSERS):
-    # TODO(Helpers/xml) re-implement HTML parsing?
-    #  Same as with `parseXMLNode`: we first have to define what this means. Basically, what would an HTML-parsing function normally yield? How are children/nodes/attributes supposed to fit in Arturo's value system: arrays, dictionaries, scalars, etc?
-    #  labels: helpers, library, enhancement, bug, open discussion
     proc parseHtmlNode(node: XmlNode): Value =
         result = newDictionary()
-        if node.kind()==xnElement:
-            result.d["attrs"] = newDictionary()
-            if node.attrsLen() > 0:
-                for k,v in pairs(node.attrs()):
-                    result.d["attrs"].d[k] = newString(v)
-
-            result.d["text"] = newString(node.innerText())
-            for subnode in items(node):
-                if subnode.kind()==xnElement:
-                    if result.d.hasKey(subnode.tag()) and result.d[subnode.tag()].kind==Dictionary:
-                        result.d[subnode.tag()] = newBlock(@[result.d[subnode.tag()]])
-
-                    if result.d.hasKey(subnode.tag()):
-                        result.d[subnode.tag()].a.add(parseHtmlNode(subnode))
-                    else:
-                        result.d[subnode.tag()] = parseHtmlNode(subnode)
+        case node.kind:
+            of xnElement:
+                result.d["kind"] = newLiteral("element")
+                result.d["tag"] = newString(node.tag())
+                let attrsDict = newDictionary()
+                if node.attrsLen() > 0:
+                    for k, v in pairs(node.attrs()):
+                        attrsDict.d[k] = newString(v)
+                result.d["attrs"] = attrsDict
+                var children = newBlock()
+                for sub in items(node):
+                    children.a.add(parseHtmlNode(sub))
+                result.d["children"] = children
+            of xnText, xnVerbatimText:
+                result.d["kind"] = newLiteral("text")
+                result.d["value"] = newString(node.text)
+            of xnComment:
+                result.d["kind"] = newLiteral("comment")
+                result.d["value"] = newString(node.text)
+            of xnCData:
+                result.d["kind"] = newLiteral("cdata")
+                result.d["value"] = newString(node.text)
+            of xnEntity:
+                result.d["kind"] = newLiteral("entity")
+                result.d["value"] = newString(node.text)
 
     proc parseHtmlInput*(input: string): Value =
         parseHtmlNode(parseHtml(input)).d["html"]
