@@ -13,7 +13,7 @@
 
 when defined(PARSERS):
     import strtabs
-    import tables, xmlparser, xmltree
+    import tables, parsexml, xmlparser, xmltree
 
     import extras/htmlparser
 
@@ -83,7 +83,7 @@ when defined(PARSERS):
                 result.d["value"] = newString(node.text)
 
     proc parseXMLInput*(input: string): Value =
-        let root = parseXml(input)
+        let root = parseXml(input, options = {reportComments, reportWhitespace})
         result = newDictionary()
         result.d["kind"] = newLiteral("document")
         var children = newBlock()
