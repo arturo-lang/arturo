@@ -30,6 +30,9 @@ import unicode, std/wordwrap, xmltree
 import helpers/charsets
 import helpers/strings
 
+when defined(PARSERS):
+    import helpers/html as htmlHelper
+
 import vm/lib
 
 when not defined(WEB):
@@ -155,7 +158,8 @@ proc defineModule*(moduleName: string) =
             "json"  : ({Logical},"for literal use in JSON strings"),
             "regex" : ({Logical},"for literal use in regular expression"),
             "shell" : ({Logical},"for use in a shell command"),
-            "xml"   : ({Logical},"for use in an XML document")
+            "xml"   : ({Logical},"for use in an XML document"),
+            "html"  : ({Logical},"for use in an HTML document")
         },
         returns     = {String,Nothing},
         example     = """
@@ -186,7 +190,7 @@ proc defineModule*(moduleName: string) =
                 elif (hadAttr("shell")):
                     when not defined(WEB):
                         SetInPlaceAny(newString(quoteShell(InPlaced.s)))
-                elif (hadAttr("xml")):
+                elif (hadAttr("xml")) or (hadAttr("html")):
                     SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
                 else:
                     SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
@@ -198,7 +202,7 @@ proc defineModule*(moduleName: string) =
                 elif (hadAttr("shell")):
                     when not defined(WEB):
                         push(newString(quoteShell(x.s)))
-                elif (hadAttr("xml")):
+                elif (hadAttr("xml")) or (hadAttr("html")):
                     push(newString(xmltree.escape(x.s)))
                 else:
                     push(newString(strutils.escape(x.s)))
