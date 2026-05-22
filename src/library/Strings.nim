@@ -190,8 +190,10 @@ proc defineModule*(moduleName: string) =
                 elif (hadAttr("shell")):
                     when not defined(WEB):
                         SetInPlaceAny(newString(quoteShell(InPlaced.s)))
-                elif (hadAttr("xml")) or (hadAttr("html")):
+                elif (hadAttr("xml")):
                     SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
+                elif (hadAttr("html")):
+                    SetInPlaceAny(newString(xmltree.escape(InPlaced.s).replace("&apos;", "&#39;")))
                 else:
                     SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
             else:
@@ -202,8 +204,10 @@ proc defineModule*(moduleName: string) =
                 elif (hadAttr("shell")):
                     when not defined(WEB):
                         push(newString(quoteShell(x.s)))
-                elif (hadAttr("xml")) or (hadAttr("html")):
+                elif (hadAttr("xml")):
                     push(newString(xmltree.escape(x.s)))
+                elif (hadAttr("html")):
+                    push(newString(xmltree.escape(x.s).replace("&apos;", "&#39;")))
                 else:
                     push(newString(strutils.escape(x.s)))
 
