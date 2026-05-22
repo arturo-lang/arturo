@@ -12,8 +12,10 @@
 
 
 when defined(PARSERS):
-    import sequtils, strtabs, sugar
-    import tables, xmlparser, xmltree
+    import strtabs
+    import tables, parsexml, xmlparser, xmltree
+
+    import extras/htmlparser
 
 import vm/values/value
 
@@ -22,34 +24,68 @@ import vm/values/value
 #=======================================
 
 when defined(PARSERS):
-    # TODO(Helpers/xml) re-implement XML parsing
-    #  This `parseXMLNode` supposedly "works", but we first have to define what this means: basically, what would an XML-parsing function normally yield? How are children/nodes/attributes supposed to fit in Arturo's value system: arrays, dictionaries, scalars, etc?
-    #  labels: helpers, library, enhancement, bug, open discussion
-    proc parseXMLNode*(n: XmlNode, level: int = 0): Value =
-        let items = toSeq(n.items)
-        if items.len == 1 and items[0].kind == xnText:
-            return newString(items[0].text)
+    proc unescapeXmlEntities*(s: string): string =
+        result = newStringOfCap(s.len)
+        var i = 0
+        while i < s.len:
+            if s[i] == '&':
+                var j = i + 1
+                while j < s.len and j - i < 12 and s[j] != ';':
+                    inc j
+                if j < s.len and s[j] == ';' and j > i + 1:
+                    let body = s[i+1 ..< j]
+                    var decoded = ""
+                    case body:
+                        of "amp":  decoded = "&"
+                        of "lt":   decoded = "<"
+                        of "gt":   decoded = ">"
+                        of "quot": decoded = "\""
+                        of "apos": decoded = "'"
+                        else:
+                            if body.len > 1 and body[0] == '#':
+                                decoded = entityToUtf8(body)
+                    if decoded.len > 0:
+                        result.add(decoded)
+                        i = j + 1
+                        continue
+                result.add('&')
+                inc i
+            else:
+                result.add(s[i])
+                inc i
 
-        var children = newBlock()
+    proc parseXMLNode*(node: XmlNode): Value =
         result = newDictionary()
-        for child in n.items:
-            let subtags = toSeq(n.items).map((x) => x.tag)
-            if count(subtags, child.tag)>1:
-                children.a.add(parseXMLNode(child, level+1))
-            else:
-                result.d[child.tag] = parseXMLNode(child, level+1)
-
-        if n.attrsLen > 0:
-            result.d["_tag"] = newString(n.tag)
-            for k,v in n.attrs.pairs:
-                result.d[k] = newString(v)
-            if children.a.len > 0:
+        case node.kind:
+            of xnElement:
+                result.d["kind"] = newLiteral("element")
+                result.d["tag"] = newString(node.tag())
+                let attrsDict = newDictionary()
+                if node.attrsLen() > 0:
+                    for k, v in pairs(node.attrs()):
+                        attrsDict.d[k] = newString(v)
+                result.d["attrs"] = attrsDict
+                var children = newBlock()
+                for sub in items(node):
+                    children.a.add(parseXMLNode(sub))
                 result.d["children"] = children
-        else:
-            if result.d.len > 0:
-                result.d["children"] = children
-            else:
-                result = children
+            of xnText, xnVerbatimText:
+                result.d["kind"] = newLiteral("text")
+                result.d["value"] = newString(node.text)
+            of xnComment:
+                result.d["kind"] = newLiteral("comment")
+                result.d["value"] = newString(node.text)
+            of xnCData:
+                result.d["kind"] = newLiteral("cdata")
+                result.d["value"] = newString(node.text)
+            of xnEntity:
+                result.d["kind"] = newLiteral("entity")
+                result.d["value"] = newString(node.text)
 
     proc parseXMLInput*(input: string): Value =
-        parseXMLNode(parseXml(input))
+        let root = parseXml(input, options = {reportComments, reportWhitespace})
+        result = newDictionary()
+        result.d["kind"] = newLiteral("document")
+        var children = newBlock()
+        children.a.add(parseXMLNode(root))
+        result.d["children"] = children

@@ -30,6 +30,10 @@ import unicode, std/wordwrap, xmltree
 import helpers/charsets
 import helpers/strings
 
+when defined(PARSERS):
+    import helpers/html as htmlHelper
+    import helpers/xml as xmlHelper
+
 import vm/lib
 
 when not defined(WEB):
@@ -155,7 +159,8 @@ proc defineModule*(moduleName: string) =
             "json"  : ({Logical},"for literal use in JSON strings"),
             "regex" : ({Logical},"for literal use in regular expression"),
             "shell" : ({Logical},"for use in a shell command"),
-            "xml"   : ({Logical},"for use in an XML document")
+            "xml"   : ({Logical},"for use in an XML document"),
+            "html"  : ({Logical},"for use in an HTML document")
         },
         returns     = {String,Nothing},
         example     = """
@@ -188,6 +193,8 @@ proc defineModule*(moduleName: string) =
                         SetInPlaceAny(newString(quoteShell(InPlaced.s)))
                 elif (hadAttr("xml")):
                     SetInPlaceAny(newString(xmltree.escape(InPlaced.s)))
+                elif (hadAttr("html")):
+                    SetInPlaceAny(newString(xmltree.escape(InPlaced.s).replace("&apos;", "&#39;")))
                 else:
                     SetInPlaceAny(newString(strutils.escape(InPlaced.s)))
             else:
@@ -200,6 +207,8 @@ proc defineModule*(moduleName: string) =
                         push(newString(quoteShell(x.s)))
                 elif (hadAttr("xml")):
                     push(newString(xmltree.escape(x.s)))
+                elif (hadAttr("html")):
+                    push(newString(xmltree.escape(x.s).replace("&apos;", "&#39;")))
                 else:
                     push(newString(strutils.escape(x.s)))
 
@@ -908,6 +917,54 @@ proc defineModule*(moduleName: string) =
                 else: 
                     ensureInPlaceAny()
                     InPlaced.s = truncate(InPlaced.s, y.i, with)
+
+    builtin "unescape",
+        alias       = unaliased,
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "unescape given string",
+        args        = {
+            "string": {String,Literal,PathLiteral}
+        },
+        attrs       = {
+            "json"  : ({Logical},"from a JSON-escaped string"),
+            "xml"   : ({Logical},"from an XML document"),
+            "html"  : ({Logical},"from an HTML document")
+        },
+        returns     = {String,Nothing},
+        example     = """
+            print unescape "a\\nb\\tc"
+            ; a
+            ; b   c
+            ..........
+            print unescape.json {a \"b\" c}
+            ; a "b" c
+            ..........
+            print unescape.html "a &amp; b &lt; c &#65;"
+            ; a & b < c A
+        """:
+            #=======================================================
+            proc doUnescape(s: string): string =
+                if (hadAttr("json")):
+                    result = parseJson("\"" & s & "\"").getStr()
+                elif (hadAttr("xml")):
+                    when defined(PARSERS):
+                        result = unescapeXmlEntities(s)
+                    else:
+                        result = s
+                elif (hadAttr("html")):
+                    when defined(PARSERS):
+                        result = unescapeHtmlEntities(s)
+                    else:
+                        result = s
+                else:
+                    result = strutils.unescape(s, prefix="", suffix="")
+
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(doUnescape(InPlaced.s)))
+            else:
+                push(newString(doUnescape(x.s)))
 
     builtin "upper",
         alias       = unaliased, 

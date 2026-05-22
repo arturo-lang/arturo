@@ -2020,10 +2020,15 @@ proc parseHtml*(s: Stream, filename: string,
   open(x, s, filename, {reportComments, reportWhitespace, allowUnquotedAttribs,
     allowEmptyAttribs})
   next(x)
-  # skip the DOCTYPE:
-  if x.kind == xmlSpecial: next(x)
+  # capture the DOCTYPE (if any) so callers can preserve it:
+  var doctypeContent = ""
+  if x.kind == xmlSpecial:
+    doctypeContent = x.rawData
+    next(x)
 
   result = newElement("document")
+  if doctypeContent.len > 0:
+    result.attrs = {"_doctype": doctypeContent}.toXmlAttributes
   result.addNode(parse(x, errors))
   #if x.kind != xmlEof:
   #  adderr(errorMsg(x, "EOF expected"))
@@ -2034,7 +2039,7 @@ proc parseHtml*(s: Stream, filename: string,
       # force progress!
       next(x)
   close(x)
-  if result.len == 1:
+  if result.len == 1 and doctypeContent.len == 0:
     result = result[0]
 
 proc parseHtml*(s: Stream): XmlNode =

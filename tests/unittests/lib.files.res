@@ -148,83 +148,174 @@ This is a multiline File.
 >> read.html
 
 [ :dictionary
-    attrs : [ :dictionary
-    ]
-    text  : 
-
-    Unordered List with Square Bullets
-    
-        Arturo
-        Python
-        Ruby
-    
-    
-        Hello
-        
-        World
-    
-
+    kind     : document :literal
+    children : [ :block
+        [ :dictionary
+            kind  : doctype :literal
+            value : DOCTYPE html :string
+        ]
+        [ :dictionary
+            kind  : text :literal
+            value : 
  :string
-    body  : [ :dictionary
-        attrs : [ :dictionary
         ]
-        text  : 
-    Unordered List with Square Bullets
-    
-        Arturo
-        Python
-        Ruby
-    
-    
-        Hello
-        
-        World
-    
+        [ :dictionary
+            kind     : element :literal
+            tag      : html :string
+            attrs    : [ :dictionary
+            ]
+            children : [ :block
+                [ :dictionary
+                    kind  : text :literal
+                    value : 
  :string
-        h2    : [ :dictionary
-            attrs : [ :dictionary
-            ]
-            text  : Unordered List with Square Bullets :string
-        ]
-        ul    : [ :dictionary
-            attrs : [ :dictionary
-                style : list-style-type:square; :string
-            ]
-            text  : 
-        Arturo
-        Python
-        Ruby
+                ]
+                [ :dictionary
+                    kind     : element :literal
+                    tag      : body :string
+                    attrs    : [ :dictionary
+                    ]
+                    children : [ :block
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
      :string
-            li    : [ :block
-                [ :dictionary
-                    attrs : [ :dictionary
-                    ]
-                    text  : Arturo :string
-                ]
-                [ :dictionary
-                    attrs : [ :dictionary
-                    ]
-                    text  : Python :string
-                ]
-                [ :dictionary
-                    attrs : [ :dictionary
-                    ]
-                    text  : Ruby :string
-                ]
-            ]
-        ]
-        p     : [ :dictionary
-            attrs : [ :dictionary
-            ]
-            text  : 
-        Hello
-        
-        World
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : h2 :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Unordered List with Square Bullets :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
      :string
-            br    : [ :dictionary
-                attrs : [ :dictionary
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : ul :string
+                            attrs    : [ :dictionary
+                                style : list-style-type:square; :string
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : 
+         :string
+                                ]
+                                [ :dictionary
+                                    kind     : element :literal
+                                    tag      : li :string
+                                    attrs    : [ :dictionary
+                                    ]
+                                    children : [ :block
+                                        [ :dictionary
+                                            kind  : text :literal
+                                            value : Arturo :string
+                                        ]
+                                    ]
+                                ]
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : 
+         :string
+                                ]
+                                [ :dictionary
+                                    kind     : element :literal
+                                    tag      : li :string
+                                    attrs    : [ :dictionary
+                                    ]
+                                    children : [ :block
+                                        [ :dictionary
+                                            kind  : text :literal
+                                            value : Python :string
+                                        ]
+                                    ]
+                                ]
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : 
+         :string
+                                ]
+                                [ :dictionary
+                                    kind     : element :literal
+                                    tag      : li :string
+                                    attrs    : [ :dictionary
+                                    ]
+                                    children : [ :block
+                                        [ :dictionary
+                                            kind  : text :literal
+                                            value : Ruby :string
+                                        ]
+                                    ]
+                                ]
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : 
+     :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : p :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : 
+         :string
+                                ]
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Hello
+         :string
+                                ]
+                                [ :dictionary
+                                    kind     : element :literal
+                                    tag      : br :string
+                                    attrs    : [ :dictionary
+                                    ]
+                                    children : [ :block
+                                    ]
+                                ]
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : 
+         :string
+                                ]
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : World
+     :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+ :string
+                        ]
+                    ]
                 ]
-                text  :  :string
+                [ :dictionary
+                    kind  : text :literal
+                    value : 
+ :string
+                ]
             ]
         ]
     ]
@@ -232,27 +323,232 @@ This is a multiline File.
 
 >> read.xml
 
-[ :block
-    [ :dictionary
-        name     : Arturo Programming Language :string
-        author   : Yanis Zafiropulos :string
-        category : Scripting and Concatenative :string
-        _tag     : language :string
-        id       : art :string
-    ]
-    [ :dictionary
-        name     : CPython :string
-        author   : Guido van Rossum :string
-        category : Scripting and Object Oriented :string
-        _tag     : language :string
-        id       : py :string
-    ]
-    [ :dictionary
-        name     : Ruby :string
-        author   : Yukihiro Matsumoto :string
-        category : Scripting and Object Oriented :string
-        _tag     : language :string
-        id       : rb :string
+[ :dictionary
+    kind     : document :literal
+    children : [ :block
+        [ :dictionary
+            kind     : element :literal
+            tag      : languages :string
+            attrs    : [ :dictionary
+            ]
+            children : [ :block
+                [ :dictionary
+                    kind  : text :literal
+                    value : 
+ :string
+                ]
+                [ :dictionary
+                    kind     : element :literal
+                    tag      : language :string
+                    attrs    : [ :dictionary
+                        id : art :string
+                    ]
+                    children : [ :block
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : name :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Arturo Programming Language :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : author :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Yanis Zafiropulos :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : category :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Scripting and Concatenative :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+ :string
+                        ]
+                    ]
+                ]
+                [ :dictionary
+                    kind  : text :literal
+                    value : 
+ :string
+                ]
+                [ :dictionary
+                    kind     : element :literal
+                    tag      : language :string
+                    attrs    : [ :dictionary
+                        id : py :string
+                    ]
+                    children : [ :block
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : name :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : CPython :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : author :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Guido van Rossum :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : category :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Scripting and Object Oriented :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+ :string
+                        ]
+                    ]
+                ]
+                [ :dictionary
+                    kind  : text :literal
+                    value : 
+ :string
+                ]
+                [ :dictionary
+                    kind     : element :literal
+                    tag      : language :string
+                    attrs    : [ :dictionary
+                        id : rb :string
+                    ]
+                    children : [ :block
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : name :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Ruby :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : author :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Yukihiro Matsumoto :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+     :string
+                        ]
+                        [ :dictionary
+                            kind     : element :literal
+                            tag      : category :string
+                            attrs    : [ :dictionary
+                            ]
+                            children : [ :block
+                                [ :dictionary
+                                    kind  : text :literal
+                                    value : Scripting and Object Oriented :string
+                                ]
+                            ]
+                        ]
+                        [ :dictionary
+                            kind  : text :literal
+                            value : 
+ :string
+                        ]
+                    ]
+                ]
+                [ :dictionary
+                    kind  : text :literal
+                    value : 
+ :string
+                ]
+            ]
+        ]
     ]
 ]
 
