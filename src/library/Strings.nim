@@ -32,6 +32,7 @@ import helpers/strings
 
 when defined(PARSERS):
     import helpers/html as htmlHelper
+    import helpers/xml as xmlHelper
 
 import vm/lib
 

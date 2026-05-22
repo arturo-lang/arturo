@@ -15,6 +15,8 @@ when defined(PARSERS):
     import strtabs
     import tables, xmlparser, xmltree
 
+    import extras/htmlparser
+
 import vm/values/value
 
 #=======================================
@@ -22,6 +24,36 @@ import vm/values/value
 #=======================================
 
 when defined(PARSERS):
+    proc unescapeXmlEntities*(s: string): string =
+        result = newStringOfCap(s.len)
+        var i = 0
+        while i < s.len:
+            if s[i] == '&':
+                var j = i + 1
+                while j < s.len and j - i < 12 and s[j] != ';':
+                    inc j
+                if j < s.len and s[j] == ';' and j > i + 1:
+                    let body = s[i+1 ..< j]
+                    var decoded = ""
+                    case body:
+                        of "amp":  decoded = "&"
+                        of "lt":   decoded = "<"
+                        of "gt":   decoded = ">"
+                        of "quot": decoded = "\""
+                        of "apos": decoded = "'"
+                        else:
+                            if body.len > 1 and body[0] == '#':
+                                decoded = entityToUtf8(body)
+                    if decoded.len > 0:
+                        result.add(decoded)
+                        i = j + 1
+                        continue
+                result.add('&')
+                inc i
+            else:
+                result.add(s[i])
+                inc i
+
     proc parseXMLNode*(node: XmlNode): Value =
         result = newDictionary()
         case node.kind:
