@@ -449,6 +449,73 @@ topic "read.html" do
         read.html htmlSample
         read.html ~"|dir|/test.html"
 
+    ; ---------//---------//---------//
+    ; lossless tree shape checks
+    ; ---------//---------//---------//
+
+    parsed: read.html htmlSample
+
+    ; helper to find first child element of `parent` with a given tag
+    findTag: function [parent t][
+        elems: select parent\children 'c -> c\kind = 'element
+        first select elems 'c -> c\tag = t
+    ]
+
+    ; top-level document node
+    ensure -> parsed\kind = 'document
+    ensure -> block? parsed\children
+
+    ; doctype preserved as the first non-whitespace child
+    doctypes: select parsed\children 'c -> c\kind = 'doctype
+    ensure -> 1 = size doctypes
+
+    ; drill into html -> body
+    htmlNode: findTag parsed "html"
+    ensure -> not? null? htmlNode
+    bodyNode: findTag htmlNode "body"
+    ensure -> not? null? bodyNode
+
+    ; helper to extract the text value of the first text-node child
+    firstText: function [node][
+        textKid: first node\children
+        textKid\value
+    ]
+
+    ; <h2> attrs + text content
+    h2: findTag bodyNode "h2"
+    ensure -> "Unordered List with Square Bullets" = firstText h2
+
+    ; <ul> attrs + three <li> element children
+    ul: findTag bodyNode "ul"
+    ensure -> "list-style-type:square;" = ul\attrs\style
+    liElems: select ul\children 'c -> c\kind = 'element
+    ensure -> 3 = size liElems
+    li0: first liElems
+    li1: liElems\1
+    li2: last liElems
+    ensure -> "Arturo" = firstText li0
+    ensure -> "Python" = firstText li1
+    ensure -> "Ruby"   = firstText li2
+
+    ; <p> preserves mixed content (text + <br> + text)
+    p: findTag bodyNode "p"
+    pKinds: map p\children 'c -> c\kind
+    ensure -> contains? pKinds 'text
+    ensure -> contains? pKinds 'element
+    ensure -> not? null? findTag p "br"
+
+    ; ---------//---------//---------//
+    ; comment node preserved
+    ; ---------//---------//---------//
+
+    withComment: read.html {<html><body><!-- hello --><p>x</p></body></html>}
+    html2: findTag withComment "html"
+    body2: findTag html2 "body"
+    commentNodes: select body2\children 'c -> c\kind = 'comment
+    ensure -> 1 = size commentNodes
+    cmt: first commentNodes
+    ensure -> " hello " = cmt\value
+
 ]
 
 topic "read.xml" do
