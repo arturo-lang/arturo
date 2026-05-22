@@ -50,4 +50,13 @@ when defined(PARSERS):
                 result.d["value"] = newString(node.text)
 
     proc parseHtmlInput*(input: string): Value =
-        parseHtmlNode(parseHtml(input)).d["html"]
+        let root = parseHtml(input)
+        result = newDictionary()
+        result.d["kind"] = newLiteral("document")
+        var children = newBlock()
+        if root.kind == xnElement and root.tag == "document":
+            for sub in items(root):
+                children.a.add(parseHtmlNode(sub))
+        else:
+            children.a.add(parseHtmlNode(root))
+        result.d["children"] = children
