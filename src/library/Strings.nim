@@ -207,6 +207,31 @@ proc defineModule*(moduleName: string) =
                 else:
                     push(newString(strutils.escape(x.s)))
 
+    when defined(PARSERS):
+        builtin "unescape",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "decode HTML/XML entities in given string",
+            args        = {
+                "string": {String,Literal,PathLiteral}
+            },
+            attrs       = {
+                "xml"   : ({Logical},"decode XML entities (same rules as HTML)"),
+                "html"  : ({Logical},"decode HTML entities (default)")
+            },
+            returns     = {String,Nothing},
+            example     = """
+                print unescape "a &amp; b &lt; c &#65;"
+                ; a & b < c A
+            """:
+                #=======================================================
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(unescapeHtmlEntities(InPlaced.s)))
+                else:
+                    push(newString(unescapeHtmlEntities(x.s)))
+
     builtin "indent",
         alias       = unaliased, 
         op          = opNop,
