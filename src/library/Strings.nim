@@ -236,7 +236,12 @@ proc defineModule*(moduleName: string) =
             proc doUnescape(s: string): string =
                 if (hadAttr("json")):
                     result = parseJson("\"" & s & "\"").getStr()
-                elif (hadAttr("xml")) or (hadAttr("html")):
+                elif (hadAttr("xml")):
+                    when defined(PARSERS):
+                        result = unescapeXmlEntities(s)
+                    else:
+                        result = s
+                elif (hadAttr("html")):
                     when defined(PARSERS):
                         result = unescapeHtmlEntities(s)
                     else:
