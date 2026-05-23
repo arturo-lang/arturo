@@ -81,26 +81,14 @@ jobs:
               with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
-                os: ${{ matrix.os == 'web' && 'linux' || matrix.os }}
-                arch: ${{ matrix.os == 'web' && 'amd64' || matrix.arch }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
                 mode: ${{ matrix.mode }}
                 support: ${{ matrix.support }}
                 src: ${{ github.ref }}
                 metadata: ${{ steps.version.outputs.VERSION }}
-                create_artifact: ${{ matrix.os == 'web' && 'false' || 'true' }}
+                create_artifact: 'true'
                 artifact_version: ${{ steps.version.outputs.VERSION }}
-
-            - if: matrix.os == 'web' && env.arturoCanRun == 'true'
-              name: Setup Node (web)
-              uses: actions/setup-node@v4
-              with:
-                node-version: '20'
-
-            - if: matrix.os == 'web' && env.arturoCanRun == 'true'
-              name: Build web target
-              run: |
-                cd $GITHUB_WORKSPACE/arturo
-                ./build.nims --mode web
 
             - name: Check if tests should be skipped
               id: check_skip
@@ -126,6 +114,8 @@ jobs:
                 cd $GITHUB_WORKSPACE/arturo
 
                 if [ "${{ matrix.os }}" = "web" ]; then
+                    mkdir -p bin
+                    cp "$HOME/.arturo/bin/arturo.js" bin/arturo.js
                     fails=0
                     for art in tests/web/*.art; do
                         res="${art%.art}.res"
