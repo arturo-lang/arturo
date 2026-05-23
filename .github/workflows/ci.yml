@@ -107,7 +107,7 @@ jobs:
                     echo "skip=false" >> "$GITHUB_OUTPUT"
                 fi
 
-            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
+            - if: (env.arturoCanRun == 'true' || matrix.os == 'web') && steps.check_skip.outputs.skip != 'true'
               name: Run tests
               timeout-minutes: 15
               run: |
