@@ -73,8 +73,24 @@ template overflowGuard(main: untyped, alternative: untyped): untyped {.dirty.} =
 template tryOp(op: untyped): untyped =
     if unlikely(op): break overflowBlock
 
+when defined(WEB):
+    # `system.gcd` uses Stein's binary algorithm with `shr`, which on the JS
+    # backend becomes a 32-bit `>>`. Any operand above 2^31 gets truncated
+    # to a negative Int32 and the loop never terminates. Use plain Euclidean
+    # gcd via `mod`, which stays in JS Number range.
+    func safeGcd(a, b: int): int =
+        var x = abs(a)
+        var y = abs(b)
+        while y != 0:
+            let t = y
+            y = x mod y
+            x = t
+        x
+else:
+    template safeGcd(a, b: int): int = gcd(a, b)
+
 func reduce(x: var VRational) =
-    let common = gcd(x.num, x.den)
+    let common = safeGcd(x.num, x.den)
     if x.den > 0:
         x.num = x.num div common
         x.den = x.den div common
