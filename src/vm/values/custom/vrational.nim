@@ -74,10 +74,7 @@ template tryOp(op: untyped): untyped =
     if unlikely(op): break overflowBlock
 
 when defined(WEB):
-    # `system.gcd` uses Stein's binary algorithm with `shr`, which on the JS
-    # backend becomes a 32-bit `>>`. Any operand above 2^31 gets truncated
-    # to a negative Int32 and the loop never terminates. Use plain Euclidean
-    # gcd via `mod`, which stays in JS Number range.
+    # `system.gcd` uses `shr` which becomes 32-bit `>>` on JS and loops forever for values above 2^31
     func safeGcd(a, b: int): int =
         var x = abs(a)
         var y = abs(b)
