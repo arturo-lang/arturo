@@ -78,17 +78,29 @@ jobs:
 
             - name: Install Arturo
               uses: arturo-lang/setup-arturo@v2
-              with: 
+              with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
-                os: ${{ matrix.os }}
-                arch: ${{ matrix.arch }}
+                os: ${{ matrix.os == 'web' && 'linux' || matrix.os }}
+                arch: ${{ matrix.os == 'web' && 'amd64' || matrix.arch }}
                 mode: ${{ matrix.mode }}
                 support: ${{ matrix.support }}
                 src: ${{ github.ref }}
                 metadata: ${{ steps.version.outputs.VERSION }}
-                create_artifact: 'true'
+                create_artifact: ${{ matrix.os == 'web' && 'false' || 'true' }}
                 artifact_version: ${{ steps.version.outputs.VERSION }}
+
+            - if: matrix.os == 'web' && env.arturoCanRun == 'true'
+              name: Setup Node (web)
+              uses: actions/setup-node@v4
+              with:
+                node-version: '20'
+
+            - if: matrix.os == 'web' && env.arturoCanRun == 'true'
+              name: Build web target
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                ./build.nims --mode web
 
             - name: Check if tests should be skipped
               id: check_skip
@@ -109,8 +121,30 @@ jobs:
 
             - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
               name: Run tests
+              timeout-minutes: 15
               run: |
                 cd $GITHUB_WORKSPACE/arturo
+
+                if [ "${{ matrix.os }}" = "web" ]; then
+                    fails=0
+                    for art in tests/web/*.art; do
+                        res="${art%.art}.res"
+                        [ -f "$res" ] || continue
+                        echo "--- $art"
+                        actual=$(node tools/run.js "$art")
+                        expected=$(cat "$res")
+                        if [ "$actual" = "$expected" ]; then
+                            echo "OK"
+                        else
+                            echo "FAIL"
+                            echo "expected: $expected"
+                            echo "actual:   $actual"
+                            fails=$((fails + 1))
+                        fi
+                    done
+                    exit $fails
+                fi
+
                 git clone https://github.com/arturo-lang/examples.git ../examples
 
                 arturo -v
@@ -124,92 +158,3 @@ jobs:
                         exit 1
                     fi
                 fi
-
-    WebTest:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Arturo sources
-              uses: actions/checkout@v4
-              with:
-                submodules: recursive
-                path: arturo
-                ref: ${{ github.ref }}
-                fetch-depth: 0
-
-            - name: Prepare artifact version
-              id: version
-              shell: bash
-              run: |
-                cd arturo
-                git_hash=$(git rev-parse --short HEAD)
-                if [ "${{ github.event_name }}" = "pull_request" ]; then
-                    version="pr${{ github.event.pull_request.number }}.${git_hash}"
-                else
-                    version="${{ github.ref_name }}.${git_hash}"
-                fi
-                echo "VERSION=$version" >> "$GITHUB_OUTPUT"
-
-            - name: Install Arturo (native runner)
-              uses: arturo-lang/setup-arturo@v2
-              with:
-                do: compile
-                token: ${{ secrets.GITHUB_TOKEN }}
-                os: linux
-                arch: amd64
-                mode: mini
-                src: ${{ github.ref }}
-                metadata: ${{ steps.version.outputs.VERSION }}
-                create_artifact: 'false'
-                artifact_version: ${{ steps.version.outputs.VERSION }}
-
-            - name: Check if tests should be skipped
-              id: check_skip
-              shell: bash
-              run: |
-                cd $GITHUB_WORKSPACE/arturo
-                if [ "${{ github.event_name }}" = "pull_request" ]; then
-                    COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
-                else
-                    COMMIT_MSG=$(git log -1 --pretty=%B HEAD)
-                fi
-
-                if echo "$COMMIT_MSG" | grep -q "\[skip tests\]"; then
-                    echo "skip=true" >> "$GITHUB_OUTPUT"
-                else
-                    echo "skip=false" >> "$GITHUB_OUTPUT"
-                fi
-
-            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
-              name: Setup Node
-              uses: actions/setup-node@v4
-              with:
-                node-version: '20'
-
-            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
-              name: Build web target
-              run: |
-                cd $GITHUB_WORKSPACE/arturo
-                ./build.nims --mode web
-
-            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
-              name: Run web smoke tests
-              timeout-minutes: 10
-              run: |
-                cd $GITHUB_WORKSPACE/arturo
-                fails=0
-                for art in tests/web/*.art; do
-                    res="${art%.art}.res"
-                    [ -f "$res" ] || continue
-                    echo "--- $art"
-                    actual=$(node tools/run.js "$art")
-                    expected=$(cat "$res")
-                    if [ "$actual" = "$expected" ]; then
-                        echo "OK"
-                    else
-                        echo "FAIL"
-                        echo "expected: $expected"
-                        echo "actual:   $actual"
-                        fails=$((fails + 1))
-                    fi
-                done
-                exit $fails
