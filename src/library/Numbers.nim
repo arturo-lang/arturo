@@ -27,6 +27,7 @@ when defined(WEB):
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
+import helpers/intrinsics
 import helpers/maths
 import helpers/ranges
 import vm/values/custom/vrange
@@ -817,8 +818,6 @@ proc defineModule*(moduleName: string) =
             requireValue(current, {Integer})
 
             var i = 1
-            # TODO(Numbers\gcd) not working for Web builds
-            # labels: web,enhancement
             while i<x.a.len:
                 let elem {.cursor.} = x.a[i]
                 requireValue(elem, {Integer})
@@ -828,7 +827,7 @@ proc defineModule*(moduleName: string) =
                         when defined(GMP):
                             current = newInteger(gcd(current.i, elem.bi))
                     else:
-                        current = newInteger(gcd(current.i, elem.i))
+                        current = newInteger(safeGcd(current.i, elem.i))
                 else:
                     when defined(GMP):
                         if elem.iKind==BigInteger:
