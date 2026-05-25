@@ -73,19 +73,6 @@ template overflowGuard(main: untyped, alternative: untyped): untyped {.dirty.} =
 template tryOp(op: untyped): untyped =
     if unlikely(op): break overflowBlock
 
-when defined(WEB):
-    # `system.gcd` uses `shr` which becomes 32-bit `>>` on JS and loops forever for values above 2^31
-    func safeGcd(a, b: int): int =
-        var x = abs(a)
-        var y = abs(b)
-        while y != 0:
-            let t = y
-            y = x mod y
-            x = t
-        x
-else:
-    template safeGcd(a, b: int): int = gcd(a, b)
-
 func reduce(x: var VRational) =
     let common = safeGcd(x.num, x.den)
     if x.den > 0:

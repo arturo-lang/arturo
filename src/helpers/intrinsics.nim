@@ -48,6 +48,19 @@ else:
 # Methods
 #=======================================
 
+when defined(WEB):
+    # `system.gcd` uses `shr` which becomes 32-bit `>>` on JS and loops forever for values above 2^31
+    func safeGcd*(a, b: int): int =
+        var x = abs(a)
+        var y = abs(b)
+        while y != 0:
+            let t = y
+            y = x mod y
+            x = t
+        x
+else:
+    template safeGcd*(a, b: int): int = system.gcd(a, b)
+
 func powIntWithOverflow*(a, b: int, res: var int): bool =
     result = false
     case b:
