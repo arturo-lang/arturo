@@ -96,7 +96,8 @@ when defined(WEB):
     type WebEnvKind* = enum
         WebBrowser, WebNodeJS, WebDeno, WebUnknown
 
-    {.emit: """
+    {.emit: 
+    """
     // Nim's `quit` emits a bare `exit(code)`; shim it so it works in every JS host.
     if (typeof globalThis.exit === 'undefined') {
         globalThis.exit = function (code) {
