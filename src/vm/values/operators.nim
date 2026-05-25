@@ -27,8 +27,7 @@ import vm/[globals, errors, stack]
 import vm/values/types
 import vm/values/value
 
-when not defined(WEB):
-    import vm/values/printable
+import vm/values/printable
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 
@@ -156,11 +155,10 @@ template notZero(v: untyped): untyped =
     v
 
 proc invalidOperation(op: string, x: Value, y: Value = nil): Value =
-    when not defined(WEB):
-        if y.isNil:
-            Error_InvalidOperation(op, valueKind(x, withBigInfo=true), "")
-        else:
-            Error_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
+    if y.isNil:
+        Error_InvalidOperation(op, valueKind(x, withBigInfo=true), "")
+    else:
+        Error_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
     VNULL
 
 template invalidOperation(op: string): untyped =
