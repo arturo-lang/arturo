@@ -1,0 +1,11 @@
+double: function [x] [ 2 * x ]
+print double 21
+
+add2: function [a b] -> a + b
+print add2 3 4
+
+fact: function [n] [
+    if n =< 1 -> return 1
+    return n * (fact n - 1)
+]
+print fact 5
