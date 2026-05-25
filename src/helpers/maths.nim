@@ -15,6 +15,8 @@
 
 import algorithm, bitops, std/math, sequtils, sugar
 
+import helpers/intrinsics
+
 when defined(WEB):
     import std/jsbigints
 elif defined(GMP):
@@ -99,8 +101,13 @@ func selectWitnesses*[T: SomeInteger](num: T): seq[uint64] =
 func isPrime*[T: SomeInteger](n: T): bool =
     let primes = @[2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]
     if n <= primes[^1].T: return (n in primes)
-    let modp47 = 614889782588491410u
-    if gcd(n, modp47) != 1: return false
+    when defined(WEB):
+        # avoid `system.gcd` (32-bit shr hang) and uint64 mismatch
+        for p in [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]:
+            if (int(n) mod p) == 0: return false
+    else:
+        let modp47 = 614889782588491410u
+        if gcd(n, modp47) != 1: return false
     let witnesses = selectWitnesses(n)
     miller_rabin_test(n, witnesses)
 
@@ -256,7 +263,7 @@ when defined(WEB):
         let bigOne = big(1)
 
         var tail: seq[JsBigInt]
-        
+
         var i = bigOne
         let s = isqrt(n)
         while i <= s:
@@ -264,11 +271,34 @@ when defined(WEB):
                 let d = n div i
                 if i != d: tail.add(d)
                 result.add(i)
-                
+
             i += bigOne
 
         tail.reverse()
         result &= tail
+
+    func primeFactorization*(n: JsBigInt): seq[JsBigInt] =
+        let bigZero = big(0)
+        let bigOne = big(1)
+        let bigTwo = big(2)
+        let bigThree = big(3)
+
+        var x = n
+        if x == bigZero: return
+
+        while x mod bigTwo == bigZero:
+            result.add(bigTwo)
+            x = x div bigTwo
+
+        var i = bigThree
+        while i <= isqrt(x):
+            while x mod i == bigZero:
+                result.add(i)
+                x = x div i
+            i += bigTwo
+
+        if x > bigTwo:
+            result.add(x)
 
 elif defined(GMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =

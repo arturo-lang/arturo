@@ -27,8 +27,7 @@ import vm/[globals, errors, stack]
 import vm/values/types
 import vm/values/value
 
-when not defined(WEB):
-    import vm/values/printable
+import vm/values/printable
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange, vrational, vversion]
 
@@ -156,11 +155,10 @@ template notZero(v: untyped): untyped =
     v
 
 proc invalidOperation(op: string, x: Value, y: Value = nil): Value =
-    when not defined(WEB):
-        if y.isNil:
-            Error_InvalidOperation(op, valueKind(x, withBigInfo=true), "")
-        else:
-            Error_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
+    if y.isNil:
+        Error_InvalidOperation(op, valueKind(x, withBigInfo=true), "")
+    else:
+        Error_InvalidOperation(op, valueKind(x, withBigInfo=true), valueKind(y, withBigInfo=true))
     VNULL
 
 template invalidOperation(op: string): untyped =
@@ -476,25 +474,43 @@ template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for unary arithmetic ops on a NormalInteger operand -
     ## on any other operand kind, it defaults to the normal ``slowOp``.
     let xv {.cursor.} = stack.sTop()
-    if likely(((ord(xv.kind) xor ord(Integer)) or ord(xv.iKind)) == 0):
-        let x = stack.pop()
-        stack.push(intFastFn(x.i))
+    when defined(WEB):
+        # JS backend trips the case-object guard if we pre-fetch `iKind`
+        # on a non-Integer value, so short-circuit on `kind` first.
+        if likely(xv.kind == Integer and xv.iKind == NormalInteger):
+            let x = stack.pop()
+            stack.push(intFastFn(x.i))
+        else:
+            slowOp()
     else:
-        slowOp()
+        if likely(((ord(xv.kind) xor ord(Integer)) or ord(xv.iKind)) == 0):
+            let x = stack.pop()
+            stack.push(intFastFn(x.i))
+        else:
+            slowOp()
 
 template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for binary arithmetic ops on two NormalInteger operands -
     ## on any other operand kind, it defaults to the normal ``slowOp``
     let xv {.cursor.} = stack.peek(0)
     let yv {.cursor.} = stack.peek(1)
-    if likely(((ord(xv.kind) xor ord(Integer)) or
-               (ord(yv.kind) xor ord(Integer)) or
-               ord(xv.iKind) or ord(yv.iKind)) == 0):
-        let x = stack.pop()
-        let y = stack.pop()
-        stack.push(intFastFn(x.i, y.i))
+    when defined(WEB):
+        if likely(xv.kind == Integer and yv.kind == Integer and
+                  xv.iKind == NormalInteger and yv.iKind == NormalInteger):
+            let x = stack.pop()
+            let y = stack.pop()
+            stack.push(intFastFn(x.i, y.i))
+        else:
+            slowOp()
     else:
-        slowOp()
+        if likely(((ord(xv.kind) xor ord(Integer)) or
+                   (ord(yv.kind) xor ord(Integer)) or
+                   ord(xv.iKind) or ord(yv.iKind)) == 0):
+            let x = stack.pop()
+            let y = stack.pop()
+            stack.push(intFastFn(x.i, y.i))
+        else:
+            slowOp()
 
 template objectOperationOrNothing*(operation: string, mgkMeth: MagicMethod, oneparam: static bool = false, inplace: static bool = false): untyped =
     if x.kind == Object and x.magic.fetch(mgkMeth):
@@ -517,11 +533,6 @@ template objectOperationOrNothing*(operation: string, mgkMeth: MagicMethod, onep
 #=======================================
 # Overloads
 #=======================================
-
-# TODO(VM/values/operators) [`+`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
 
 proc `+`*(x: Value, y: Value): Value =
     ## add given values and return the result
@@ -606,11 +617,6 @@ proc `+=`*(x: var Value, y: Value) =
         else:
             objectOperationOrNothing("add", AddM, inplace=true)
 
-# TODO(VM/values/operators) [`inc`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc inc*(x: Value): Value =
     ## increment given value and return the result
 
@@ -641,11 +647,6 @@ proc incI*(x: var Value) =
         of Quantity: x.q += 1
         else:
             objectOperationOrNothing("inc", IncM, oneparam=true, inplace=true)
-
-# TODO(VM/values/operators) [`-`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
 
 proc `-`*(x: Value, y: Value): Value = 
     ## subtract given values and return the result
@@ -730,11 +731,6 @@ proc `-=`*(x: var Value, y: Value) =
         else:
             objectOperationOrNothing("sub", SubM, inplace=true)
 
-# TODO(VM/values/operators) [`dec`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc dec*(x: Value): Value =
     ## decrement given value and return the result
 
@@ -765,11 +761,6 @@ proc decI*(x: var Value) =
         of Quantity: x.q -= 1
         else:
             objectOperationOrNothing("dec", DecM, oneparam=true, inplace=true)
-
-# TODO(VM/values/operators) [`*`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
 
 proc `*`*(x: Value, y: Value): Value =
     ## multiply given values and return the result
@@ -884,11 +875,6 @@ proc `*=`*(x: var Value, y: Value) =
         else:
             objectOperationOrNothing("mul", MulM, inplace=true)
 
-# TODO(VM/values/operators) [`neg`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc neg*(x: Value): Value =
     ## negate given value and return the result
 
@@ -919,11 +905,6 @@ proc negI*(x: var Value) =
         of Quantity: x.q *= -1
         else:
             objectOperationOrNothing("neg", NegM, oneparam=true, inplace=true)
-
-# TODO(VM/values/operators) [`/`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
 
 proc `/`*(x: Value, y: Value): Value =
     ## divide (integer division) given values and return the result
@@ -1006,11 +987,6 @@ proc `/=`*(x: var Value, y: Value) =
         else:
             objectOperationOrNothing("div", DivM, inplace=true)
 
-# TODO(VM/values/operators) [`//`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `//`*(x: Value, y: Value): Value =
     ## divide (floating-point division) given values and return the result
     
@@ -1074,11 +1050,6 @@ proc `//=`*(x: var Value, y: Value) =
         else:
             objectOperationOrNothing("fdiv", FDivM, inplace=true)
 
-# TODO(VM/values/operators) [`%`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `%`*(x: Value, y: Value): Value =
     ## perform the modulo operation between given values and return the result
 
@@ -1141,11 +1112,6 @@ proc `%=`*(x: var Value, y: Value) =
         else:
             objectOperationOrNothing("mod", ModM, inplace=true)
 
-# TODO(VM/values/operators) [`/%`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `/%`*(x: Value, y: Value): Value =
     ## perform the divmod operation between given values
     ## and return the result as a *tuple* Block value
@@ -1193,11 +1159,6 @@ proc `/%=`*(x: var Value, y: Value) =
     ## **Hint:** In-place, mutating operation
     
     x = x /% y
-
-# TODO(VM/values/operators) [`^`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
 
 proc `^`*(x: Value, y: Value): Value =
     ## perform the power operation between given values and return the result
@@ -1264,11 +1225,6 @@ proc `^=`*(x: var Value, y: Value) =
         else:
             objectOperationOrNothing("pow", PowM, inplace=true)
 
-# TODO(VM/values/operators) [`&&`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `&&`*(x: Value, y: Value): Value =
     ## perform binary-AND between given values and return the result
     
@@ -1305,11 +1261,6 @@ proc `&&=`*(x: var Value, y: Value) =
 
         else:
             discard invalidOperation("and")
-
-# TODO(VM/values/operators) [`||`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
 
 proc `||`*(x: Value, y: Value): Value =
     ## perform binary-OR between given values and return the result
@@ -1348,11 +1299,6 @@ proc `||=`*(x: var Value, y: Value) =
         else:
             discard invalidOperation("or")
 
-# TODO(VM/values/operators) [`^^`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `^^`*(x: Value, y: Value): Value =
     ## perform binary-XOR between given values and return the result
     
@@ -1390,11 +1336,6 @@ proc `^^=`*(x: var Value, y: Value) =
         else:
             discard invalidOperation("xor")
 
-# TODO(VM/values/operators) [`!!`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `!!`*(x: Value): Value =
     ## perform binary-NOT on given value and return the result
 
@@ -1420,11 +1361,6 @@ proc `!!=`*(x: var Value) =
         else:
             discard invalidOperation("not")
 
-# TODO(VM/values/operators) [`<<`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `<<`*(x: Value, y: Value): Value =
     ## perform binary left-shift between given values and return the result
 
@@ -1448,11 +1384,6 @@ proc `<<=`*(x: var Value, y: Value) =
         else:
             discard invalidOperation("shl")
     
-# TODO(VM/values/operators) [`>>`] Verify for Web builds
-#  we should also check whether big integers work too!
-#  (the same applies to its in-place equivalent)
-#  labels: unit-test, web, :integer
-
 proc `>>`*(x: Value, y: Value): Value =
     ## perform binary right-shift between given values and return the result
 

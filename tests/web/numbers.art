@@ -1,0 +1,7 @@
+print gcd [48 60 120]
+print lcm [4 6 8]
+print prime? 7
+print prime? 8
+print prime? 97
+print factors 24
+print factors.prime 24

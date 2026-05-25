@@ -7,10 +7,14 @@
 #=======================================================
 
 #=======================================
-# Helpers
+# Libraries
 #=======================================
 
+import std/math
 
+#=======================================
+# Helpers
+#=======================================
 
 when defined(bit32):
     func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
@@ -47,6 +51,24 @@ else:
 #=======================================
 # Methods
 #=======================================
+
+when defined(WEB):
+    # `system.gcd` uses `shr` which becomes 32-bit `>>` on JS and loops forever for values above 2^31
+    func safeGcd*(a, b: int): int =
+        var x = abs(a)
+        var y = abs(b)
+        while y != 0:
+            let t = y
+            y = x mod y
+            x = t
+        x
+
+    func safeLcm*(a, b: int): int =
+        if a == 0 or b == 0: 0
+        else: (abs(a) div safeGcd(a, b)) * abs(b)
+else:
+    template safeGcd*(a, b: int): int = math.gcd(a, b)
+    template safeLcm*(a, b: int): int = math.lcm(a, b)
 
 func powIntWithOverflow*(a, b: int, res: var int): bool =
     result = false
