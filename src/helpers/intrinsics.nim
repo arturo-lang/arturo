@@ -7,10 +7,14 @@
 #=======================================================
 
 #=======================================
-# Helpers
+# Libraries
 #=======================================
 
+import std/math
 
+#=======================================
+# Helpers
+#=======================================
 
 when defined(bit32):
     func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
@@ -63,8 +67,8 @@ when defined(WEB):
         if a == 0 or b == 0: 0
         else: (abs(a) div safeGcd(a, b)) * abs(b)
 else:
-    template safeGcd*(a, b: int): int = system.gcd(a, b)
-    template safeLcm*(a, b: int): int = system.lcm(a, b)
+    template safeGcd*(a, b: int): int = math.gcd(a, b)
+    template safeLcm*(a, b: int): int = math.lcm(a, b)
 
 func powIntWithOverflow*(a, b: int, res: var int): bool =
     result = false
