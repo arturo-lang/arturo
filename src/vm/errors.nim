@@ -89,6 +89,41 @@ var
     IsRepl*         : bool = false
 
 #=======================================
+# Web-runtime environment
+#=======================================
+
+when defined(WEB):
+    type WebEnvKind* = enum
+        WebBrowser, WebNodeJS, WebDeno, WebUnknown
+
+    {.emit: """
+    // Nim's `quit` emits a bare `exit(code)`; shim it so it works in every JS host.
+    if (typeof globalThis.exit === 'undefined') {
+        globalThis.exit = function (code) {
+            if (typeof Deno !== 'undefined') { try { Deno.exit(code | 0); } catch (_) {} return; }
+            if (typeof process !== 'undefined' && typeof process.exit === 'function') {
+                process.exit(code | 0); return;
+            }
+            // browser: nothing to exit
+        };
+    }
+    """.}
+
+    proc jsIsDeno(): bool      {.importjs: "(typeof Deno !== 'undefined')".}
+    proc jsIsNodeJS(): bool    {.importjs: "(typeof process !== 'undefined' && !!(process.versions && process.versions.node))".}
+    proc jsIsBrowser(): bool   {.importjs: "(typeof window !== 'undefined' && typeof window.document !== 'undefined')".}
+
+    proc detectWebEnv(): WebEnvKind =
+        if jsIsDeno(): WebDeno
+        elif jsIsNodeJS(): WebNodeJS
+        elif jsIsBrowser(): WebBrowser
+        else: WebUnknown
+
+    let WebEnv* = detectWebEnv()
+
+    proc consoleError*(s: cstring) {.importjs: "console.error(#)".}
+
+#=======================================
 # Helpers
 #=======================================
 
@@ -233,16 +268,46 @@ proc printHint(e: VError) =
 # Methods
 #=======================================
 
+when defined(WEB):
+    proc stripFormatting(s: string): string =
+        # drop both pseudo-markdown `_..._` markers and any ANSI escape sequences
+        result = newStringOfCap(s.len)
+        var i = 0
+        while i < s.len:
+            let c = s[i]
+            if c == '_':
+                inc i
+            elif c == '\x1b' and i+1 < s.len and s[i+1] == '[':
+                i += 2
+                while i < s.len and s[i] != 'm':
+                    inc i
+                if i < s.len: inc i
+            else:
+                result.add c
+                inc i
+
+    proc showErrorWeb(e: VError) =
+        var msg = $(e.kind.label)
+        if e.kind.description != "":
+            msg.add "\n\n" & e.kind.description
+        msg.add "\n\n" & strip(dedent(stripFormatting(formatMessage(e.msg))))
+        if e.hint != "":
+            msg.add "\n\nHint: " & strip(dedent(stripFormatting(e.hint)))
+        consoleError(cstring(msg))
+
 proc showError*(e: VError) =
-    with e:
-        printErrorHeader()
-        printErrorKindDescription()
-        printErrorMessage()
-        printCodePreview()
-        printHint()
-    
-    if (not IsRepl) or e.hint=="":
-        printError ""
+    when defined(WEB):
+        showErrorWeb(e)
+    else:
+        with e:
+            printErrorHeader()
+            printErrorKindDescription()
+            printErrorMessage()
+            printCodePreview()
+            printHint()
+
+        if (not IsRepl) or e.hint=="":
+            printError ""
 
 func panic(error: VError) =
     raise error
