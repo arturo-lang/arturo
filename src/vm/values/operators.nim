@@ -476,25 +476,43 @@ template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for unary arithmetic ops on a NormalInteger operand -
     ## on any other operand kind, it defaults to the normal ``slowOp``.
     let xv {.cursor.} = stack.sTop()
-    if likely(((ord(xv.kind) xor ord(Integer)) or ord(xv.iKind)) == 0):
-        let x = stack.pop()
-        stack.push(intFastFn(x.i))
+    when defined(WEB):
+        # JS backend trips the case-object guard if we pre-fetch `iKind`
+        # on a non-Integer value, so short-circuit on `kind` first.
+        if likely(xv.kind == Integer and xv.iKind == NormalInteger):
+            let x = stack.pop()
+            stack.push(intFastFn(x.i))
+        else:
+            slowOp()
     else:
-        slowOp()
+        if likely(((ord(xv.kind) xor ord(Integer)) or ord(xv.iKind)) == 0):
+            let x = stack.pop()
+            stack.push(intFastFn(x.i))
+        else:
+            slowOp()
 
 template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for binary arithmetic ops on two NormalInteger operands -
     ## on any other operand kind, it defaults to the normal ``slowOp``
     let xv {.cursor.} = stack.peek(0)
     let yv {.cursor.} = stack.peek(1)
-    if likely(((ord(xv.kind) xor ord(Integer)) or
-               (ord(yv.kind) xor ord(Integer)) or
-               ord(xv.iKind) or ord(yv.iKind)) == 0):
-        let x = stack.pop()
-        let y = stack.pop()
-        stack.push(intFastFn(x.i, y.i))
+    when defined(WEB):
+        if likely(xv.kind == Integer and yv.kind == Integer and
+                  xv.iKind == NormalInteger and yv.iKind == NormalInteger):
+            let x = stack.pop()
+            let y = stack.pop()
+            stack.push(intFastFn(x.i, y.i))
+        else:
+            slowOp()
     else:
-        slowOp()
+        if likely(((ord(xv.kind) xor ord(Integer)) or
+                   (ord(yv.kind) xor ord(Integer)) or
+                   ord(xv.iKind) or ord(yv.iKind)) == 0):
+            let x = stack.pop()
+            let y = stack.pop()
+            stack.push(intFastFn(x.i, y.i))
+        else:
+            slowOp()
 
 template objectOperationOrNothing*(operation: string, mgkMeth: MagicMethod, oneparam: static bool = false, inplace: static bool = false): untyped =
     if x.kind == Object and x.magic.fetch(mgkMeth):
