@@ -23,6 +23,10 @@ if (process.argv.length == 4 && process.argv[3] == "--mini") {
 // e.g. the unit-test file
 let scriptToExecute = process.argv[2];
 
+// the JS binary emits `exit(code)` from Nim's `quit`, which expects a
+// global `exit` (browser/Emscripten-style); shim it onto Node.
+globalThis.exit = (code) => process.exit(code | 0);
+
 // read the Arturo JS script and execute it
 // into the global namespace; after this,
 // A$ is available anywhere!
