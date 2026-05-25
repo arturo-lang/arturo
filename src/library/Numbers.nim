@@ -751,13 +751,8 @@ proc defineModule*(moduleName: string) =
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
                 when defined(WEB) or defined(GMP):
-                    # TODO(Numbers\factors) `.prime` not working for Web builds
-                    # labels: web,enhancement
                     if prime:
-                        when not defined(WEB):
-                            push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
-                        else:
-                            discard
+                        push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
                     else:
                         push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 

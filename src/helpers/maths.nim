@@ -263,7 +263,7 @@ when defined(WEB):
         let bigOne = big(1)
 
         var tail: seq[JsBigInt]
-        
+
         var i = bigOne
         let s = isqrt(n)
         while i <= s:
@@ -271,11 +271,34 @@ when defined(WEB):
                 let d = n div i
                 if i != d: tail.add(d)
                 result.add(i)
-                
+
             i += bigOne
 
         tail.reverse()
         result &= tail
+
+    func primeFactorization*(n: JsBigInt): seq[JsBigInt] =
+        let bigZero = big(0)
+        let bigOne = big(1)
+        let bigTwo = big(2)
+        let bigThree = big(3)
+
+        var x = n
+        if x == bigZero: return
+
+        while x mod bigTwo == bigZero:
+            result.add(bigTwo)
+            x = x div bigTwo
+
+        var i = bigThree
+        while i <= isqrt(x):
+            while x mod i == bigZero:
+                result.add(i)
+                x = x div i
+            i += bigTwo
+
+        if x > bigTwo:
+            result.add(x)
 
 elif defined(GMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
