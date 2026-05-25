@@ -877,8 +877,6 @@ proc defineModule*(moduleName: string) =
             requireValue(current, {Integer})
 
             var i = 1
-            # TODO(Numbers\lcm) not working for Web builds
-            # labels: web,enhancement
             while i<x.a.len:
                 let elem {.cursor.} = x.a[i]
                 requireValue(elem, {Integer})
@@ -888,7 +886,7 @@ proc defineModule*(moduleName: string) =
                         when defined(GMP):
                             current = newInteger(lcm(current.i, elem.bi))
                     else:
-                        current = newInteger(lcm(current.i, elem.i))
+                        current = newInteger(safeLcm(current.i, elem.i))
                 else:
                     when defined(GMP):
                         if elem.iKind==BigInteger:

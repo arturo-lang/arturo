@@ -58,8 +58,13 @@ when defined(WEB):
             y = x mod y
             x = t
         x
+
+    func safeLcm*(a, b: int): int =
+        if a == 0 or b == 0: 0
+        else: (abs(a) div safeGcd(a, b)) * abs(b)
 else:
     template safeGcd*(a, b: int): int = system.gcd(a, b)
+    template safeLcm*(a, b: int): int = system.lcm(a, b)
 
 func powIntWithOverflow*(a, b: int, res: var int): bool =
     result = false
