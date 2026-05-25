@@ -1513,8 +1513,6 @@ proc defineModule*(moduleName: string) =
             if x.iKind==NormalInteger:
                 push(newLogical(isPrime(x.i.uint64)))
             else:
-                # TODO(Numbers\prime?) not working for Web builds
-                # labels: web,enhancement
                 when defined(GMP):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
