@@ -81,9 +81,10 @@ proc defineModule*(moduleName: string) =
             },
             attrs       = {
                 "to"        : ({String},"set socket address"),
-                "udp"       : ({Logical},"use UDP instead of TCP")
+                "udp"       : ({Logical},"use UDP instead of TCP"),
+                "async"     : ({Logical},"return a `:task` resolving to the connected socket")
             },
-            returns     = {Socket},
+            returns     = {Socket,Task},
             example     = """
             ; connect to local server on port 18966
             server: connect 18966
@@ -93,31 +94,37 @@ proc defineModule*(moduleName: string) =
             ..........
             ; connect to a remote server on port 18966
             server: connect.to:"123.456.789.123" 18966
+            ..........
+            ; parallel connect to many hosts
+            tasks: map hosts 'h -> connect.async.to: h 80
+            sockets: wait.all tasks
             """:
                 #=======================================================
                 let isUDP = hadAttr("udp")
+                let explicitAsync = hadAttr("async")
 
                 let protocol =
                     if isUDP: IPPROTO_UDP
                     else: IPPROTO_TCP
 
-                var toAddress: string
-                if checkAttr("to"):
-                    toAddress = aTo.s
-                else:
-                    toAddress = "0.0.0.0"
+                let toAddress =
+                    if checkAttr("to"): aTo.s
+                    else:               "0.0.0.0"
 
-                var port = Port(x.i)
+                let port = Port(x.i)
 
-                var sock: AsyncSocket =
+                let sock: AsyncSocket =
                     if isUDP: newAsyncSocket(sockType=SOCK_DGRAM, protocol=IPPROTO_UDP, buffered=false)
                     else:     newAsyncSocket(protocol=IPPROTO_TCP)
-                if not isUDP:
-                    waitFor sock.connect(toAddress, port)
 
-                let socket = initSocket(sock, proto=protocol, address=toAddress, port=port)
+                let post = proc(): Value =
+                    newSocket(initSocket(sock, proto=protocol, address=toAddress, port=port))
 
-                push newSocket(socket)
+                let asyncTask = spawnAsyncConnect(sock, toAddress, port, isUDP, post)
+                if explicitAsync:
+                    push asyncTask
+                else:
+                    push coopWait(asyncTask.tsk.future)
 
         builtin "listen",
             alias       = unaliased,
