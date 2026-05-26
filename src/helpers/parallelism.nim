@@ -384,6 +384,26 @@ when not defined(WEB):
     proc setInboundChannelDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundChannelDispatcher = fn
 
+    # Outbound side of cross-process channels (child→parent). When set,
+    # `send` on a `:channel` calls this instead of the local state
+    # machine — Channels.nim registers a closure that writes a 2-line
+    # record to the temp file passed in via `ARTURO_CHANNEL_FILE`.
+    # Returns true if the record was actually written; false means
+    # no outbound is configured and the caller should fall through to
+    # local send.
+    var outboundChannelEmitter*: proc(name: string, payload: Value): bool {.gcsafe.} = nil
+
+    proc setOutboundChannelEmitter*(fn: proc(name: string, payload: Value): bool {.gcsafe.}) =
+        outboundChannelEmitter = fn
+
+    proc emitToOutboundChannel*(name: string, payload: Value): bool {.gcsafe.} =
+        ## Returns true if the record was forwarded across-process,
+        ## false if no outbound is configured (fall through to local).
+        {.cast(gcsafe).}:
+            if outboundChannelEmitter.isNil:
+                return false
+            return outboundChannelEmitter(name, payload)
+
     proc dispatchInboundChannel(name: string, payload: Value) {.gcsafe.} =
         {.cast(gcsafe).}:
             if not inboundChannelDispatcher.isNil:
