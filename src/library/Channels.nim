@@ -74,6 +74,23 @@ proc defineModule*(moduleName: string) =
             except CatchableError:
                 discard
 
+        # Register the outbound emitter for cross-process `send Ch v`.
+        # `send` (Sockets.nim) calls `emitToOutboundChannel` which
+        # delegates here when we're a child VM. Two-line wire format:
+        # name + `codify(payload, safeStrings=true)`, matching events.
+        setOutboundChannelEmitter(proc(name: string, payload: Value): bool {.gcsafe.} =
+            {.cast(gcsafe).}:
+                if not outboundChannelFileOpen:
+                    return false
+                try:
+                    outboundChannelFile.writeLine(name)
+                    outboundChannelFile.writeLine(codify(payload, safeStrings = true))
+                    outboundChannelFile.flushFile()
+                    return true
+                except IOError:
+                    return false
+        )
+
         builtin "channel",
             alias       = unaliased,
             op          = opNop,
