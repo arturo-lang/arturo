@@ -220,10 +220,10 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "send given message to selected socket",
+            description = "send given message to selected socket or channel",
             args        = {
-                "destination"   : {Socket},
-                "message"       : {String}
+                "destination"   : {Socket,Channel},
+                "message"       : {Any}
             },
             attrs       = {
                 "chunk"     : ({Logical},"don't send data as a line of data")
@@ -235,15 +235,20 @@ proc defineModule*(moduleName: string) =
 
             ; send a message to the server
             send socket "Hello Socket World"
+            ..........
+            ; send a value through a channel
+            Jobs: channel 'jobs
+            send Jobs 42
             """:
                 #=======================================================
-                let asChunk = hadAttr("chunk")
-
-                let message =
-                    if asChunk: y.s
-                    else: y.s & "\r\L"
-
-                coopWait x.sock.socket.send(message)
+                if x.kind == Channel:
+                    coopWait chanSend(x.chn, y)
+                else:
+                    let asChunk = hadAttr("chunk")
+                    let message =
+                        if asChunk: y.s
+                        else: y.s & "\r\L"
+                    coopWait x.sock.socket.send(message)
 
         builtin "unplug",
             alias       = unaliased,
