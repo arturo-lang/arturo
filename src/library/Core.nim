@@ -567,6 +567,21 @@ proc defineModule*(moduleName: string) =
                         push ParallelismHelper.spawnAsTask(src, taskName)
                     return
 
+                if hadAttr("isolated"):
+                    # `do.isolated [block]` — sync subprocess execution.
+                    # Sugar for `wait do.async.isolated [block]`: fresh
+                    # VM, no closure capture, blocks caller until the
+                    # child finishes. Returns the child's result (or
+                    # `:error` if it raised).
+                    let src =
+                        case xKind
+                            of Block, Bytecode: codify(x)
+                            of String:          x.s
+                            else:               ""
+                    let tsk = ParallelismHelper.spawnAsTask(src, "")
+                    push ParallelismHelper.drainTask(tsk.tsk, -1)
+                    return
+
             # `do task` is sugar for `wait task` - drain the future once.
             # Honors `.timeout` the same way `wait` does: on timeout we
             # return a `:error` value and leave the task pending.
