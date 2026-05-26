@@ -206,7 +206,16 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if x.kind == Channel:
-                    push coopWait(chanReceive(x.chn))
+                    # Child VM: route via cross-process proxy. Parent
+                    # tail registers a remote receiver under the channel
+                    # name; a DELIVER record back will resolve the
+                    # future. Falls through to local `chanReceive` when
+                    # not in a child VM.
+                    let (isProxy, pFut) = tryProxyReceive(x.chn)
+                    if isProxy:
+                        push coopWait(pFut)
+                    else:
+                        push coopWait(chanReceive(x.chn))
                     return
 
                 var size = MaxLineLength
