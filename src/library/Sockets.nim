@@ -6,7 +6,7 @@
 # @file: library/Sockets.nim
 #=======================================================
 
-## The main Sockets module 
+## The main Sockets module
 ## (part of the standard library)
 
 #=======================================
@@ -20,6 +20,7 @@
 #=======================================
 
 when not defined(WEB):
+    import asyncdispatch, asyncnet
     import std/net as netsock except Socket
     import nativesockets
 
@@ -42,12 +43,12 @@ proc defineModule*(moduleName: string) =
     #----------------------------
     # Functions
     #----------------------------
-    
+
     when not defined(WEB):
 
         builtin "accept",
             alias       = unaliased,
-            op          = opNop, 
+            op          = opNop,
             rule        = PrefixPrecedence,
             description = "accept incoming connection and return corresponding socket",
             args        = {
@@ -63,16 +64,13 @@ proc defineModule*(moduleName: string) =
             print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
-                var client: netsock.Socket
-                x.sock.socket.accept(client)
-
-                let (address,port) = getPeerAddr(client)
-
+                let (address, client) = waitFor x.sock.socket.acceptAddr()
+                let (_, port) = getPeerAddr(client)
                 let socket = initSocket(client, proto=x.sock.protocol, address=address, port=port)
                 push newSocket(socket)
 
         builtin "connect",
-            alias       = unaliased, 
+            alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "create new socket connection to given server port",
@@ -97,11 +95,11 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 let isUDP = hadAttr("udp")
 
-                let protocol = 
+                let protocol =
                     if isUDP: IPPROTO_UDP
                     else: IPPROTO_TCP
 
-                var toAddress: string  
+                var toAddress: string
                 if checkAttr("to"):
                     toAddress = aTo.s
                 else:
@@ -109,16 +107,18 @@ proc defineModule*(moduleName: string) =
 
                 var port = Port(x.i)
 
-                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                var sock: AsyncSocket =
+                    if isUDP: newAsyncSocket(sockType=SOCK_DGRAM, protocol=IPPROTO_UDP, buffered=false)
+                    else:     newAsyncSocket(protocol=IPPROTO_TCP)
                 if not isUDP:
-                    sock.connect(toAddress, port)
+                    waitFor sock.connect(toAddress, port)
 
                 let socket = initSocket(sock, proto=protocol, address=toAddress, port=port)
 
                 push newSocket(socket)
 
         builtin "listen",
-            alias       = unaliased, 
+            alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "start listening on given port and return new socket",
@@ -134,15 +134,16 @@ proc defineModule*(moduleName: string) =
             server: listen 18966
             """:
                 #=======================================================
-                let blocking = true
-                let protocol = 
-                    if hadAttr("udp"): IPPROTO_UDP
+                let isUDP = hadAttr("udp")
+                let protocol =
+                    if isUDP: IPPROTO_UDP
                     else: IPPROTO_TCP
 
-                var sock: netsock.Socket = netsock.newSocket(protocol=protocol)
+                var sock: AsyncSocket =
+                    if isUDP: newAsyncSocket(sockType=SOCK_DGRAM, protocol=IPPROTO_UDP, buffered=false)
+                    else:     newAsyncSocket(protocol=IPPROTO_TCP)
                 sock.setSockOpt(OptReuseAddr, true)
-                
-                sock.getFd().setBlocking(blocking)
+
                 sock.bindAddr(Port(x.i))
                 sock.listen()
 
@@ -153,12 +154,12 @@ proc defineModule*(moduleName: string) =
                 push newSocket(socket)
 
         builtin "receive",
-            alias       = unaliased, 
+            alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "receive line of data from selected socket",
             args        = {
-                "origin"    : {Socket}  
+                "origin"    : {Socket}
             },
             attrs       = {
                 "size"      : ({Integer},"set maximum size of received data"),
@@ -194,16 +195,22 @@ proc defineModule*(moduleName: string) =
                 if checkAttr("timeout"):
                     timeout = aTimeout.i
 
-                push newString(x.sock.socket.recvLine(timeout=timeout, maxLength=size))
+                let fut = x.sock.socket.recvLine(maxLength = size)
+                if timeout > 0:
+                    if not waitFor withTimeout(fut, timeout):
+                        try: x.sock.socket.close() except CatchableError: discard
+                        push newString("")
+                        return
+                push newString(waitFor fut)
 
         builtin "send",
-            alias       = unaliased, 
+            alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "send given message to selected socket",
             args        = {
                 "destination"   : {Socket},
-                "message"       : {String}    
+                "message"       : {String}
             },
             attrs       = {
                 "chunk"     : ({Logical},"don't send data as a line of data")
@@ -219,19 +226,19 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 let asChunk = hadAttr("chunk")
 
-                let message = 
+                let message =
                     if asChunk: y.s
                     else: y.s & "\r\L"
 
-                x.sock.socket.send(message)
+                waitFor x.sock.socket.send(message)
 
         builtin "unplug",
-            alias       = unaliased, 
+            alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "close given socket",
             args        = {
-                "socket"    : {Socket} 
+                "socket"    : {Socket}
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
@@ -255,13 +262,13 @@ proc defineModule*(moduleName: string) =
     when not defined(WEB):
 
         builtin "send?",
-            alias       = unaliased, 
+            alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
             description = "send given message to selected socket and return true if successful",
             args        = {
                 "destination"   : {Socket},
-                "message"       : {String}    
+                "message"       : {String}
             },
             attrs       = NoAttrs,
             returns     = {Logical},
@@ -276,4 +283,9 @@ proc defineModule*(moduleName: string) =
             print ["Message was sent successfully:" sent?]
             """:
                 #=======================================================
-                push newLogical(x.sock.socket.trySend(y.s))
+                var ok = true
+                try:
+                    waitFor x.sock.socket.send(y.s)
+                except CatchableError:
+                    ok = false
+                push newLogical(ok)
