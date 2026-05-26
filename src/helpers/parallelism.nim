@@ -375,6 +375,20 @@ when not defined(WEB):
     proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundEventDispatcher = fn
 
+    # Sibling of `inboundEventDispatcher` for cross-process channels.
+    # Channels.nim registers a callback that routes (name, payload) to
+    # the local VChannel of that name and feeds it via `chanSend`.
+    # nil if Channels isn't loaded.
+    var inboundChannelDispatcher*: proc(name: string, payload: Value) {.gcsafe.} = nil
+
+    proc setInboundChannelDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
+        inboundChannelDispatcher = fn
+
+    proc dispatchInboundChannel(name: string, payload: Value) {.gcsafe.} =
+        {.cast(gcsafe).}:
+            if not inboundChannelDispatcher.isNil:
+                inboundChannelDispatcher(name, payload)
+
     # static gcsafe shim around the `var proc` global — the `async` macro
     # re-analyzes our body for gcsafety and flags procvar calls even when
     # wrapped in `cast(gcsafe)` at the call site. Hiding the call behind a
