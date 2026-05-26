@@ -1,0 +1,12 @@
+loop 1..3 'i [ print ["i=" i] ]
+x: 0
+while [x < 3] [
+    x: x + 1
+    print x
+]
+if 2 > 1 -> print "yes"
+case 1 [
+    1   -> print "one"
+    2   -> print "two"
+    any -> print "other"
+]

@@ -74,7 +74,7 @@ template tryOp(op: untyped): untyped =
     if unlikely(op): break overflowBlock
 
 func reduce(x: var VRational) =
-    let common = gcd(x.num, x.den)
+    let common = safeGcd(x.num, x.den)
     if x.den > 0:
         x.num = x.num div common
         x.den = x.den div common

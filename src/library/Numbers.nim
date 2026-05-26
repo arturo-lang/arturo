@@ -27,6 +27,7 @@ when defined(WEB):
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
+import helpers/intrinsics
 import helpers/maths
 import helpers/ranges
 import vm/values/custom/vrange
@@ -750,13 +751,8 @@ proc defineModule*(moduleName: string) =
                     push(newBlock(factors(x.i).map((x)=>newInteger(x))))
             else:
                 when defined(WEB) or defined(GMP):
-                    # TODO(Numbers\factors) `.prime` not working for Web builds
-                    # labels: web,enhancement
                     if prime:
-                        when not defined(WEB):
-                            push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
-                        else:
-                            discard
+                        push(newBlock(primeFactorization(x.bi).map((x)=>newInteger(x))))
                     else:
                         push(newBlock(factors(x.bi).map((x)=>newInteger(x))))
 
@@ -817,8 +813,6 @@ proc defineModule*(moduleName: string) =
             requireValue(current, {Integer})
 
             var i = 1
-            # TODO(Numbers\gcd) not working for Web builds
-            # labels: web,enhancement
             while i<x.a.len:
                 let elem {.cursor.} = x.a[i]
                 requireValue(elem, {Integer})
@@ -828,7 +822,7 @@ proc defineModule*(moduleName: string) =
                         when defined(GMP):
                             current = newInteger(gcd(current.i, elem.bi))
                     else:
-                        current = newInteger(gcd(current.i, elem.i))
+                        current = newInteger(safeGcd(current.i, elem.i))
                 else:
                     when defined(GMP):
                         if elem.iKind==BigInteger:
@@ -878,8 +872,6 @@ proc defineModule*(moduleName: string) =
             requireValue(current, {Integer})
 
             var i = 1
-            # TODO(Numbers\lcm) not working for Web builds
-            # labels: web,enhancement
             while i<x.a.len:
                 let elem {.cursor.} = x.a[i]
                 requireValue(elem, {Integer})
@@ -889,7 +881,7 @@ proc defineModule*(moduleName: string) =
                         when defined(GMP):
                             current = newInteger(lcm(current.i, elem.bi))
                     else:
-                        current = newInteger(lcm(current.i, elem.i))
+                        current = newInteger(safeLcm(current.i, elem.i))
                 else:
                     when defined(GMP):
                         if elem.iKind==BigInteger:
@@ -1516,8 +1508,6 @@ proc defineModule*(moduleName: string) =
             if x.iKind==NormalInteger:
                 push(newLogical(isPrime(x.i.uint64)))
             else:
-                # TODO(Numbers\prime?) not working for Web builds
-                # labels: web,enhancement
                 when defined(GMP):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 

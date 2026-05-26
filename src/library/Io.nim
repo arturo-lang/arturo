@@ -41,6 +41,10 @@ when defined(WEB):
         buffer &= str
     
     proc flushFile*(buffer: var string) =
+        # `echo` already appends a newline; drop a trailing one from the buffer
+        # so block prints don't end up with a double blank line on web
+        if buffer.len > 0 and buffer[^1] == '\n':
+            buffer.setLen(buffer.len - 1)
         echo buffer
 
 #=======================================

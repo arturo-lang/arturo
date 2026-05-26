@@ -1,0 +1,10 @@
+print 3 + 4
+print 10 - 7
+print 6 * 7
+print 20 / 4
+print 17 % 5
+print 17 /% 5
+print 2 ^ 10
+print neg 5
+print inc 9
+print dec 1

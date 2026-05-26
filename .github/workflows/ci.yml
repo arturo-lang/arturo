@@ -78,7 +78,7 @@ jobs:
 
             - name: Install Arturo
               uses: arturo-lang/setup-arturo@v2
-              with: 
+              with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
@@ -107,20 +107,44 @@ jobs:
                     echo "skip=false" >> "$GITHUB_OUTPUT"
                 fi
 
-            - if: env.arturoCanRun == 'true' && steps.check_skip.outputs.skip != 'true'
+            - if: (env.arturoCanRun == 'true' || matrix.os == 'web') && steps.check_skip.outputs.skip != 'true'
               name: Run tests
+              timeout-minutes: 15
               run: |
                 cd $GITHUB_WORKSPACE/arturo
-                git clone https://github.com/arturo-lang/examples.git ../examples
 
-                arturo -v
-                if ! arturo tools/tester.art; then
-                    exit 1
-                fi
+                if [ "${{ matrix.os }}" = "web" ]; then
+                    mkdir -p bin
+                    cp "$HOME/.arturo/bin/arturo.js" bin/arturo.js
+                    fails=0
+                    for art in tests/web/*.art; do
+                        res="${art%.art}.res"
+                        [ -f "$res" ] || continue
+                        echo "--- $art"
+                        actual=$(node tools/run.js "$art")
+                        expected=$(cat "$res")
+                        if [ "$actual" = "$expected" ]; then
+                            echo "OK"
+                        else
+                            echo "FAIL"
+                            echo "expected: $expected"
+                            echo "actual:   $actual"
+                            fails=$((fails + 1))
+                        fi
+                    done
+                    exit $fails
+                else
+                    git clone https://github.com/arturo-lang/examples.git ../examples
 
-                if [ "${{ matrix.mode }}" != "mini" ]; then
-                    arturo -p install unitt
-                    if ! arturo tools/unitt-tester.art; then
+                    arturo -v
+                    if ! arturo tools/tester.art; then
                         exit 1
+                    fi
+
+                    if [ "${{ matrix.mode }}" != "mini" ]; then
+                        arturo -p install unitt
+                        if ! arturo tools/unitt-tester.art; then
+                            exit 1
+                        fi
                     fi
                 fi

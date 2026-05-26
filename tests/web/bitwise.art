@@ -1,0 +1,6 @@
+print and 12 10
+print or 12 10
+print xor 12 10
+print not 0
+print shl 1 4
+print shr 16 2

@@ -1,0 +1,6 @@
+print "hello, " ++ "world"
+print upper "arturo"
+print lower "ARTURO"
+print size "abcdef"
+print reverse "abcd"
+print replace "foo bar foo" "foo" "baz"

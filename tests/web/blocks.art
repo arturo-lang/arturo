@@ -1,0 +1,8 @@
+print [1 2 3 4 5]
+print size [1 2 3]
+print first [10 20 30]
+print last [10 20 30]
+print reverse [1 2 3]
+print map [1 2 3] 'x -> 2 * x
+print filter [1 2 3 4 5] 'x -> odd? x
+print sort [3 1 4 1 5 9 2 6]
