@@ -487,6 +487,24 @@ when not defined(WEB):
             if not deliverDispatcher.isNil:
                 deliverDispatcher(uid, payload)
 
+    # Hook set by Channels.nim — when `receive Ch` runs in a child VM,
+    # this returns a Future[Value] driven by the cross-process RECV/
+    # DELIVER round-trip instead of the local state machine. nil in
+    # the parent / standalone process.
+    var proxyReceiveHook*: proc(c: VChannel): Future[Value] {.gcsafe.} = nil
+
+    proc setProxyReceiveHook*(fn: proc(c: VChannel): Future[Value] {.gcsafe.}) =
+        proxyReceiveHook = fn
+
+    proc tryProxyReceive*(c: VChannel): (bool, Future[Value]) {.gcsafe.} =
+        ## Returns (true, future) if we're a child VM with cross-process
+        ## channels active. Otherwise (false, nil) → caller falls through
+        ## to local `chanReceive`.
+        {.cast(gcsafe).}:
+            if proxyReceiveHook.isNil:
+                return (false, Future[Value](nil))
+            return (true, proxyReceiveHook(c))
+
     proc dispatchInboundChannel(name: string, payload: Value) {.gcsafe.} =
         {.cast(gcsafe).}:
             if not inboundChannelDispatcher.isNil:
