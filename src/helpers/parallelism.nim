@@ -453,7 +453,6 @@ when not defined(WEB):
                     break oneRound
                 defer: f.close()
                 f.setFilePos(pos)
-                var line: string
                 # two-line records: name on first line, codified payload
                 # on second. if we read a name but EOF hits before the
                 # payload, the name line is lost (rare — child flushes
