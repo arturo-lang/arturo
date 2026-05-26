@@ -460,6 +460,21 @@ when not defined(WEB):
         inc uidCounter
         result = "r-" & $getCurrentProcessId() & "-" & $uidCounter
 
+    # Hook set by Channels.nim — when a child sends RECV for `name`,
+    # try to drain one item from the local channel of that name into
+    # the just-registered remote receiver (if buffer or parked senders
+    # have anything ready). Returns true if delivered.
+    var remoteReceiverFulfiller*: proc(name: string): bool {.gcsafe.} = nil
+
+    proc setRemoteReceiverFulfiller*(fn: proc(name: string): bool {.gcsafe.}) =
+        remoteReceiverFulfiller = fn
+
+    proc tryFulfillRemoteReceiver*(name: string): bool {.gcsafe.} =
+        {.cast(gcsafe).}:
+            if remoteReceiverFulfiller.isNil:
+                return false
+            return remoteReceiverFulfiller(name)
+
     proc dispatchInboundChannel(name: string, payload: Value) {.gcsafe.} =
         {.cast(gcsafe).}:
             if not inboundChannelDispatcher.isNil:
@@ -584,11 +599,15 @@ when not defined(WEB):
 
     {.push warning[GcUnsafe2]: off.}
     proc tailChannelFile*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
-        ## Sibling of `tailEventChannel` for cross-process channel records.
-        ## Same 2-line wire format (`name\npayloadSrc\n`), but each record
-        ## routes through `dispatchInboundChannel` instead of the event
-        ## dispatcher — i.e. delivers to a specific local `:channel` by
-        ## name rather than broadcasting.
+        ## Tail a child's outbound channel file. Reads uniform 4-line
+        ## records:
+        ##   SEND     name        codified-payload   ""
+        ##   RECV     name        uid                child-inbound-path
+        ## SEND routes through `dispatchInboundChannel`; RECV registers a
+        ## remote receiver under `name` so a future local `chanSend` (or
+        ## tail-driven SEND from another child) can hand the value back
+        ## via DELIVER. DELIVER records are emitted by the parent — never
+        ## read by this tail.
         var pos: int64 = 0
         while true:
             block oneRound:
@@ -597,25 +616,41 @@ when not defined(WEB):
                     break oneRound
                 defer: f.close()
                 f.setFilePos(pos)
-                var name: string
-                var payloadSrc: string
-                while f.readLine(name):
-                    if not f.readLine(payloadSrc):
-                        break
+                var recType: string
+                var lineB, lineC, lineD: string
+                while f.readLine(recType):
+                    if not f.readLine(lineB): break
+                    if not f.readLine(lineC): break
+                    if not f.readLine(lineD): break
                     pos = f.getFilePos()
-                    if inboundChannelDispatcher.isNil: continue
-                    try:
-                        {.cast(gcsafe).}:
-                            let parsed = doParse(payloadSrc, isFile=false)
-                            var payload = VNULL
-                            if not parsed.isNil:
-                                let savedSP = SP
-                                execUnscoped(parsed)
-                                if SP > savedSP:
-                                    payload = stack.pop()
-                            dispatchInboundChannel(name, payload)
-                    except CatchableError:
-                        discard
+                    case recType
+                        of "SEND":
+                            if inboundChannelDispatcher.isNil: continue
+                            try:
+                                {.cast(gcsafe).}:
+                                    let parsed = doParse(lineC, isFile=false)
+                                    var payload = VNULL
+                                    if not parsed.isNil:
+                                        let savedSP = SP
+                                        execUnscoped(parsed)
+                                        if SP > savedSP:
+                                            payload = stack.pop()
+                                    dispatchInboundChannel(lineB, payload)
+                            except CatchableError:
+                                discard
+                        of "RECV":
+                            registerRemoteReceiver(lineB, RemoteReceiver(uid: lineC, inbound: lineD))
+                            # try to fulfill immediately if a local
+                            # channel has buffered items / parked senders
+                            if inboundChannelDispatcher.isNil: continue
+                            # send a synthetic poll: ask local channel
+                            # to flush one item to remote, if any
+                            try:
+                                {.cast(gcsafe).}:
+                                    discard tryFulfillRemoteReceiver(lineB)
+                            except CatchableError:
+                                discard
+                        else: discard
             if not alive():
                 break
             await sleepAsync(20)
