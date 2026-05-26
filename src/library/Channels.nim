@@ -20,7 +20,7 @@
 #=======================================
 
 when not defined(WEB):
-    import std/deques
+    import std/[asyncdispatch, deques]
 
 import vm/lib
 
