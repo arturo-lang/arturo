@@ -262,9 +262,9 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "close given socket",
+            description = "close given socket or channel",
             args        = {
-                "socket"    : {Socket}
+                "target"    : {Socket,Channel}
             },
             attrs       = NoAttrs,
             returns     = {Nothing},
@@ -277,9 +277,16 @@ proc defineModule*(moduleName: string) =
 
             ; disconnect from the server
             unplug socket
+            ..........
+            ; close a channel — parked recvs wake with :null, sends fail
+            Jobs: channel 'jobs
+            unplug Jobs
             """:
                 #=======================================================
-                x.sock.socket.close()
+                if x.kind == Channel:
+                    chanClose(x.chn)
+                else:
+                    x.sock.socket.close()
 
     #----------------------------
     # Predicates
