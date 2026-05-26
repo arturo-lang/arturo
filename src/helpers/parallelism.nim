@@ -404,6 +404,62 @@ when not defined(WEB):
                 return false
             return outboundChannelEmitter(name, payload)
 
+    # Cross-process receive (child → parent → child): child writes a
+    # RECV record with a UID; parent registers it under the channel
+    # name; when a value becomes available, parent writes a DELIVER
+    # record with the same UID to that child's inbound file. Child
+    # tails its inbound and resolves the matching pending future.
+    #
+    # Wire format (uniform 4-line records, empty padding where unused):
+    #     SEND     name        codified-payload   ""
+    #     RECV     name        uid                child-inbound-path
+    #     DELIVER  uid         codified-payload   ""
+
+    # Remote receivers waiting on parent for value from a given channel.
+    # Each entry carries the inbound file path of the requesting child
+    # plus the UID it expects to see returned in the DELIVER record.
+    type RemoteReceiver* = object
+        uid*: string
+        inbound*: string                      ## that child's `ARTURO_CHANNEL_INBOUND`
+
+    var remoteReceivers: Table[string, Deque[RemoteReceiver]]
+
+    proc registerRemoteReceiver*(name: string, rr: RemoteReceiver) =
+        if not remoteReceivers.hasKey(name):
+            remoteReceivers[name] = initDeque[RemoteReceiver]()
+        remoteReceivers[name].addLast(rr)
+
+    proc popRemoteReceiver*(name: string): (bool, RemoteReceiver) =
+        if remoteReceivers.hasKey(name) and remoteReceivers[name].len > 0:
+            return (true, remoteReceivers[name].popFirst())
+        return (false, RemoteReceiver())
+
+    proc writeDeliverRecord*(inbound: string, uid: string, payloadSrc: string) {.gcsafe.} =
+        ## Append a 4-line DELIVER record into the named child's inbound
+        ## file. Cooperatively safe under threads:off — the file is the
+        ## sync point between parent's async tail and the child's tail.
+        {.cast(gcsafe).}:
+            try:
+                var f: File
+                if open(f, inbound, fmAppend):
+                    f.writeLine("DELIVER")
+                    f.writeLine(uid)
+                    f.writeLine(payloadSrc)
+                    f.writeLine("")
+                    f.flushFile()
+                    f.close()
+            except IOError, OSError:
+                discard
+
+    # Random UID generator for cross-process recv requests. UIDs only
+    # need uniqueness within a single child VM's lifetime — keyed by
+    # (inbound-path, uid) on the parent side, so collisions across
+    # children are harmless.
+    var uidCounter: int = 0
+    proc genReceiveUid*(): string =
+        inc uidCounter
+        result = "r-" & $getCurrentProcessId() & "-" & $uidCounter
+
     proc dispatchInboundChannel(name: string, payload: Value) {.gcsafe.} =
         {.cast(gcsafe).}:
             if not inboundChannelDispatcher.isNil:
