@@ -492,6 +492,38 @@ when not defined(WEB):
             await sleepAsync(20)
     {.pop.}
 
+    #=======================================
+    # Channel primitives
+    #=======================================
+    #
+    # Cooperative state machine over a `VChannel`. Each `chanSend` /
+    # `chanReceive` returns a `Future` so callers can `coopWait` it
+    # from any context (main thread or fiber). Single-threaded under
+    # `--threads:off`, so the buffer + park queues need no locks —
+    # every `await` boundary is the synchronization point.
+
+    proc chanSend*(c: VChannel, v: Value): Future[void] =
+        ## park-or-deliver semantics. Returns a future that completes
+        ## as soon as the value is either handed to a parked receiver
+        ## or accepted into the buffer.
+        result = newFuture[void]("channel.send")
+        if c.closed:
+            result.fail(newException(CatchableError, "send on closed channel"))
+            return
+        if c.receivers.len > 0:
+            # hand directly to oldest parked receiver
+            let r = c.receivers.popFirst()
+            r.complete(v)
+            result.complete()
+            return
+        if c.capacity == -1 or (c.capacity > 0 and c.buffer.len < c.capacity):
+            # room in buffer
+            c.buffer.addLast(v)
+            result.complete()
+            return
+        # full (or unbuffered) — park the sender
+        c.senders.addLast((v: v, f: result))
+
 #=======================================
 # Subprocess-isolated path (`do.async.isolated`)
 #=======================================
