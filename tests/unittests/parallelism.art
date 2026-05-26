@@ -526,6 +526,39 @@ do [
 ]
 
 
+topic "channel — cross-process close propagation (parent unplug wakes child)"
+do [
+
+    Jobs: channel.bounded: 10 'jobs
+
+    seen: new []
+    worker: do.async.isolated [
+        keepGoing: true
+        while [keepGoing][
+            j: receive channel 'jobs
+            switch null? j [
+                keepGoing: false
+            ][
+                send channel 'results j
+            ]
+        ]
+    ]
+
+    Results: channel.bounded: 10 'results
+    send Jobs 100
+    send Jobs 200
+    'seen ++ receive Results
+    'seen ++ receive Results
+    unplug Jobs                 ; should DELIVER null to child's pending recv
+    wait worker
+    unplug Results
+
+    ensure -> [100 200] = sort seen
+    passed
+
+]
+
+
 topic "channel — cross-process dict payload fidelity"
 do [
 

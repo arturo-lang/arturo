@@ -104,6 +104,9 @@
 >> channel — cross-process worker pool (parent → child dispatch)
 [+] passed!
 
+>> channel — cross-process close propagation (parent unplug wakes child)
+[+] passed!
+
 >> channel — cross-process dict payload fidelity
 [+] passed!
 
