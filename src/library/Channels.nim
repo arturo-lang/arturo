@@ -41,11 +41,45 @@ when not defined(WEB):
     # Cross-process outbound (child → parent). Set at module init when
     # the spawning parent has placed a temp-file path in
     # `ARTURO_CHANNEL_FILE`. While open, every `send Ch v` from this
-    # process appends a 2-line record to the file instead of running
-    # the local state machine — letting the parent's `tailChannelFile`
-    # deliver into its real local channel.
+    # process appends a SEND record (4 lines, uniform) to the file
+    # instead of running the local state machine.
     var outboundChannelFile*: File
     var outboundChannelFileOpen*: bool = false
+
+    # Child's own inbound path — used in RECV records so parent knows
+    # where to write DELIVER responses for this child.
+    var ownChannelInbound*: string = ""
+
+    # Pending proxy-recv futures, keyed by UID — populated when a child
+    # calls `receive Ch` (writes RECV), resolved when a DELIVER record
+    # arrives on the child's inbound.
+    var pendingProxyRecvs: Table[string, Future[Value]] = initTable[string, Future[Value]]()
+
+#=======================================
+# Helpers
+#=======================================
+
+when not defined(WEB):
+    proc proxyReceive*(c: VChannel): Future[Value] =
+        ## Cross-process receive: write a RECV record to outbound,
+        ## park a future under the generated UID, return it. The
+        ## parent's tail registers a remote-receiver entry; when a
+        ## value becomes available, the parent writes DELIVER to this
+        ## child's inbound; the inbound tail resolves the future.
+        let uid = genReceiveUid()
+        result = newFuture[Value]("channel.proxyReceive")
+        pendingProxyRecvs[uid] = result
+        try:
+            outboundChannelFile.writeLine("RECV")
+            outboundChannelFile.writeLine(c.name)
+            outboundChannelFile.writeLine(uid)
+            outboundChannelFile.writeLine(ownChannelInbound)
+            outboundChannelFile.flushFile()
+        except IOError:
+            # if the write fails, complete the future with null so the
+            # caller doesn't hang forever
+            pendingProxyRecvs.del(uid)
+            result.complete(VNULL)
 
 #=======================================
 # Definitions
@@ -55,17 +89,62 @@ proc defineModule*(moduleName: string) =
 
     when not defined(WEB):
 
-        # Channel dispatcher — routes a (name, payload) inbound from a
-        # child VM into the matching local `:channel` via `chanSend`.
-        # If the name isn't registered, the record is dropped silently.
+        # Inbound channel dispatcher — parent side: route SEND records
+        # from children into the matching local channel by name.
         setInboundChannelDispatcher(proc(name: string, payload: Value) {.gcsafe.} =
             {.cast(gcsafe).}:
                 if channelsByName.hasKey(name):
                     discard chanSend(channelsByName[name], payload)
         )
 
-        # If we were spawned by a parent VM, the parent's path lives
-        # in `ARTURO_CHANNEL_FILE`. Open it once for append.
+        # Remote-receiver fulfiller — parent side: when a child RECV
+        # registers, try to drain one item from the named local channel
+        # (buffer or parked sender) and DELIVER it back to that child.
+        setRemoteReceiverFulfiller(proc(name: string): bool {.gcsafe.} =
+            {.cast(gcsafe).}:
+                if not channelsByName.hasKey(name):
+                    return false
+                let c = channelsByName[name]
+                var picked: Value
+                var have = false
+                if c.buffer.len > 0:
+                    picked = c.buffer.popFirst()
+                    have = true
+                    # if a sender was parked because we were full, move
+                    # its value into the freed slot and wake it
+                    if c.senders.len > 0:
+                        let s = c.senders.popFirst()
+                        c.buffer.addLast(s.v)
+                        s.f.complete()
+                elif c.senders.len > 0:
+                    let s = c.senders.popFirst()
+                    s.f.complete()
+                    picked = s.v
+                    have = true
+                if not have:
+                    return false
+                let (ok, rr) = popRemoteReceiver(name)
+                if not ok:
+                    # remote was de-registered between RECV and fulfill —
+                    # put the picked value back in front of the buffer
+                    c.buffer.addFirst(picked)
+                    return false
+                writeDeliverRecord(rr.inbound, rr.uid, codify(picked, safeStrings = true))
+                return true
+        )
+
+        # Deliver dispatcher — child side: resolve the pending proxy-recv
+        # future under this UID with the delivered payload.
+        setDeliverDispatcher(proc(uid: string, payload: Value) {.gcsafe.} =
+            {.cast(gcsafe).}:
+                if pendingProxyRecvs.hasKey(uid):
+                    let fut = pendingProxyRecvs[uid]
+                    pendingProxyRecvs.del(uid)
+                    fut.complete(payload)
+        )
+
+        # If we were spawned by a parent VM, the parent's outbound path
+        # lives in `ARTURO_CHANNEL_FILE`. Open it once for append.
         let path = getEnv("ARTURO_CHANNEL_FILE")
         if path.len > 0:
             try:
@@ -74,17 +153,27 @@ proc defineModule*(moduleName: string) =
             except CatchableError:
                 discard
 
+        # Child's own inbound (parent writes DELIVER records here).
+        # Start tailing it so DELIVER records resolve pending proxy
+        # `receive` futures by UID. Same `tailChannelFile` proc the
+        # parent uses for its outbound side — DELIVER branch handles
+        # this direction.
+        ownChannelInbound = getEnv("ARTURO_CHANNEL_INBOUND")
+        if ownChannelInbound.len > 0:
+            asyncCheck tailChannelFile(ownChannelInbound,
+                proc(): bool {.gcsafe.} = true)
+
         # Register the outbound emitter for cross-process `send Ch v`.
-        # `send` (Sockets.nim) calls `emitToOutboundChannel` which
-        # delegates here when we're a child VM. Two-line wire format:
-        # name + `codify(payload, safeStrings=true)`, matching events.
+        # Uniform 4-line SEND record: "SEND", name, codified-payload, "".
         setOutboundChannelEmitter(proc(name: string, payload: Value): bool {.gcsafe.} =
             {.cast(gcsafe).}:
                 if not outboundChannelFileOpen:
                     return false
                 try:
+                    outboundChannelFile.writeLine("SEND")
                     outboundChannelFile.writeLine(name)
                     outboundChannelFile.writeLine(codify(payload, safeStrings = true))
+                    outboundChannelFile.writeLine("")
                     outboundChannelFile.flushFile()
                     return true
                 except IOError:
