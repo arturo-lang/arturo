@@ -447,6 +447,7 @@ when not defined(WEB):
                 except IOError, OSError:
                     discard
 
+    {.push warning[GcUnsafe2]: off.}
     proc tailEventChannel*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
         ## Poll-based tail of the child's event channel file. Reads any
         ## newly-appended `[name payload]` records, parses each via the
@@ -489,6 +490,7 @@ when not defined(WEB):
                 # one more pass already happened above — safe to exit
                 break
             await sleepAsync(20)
+    {.pop.}
 
 #=======================================
 # Subprocess-isolated path (`do.async.isolated`)
