@@ -965,6 +965,36 @@ when not defined(WEB):
             except CatchableError: discard
         result = newTask(tsk)
 
+    # in-process async socket recvLine. `AsyncSocket.recvLine` has no native
+    # timeout, so we race against `sleepAsync` like `spawnAsyncRequest`. on
+    # timer-win we close the socket to abort the in-flight recv and fail the
+    # future with a timeout message. otherwise the awaited line is wrapped
+    # in a Value string. socket lifetime is *not* owned by the task — the
+    # caller decides when to `unplug`; cancel only closes to abort an
+    # in-flight recv (the socket is unusable afterwards anyway).
+    proc receiveAsync(sock: AsyncSocket, maxLen: int, timeoutMs: int): Future[Value] {.async.} =
+        let inner = sock.recvLine(maxLength = maxLen)
+        if timeoutMs > 0:
+            let inTime = await withTimeout(inner, timeoutMs)
+            if not inTime:
+                try: sock.close()
+                except CatchableError: discard
+                raise newException(CatchableError,
+                    "receive.async timed out after " & $timeoutMs & "ms")
+            return newString(inner.read)
+        let line = await inner
+        return newString(line)
+
+    # convenience: kick off an in-process async `recvLine` and return a
+    # `:task`. cancel closes the underlying socket to unblock the recv.
+    proc spawnAsyncReceive*(sock: AsyncSocket, maxLen: int, timeoutMs: int = -1): Value =
+        let tsk = VTask(state: taskPending)
+        tsk.future = receiveAsync(sock, maxLen, timeoutMs)
+        tsk.cancelHandle = proc() =
+            try: sock.close()
+            except CatchableError: discard
+        result = newTask(tsk)
+
     # in-process async HTTP request via Nim's `AsyncHttpClient`. the response
     # is awaited, the body is drained, and the caller-provided `buildResponse`
     # closure converts the raw fields into a Value (so the response shape
