@@ -232,7 +232,7 @@ proc defineModule*(moduleName: string) =
                     if asChunk: y.s
                     else: y.s & "\r\L"
 
-                waitFor x.sock.socket.send(message)
+                coopWait x.sock.socket.send(message)
 
         builtin "unplug",
             alias       = unaliased,
@@ -287,7 +287,7 @@ proc defineModule*(moduleName: string) =
                 #=======================================================
                 var ok = true
                 try:
-                    waitFor x.sock.socket.send(y.s)
+                    coopWait x.sock.socket.send(y.s)
                 except CatchableError:
                     ok = false
                 push newLogical(ok)
