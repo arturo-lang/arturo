@@ -375,6 +375,15 @@ when not defined(WEB):
     proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundEventDispatcher = fn
 
+    # static gcsafe shim around the `var proc` global — the `async` macro
+    # re-analyzes our body for gcsafety and flags procvar calls even when
+    # wrapped in `cast(gcsafe)` at the call site. Hiding the call behind a
+    # named proc moves the cast out of the macro's view.
+    proc dispatchInbound(name: string, payload: Value) {.gcsafe.} =
+        {.cast(gcsafe).}:
+            if not inboundEventDispatcher.isNil:
+                inboundEventDispatcher(name, payload)
+
     # Dispatcher-aware sleep. If there are pending in-process tasks (any
     # `.async` builtin currently in flight), route through `sleepAsync` +
     # `waitFor` so the dispatcher gets cycles to make progress on them.
@@ -466,9 +475,6 @@ when not defined(WEB):
                     if inboundEventDispatcher.isNil: continue
                     try:
                         {.cast(gcsafe).}:
-                            # widen cast to cover `SP`/`stack.pop()` accesses too —
-                            # threads:off, single-threaded, but the `async` macro
-                            # emits a gcsafe closure that flags Stack as a global
                             let parsed = doParse(payloadSrc, isFile=false)
                             var payload = VNULL
                             if not parsed.isNil:
@@ -476,7 +482,7 @@ when not defined(WEB):
                                 execUnscoped(parsed)
                                 if SP > savedSP:
                                     payload = stack.pop()
-                            inboundEventDispatcher(name, payload)
+                            dispatchInbound(name, payload)
                     except CatchableError:
                         discard
             if not alive():
