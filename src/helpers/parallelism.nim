@@ -475,6 +475,18 @@ when not defined(WEB):
                 return false
             return remoteReceiverFulfiller(name)
 
+    # Hook set by Channels.nim — child receives a DELIVER record and
+    # routes it to the matching pending proxy-receive future by UID.
+    var deliverDispatcher*: proc(uid: string, payload: Value) {.gcsafe.} = nil
+
+    proc setDeliverDispatcher*(fn: proc(uid: string, payload: Value) {.gcsafe.}) =
+        deliverDispatcher = fn
+
+    proc dispatchDeliver(uid: string, payload: Value) {.gcsafe.} =
+        {.cast(gcsafe).}:
+            if not deliverDispatcher.isNil:
+                deliverDispatcher(uid, payload)
+
     proc dispatchInboundChannel(name: string, payload: Value) {.gcsafe.} =
         {.cast(gcsafe).}:
             if not inboundChannelDispatcher.isNil:
@@ -642,12 +654,22 @@ when not defined(WEB):
                             registerRemoteReceiver(lineB, RemoteReceiver(uid: lineC, inbound: lineD))
                             # try to fulfill immediately if a local
                             # channel has buffered items / parked senders
-                            if inboundChannelDispatcher.isNil: continue
-                            # send a synthetic poll: ask local channel
-                            # to flush one item to remote, if any
                             try:
                                 {.cast(gcsafe).}:
                                     discard tryFulfillRemoteReceiver(lineB)
+                            except CatchableError:
+                                discard
+                        of "DELIVER":
+                            try:
+                                {.cast(gcsafe).}:
+                                    let parsed = doParse(lineC, isFile=false)
+                                    var payload = VNULL
+                                    if not parsed.isNil:
+                                        let savedSP = SP
+                                        execUnscoped(parsed)
+                                        if SP > savedSP:
+                                            payload = stack.pop()
+                                    dispatchDeliver(lineB, payload)
                             except CatchableError:
                                 discard
                         else: discard
