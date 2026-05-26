@@ -34,3 +34,6 @@ when not defined(WEB):
 
     proc hash*(c: VChannel): Hash {.inline.} =
         hash(c.name)
+
+    func `$`*(c: VChannel): string =
+        "<channel:" & c.name & ">"
