@@ -873,6 +873,13 @@ func `$`*(t: VTask): string =
         of taskFailed   : "<task:failed>"
         of taskCancelled: "<task:cancelled>"
 
+when not defined(WEB):
+    proc hash*(c: VChannel): Hash {.inline.} =
+        hash(c.name)
+
+    func `$`*(c: VChannel): string =
+        "<channel:" & c.name & ">"
+
 proc newEvent*(evt: VEvent): Value {.inline.} =
     ## create Event value from VEvent
     Value(kind: Event, evt: evt)

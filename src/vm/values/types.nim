@@ -12,7 +12,7 @@
 # Libraries
 #=======================================
 
-import std/[tables, times, unicode, setutils]
+import std/[deques, tables, times, unicode, setutils]
 
 when not defined(WEB):
     import std/asyncfutures, std/osproc
@@ -27,7 +27,7 @@ when defined(GMP):
     import helpers/bignums
 
 import vm/opcodes
-import vm/values/custom/[vbinary, vchannel, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
+import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 import vm/values/flags
 
 when not defined(WEB):
@@ -268,6 +268,15 @@ type
             future*  : Future[Value]    # the actual handle a producer (e.g. `request.async`) feeds
             process* : Process          # the underlying OS process (for subprocess-backed tasks); nil otherwise
             cancelHandle* : proc() {.closure.}  # invoked by `cancel` for in-process tasks; closes the live handle (file, http client, …) so the future actually unwinds. nil for subprocess-backed tasks.
+
+    VChannel* = ref object
+        name*         : string              # symbolic identity for `print` / `inspect`
+        capacity*     : int                 # 0 = unbuffered, -1 = unbounded, N > 0 = bounded
+        closed*       : bool                # once true, sends raise, recvs drain then return null
+        when not defined(WEB):
+            buffer*      : Deque[Value]                       # buffered items
+            senders*     : Deque[tuple[v: Value, f: Future[void]]]  # parked while full
+            receivers*   : Deque[Future[Value]]                # parked while empty
 
     Value* {.final,acyclic.} = ref object
         info*   : ValueInfo
