@@ -217,6 +217,10 @@ proc `$`*(v: Value): string {.inline.} =
         of Event:
             result = "<event>" & "(" & v.evt.name & ")"
 
+        of Channel:
+            when not defined(WEB):
+                result = "<channel>" & "(" & v.chn.name & ")"
+
         of Nothing: discard
         of ANY: discard
 
