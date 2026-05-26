@@ -1360,6 +1360,10 @@ func hash*(v: Value): Hash {.inline.} =
         of Event:
             result = result !& hash(v.evt)
 
+        of Channel:
+            when not defined(WEB):
+                result = result !& hash(v.chn)
+
         of Nothing      : discard
         of ANY          : discard
 
