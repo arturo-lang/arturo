@@ -1356,7 +1356,8 @@ func hash*(v: Value): Hash {.inline.} =
         of Event:
             result = result !& hash(v.evt)
 
-        else: discard
+        of Nothing      : discard
+        of ANY          : discard
 
     result = !$ result
 
