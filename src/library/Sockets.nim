@@ -165,9 +165,10 @@ proc defineModule*(moduleName: string) =
             },
             attrs       = {
                 "size"      : ({Integer},"set maximum size of received data"),
-                "timeout"   : ({Integer},"set timeout (in milliseconds)")
+                "timeout"   : ({Integer},"set timeout (in milliseconds)"),
+                "async"     : ({Logical},"return a `:task` resolving to the received line")
             },
-            returns     = {String},
+            returns     = {String,Task},
             example     = """
             server: listen 18966
             print "started server connection..."
@@ -187,6 +188,10 @@ proc defineModule*(moduleName: string) =
             ]
 
             unplug server
+            ..........
+            ; read-with-deadline via `:task`
+            t: receive.async client
+            r: wait.timeout: 5000 t          ; → :error on 5s deadline
             """:
                 #=======================================================
                 var size = MaxLineLength
@@ -197,13 +202,12 @@ proc defineModule*(moduleName: string) =
                 if checkAttr("timeout"):
                     timeout = aTimeout.i
 
-                let fut = x.sock.socket.recvLine(maxLength = size)
-                if timeout > 0:
-                    if not waitFor withTimeout(fut, timeout):
-                        try: x.sock.socket.close() except CatchableError: discard
-                        push newString("")
-                        return
-                push newString(waitFor fut)
+                let explicitAsync = hadAttr("async")
+                let asyncTask = spawnAsyncReceive(x.sock.socket, size, timeout)
+                if explicitAsync:
+                    push asyncTask
+                else:
+                    push coopWait(asyncTask.tsk.future)
 
         builtin "send",
             alias       = unaliased,
