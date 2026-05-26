@@ -3,10 +3,10 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2026 Yanis Zafirópulos
 #
-# @file: library/Sockets.nim
+# @file: library/Streams.nim
 #=======================================================
 
-## The main Sockets module
+## The main Streams module
 ## (part of the standard library)
 
 #=======================================
@@ -21,6 +21,7 @@
 
 when not defined(WEB):
     import asyncdispatch, asyncnet
+    import std/[deques]
     import std/net as netsock except Socket
     import nativesockets
 
@@ -47,6 +48,46 @@ proc defineModule*(moduleName: string) =
     #----------------------------
 
     when not defined(WEB):
+
+        initChannels()
+
+        builtin "channel",
+            alias       = unaliased,
+            op          = opNop,
+            rule        = PrefixPrecedence,
+            description = "create a new channel with given name",
+            args        = {
+                "name"  : {Literal,String}
+            },
+            attrs       = {
+                "bounded"   : ({Integer},"bounded buffer of given capacity"),
+                "unbounded" : ({Logical},"unbounded buffer (send never blocks)")
+            },
+            returns     = {Channel},
+            example     = """
+            Jobs: channel 'jobs              ; unbuffered
+            ..........
+            Jobs: channel.bounded: 10 'jobs  ; bounded
+            ..........
+            Jobs: channel.unbounded 'jobs    ; never blocks send
+            """:
+                #=======================================================
+                var cap = 0
+                if checkAttr("bounded"):
+                    cap = aBounded.i
+                elif hadAttr("unbounded"):
+                    cap = -1
+
+                let chn = VChannel(
+                    name: x.s,
+                    capacity: cap,
+                    closed: false,
+                    buffer: initDeque[Value](),
+                    senders: initDeque[tuple[v: Value, f: Future[void]]](),
+                    receivers: initDeque[Future[Value]]()
+                )
+                channelsByName[x.s] = chn
+                push Value(kind: Channel, chn: chn)
 
         builtin "accept",
             alias       = unaliased,
