@@ -375,52 +375,30 @@ when not defined(WEB):
     proc setInboundEventDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundEventDispatcher = fn
 
-    # Sibling of `inboundEventDispatcher` for cross-process channels.
-    # Channels.nim registers a callback that routes (name, payload) to
-    # the local VChannel of that name and feeds it via `chanSend`.
-    # nil if Channels isn't loaded.
+    # Cross-process channels: wire format is uniform 4-line records.
+    #   SEND     name  payload  ""
+    #   RECV     name  uid      child-inbound-path
+    #   DELIVER  uid   payload  ""
+
     var inboundChannelDispatcher*: proc(name: string, payload: Value) {.gcsafe.} = nil
 
     proc setInboundChannelDispatcher*(fn: proc(name: string, payload: Value) {.gcsafe.}) =
         inboundChannelDispatcher = fn
 
-    # Outbound side of cross-process channels (child→parent). When set,
-    # `send` on a `:channel` calls this instead of the local state
-    # machine, Channels.nim registers a closure that writes a 2-line
-    # record to the temp file passed in via `ARTURO_CHANNEL_FILE`.
-    # Returns true if the record was actually written; false means
-    # no outbound is configured and the caller should fall through to
-    # local send.
     var outboundChannelEmitter*: proc(name: string, payload: Value): bool {.gcsafe.} = nil
 
     proc setOutboundChannelEmitter*(fn: proc(name: string, payload: Value): bool {.gcsafe.}) =
         outboundChannelEmitter = fn
 
     proc emitToOutboundChannel*(name: string, payload: Value): bool {.gcsafe.} =
-        ## Returns true if the record was forwarded across-process,
-        ## false if no outbound is configured (fall through to local).
         {.cast(gcsafe).}:
             if outboundChannelEmitter.isNil:
                 return false
             return outboundChannelEmitter(name, payload)
 
-    # Cross-process receive (child → parent → child): child writes a
-    # RECV record with a UID; parent registers it under the channel
-    # name; when a value becomes available, parent writes a DELIVER
-    # record with the same UID to that child's inbound file. Child
-    # tails its inbound and resolves the matching pending future.
-    #
-    # Wire format (uniform 4-line records, empty padding where unused):
-    #     SEND     name        codified-payload   ""
-    #     RECV     name        uid                child-inbound-path
-    #     DELIVER  uid         codified-payload   ""
-
-    # Remote receivers waiting on parent for value from a given channel.
-    # Each entry carries the inbound file path of the requesting child
-    # plus the UID it expects to see returned in the DELIVER record.
     type RemoteReceiver* = object
         uid*: string
-        inbound*: string                      ## that child's `ARTURO_CHANNEL_INBOUND`
+        inbound*: string
 
     var remoteReceivers: Table[string, Deque[RemoteReceiver]]
 
@@ -435,9 +413,6 @@ when not defined(WEB):
         return (false, RemoteReceiver())
 
     proc writeDeliverRecord*(inbound: string, uid: string, payloadSrc: string) {.gcsafe.} =
-        ## Append a 4-line DELIVER record into the named child's inbound
-        ## file. Cooperatively safe under threads:off, the file is the
-        ## sync point between parent's async tail and the child's tail.
         {.cast(gcsafe).}:
             try:
                 var f: File
@@ -451,19 +426,11 @@ when not defined(WEB):
             except IOError, OSError:
                 discard
 
-    # Random UID generator for cross-process recv requests. UIDs only
-    # need uniqueness within a single child VM's lifetime, keyed by
-    # (inbound-path, uid) on the parent side, so collisions across
-    # children are harmless.
     var uidCounter: int = 0
     proc genReceiveUid*(): string =
         inc uidCounter
         result = "r-" & $getCurrentProcessId() & "-" & $uidCounter
 
-    # Hook set by Channels.nim, when a child sends RECV for `name`,
-    # try to drain one item from the local channel of that name into
-    # the just-registered remote receiver (if buffer or parked senders
-    # have anything ready). Returns true if delivered.
     var remoteReceiverFulfiller*: proc(name: string): bool {.gcsafe.} = nil
 
     proc setRemoteReceiverFulfiller*(fn: proc(name: string): bool {.gcsafe.}) =
@@ -475,8 +442,6 @@ when not defined(WEB):
                 return false
             return remoteReceiverFulfiller(name)
 
-    # Hook set by Channels.nim, child receives a DELIVER record and
-    # routes it to the matching pending proxy-receive future by UID.
     var deliverDispatcher*: proc(uid: string, payload: Value) {.gcsafe.} = nil
 
     proc setDeliverDispatcher*(fn: proc(uid: string, payload: Value) {.gcsafe.}) =
@@ -487,19 +452,12 @@ when not defined(WEB):
             if not deliverDispatcher.isNil:
                 deliverDispatcher(uid, payload)
 
-    # Hook set by Channels.nim, when `receive Ch` runs in a child VM,
-    # this returns a Future[Value] driven by the cross-process RECV/
-    # DELIVER round-trip instead of the local state machine. nil in
-    # the parent / standalone process.
     var proxyReceiveHook*: proc(c: VChannel): Future[Value] {.gcsafe.} = nil
 
     proc setProxyReceiveHook*(fn: proc(c: VChannel): Future[Value] {.gcsafe.}) =
         proxyReceiveHook = fn
 
     proc tryProxyReceive*(c: VChannel): (bool, Future[Value]) {.gcsafe.} =
-        ## Returns (true, future) if we're a child VM with cross-process
-        ## channels active. Otherwise (false, nil) → caller falls through
-        ## to local `chanReceive`.
         {.cast(gcsafe).}:
             if proxyReceiveHook.isNil:
                 return (false, Future[Value](nil))
@@ -699,52 +657,34 @@ when not defined(WEB):
     #=======================================
     # Channel primitives
     #=======================================
-    #
-    # Cooperative state machine over a `VChannel`. Each `chanSend` /
-    # `chanReceive` returns a `Future` so callers can `coopWait` it
-    # from any context (main thread or fiber). Single-threaded under
-    # `--threads:off`, so the buffer + park queues need no locks;
-    # every `await` boundary is the synchronization point.
+    # Cooperative state machine over a `VChannel`. Single-threaded
+    # under `--threads:off`; every `await` is the sync point.
 
     proc chanSend*(c: VChannel, v: Value): Future[void] =
-        ## park-or-deliver semantics. Returns a future that completes
-        ## as soon as the value is either handed to a parked receiver
-        ## (local or remote) or accepted into the buffer.
         result = newFuture[void]("channel.send")
         if c.closed:
             result.fail(newException(CatchableError, "send on closed channel"))
             return
         if c.receivers.len > 0:
-            # hand directly to oldest parked LOCAL receiver
             let r = c.receivers.popFirst()
             r.complete(v)
             result.complete()
             return
-        # check for parked REMOTE receivers (children awaiting via RECV
-        # records); if any, deliver via DELIVER wire record
         let (hasRemote, rr) = popRemoteReceiver(c.name)
         if hasRemote:
             writeDeliverRecord(rr.inbound, rr.uid, codify(v, safeStrings = true))
             result.complete()
             return
         if c.capacity == -1 or (c.capacity > 0 and c.buffer.len < c.capacity):
-            # room in buffer
             c.buffer.addLast(v)
             result.complete()
             return
-        # full (or unbuffered), park the sender
         c.senders.addLast((v: v, f: result))
 
     proc chanReceive*(c: VChannel): Future[Value] =
-        ## park-or-pop semantics. Returns a future that completes
-        ## with the next value, either popped from the buffer, taken
-        ## directly from a parked sender, or awaited from a future
-        ## sender. Closed empty channel resolves to `:null`.
         result = newFuture[Value]("channel.receive")
         if c.buffer.len > 0:
             let v = c.buffer.popFirst()
-            # if a sender was parked because we were full, move its
-            # value into the freed slot and wake it.
             if c.senders.len > 0:
                 let s = c.senders.popFirst()
                 c.buffer.addLast(s.v)
@@ -752,7 +692,6 @@ when not defined(WEB):
             result.complete(v)
             return
         if c.senders.len > 0:
-            # unbuffered case: hand directly from parked sender
             let s = c.senders.popFirst()
             s.f.complete()
             result.complete(s.v)
@@ -760,36 +699,24 @@ when not defined(WEB):
         if c.closed:
             result.complete(VNULL)
             return
-        # empty, park the receiver
         c.receivers.addLast(result)
 
     proc chanClose*(c: VChannel) =
-        ## mark the channel closed. all parked receivers wake with
-        ## `:null` (and drain any remaining buffered items first via
-        ## subsequent recvs). all parked senders fail with an error.
-        ## Any remote receivers parked across-process get a DELIVER
-        ## null so child VMs don't hang forever.
         if c.closed:
             return
         c.closed = true
-        # buffered items stay readable until drained; only parked
-        # receivers with no buffer to satisfy them wake now.
         while c.receivers.len > 0 and c.buffer.len == 0:
             let r = c.receivers.popFirst()
             r.complete(VNULL)
-        # parked senders fail, can't deliver to a closed channel
         while c.senders.len > 0:
             let s = c.senders.popFirst()
             s.f.fail(newException(CatchableError, "send on closed channel"))
-        # remote receivers (cross-process) get DELIVER null so child
-        # VMs awaiting on `receive Ch` unblock cleanly
         if remoteReceivers.hasKey(c.name):
             while remoteReceivers[c.name].len > 0:
                 let rr = remoteReceivers[c.name].popFirst()
                 writeDeliverRecord(rr.inbound, rr.uid, "null")
 
-    # Per-process channel state (moved here from library/Channels.nim
-    # so the library file stays just builtins + imports).
+    # Per-process channel state.
     var channelsByName*: Table[string, VChannel] = initTable[string, VChannel]()
     var outboundChannelFile*: File
     var outboundChannelFileOpen*: bool = false
