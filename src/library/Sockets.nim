@@ -24,6 +24,8 @@ when not defined(WEB):
     import std/net as netsock except Socket
     import nativesockets
 
+    import helpers/parallelism
+
     import vm/lib
     import vm/errors
     import vm/values/custom/[vsocket]
@@ -64,7 +66,7 @@ proc defineModule*(moduleName: string) =
             print ["accepted incoming connection from:" client]
             """:
                 #=======================================================
-                let (address, client) = waitFor x.sock.socket.acceptAddr()
+                let (address, client) = coopWait x.sock.socket.acceptAddr()
                 let (_, port) = getPeerAddr(client)
                 let socket = initSocket(client, proto=x.sock.protocol, address=address, port=port)
                 push newSocket(socket)
