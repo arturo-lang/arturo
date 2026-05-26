@@ -1064,7 +1064,7 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Event:
             result = newEvent(v.evt)
 
-        of Nothing, Any:
+        else:
             discard
 
 #=======================================
