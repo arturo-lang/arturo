@@ -101,6 +101,9 @@
 >> channel — cross-process fan-in (child → parent send)
 [+] passed!
 
+>> channel — cross-process worker pool (parent → child dispatch)
+[+] passed!
+
 >> channel — cross-process dict payload fidelity
 [+] passed!
 

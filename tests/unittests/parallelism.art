@@ -494,6 +494,38 @@ do [
 ]
 
 
+topic "channel — cross-process worker pool (parent → child dispatch)"
+do [
+
+    Jobs:    channel.bounded: 20 'jobs
+    Results: channel.bounded: 20 'results
+
+    workers: new []
+    loop 1..3 'k [
+        'workers ++ do.async.isolated [
+            loop 1..2 'i [
+                j: receive channel 'jobs
+                send channel 'results j * 10
+            ]
+        ]
+    ]
+
+    loop 1..6 'i -> send Jobs i
+
+    received: new []
+    loop 1..6 'k -> 'received ++ receive Results
+
+    wait.all workers
+    unplug Jobs
+    unplug Results
+
+    ensure -> 6 = size received
+    ensure -> [10 20 30 40 50 60] = sort received
+    passed
+
+]
+
+
 topic "channel — cross-process dict payload fidelity"
 do [
 
