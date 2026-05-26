@@ -587,15 +587,6 @@ when not defined(WEB):
 
     {.push warning[GcUnsafe2]: off.}
     proc tailChannelFile*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
-        ## Tail a child's outbound channel file. Reads uniform 4-line
-        ## records:
-        ##   SEND     name        codified-payload   ""
-        ##   RECV     name        uid                child-inbound-path
-        ## SEND routes through `dispatchInboundChannel`; RECV registers a
-        ## remote receiver under `name` so a future local `chanSend` (or
-        ## tail-driven SEND from another child) can hand the value back
-        ## via DELIVER. DELIVER records are emitted by the parent, never
-        ## read by this tail.
         var pos: int64 = 0
         while true:
             block oneRound:
@@ -628,8 +619,6 @@ when not defined(WEB):
                                 discard
                         of "RECV":
                             registerRemoteReceiver(lineB, RemoteReceiver(uid: lineC, inbound: lineD))
-                            # try to fulfill immediately if a local
-                            # channel has buffered items / parked senders
                             try:
                                 {.cast(gcsafe).}:
                                     discard tryFulfillRemoteReceiver(lineB)
@@ -738,8 +727,6 @@ when not defined(WEB):
             result.complete(VNULL)
 
     proc initChannels*() =
-        ## Wire up the cross-process channel hooks. Called once from
-        ## library/Streams.nim's defineModule.
         setInboundChannelDispatcher(proc(name: string, payload: Value) {.gcsafe.} =
             {.cast(gcsafe).}:
                 if channelsByName.hasKey(name):
@@ -903,14 +890,8 @@ when not defined(WEB):
         let inboundFile = genTempPath("arturo-inb-", ".art")
         writeFile(inboundFile, "")
         registerChildInbound(inboundFile)
-        # Cross-process channel file, child writes `send Ch v` and
-        # RECV requests here, parent tails and routes by name into
-        # local `:channel`s (SEND) or registers remote receivers (RECV).
         let chanFile = genTempPath("arturo-chn-", ".art")
         writeFile(chanFile, "")
-        # Inbound channel-records pipe, parent writes DELIVER records
-        # here for this specific child; child tails it and resolves
-        # pending proxy `receive` futures by UID.
         let chanInbound = genTempPath("arturo-cin-", ".art")
         writeFile(chanInbound, "")
         var childEnv = newStringTable(modeCaseSensitive)
@@ -967,9 +948,6 @@ when not defined(WEB):
         let proc1 = p
         let tailFut = tailEventChannel(evtFile, proc(): bool {.gcsafe.} =
             {.cast(gcsafe).}: proc1.running)
-        # Same tail for the cross-process channel file, drains records
-        # the child appends via `send Ch v` and routes each into the
-        # matching local `:channel` in the parent.
         let chanTailFut = tailChannelFile(chanFile, proc(): bool {.gcsafe.} =
             {.cast(gcsafe).}: proc1.running)
         while p.running and tsk.state != taskCancelled:
