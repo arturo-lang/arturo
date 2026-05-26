@@ -217,7 +217,8 @@ proc `$`*(v: Value): string {.inline.} =
         of Event:
             result = "<event>" & "(" & v.evt.name & ")"
 
-        else: discard
+        of Nothing: discard
+        of ANY: discard
 
 template stdoutWrite(sss: string): untyped = 
     if target.isNil: stdout.write sss
