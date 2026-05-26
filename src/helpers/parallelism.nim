@@ -465,14 +465,17 @@ when not defined(WEB):
                     pos = f.getFilePos()
                     if inboundEventDispatcher.isNil: continue
                     try:
-                        let parsed = doParse(payloadSrc, isFile=false)
-                        var payload = VNULL
-                        if not parsed.isNil:
-                            let savedSP = SP
-                            execUnscoped(parsed)
-                            if SP > savedSP:
-                                payload = stack.pop()
                         {.cast(gcsafe).}:
+                            # widen cast to cover `SP`/`stack.pop()` accesses too —
+                            # threads:off, single-threaded, but the `async` macro
+                            # emits a gcsafe closure that flags Stack as a global
+                            let parsed = doParse(payloadSrc, isFile=false)
+                            var payload = VNULL
+                            if not parsed.isNil:
+                                let savedSP = SP
+                                execUnscoped(parsed)
+                                if SP > savedSP:
+                                    payload = stack.pop()
                             inboundEventDispatcher(name, payload)
                     except CatchableError:
                         discard
