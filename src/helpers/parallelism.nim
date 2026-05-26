@@ -19,7 +19,7 @@ when not defined(WEB):
     import streams, strtabs, strutils, times
     when defined(posix):
         import posix
-    import asyncnet
+    import asyncnet, deques
     when defined(ssl):
         # std/net has to be qualified — there's a sibling `helpers/net.nim`
         # and Nim resolves bare `net` to it first.
