@@ -703,11 +703,17 @@ when not defined(WEB):
         let inboundFile = genTempPath("arturo-inb-", ".art")
         writeFile(inboundFile, "")
         registerChildInbound(inboundFile)
+        # Cross-process channel file — child writes `send Ch v` records
+        # here, parent tails and routes by name into local `:channel`s.
+        # Half-duplex v1: child → parent only.
+        let chanFile = genTempPath("arturo-chn-", ".art")
+        writeFile(chanFile, "")
         var childEnv = newStringTable(modeCaseSensitive)
         for k, v in envPairs():
             childEnv[k] = v
         childEnv["ARTURO_EVENT_FILE"] = evtFile
         childEnv["ARTURO_EVENT_INBOUND"] = inboundFile
+        childEnv["ARTURO_CHANNEL_FILE"] = chanFile
         # void-safety trick: prepend `null` *inside* the user's block so the
         # block always has a value even if the user's last expression doesn't
         # push (e.g. ends with `print`). if the user does push a real value,
