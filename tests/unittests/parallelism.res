@@ -73,3 +73,30 @@
 
 >> task callbacks — on.failed
 [+] passed!
+
+>> :channel value
+[+] passed!
+
+>> channel — buffered send / receive
+[+] passed!
+
+>> channel — close drains buffer then yields :null
+[+] passed!
+
+>> channel — unbuffered cross-fiber
+[+] passed!
+
+>> channel — bounded fan-out workers
+[+] passed!
+
+>> channel — polymorphic send / receive carry any value type
+[+] passed!
+
+>> socket — listen / accept / receive / send round-trip
+[+] passed!
+
+>> socket — receive.async with .timeout
+[+] passed!
+
+>> socket — connect.async parallel fan-out
+[+] passed!

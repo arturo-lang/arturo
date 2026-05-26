@@ -315,3 +315,178 @@ do [
     passed
 
 ]
+
+
+topic ":channel value"
+do [
+
+    Ch: channel 'sample
+    ensure -> :channel = type Ch
+    passed
+
+]
+
+
+topic "channel — buffered send / receive"
+do [
+
+    Ch: channel.bounded: 5 'buf
+    send Ch 1
+    send Ch 2
+    send Ch 3
+    ensure -> 1 = receive Ch
+    ensure -> 2 = receive Ch
+    ensure -> 3 = receive Ch
+    passed
+
+]
+
+
+topic "channel — close drains buffer then yields :null"
+do [
+
+    Ch: channel.bounded: 5 'closing
+    send Ch 'first
+    send Ch 'second
+    unplug Ch
+    ensure -> 'first = receive Ch
+    ensure -> 'second = receive Ch
+    ensure -> null = receive Ch
+    passed
+
+]
+
+
+topic "channel — unbuffered cross-fiber"
+do [
+
+    Ch: channel 'sync
+    got: []
+    consumer: do.async [
+        keepGoing: true
+        while [keepGoing][
+            v: receive Ch
+            switch null? v [ keepGoing: false ][ 'got ++ v ]
+        ]
+    ]
+    producer: do.async [
+        loop 1..3 'i -> send Ch i * 10
+        unplug Ch
+    ]
+    wait.all @[producer consumer]
+    ensure -> [10 20 30] = got
+    passed
+
+]
+
+
+topic "channel — bounded fan-out workers"
+do [
+
+    Jobs: channel.bounded: 20 'jobs
+    results: []
+    workers: map 1..3 'w [
+        do.async [
+            keepGoing: true
+            while [keepGoing][
+                j: receive Jobs
+                switch null? j [ keepGoing: false ][ 'results ++ j ]
+            ]
+        ]
+    ]
+    loop 1..6 'i -> send Jobs i * 100
+    unplug Jobs
+    wait.all workers
+    ensure -> [100 200 300 400 500 600] = sort results
+    passed
+
+]
+
+
+topic "channel — polymorphic send / receive carry any value type"
+do [
+
+    Ch: channel.bounded: 5 'mixed
+    send Ch 42
+    send Ch "hello"
+    send Ch @[1 2 3]
+    send Ch #[k: "v"]
+    ensure -> 42       = receive Ch
+    ensure -> "hello"  = receive Ch
+    ensure -> [1 2 3]  = receive Ch
+    d: receive Ch
+    ensure -> "v"      = d\k
+    passed
+
+]
+
+
+topic "socket — listen / accept / receive / send round-trip"
+do [
+
+    srv: listen 19500
+    s: do.async [
+        client: accept srv
+        msg: receive client
+        send client (msg ++ "back")
+        unplug client
+    ]
+    pause 50
+    c: connect.to: "127.0.0.1" 19500
+    send c "hello "
+    ensure -> "hello back" = receive c
+    unplug c
+    wait s
+    unplug srv
+    passed
+
+]
+
+
+topic "socket — receive.async with .timeout"
+do [
+
+    srv: listen 19501
+    pump: do.async [
+        client: accept srv
+        pause 2000
+        unplug client
+    ]
+    pause 50
+    c: connect.to: "127.0.0.1" 19501
+    t: receive.async c
+    r: wait.timeout: 100 t
+    ensure -> :error = type r
+    cancel t
+    unplug c
+    cancel pump
+    unplug srv
+    passed
+
+]
+
+
+topic "socket — connect.async parallel fan-out"
+do [
+
+    servers: map [19502 19503 19504] 'p [
+        do.async [
+            sr: listen p
+            cl: accept sr
+            send cl "ok"
+            unplug cl
+            unplug sr
+        ]
+    ]
+    pause 50
+    tasks: map [19502 19503 19504] 'p -> connect.async.to: "127.0.0.1" p
+    socks: wait.all tasks
+    ensure -> 3 = size socks
+    loop socks 's [
+        ensure -> "ok" = receive s
+        unplug s
+    ]
+    wait.all servers
+    passed
+
+]
