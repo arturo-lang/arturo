@@ -15,8 +15,6 @@
 
 import algorithm, bitops, std/math, sequtils, sugar
 
-import helpers/intrinsics
-
 when defined(WEB):
     import std/jsbigints
 elif defined(GMP):
