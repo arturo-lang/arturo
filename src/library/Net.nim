@@ -315,15 +315,6 @@ proc defineModule*(moduleName: string) =
 
                 let explicitAsync = hadAttr("async")
                 if explicitAsync or not onMainFiber():
-                    # in-process async request: build an `AsyncHttpClient`
-                    # mirroring the sync setup, hand it off to `spawnAsyncRequest`,
-                    # which awaits the response and runs our `buildResp` closure
-                    # to produce a Value identical to the sync builtin's output.
-                    #
-                    # implicit-fiber routing: when called from inside a fiber
-                    # (`do.async` / `map.parallel` / etc.), we transparently
-                    # take the async path and cooperatively wait, otherwise
-                    # the fiber would block the C stack and starve siblings.
                     var asyncClient: AsyncHttpClient
                     if checkAttr("certificate"):
                         when defined(ssl):

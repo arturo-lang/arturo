@@ -247,11 +247,6 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if x.kind == Channel:
-                    # Child VM: route via cross-process proxy. Parent
-                    # tail registers a remote receiver under the channel
-                    # name; a DELIVER record back will resolve the
-                    # future. Falls through to local `chanReceive` when
-                    # not in a child VM.
                     let (isProxy, pFut) = tryProxyReceive(x.chn)
                     if isProxy:
                         push coopWait(pFut)
@@ -300,11 +295,6 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if x.kind == Channel:
-                    # When running in a child VM with `ARTURO_CHANNEL_FILE`
-                    # set, route across-process. Parent's `tailChannelFile`
-                    # picks it up and delivers into its local channel of
-                    # the same name. Otherwise fall through to local
-                    # cooperative send.
                     if not emitToOutboundChannel(x.chn.name, y):
                         coopWait chanSend(x.chn, y)
                 else:

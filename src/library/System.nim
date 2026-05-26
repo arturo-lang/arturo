@@ -236,15 +236,7 @@ proc defineModule*(moduleName: string) =
                 let directly = (hadAttr("directly"))
 
                 let explicitAsync = hadAttr("async")
-                # implicit-fiber routing: route the capturing `execCmdEx`
-                # path through `spawnShellAsTask` when called from inside a
-                # fiber, so the C stack doesn't block. `.directly` keeps
-                # sync semantics (no output capture, parent stdio).
                 if explicitAsync or (not directly and not onMainFiber()):
-                    # build the full shell command (args appended, quoted)
-                    # so `runShellInChildProcess` can pass it through the
-                    # system shell, same semantics as the sync `execCmdEx`
-                    # path below, just non-blocking and `:task`-wrapped.
                     var fullCmd = cmd
                     for i in 0..high(args):
                         fullCmd.add(' ')
