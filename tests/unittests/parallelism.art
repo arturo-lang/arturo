@@ -148,6 +148,21 @@ do [
 ]
 
 
+topic "do.isolated — sync subprocess execution"
+do [
+
+    ensure -> 42 = do.isolated [40 + 2]
+    passed
+
+    ; subprocess scope: closure-capture doesn't reach in
+    ; (same as `do.async.isolated`)
+    parent: 99
+    ensure -> 7 = do.isolated [3 + 4]
+    passed
+
+]
+
+
 topic "map.async — fan-out parallel map"
 do [
 

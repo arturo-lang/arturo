@@ -35,6 +35,10 @@
 [+] passed!
 [+] passed!
 
+>> do.isolated — sync subprocess execution
+[+] passed!
+[+] passed!
+
 >> map.async — fan-out parallel map
 [+] passed!
 
