@@ -669,15 +669,22 @@ when not defined(WEB):
     proc chanSend*(c: VChannel, v: Value): Future[void] =
         ## park-or-deliver semantics. Returns a future that completes
         ## as soon as the value is either handed to a parked receiver
-        ## or accepted into the buffer.
+        ## (local or remote) or accepted into the buffer.
         result = newFuture[void]("channel.send")
         if c.closed:
             result.fail(newException(CatchableError, "send on closed channel"))
             return
         if c.receivers.len > 0:
-            # hand directly to oldest parked receiver
+            # hand directly to oldest parked LOCAL receiver
             let r = c.receivers.popFirst()
             r.complete(v)
+            result.complete()
+            return
+        # check for parked REMOTE receivers (children awaiting via RECV
+        # records); if any, deliver via DELIVER wire record
+        let (hasRemote, rr) = popRemoteReceiver(c.name)
+        if hasRemote:
+            writeDeliverRecord(rr.inbound, rr.uid, codify(v, safeStrings = true))
             result.complete()
             return
         if c.capacity == -1 or (c.capacity > 0 and c.buffer.len < c.capacity):
