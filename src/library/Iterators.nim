@@ -55,12 +55,12 @@ type IterCap* = enum
     ## Compile-time capability flags for `doIterate`. Each bit toggles
     ## a piece of the iteration shape:
     ##
-    ## * `AcceptsLit` — first arg may be a `'literal`; result is written
+    ## * `AcceptsLit`, first arg may be a `'literal`; result is written
     ##                  back via `RawInPlaced` when so.
-    ## * `WithCap`    — `act` exposes a `captured` symbol holding the
+    ## * `WithCap`   , `act` exposes a `captured` symbol holding the
     ##                  current item(s).
-    ## * `WithCounter`— `act` exposes a `cntr` running counter.
-    ## * `IsRolling`  — fold-style rolling iteration; `iterate*WithParams`
+    ## * `WithCounter`, `act` exposes a `cntr` running counter.
+    ## * `IsRolling` , fold-style rolling iteration; `iterate*WithParams`
     ##                  feeds `res` back as the rolling accumulator.
     AcceptsLit
     WithCap
@@ -452,7 +452,7 @@ template fetchIterableItemsForParallel(defaultReturn: untyped) {.dirty.} =
         return
 
 template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.dirty.} =
-    ## Parallel sibling of `iterateBlock` — each item runs in its own
+    ## Parallel sibling of `iterateBlock`, each item runs in its own
     ## cooperative fiber. Drains in input order via a sliding-window
     ## semaphore (`.parallel: N` caps in-flight; bare `.parallel` is
     ## unbounded). For each drained fiber the resolved value (or
@@ -505,7 +505,7 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
         # path: the resolved value is pushed before `act` runs so that
         # acts written for sync (`stack.pop()`) work unchanged. After
         # `act` we truncate any residue back to the pre-iteration
-        # baseline — handles the case where `act` is `discard` (e.g.
+        # baseline, handles the case where `act` is `discard` (e.g.
         # `loop`) and would otherwise leak a slot per iteration.
         when withCap:
             captured = blo[pDrain]
@@ -1309,11 +1309,11 @@ proc defineModule*(moduleName: string) =
             ]
             ; => ["ONE" "two" "THREE" "four"]
             ..........
-            ; .parallel — fan out one cooperative fiber per item.
+            ; .parallel, fan out one cooperative fiber per item.
             ; Bare flag = unbounded; integer = sliding-window cap.
             results: map.parallel 1..5 'x [ pause 100 x*2 ]
             ; 5 fibers run concurrently; ~100ms total instead of ~500ms
-            ; ⚠ each fiber gets a SHALLOW COPY of parent symbols —
+            ; ⚠ each fiber gets a SHALLOW COPY of parent symbols;
             ; writes don't leak back. Return values; don't mutate
             ; outer state inside the body.
         """:

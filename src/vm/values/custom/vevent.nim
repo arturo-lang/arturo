@@ -13,7 +13,7 @@
 ## so this is the sense the user observes).
 ##
 ## Built-in events (e.g. `CtrlC`, `BeforeExit`) are pre-bound `:event`
-## values constructed at startup — they're not a separate kind, just
+## values constructed at startup, they're not a separate kind, just
 ## conventionally-named instances of this same type.
 
 #=======================================

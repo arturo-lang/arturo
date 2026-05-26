@@ -322,7 +322,7 @@ proc defineModule*(moduleName: string) =
                     #
                     # implicit-fiber routing: when called from inside a fiber
                     # (`do.async` / `map.parallel` / etc.), we transparently
-                    # take the async path and cooperatively wait — otherwise
+                    # take the async path and cooperatively wait, otherwise
                     # the fiber would block the C stack and starve siblings.
                     var asyncClient: AsyncHttpClient
                     if checkAttr("certificate"):
@@ -492,7 +492,7 @@ proc defineModule*(moduleName: string) =
                     # `.async` spins up a child process that runs sync `serve`
                     # blockingly. routes are codified back to source and embedded
                     # in the child's command. this isolates the server from the
-                    # parent's dispatcher — so combinations like `serve.async`
+                    # parent's dispatcher, so combinations like `serve.async`
                     # followed by `webview` (which blocks the parent's main loop)
                     # work cleanly: the child has its own dispatcher and the
                     # parent is free to enter native event loops.
@@ -506,7 +506,7 @@ proc defineModule*(moduleName: string) =
                     if routes.kind == Function:
                         Error_UnsupportedFeature(
                             "serve.async with function-form routes",
-                            "subprocess execution — use block-form routes (e.g. `[GET \"/\" -> \"ok\"]`) or drop `.async` for sync mode"
+                            "subprocess execution, use block-form routes (e.g. `[GET \"/\" -> \"ok\"]`) or drop `.async` for sync mode"
                         )
 
                     if hadAttr("chrome"):

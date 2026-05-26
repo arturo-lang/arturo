@@ -300,7 +300,7 @@ proc defineModule*(moduleName: string) =
                     # `.bytecode` keeps the subprocess path: it uses a custom
                     # on-disk format via `readBytecode` that doesn't fit the
                     # plain "read bytes, post-process" shape below. only
-                    # triggers on explicit `.async` — implicit fiber routing
+                    # triggers on explicit `.async`, implicit fiber routing
                     # falls through to the sync `.bytecode` path.
                     var attrSuffix = ""
                     if hadAttr("lines"):       attrSuffix &= ".lines"
@@ -323,7 +323,7 @@ proc defineModule*(moduleName: string) =
                     # in-process async: `asyncfile` for local paths,
                     # `AsyncHttpClient` for URLs. either way we get raw bytes
                     # then run the same sync `post` closure (CSV/JSON/parsers
-                    # are pure CPU work — no benefit from offloading).
+                    # are pure CPU work, no benefit from offloading).
                     let asLines       = hadAttr("lines")
                     let asJson        = hadAttr("json")
                     let asCsv         = hadAttr("csv")
@@ -574,7 +574,7 @@ proc defineModule*(moduleName: string) =
                 # implicit-fiber routing: in-process async path triggers from
                 # inside a fiber so siblings keep running. subprocess-bound
                 # variants (bytecode / `.directory` / null path) stay on
-                # explicit `.async` only — too heavy to fire implicitly.
+                # explicit `.async` only, too heavy to fire implicitly.
                 if explicitAsync and (xKind == Bytecode or hadAttr("directory") or y.kind == Null):
                     var attrSuffix = ""
                     if hadAttr("append"):    attrSuffix &= ".append"

@@ -334,7 +334,7 @@ proc defineModule*(moduleName: string) =
             ; disconnect from the server
             unplug socket
             ..........
-            ; close a channel — parked recvs wake with :null, sends fail
+            ; close a channel, parked recvs wake with :null, sends fail
             Jobs: channel 'jobs
             unplug Jobs
             """:

@@ -21,7 +21,7 @@ when not defined(WEB):
         import posix
     import asyncnet, deques
     when defined(ssl):
-        # std/net has to be qualified — there's a sibling `helpers/net.nim`
+        # std/net has to be qualified, there's a sibling `helpers/net.nim`
         # and Nim resolves bare `net` to it first.
         import std/net as netmod
         import extras/smtp
@@ -33,7 +33,7 @@ when not defined(WEB):
     import vm/values/custom/[vtask, verror]
 
 #=======================================
-# Fibers — stackful coroutines on top of vendored minicoro
+# Fibers, stackful coroutines on top of vendored minicoro
 #=======================================
 #
 # Asymmetric coroutines: from the main thread you `resume(f)` a
@@ -49,7 +49,7 @@ when not defined(WEB):
 # decrements, so any `ref` reachable only from the fiber's stack is
 # kept alive by its own refcount. Cycles reachable only from the
 # fiber are likewise visible to ORC's cycle collector. Consequently,
-# no `GC_addStack` / `GC_removeStack` is needed — under ORC those
+# no `GC_addStack` / `GC_removeStack` is needed, under ORC those
 # procs aren't even declared. Confirmed by the ucontext spike (see
 # CONCURRENCY_NOTES.md "Spike result", 2026-05-01) and the Phase 1
 # stress test on this branch. If we ever switch to a stack-scanning
@@ -58,7 +58,7 @@ when not defined(WEB):
 when not defined(WEB):
     const
         DefaultFiberStackSize* = 256 * 1024
-            ## 256KB per CONCURRENCY_NOTES.md — comfortable for
+            ## 256KB per CONCURRENCY_NOTES.md, comfortable for
             ## moderately recursive Arturo functions, far more than
             ## minicoro's own 56KB default. Per-fiber override via
             ## `createFiber`'s `stackSize` argument.
@@ -103,7 +103,7 @@ when not defined(WEB):
 
     proc destroyFiber*(f: Fiber) =
         ## Release the fiber's stack and internal struct. Safe only
-        ## when the fiber is suspended or dead — calling this on a
+        ## when the fiber is suspended or dead, calling this on a
         ## running fiber is a programming error and minicoro will
         ## report it.
         if f.handle != nil:
@@ -134,7 +134,7 @@ when not defined(WEB):
         mco_running()
 
 #=======================================
-# Scheduler — fibers + asyncdispatch
+# Scheduler, fibers + asyncdispatch
 #=======================================
 #
 # Cooperative scheduler. Main thread owns the asyncdispatch poll
@@ -202,7 +202,7 @@ when not defined(WEB):
         ## Create a fiber bound to a fresh `VMContext` (shallow copy
         ## of `parentSyms`, fresh stack/attrs/scope) and queue it on
         ## the scheduler's ready list. Returns the `Fiber` so the
-        ## caller can hold onto it (e.g. for cancellation) — the
+        ## caller can hold onto it (e.g. for cancellation), the
         ## scheduler doesn't otherwise expose its queue.
         ##
         ## The entry proc receives the fiber's globals already
@@ -226,10 +226,10 @@ when not defined(WEB):
         ## globals belonging to whoever is currently running.
         if scheduler.ready.len > 0:
             let f = scheduler.ready[0]
-            scheduler.ready.delete(0)         # FIFO; O(N) — fine for v1
+            scheduler.ready.delete(0)         # FIFO; O(N), fine for v1
             # Cancel hooks may re-queue a fiber that has already
             # finished (race between `cancel` and the fiber's last
-            # resume). Skip dead fibers — minicoro's `resume` on
+            # resume). Skip dead fibers, minicoro's `resume` on
             # `mcoDead` would error.
             if isDone(f):
                 return
@@ -271,7 +271,7 @@ when not defined(WEB):
         ## value or re-raises its failure.
         ##
         ## Deadlock guard: if both queues are empty but `fut` isn't
-        ## done, nothing can ever wake it — bail with a clear error
+        ## done, nothing can ever wake it, bail with a clear error
         ## rather than spin forever.
         while not fut.finished:
             if scheduler.ready.len == 0 and not hasPendingOperations():
@@ -286,18 +286,18 @@ when not defined(WEB):
     proc cooperativeAwait*[T](fut: Future[T]): T =
         ## Suspend the current fiber until `fut` completes, then
         ## return its value (or re-raise its failure). Must be
-        ## called from inside a fiber — calling from main is a
+        ## called from inside a fiber, calling from main is a
         ## programming error since main has no fiber stack to park.
         ##
         ## ## Protocol with the scheduler
         ##
-        ## The fiber does **not** swap its globals here — the
+        ## The fiber does **not** swap its globals here, the
         ## scheduler's `runOneStep` does that around every
         ## `resume` / `suspend` pair. From the fiber's view:
         ##
         ## 1. If `fut` is already finished, fast-path: just read it.
         ## 2. Otherwise register a callback that re-queues us when
-        ##    the future fires, then `suspend()` — control returns
+        ##    the future fires, then `suspend()`, control returns
         ##    to whoever called `resume(me)` (the scheduler).
         ## 3. ...time passes; the future eventually completes; the
         ##    callback adds us to `scheduler.ready`; the scheduler
@@ -311,7 +311,7 @@ when not defined(WEB):
         ## compile time.
         let me = scheduler.currentFiber
         doAssert not me.isNil,
-            "cooperativeAwait called outside a fiber — use waitFor on main"
+            "cooperativeAwait called outside a fiber, use waitFor on main"
         # Fast path: if cancellation was requested before we got
         # here, bail out without touching the future.
         if me.ctx.cancelRequested:
@@ -319,7 +319,7 @@ when not defined(WEB):
         if not fut.finished:
             # The scheduler global is GC-allocated; the closure
             # below touches it from inside an asyncdispatch callback.
-            # `cast(gcsafe)` is the standard escape — same pattern
+            # `cast(gcsafe)` is the standard escape, same pattern
             # `broadcastToChildren` above uses for `childInboundFiles`.
             fut.addCallback(proc () {.gcsafe.} =
                 {.cast(gcsafe).}:
@@ -336,7 +336,7 @@ when not defined(WEB):
             return fut.read()
 
     proc coopWait*[T](fut: Future[T]): T =
-        ## Block on `fut` from any context — main or fiber. Picks the
+        ## Block on `fut` from any context, main or fiber. Picks the
         ## right primitive automatically:
         ##
         ## - **on main:** `runUntilFutureDone` drives both the
@@ -386,7 +386,7 @@ when not defined(WEB):
 
     # Outbound side of cross-process channels (child→parent). When set,
     # `send` on a `:channel` calls this instead of the local state
-    # machine — Channels.nim registers a closure that writes a 2-line
+    # machine, Channels.nim registers a closure that writes a 2-line
     # record to the temp file passed in via `ARTURO_CHANNEL_FILE`.
     # Returns true if the record was actually written; false means
     # no outbound is configured and the caller should fall through to
@@ -436,7 +436,7 @@ when not defined(WEB):
 
     proc writeDeliverRecord*(inbound: string, uid: string, payloadSrc: string) {.gcsafe.} =
         ## Append a 4-line DELIVER record into the named child's inbound
-        ## file. Cooperatively safe under threads:off — the file is the
+        ## file. Cooperatively safe under threads:off, the file is the
         ## sync point between parent's async tail and the child's tail.
         {.cast(gcsafe).}:
             try:
@@ -452,7 +452,7 @@ when not defined(WEB):
                 discard
 
     # Random UID generator for cross-process recv requests. UIDs only
-    # need uniqueness within a single child VM's lifetime — keyed by
+    # need uniqueness within a single child VM's lifetime, keyed by
     # (inbound-path, uid) on the parent side, so collisions across
     # children are harmless.
     var uidCounter: int = 0
@@ -460,7 +460,7 @@ when not defined(WEB):
         inc uidCounter
         result = "r-" & $getCurrentProcessId() & "-" & $uidCounter
 
-    # Hook set by Channels.nim — when a child sends RECV for `name`,
+    # Hook set by Channels.nim, when a child sends RECV for `name`,
     # try to drain one item from the local channel of that name into
     # the just-registered remote receiver (if buffer or parked senders
     # have anything ready). Returns true if delivered.
@@ -475,7 +475,7 @@ when not defined(WEB):
                 return false
             return remoteReceiverFulfiller(name)
 
-    # Hook set by Channels.nim — child receives a DELIVER record and
+    # Hook set by Channels.nim, child receives a DELIVER record and
     # routes it to the matching pending proxy-receive future by UID.
     var deliverDispatcher*: proc(uid: string, payload: Value) {.gcsafe.} = nil
 
@@ -487,7 +487,7 @@ when not defined(WEB):
             if not deliverDispatcher.isNil:
                 deliverDispatcher(uid, payload)
 
-    # Hook set by Channels.nim — when `receive Ch` runs in a child VM,
+    # Hook set by Channels.nim, when `receive Ch` runs in a child VM,
     # this returns a Future[Value] driven by the cross-process RECV/
     # DELIVER round-trip instead of the local state machine. nil in
     # the parent / standalone process.
@@ -510,7 +510,7 @@ when not defined(WEB):
             if not inboundChannelDispatcher.isNil:
                 inboundChannelDispatcher(name, payload)
 
-    # static gcsafe shim around the `var proc` global — the `async` macro
+    # static gcsafe shim around the `var proc` global, the `async` macro
     # re-analyzes our body for gcsafety and flags procvar calls even when
     # wrapped in `cast(gcsafe)` at the call site. Hiding the call behind a
     # named proc moves the cast out of the macro's view.
@@ -522,7 +522,7 @@ when not defined(WEB):
     # Dispatcher-aware sleep. If there are pending in-process tasks (any
     # `.async` builtin currently in flight), route through `sleepAsync` +
     # `waitFor` so the dispatcher gets cycles to make progress on them.
-    # Otherwise fall back to the OS `sleep` — there's nothing to drive,
+    # Otherwise fall back to the OS `sleep`, there's nothing to drive,
     # and `waitFor sleepAsync` allocates a future for no reason.
     #
     # Avoids the footgun where `pause 1000` inside an async-heavy program
@@ -539,7 +539,7 @@ when not defined(WEB):
             # From main with live work: drive the fiber scheduler
             # AND asyncdispatch for the duration. Plain `waitFor`
             # would only pump dispatcher futures and starve any
-            # ready fiber — including in-process `do.async` tasks
+            # ready fiber, including in-process `do.async` tasks
             # whose progress the user may be polling between
             # `pause`s (`while [not? finished? t][pause 100]`).
             try:
@@ -549,7 +549,7 @@ when not defined(WEB):
         else:
             sleep(ms)
 
-    # Per-child inbound files — paths the parent writes into so each
+    # Per-child inbound files, paths the parent writes into so each
     # live child can tail and dispatch into its own subscriber table.
     # `runInChildProcess` registers when it spawns and unregisters when
     # the child exits. The list is what the parent's `emit` fans out
@@ -568,7 +568,7 @@ when not defined(WEB):
         ## Append a `[name, payload]` record (two-line format, same as
         ## the child→parent direction) into every live child's inbound
         ## file. Called by `emit` from a parent VM. `payloadSrc` is the
-        ## already-codified Arturo source for the payload — keeps this
+        ## already-codified Arturo source for the payload, keeps this
         ## helper decoupled from the value-codify imports.
         {.cast(gcsafe).}:
             for path in childInboundFiles:
@@ -600,7 +600,7 @@ when not defined(WEB):
                 f.setFilePos(pos)
                 # two-line records: name on first line, codified payload
                 # on second. if we read a name but EOF hits before the
-                # payload, the name line is lost (rare — child flushes
+                # payload, the name line is lost (rare, child flushes
                 # both writeLines before the next emit/exit).
                 var name: string
                 var payloadSrc: string
@@ -622,7 +622,7 @@ when not defined(WEB):
                     except CatchableError:
                         discard
             if not alive():
-                # one more pass already happened above — safe to exit
+                # one more pass already happened above, safe to exit
                 break
             await sleepAsync(20)
     {.pop.}
@@ -636,7 +636,7 @@ when not defined(WEB):
         ## SEND routes through `dispatchInboundChannel`; RECV registers a
         ## remote receiver under `name` so a future local `chanSend` (or
         ## tail-driven SEND from another child) can hand the value back
-        ## via DELIVER. DELIVER records are emitted by the parent — never
+        ## via DELIVER. DELIVER records are emitted by the parent, never
         ## read by this tail.
         var pos: int64 = 0
         while true:
@@ -703,7 +703,7 @@ when not defined(WEB):
     # Cooperative state machine over a `VChannel`. Each `chanSend` /
     # `chanReceive` returns a `Future` so callers can `coopWait` it
     # from any context (main thread or fiber). Single-threaded under
-    # `--threads:off`, so the buffer + park queues need no locks —
+    # `--threads:off`, so the buffer + park queues need no locks;
     # every `await` boundary is the synchronization point.
 
     proc chanSend*(c: VChannel, v: Value): Future[void] =
@@ -732,12 +732,12 @@ when not defined(WEB):
             c.buffer.addLast(v)
             result.complete()
             return
-        # full (or unbuffered) — park the sender
+        # full (or unbuffered), park the sender
         c.senders.addLast((v: v, f: result))
 
     proc chanReceive*(c: VChannel): Future[Value] =
         ## park-or-pop semantics. Returns a future that completes
-        ## with the next value — either popped from the buffer, taken
+        ## with the next value, either popped from the buffer, taken
         ## directly from a parked sender, or awaited from a future
         ## sender. Closed empty channel resolves to `:null`.
         result = newFuture[Value]("channel.receive")
@@ -760,7 +760,7 @@ when not defined(WEB):
         if c.closed:
             result.complete(VNULL)
             return
-        # empty — park the receiver
+        # empty, park the receiver
         c.receivers.addLast(result)
 
     proc chanClose*(c: VChannel) =
@@ -777,7 +777,7 @@ when not defined(WEB):
         while c.receivers.len > 0 and c.buffer.len == 0:
             let r = c.receivers.popFirst()
             r.complete(VNULL)
-        # parked senders fail — can't deliver to a closed channel
+        # parked senders fail, can't deliver to a closed channel
         while c.senders.len > 0:
             let s = c.senders.popFirst()
             s.f.fail(newException(CatchableError, "send on closed channel"))
@@ -900,14 +900,14 @@ when not defined(WEB):
 #=======================================
 #
 # Everything from here through `spawnShellAsTask` is the SUBPROCESS
-# flavor of `do.async` — kept reachable via `do.async.isolated` (and
+# flavor of `do.async`, kept reachable via `do.async.isolated` (and
 # `execute.async`). It's the *rare* path now:
 #
 #   - default `do.async` runs in-process via `spawnInProcessDoBlock`
 #     (cooperative fiber, sub-ms spawn, closure capture, real
 #     `:error` fidelity)
 #   - `do.async.isolated` lands here: ~30 ms fork+exec, fresh VM,
-#     no closure capture, generic "exited with code N" errors —
+#     no closure capture, generic "exited with code N" errors;
 #     but full process isolation and true OS-scheduler parallelism
 #
 # Anything here that touches `osproc` / `runProcess` / temp-file
@@ -921,10 +921,10 @@ when not defined(WEB):
     # below can take down any grandchildren the child spawned (shell
     # `execute.async`, nested `do.async.isolated`). On POSIX a small
     # race exists between `startProcess` returning and us calling
-    # `setpgid` — child may briefly share parent's pgid. Mitigation:
+    # `setpgid`, child may briefly share parent's pgid. Mitigation:
     # we always set right after spawn; child's own startup is too
     # short to fork before we get here in practice. No-op on Windows
-    # (job objects would be the equivalent — not wired today).
+    # (job objects would be the equivalent, not wired today).
     proc detachToOwnGroup(p: Process) {.inline.} =
         when defined(posix):
             discard setpgid(Pid(p.processID), Pid(p.processID))
@@ -954,34 +954,34 @@ when not defined(WEB):
     # result hand-off. capturing stdout would swallow user prints.
     proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
         let arturoBin = getAppFilename()
-        # `genTempPath` mixes in OS-supplied random bytes — a real
+        # `genTempPath` mixes in OS-supplied random bytes, a real
         # unique path, unlike the old `pid + epochTime` recipe which
         # could collide under fast successive spawns.
         let resFile = genTempPath("arturo-task-", ".art")
-        # Side-channel for errors — child writes `#[kind: msg:]` here
+        # Side-channel for errors, child writes `#[kind: msg:]` here
         # if the user block raises, so we can resurrect the real
         # `VError` kind+message on the parent side. Live `print` from
         # the child stays untouched (still inherits `poParentStreams`),
         # which is why we need a file rather than capturing stderr.
         let errFile = genTempPath("arturo-err-", ".art")
-        # Cross-process emit channel — child appends one
+        # Cross-process emit channel, child appends one
         # `[name payload]` record per `emit`, parent tails. Created
         # empty so the child's append open succeeds immediately.
         let evtFile = genTempPath("arturo-evt-", ".art")
         writeFile(evtFile, "")
-        # Inbound channel — parent writes here, child tails it. Pair
+        # Inbound channel, parent writes here, child tails it. Pair
         # to `evtFile` (the outbound channel). Child receives parent's
         # `emit` records on `inboundFile` and dispatches them into its
         # own subscriber table.
         let inboundFile = genTempPath("arturo-inb-", ".art")
         writeFile(inboundFile, "")
         registerChildInbound(inboundFile)
-        # Cross-process channel file — child writes `send Ch v` and
+        # Cross-process channel file, child writes `send Ch v` and
         # RECV requests here, parent tails and routes by name into
         # local `:channel`s (SEND) or registers remote receivers (RECV).
         let chanFile = genTempPath("arturo-chn-", ".art")
         writeFile(chanFile, "")
-        # Inbound channel-records pipe — parent writes DELIVER records
+        # Inbound channel-records pipe, parent writes DELIVER records
         # here for this specific child; child tails it and resolves
         # pending proxy `receive` futures by UID.
         let chanInbound = genTempPath("arturo-cin-", ".art")
@@ -1012,8 +1012,8 @@ when not defined(WEB):
         # Use forward slashes when embedding the path into Arturo
         # source. Windows `getTempDir` returns backslash-separated
         # paths; Arturo's string parser treats `\` as the start of an
-        # escape sequence (`\n`, `\t`, …) and an odd-length tail —
-        # `…\` followed by the closing `"` — collapses to an
+        # escape sequence (`\n`, `\t`, …) and an odd-length tail;
+        # `…\` followed by the closing `"`, collapses to an
         # unterminated string and blows up the child VM (SIGSEGV).
         # Forward slashes work fine on every OS we target.
         let resFileEmbed = resFile.replace('\\', '/')
@@ -1036,11 +1036,11 @@ when not defined(WEB):
         # Tail the child's event channel concurrently. The closure
         # `alive` returns true while the child is still running, so the
         # loop exits with one trailing read after the child terminates
-        # — flushes any final `emit` records the child wrote before exit.
+        #, flushes any final `emit` records the child wrote before exit.
         let proc1 = p
         let tailFut = tailEventChannel(evtFile, proc(): bool {.gcsafe.} =
             {.cast(gcsafe).}: proc1.running)
-        # Same tail for the cross-process channel file — drains records
+        # Same tail for the cross-process channel file, drains records
         # the child appends via `send Ch v` and routes each into the
         # matching local `:channel` in the parent.
         let chanTailFut = tailChannelFile(chanFile, proc(): bool {.gcsafe.} =
@@ -1118,7 +1118,7 @@ when not defined(WEB):
                 result = VNULL
         else:
             if fileExists(resFile): removeFile(resFile)
-            # cancellation is not a failure — caller observes via task state.
+            # cancellation is not a failure, caller observes via task state.
             # for any other non-zero exit, fail the future so `wait` can
             # surface it as an `:error` value.
             if tsk.state == taskCancelled:
@@ -1132,7 +1132,7 @@ when not defined(WEB):
     # together, full string passed through the system shell (`poEvalCommand`).
     # 50ms poll, dispatcher-friendly. cancellation terminates the child;
     # non-zero exit fails the future so `wait` surfaces an `:error` (with the
-    # captured output appended to the message — actually-useful diagnostics,
+    # captured output appended to the message, actually-useful diagnostics,
     # unlike `do.async`'s opaque "exited with code N").
     proc runShellInChildProcess*(tsk: VTask, fullCmd: string,
                                  withCode: bool): Future[Value] {.async.} =
@@ -1198,7 +1198,7 @@ when not defined(WEB):
 
 when not defined(WEB):
     # in-process flavor of `do.async`. Runs the block on a cooperative
-    # fiber inside the same VM — sub-ms spawn, full closure capture
+    # fiber inside the same VM, sub-ms spawn, full closure capture
     # (parent `Syms` shallow-copied at spawn), real `VMError`s preserved
     # rather than the generic "exited with code N" of the subprocess
     # path. Returns immediately; the fiber actually executes when the
@@ -1228,7 +1228,7 @@ when not defined(WEB):
                 except FiberCancelledError:
                     # `cancel` hook flipped the flag while we were
                     # parked; cooperativeAwait re-raised. Surface as
-                    # a cancelled future, *not* a failed one — the
+                    # a cancelled future, *not* a failed one, the
                     # consumer (`wait`) maps cancelled → :null.
                     tsk.state = taskCancelled
                     fut.fail(newException(FiberCancelledError,
@@ -1242,7 +1242,7 @@ when not defined(WEB):
         # Cancel hook flips the per-fiber cancel flag and pokes the
         # scheduler so a parked fiber actually wakes up to see it.
         # If the fiber is already in `ready` or already done, the
-        # extra add is harmless — the scheduler skips finished
+        # extra add is harmless, the scheduler skips finished
         # fibers and an extra resume on a still-suspended one just
         # runs the post-suspend cancel-check immediately.
         let cancelCtx = f.ctx
@@ -1262,10 +1262,10 @@ when not defined(WEB):
     #
     # caveat: in-process futures only progress while the dispatcher is being
     # driven (i.e. during `wait` / `waitFor`). that's fine for the usual flow
-    # — launch, do other things, then `wait` — but pure fire-and-forget won't
+    #, launch, do other things, then `wait`, but pure fire-and-forget won't
     # actually transfer bytes until something dispatches.
     proc downloadFileAsync(client: AsyncHttpClient, url, target: string): Future[Value] {.async.} =
-        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # let CatchableError escape, `wait` classifies it (cancel → :null,
         # otherwise → :error). cancellation closes the client and surfaces
         # here as an exception, which `wait` filters out via task state.
         try:
@@ -1277,9 +1277,9 @@ when not defined(WEB):
 
     # in-process async file read via `asyncfile`. returns the raw bytes/text;
     # the caller (`read.async` builtin) is responsible for any post-processing
-    # like CSV/JSON/markdown parsing — that's pure CPU work and stays sync.
+    # like CSV/JSON/markdown parsing, that's pure CPU work and stays sync.
     proc readFileAsyncStr(f: AsyncFile): Future[string] {.async.} =
-        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # let CatchableError escape, `wait` classifies it (cancel → :null,
         # otherwise → :error). cancellation closes the file and surfaces
         # here as an exception, filtered out downstream via task state.
         try:
@@ -1290,10 +1290,10 @@ when not defined(WEB):
 
     # in-process async URL fetch via `AsyncHttpClient.getContent`. mirrors
     # the sync `getSource` URL leg (which already uses `newAsyncHttpClient`
-    # with a blocking `waitFor`) — same client, same semantics, but the
+    # with a blocking `waitFor`), same client, same semantics, but the
     # result is awaited cooperatively so other tasks can make progress.
     proc readUrlAsyncStr(client: AsyncHttpClient, url: string): Future[string] {.async.} =
-        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # let CatchableError escape, `wait` classifies it (cancel → :null,
         # otherwise → :error). cancellation closes the client and surfaces
         # here as an exception, filtered out downstream via task state.
         try:
@@ -1346,7 +1346,7 @@ when not defined(WEB):
         proc mailAsyncSend(smtp: AsyncSmtp, server: string, port: int,
                            username, password, fromAddr: string,
                            toAddrs: seq[string], msgStr: string): Future[Value] {.async.} =
-            # let CatchableError escape — `wait` classifies it (cancel →
+            # let CatchableError escape, `wait` classifies it (cancel →
             # :null, otherwise → :error). cancellation closes the smtp
             # socket and surfaces here as an exception, filtered out
             # downstream via task state.
@@ -1382,7 +1382,7 @@ when not defined(WEB):
     # serialized by the caller (e.g. JSON-encoded), so this layer just
     # streams bytes to disk through the dispatcher.
     proc writeFileAsync(f: AsyncFile, content: string): Future[Value] {.async.} =
-        # let CatchableError escape — `wait` classifies it (cancel → :null,
+        # let CatchableError escape, `wait` classifies it (cancel → :null,
         # otherwise → :error). cancellation closes the file and surfaces
         # here as an exception, filtered out downstream via task state.
         try:
@@ -1409,7 +1409,7 @@ when not defined(WEB):
     # timeout, so we race against `sleepAsync` like `spawnAsyncRequest`. on
     # timer-win we close the socket to abort the in-flight recv and fail the
     # future with a timeout message. otherwise the awaited line is wrapped
-    # in a Value string. socket lifetime is *not* owned by the task — the
+    # in a Value string. socket lifetime is *not* owned by the task, the
     # caller decides when to `unplug`; cancel only closes to abort an
     # in-flight recv (the socket is unusable afterwards anyway).
     proc receiveAsync(sock: AsyncSocket, maxLen: int, timeoutMs: int): Future[Value] {.async.} =
@@ -1437,7 +1437,7 @@ when not defined(WEB):
 
     # in-process async socket connect. for TCP, awaits the handshake; for
     # UDP, no-op (UDP is connectionless). `postProcess` builds the final
-    # Value (typically a `:socket` wrapping `sock`) — keeps `vsocket` /
+    # Value (typically a `:socket` wrapping `sock`), keeps `vsocket` /
     # `newSocket` plumbing out of this helper.
     proc connectAsync(sock: AsyncSocket, address: string, port: Port,
                       isUDP: bool,
@@ -1468,7 +1468,7 @@ when not defined(WEB):
                       buildResponse: proc(version, body, status: string,
                                           headers: HttpHeaders): Value
                      ): Future[Value] {.async.} =
-        # let CatchableError escape — `wait` classifies it based on task state
+        # let CatchableError escape, `wait` classifies it based on task state
         # (cancellation → :null, anything else → :error). this is intentionally
         # *not* a mirror of sync `request`'s null-on-failure behavior: a `:task`
         # is a richer abstraction and users can introspect/recover via `:error`.
@@ -1551,7 +1551,7 @@ when not defined(WEB):
             if timeoutMs >= 0:
                 # race the task's future against a sleep timer. on timeout
                 # return `:error` and leave the task pending (timeout is a
-                # drain-side concept — the work itself isn't broken; the
+                # drain-side concept, the work itself isn't broken; the
                 # user can `do task` / `wait task` again).
                 if not coopWait withTimeout(tsk.future, timeoutMs):
                     return newError(RuntimeErr, "do timed out")

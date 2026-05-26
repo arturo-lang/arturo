@@ -243,7 +243,7 @@ proc defineModule*(moduleName: string) =
                 if explicitAsync or (not directly and not onMainFiber()):
                     # build the full shell command (args appended, quoted)
                     # so `runShellInChildProcess` can pass it through the
-                    # system shell — same semantics as the sync `execCmdEx`
+                    # system shell, same semantics as the sync `execCmdEx`
                     # path below, just non-blocking and `:task`-wrapped.
                     var fullCmd = cmd
                     for i in 0..high(args):
@@ -555,7 +555,7 @@ proc defineModule*(moduleName: string) =
 
                 # send SIGTERM (POSIX) / TerminateProcess (Windows) to the
                 # given PID. for processes spawned by `execute.async`, prefer
-                # `cancel` on the returned `:task` instead — that handle owns
+                # `cancel` on the returned `:task` instead, that handle owns
                 # the lifecycle.
                 when defined(windows):
                     # TerminateProcess needs a HANDLE, not a PID

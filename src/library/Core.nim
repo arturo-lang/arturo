@@ -492,7 +492,7 @@ proc defineModule*(moduleName: string) =
             ; On the other hand, simple variables can be used without
             ; issues, as 'pi in this example
             ..........
-            ; concurrent evaluation — returns a `:task` immediately;
+            ; concurrent evaluation, returns a `:task` immediately;
             ; the body runs in a cooperative fiber inside this same VM.
             ; closures are captured (parent symbols shallow-copied at
             ; spawn time) and real `:error` values are preserved.
@@ -509,7 +509,7 @@ proc defineModule*(moduleName: string) =
             wait do.async [ u: 99 ]
             print u
             ; 1
-            ; (parent's `u` untouched — fiber's copy was incremented)
+            ; (parent's `u` untouched, fiber's copy was incremented)
             ;
             ; if you want results back, return them and use `wait`:
             new-u: wait do.async [ 99 ]
@@ -533,13 +533,13 @@ proc defineModule*(moduleName: string) =
             if checkAttr("times"):
                 times = aTimes.i
 
-            # `do.async <code>` — default is in-process: a cooperative
+            # `do.async <code>`, default is in-process: a cooperative
             # fiber inside this VM. Sub-ms spawn, parent `Syms` shallow-
             # copied at spawn time, real `VMError`s preserved.
             #
             # `.isolated` opts back into the subprocess path (fresh
             # VM, full process isolation, no closure capture). Same
-            # behavior as `do.async` had before in-VM spawn landed —
+            # behavior as `do.async` had before in-VM spawn landed;
             # kept reachable for sandboxing / globally-stomping
             # bytecode walkers / true OS-scheduler parallelism.
             #
@@ -568,7 +568,7 @@ proc defineModule*(moduleName: string) =
                     return
 
                 if hadAttr("isolated"):
-                    # `do.isolated [block]` — sync subprocess execution.
+                    # `do.isolated [block]`, sync subprocess execution.
                     # Sugar for `wait do.async.isolated [block]`: fresh
                     # VM, no closure capture, blocks caller until the
                     # child finishes. Returns the child's result (or

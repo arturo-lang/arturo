@@ -22,7 +22,7 @@
 # Mirrors `Tasks.nim`'s WEB-gating: the dispatcher-driven scheduling
 # this module relies on (and the OS-level signal hooks for built-in
 # events like `CtrlC`) aren't available on the JS backend. The
-# `:event` *value* itself is fine on WEB — only the surrounding
+# `:event` *value* itself is fine on WEB, only the surrounding
 # machinery is gated.
 when not defined(WEB):
     import asyncdispatch
@@ -66,7 +66,7 @@ when not defined(WEB):
     # creates a temp file and passes its path via `ARTURO_EVENT_FILE`.
     # We open it for append here and write one `[name payload]` record
     # per `emit` so the parent's dispatcher (which tails the file) can
-    # fire its own handlers. Nil when running as the top-level VM —
+    # fire its own handlers. Nil when running as the top-level VM;
     # `emit` then is purely local. We picked a file rather than an OS
     # pipe to dodge platform-specific fd-inheritance plumbing.
     var emitChannel: File = nil
@@ -74,7 +74,7 @@ when not defined(WEB):
     # Set by the `BeforeExit` drain so the inbound tail loop (which is
     # otherwise an infinite `sleepAsync(20)` pump) knows to exit
     # cleanly. Without this, the drain's `while hasPendingOperations`
-    # would spin forever — the tail's pending `sleepAsync(20)` is
+    # would spin forever, the tail's pending `sleepAsync(20)` is
     # never not-pending.
     var shuttingDown: bool = false
 
@@ -88,10 +88,10 @@ when not defined(WEB):
     proc enqueueEmit(handler: EventHandler, payload: Value) =
         ## Schedule a handler invocation on the next dispatcher tick.
         ## Avoids reentrancy surprises: `emit` never runs handlers
-        ## synchronously — they fire from `sleepAsync(0)`'s callback.
+        ## synchronously, they fire from `sleepAsync(0)`'s callback.
         ##
         ## We bind the payload as a plain global symbol and `execUnscoped`
-        ## the handler body directly — same idiom `loop` uses for its
+        ## the handler body directly, same idiom `loop` uses for its
         ## iterator var. Going through `callFunction` here would push args
         ## + re-enter `execFunction`, which deadlocks the VM when the
         ## dispatcher is being driven from inside another VM call (e.g.
@@ -106,7 +106,7 @@ when not defined(WEB):
                     execUnscoped(cap.body)
                 except CatchableError as e:
                     # v1 policy: a raising handler doesn't poison the
-                    # queue — log a warning and move on. Revisit if we
+                    # queue, log a warning and move on. Revisit if we
                     # want an UnhandledError event later.
                     echo "Events: handler raised: " & e.msg
         )
@@ -128,7 +128,7 @@ when not defined(WEB):
         ## Symmetric to `initEmitChannel`: when running as a child, the
         ## parent's path lives in `ARTURO_EVENT_INBOUND`. We launch a
         ## long-running async tail that dispatches every parent-emitted
-        ## record into our local subscriber table — so `on E [...]` in
+        ## record into our local subscriber table, so `on E [...]` in
         ## a child fires when the parent does `emit E`.
         ##
         ## The tail's `alive` predicate always returns true: the child
@@ -153,14 +153,14 @@ when not defined(WEB):
                 if oneShotIds.len > 0:
                     # Drop fired-once subscriptions from the registry.
                     # Their already-queued invocation still fires on
-                    # the next tick — we only stop *future* fires.
+                    # the next tick, we only stop *future* fires.
                     var keep: seq[Subscription]
                     for sub in subscribers[name]:
                         if sub.id notin oneShotIds:
                             keep.add(sub)
                     subscribers[name] = keep
 
-# TODO(Events): per-handler unsubscribe — `off E` clears *all* handlers
+# TODO(Events): per-handler unsubscribe, `off E` clears *all* handlers
 #  for an event today. Per-handler removal would need handles returned
 #  from `on`. Add when someone needs it.
 
@@ -278,7 +278,7 @@ proc defineModule*(moduleName: string) =
                             elif tsk.state == taskCancelled:
                                 # cancellation may surface as a successful
                                 # `VNULL` rather than a raised future
-                                # (subprocess case — see helpers/parallelism)
+                                # (subprocess case, see helpers/parallelism)
                                 state = "cancelled"
                                 payload = VNULL
                             else:
@@ -294,7 +294,7 @@ proc defineModule*(moduleName: string) =
                                 # already running on the dispatcher
                                 # tick that processed the future, and
                                 # we're inside the parent's `wait`
-                                # call — same VM context that
+                                # call, same VM context that
                                 # `execUnscoped` is happy with. This
                                 # drops the user-visible "two-tick"
                                 # latency: the handler now fires
@@ -329,7 +329,7 @@ proc defineModule*(moduleName: string) =
             emit.with: "hello" DataReady
             ; → got: hello   (fires on next dispatcher tick)
             ..........
-            ; no payload — just emit:
+            ; no payload, just emit:
             emit CtrlC
             """:
                 #=======================================================
@@ -339,7 +339,7 @@ proc defineModule*(moduleName: string) =
                 dispatchEvent(x.evt.name, payload)
                 # Cross-process leg: if we're a `do.async` child, also
                 # ship `[name payload]` up the pipe so the parent's
-                # dispatcher fires its own subscribers. Best-effort —
+                # dispatcher fires its own subscribers. Best-effort;
                 # parent-died errors are dropped silently.
                 # Built-in events are local-only. A child's `emit CtrlC`
                 # making the parent's CtrlC handler fire would almost
@@ -357,7 +357,7 @@ proc defineModule*(moduleName: string) =
                         # We tried `[name payload]` as one line but Arturo's
                         # parser splits `#[...]` (dict literal) into `#`
                         # plus a plain block when it lives inside another
-                        # block — so dict payloads round-tripped wrong.
+                        # block, so dict payloads round-tripped wrong.
                         # Two lines side-step that entirely.
                         try:
                             emitChannel.writeLine(x.evt.name)
@@ -374,7 +374,7 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "remove registered handler(s) — either every handler for given event, or the one with given id",
+            description = "remove registered handler(s), either every handler for given event, or the one with given id",
             args        = {
                 "target" : {Event,Integer}
             },
@@ -400,7 +400,7 @@ proc defineModule*(moduleName: string) =
                     # (Nim's Future has no callback-removal API).
                     subscribers.del(x.evt.name)
                 else:
-                    # Per-handler removal by id. Linear scan — fine for
+                    # Per-handler removal by id. Linear scan, fine for
                     # the subscriber counts we expect; revisit with a
                     # secondary id→(name, index) index if it ever bites.
                     let targetId = x.i
@@ -438,7 +438,7 @@ proc defineModule*(moduleName: string) =
         # POSIX-only: catch SIGTERM / SIGHUP and dispatch the matching
         # event before letting the process exit. Strictly speaking, the
         # signal-handler context is async-unsafe and `addCallback` /
-        # `dispatchEvent` are not signal-safe — but in practice the
+        # `dispatchEvent` are not signal-safe, but in practice the
         # handler is short and the alternative (a polled flag) needs a
         # main loop Arturo doesn't have. We drain inline so the user's
         # handler actually gets to run before `quit`. Exit codes follow
@@ -475,7 +475,7 @@ proc defineModule*(moduleName: string) =
                 dispatchEvent("BeforeExit", VNULL)
                 # Cap the drain in case anything else (besides the
                 # inbound tail) is permanently pending. 100 ticks at
-                # 20ms ceiling = 2s max — plenty for a real handler,
+                # 20ms ceiling = 2s max, plenty for a real handler,
                 # bounded so we never spin forever.
                 var drainTicks = 0
                 try:
@@ -489,7 +489,7 @@ proc defineModule*(moduleName: string) =
         # SIGINT → emit `CtrlC`. Nim invokes the hook on the main thread
         # at a safe point (not in signal context), so scheduling on the
         # dispatcher is fine. We drain the queue here because Nim's
-        # runtime terminates the program once the hook returns —
+        # runtime terminates the program once the hook returns;
         # otherwise the user's handler would never get to run.
         setControlCHook(proc() {.noconv.} =
             {.cast(gcsafe).}:
@@ -502,5 +502,5 @@ proc defineModule*(moduleName: string) =
         )
 
         # Pre-bound built-in events (`BeforeExit`, `SigTerm`, `SigHup`)
-        # and the OS hooks that fire them land in follow-up commits —
+        # and the OS hooks that fire them land in follow-up commits;
         # see EVENT_NOTES.md.

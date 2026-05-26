@@ -13,41 +13,41 @@
 ## [`vm/globals.nim`](globals.nim)). To run a user block on a
 ## fiber, we save those slots into a `VMContext` when the fiber
 ## suspends and restore them when it resumes. The interpreter
-## itself never learns about fibers — it just sees globals that
+## itself never learns about fibers, it just sees globals that
 ## change shape between switches.
 ##
 ## ## What gets swapped (per-fiber)
 ##
-## - `Stack`, `SP`, `Attrs` (vm/stack.nim) — operand stack and
+## - `Stack`, `SP`, `Attrs` (vm/stack.nim), operand stack and
 ##   attributes table for the in-flight expression.
-## - `Syms` (vm/globals.nim) — the symbol table the user block
+## - `Syms` (vm/globals.nim), the symbol table the user block
 ##   reads and writes against. Shallow-copied at spawn (per the
 ##   closure-capture decision in CONCURRENCY_NOTES.md); writes from
 ##   one fiber don't leak into others.
-## - `DictSyms` (vm/globals.nim) — the dictionary-construction
+## - `DictSyms` (vm/globals.nim), the dictionary-construction
 ##   stack used by `execDictionary`. Per-fiber so a
 ##   `make :dictionary` running concurrently doesn't stomp another
 ##   fiber's frame.
-## - `ScopeStack` (vm/globals.nim) — the per-call undo log of
+## - `ScopeStack` (vm/globals.nim), the per-call undo log of
 ##   touched symbols. Per-fiber so function unwind on one fiber
 ##   doesn't roll back another fiber's writes.
 ##
 ## ## What stays shared (truly global, do NOT swap)
 ##
-## - `Aliases` — symbol-aliasing rules. Configuration, set at
+## - `Aliases`, symbol-aliasing rules. Configuration, set at
 ##   startup, read everywhere. Sharing is the point.
-## - `LibraryModules` — the registry of builtin libraries.
+## - `LibraryModules`, the registry of builtin libraries.
 ##   Read-only after init.
-## - `ScopeFramePool` — pool of recycled `SymTable`s used by
+## - `ScopeFramePool`, pool of recycled `SymTable`s used by
 ##   `pushScopeFrame` / `releaseScopeFrame`. Allocator-shaped
 ##   infrastructure; sharing it across fibers gives us a strictly
 ##   larger pool. Cooperative scheduling means concurrent access
 ##   isn't a race.
-## - `Stores` — list of active stores to flush at exit. Shared by
-##   design — a fiber writing to a store should land in the same
+## - `Stores`, list of active stores to flush at exit. Shared by
+##   design, a fiber writing to a store should land in the same
 ##   place the parent reads from.
-## - `Config` — global configuration value. Read-only at runtime.
-## - `Dumper` — value-printing callback. Pure infrastructure.
+## - `Config`, global configuration value. Read-only at runtime.
+## - `Dumper`, value-printing callback. Pure infrastructure.
 
 #=======================================
 # Libraries
@@ -88,13 +88,13 @@ proc newVMContext*(parentSyms: SymTable): VMContext =
     ## the parent's symbol table is **shallow-copied**. The child
     ## fiber sees parent symbols at spawn time and writes don't
     ## leak back. Values are refs, so the copy is just the bucket
-    ## array — sub-ms even for large namespaces.
+    ## array, sub-ms even for large namespaces.
     ##
     ## Everything else starts fresh:
     ##
     ## - `stack` is pre-allocated to `StackSize` to match
     ##   `createMainStack`. Per-fiber operand stacks are independent.
-    ## - `attrs`, `dictSyms`, `scopeStack` start empty — the child
+    ## - `attrs`, `dictSyms`, `scopeStack` start empty, the child
     ##   block runs as a top-level execution, not a continuation of
     ##   the parent's in-flight call/dictionary construction.
     result = VMContext(
@@ -112,7 +112,7 @@ proc swapOutTo*(ctx: VMContext) =
     ## in a consistent empty state. The next `swapInFrom` repopulates
     ## them; nothing else should touch the globals in between.
     ##
-    ## `move` everywhere for the seq/Table fields — those headers
+    ## `move` everywhere for the seq/Table fields, those headers
     ## move in O(1) under ORC and the source ends up default-empty.
     ## `SP` is a plain `int`, so we reset it explicitly to keep it
     ## consistent with the now-empty `Stack` (`Stack[SP-1]` would

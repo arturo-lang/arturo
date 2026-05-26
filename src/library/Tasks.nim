@@ -47,7 +47,7 @@ when not defined(WEB):
     proc cancelTask(tsk: Value) =
         ## Move a `:task` value to the cancelled state and tear down its
         ## underlying handle (subprocess or in-process producer's cancel hook).
-        ## Idempotent — calling on a non-pending task is a no-op.
+        ## Idempotent, calling on a non-pending task is a no-op.
         if tsk.tsk.state != taskPending:
             return
         tsk.tsk.state = taskCancelled
@@ -92,7 +92,7 @@ proc defineModule*(moduleName: string) =
             ]
             results: wait.all tasks
             ..........
-            ; settle for the first 3 of 5 mirrors that respond — useful
+            ; settle for the first 3 of 5 mirrors that respond, useful
             ; for redundant-fetch patterns. results come back in
             ; completion order (NOT input order), unlike `wait.all`.
             mirrors: map mirror-urls 'u [request.async u #[]]
@@ -108,7 +108,7 @@ proc defineModule*(moduleName: string) =
                     # tasks surface as `:null` (matching bare `wait`).
                     # with `.timeout`: any task still pending when the budget
                     # runs out gets a timeout `:error` slot; the task itself
-                    # is left untouched (still pending — caller can wait again).
+                    # is left untouched (still pending, caller can wait again).
                     for t in x.a:
                         if unlikely(t.kind != Task):
                             Error_OperationNotPermitted("`wait.all` expects a block of :task values")
@@ -136,7 +136,7 @@ proc defineModule*(moduleName: string) =
                                 # In-process fibers raise the original
                                 # `VError` (with kind, hint, context).
                                 # Subprocess-backed tasks raise a generic
-                                # exception — fall back to `RuntimeErr`.
+                                # exception, fall back to `RuntimeErr`.
                                 resolved[i] =
                                     if e of VError: newError(VError(e))
                                     else:           newError(RuntimeErr, e.msg)
@@ -144,7 +144,7 @@ proc defineModule*(moduleName: string) =
                 elif (hadAttr("first")):
                     # accept a block of tasks; block until the first one
                     # settles and return its value (or `:error` if the
-                    # winner failed). the rest are left alone — pass
+                    # winner failed). the rest are left alone, pass
                     # `.cancel` to also abort them.
                     for t in x.a:
                         if unlikely(t.kind != Task):
@@ -179,7 +179,7 @@ proc defineModule*(moduleName: string) =
                         )
                     # `.timeout`: if no task settles within the budget, complete
                     # the winner with a timeout `:error`. underlying tasks are
-                    # left untouched (still pending) — pair with `.cancel` to
+                    # left untouched (still pending), pair with `.cancel` to
                     # also abort them.
                     if checkAttr("timeout"):
                         let timer = sleepAsync(timeoutMsOf(aTimeout))
@@ -198,7 +198,7 @@ proc defineModule*(moduleName: string) =
                     # accept a block of tasks; block until the first N
                     # settle and return their values in COMPLETION order
                     # (the fastest one ends up at index 0). Failed slots
-                    # surface as `:error`, cancelled as `:null` —
+                    # surface as `:error`, cancelled as `:null`;
                     # matching the rest of the `wait` family.
                     let target = aAny.i
                     if target < 1:
@@ -248,7 +248,7 @@ proc defineModule*(moduleName: string) =
                 else:
                     # optional `.timeout`: race the task's future against a
                     # sleep timer; on timeout return `:error` and leave the
-                    # task pending (timeout is a wait-side concept — the
+                    # task pending (timeout is a wait-side concept, the
                     # work itself isn't broken, the user can wait again).
                     var timedOut = false
                     if checkAttr("timeout"):
