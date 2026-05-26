@@ -1064,6 +1064,10 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Event:
             result = newEvent(v.evt)
 
+        of Channel:
+            when not defined(WEB):
+                result = Value(kind: Channel, chn: v.chn)
+
         of Nothing, Any:
             discard
 
