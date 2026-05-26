@@ -761,6 +761,11 @@ when not defined(WEB):
         let proc1 = p
         let tailFut = tailEventChannel(evtFile, proc(): bool {.gcsafe.} =
             {.cast(gcsafe).}: proc1.running)
+        # Same tail for the cross-process channel file — drains records
+        # the child appends via `send Ch v` and routes each into the
+        # matching local `:channel` in the parent.
+        let chanTailFut = tailChannelFile(chanFile, proc(): bool {.gcsafe.} =
+            {.cast(gcsafe).}: proc1.running)
         while p.running and tsk.state != taskCancelled:
             await sleepAsync(50)
         if tsk.state == taskCancelled and p.running:
@@ -773,8 +778,15 @@ when not defined(WEB):
             await tailFut
         except CatchableError:
             discard
+        try:
+            await chanTailFut
+        except CatchableError:
+            discard
         if fileExists(evtFile):
             try: removeFile(evtFile)
+            except CatchableError: discard
+        if fileExists(chanFile):
+            try: removeFile(chanFile)
             except CatchableError: discard
         unregisterChildInbound(inboundFile)
         if fileExists(inboundFile):
