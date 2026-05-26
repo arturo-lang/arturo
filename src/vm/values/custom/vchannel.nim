@@ -27,6 +27,7 @@ when not defined(WEB):
     type
         VChannel* = ref object
             name*: string
+            capacity*: int                  ## 0 = unbuffered, -1 = unbounded, N > 0 = bounded
 
     #=======================================
     # Overloads
