@@ -166,16 +166,16 @@ proc defineModule*(moduleName: string) =
             alias       = unaliased,
             op          = opNop,
             rule        = PrefixPrecedence,
-            description = "receive line of data from selected socket",
+            description = "receive next message from selected socket or channel",
             args        = {
-                "origin"    : {Socket}
+                "origin"    : {Socket,Channel}
             },
             attrs       = {
                 "size"      : ({Integer},"set maximum size of received data"),
                 "timeout"   : ({Integer},"set timeout (in milliseconds)"),
                 "async"     : ({Logical},"return a `:task` resolving to the received line")
             },
-            returns     = {String,Task},
+            returns     = {String,Any,Task},
             example     = """
             server: listen 18966
             print "started server connection..."
@@ -199,8 +199,16 @@ proc defineModule*(moduleName: string) =
             ; read-with-deadline via `:task`
             t: receive.async client
             r: wait.timeout: 5000 t          ; → :error on 5s deadline
+            ..........
+            ; receive from a channel
+            Jobs: channel 'jobs
+            v: receive Jobs                  ; parks until something sent
             """:
                 #=======================================================
+                if x.kind == Channel:
+                    push coopWait(chanReceive(x.chn))
+                    return
+
                 var size = MaxLineLength
                 if checkAttr("size"):
                     size = aSize.i
