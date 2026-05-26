@@ -96,6 +96,7 @@ macro libraryModule(name: static[string]): untyped =
 
 libraryModule "Arithmetic"
 libraryModule "Bitwise"
+libraryModule "Channels"
 libraryModule "Collections"
 libraryModule "Colors"
 libraryModule "Comparison"
