@@ -98,5 +98,11 @@
 >> socket — receive.async with .timeout
 [+] passed!
 
+>> channel — cross-process fan-in (child → parent send)
+[+] passed!
+
+>> channel — cross-process dict payload fidelity
+[+] passed!
+
 >> socket — connect.async parallel fan-out
 [+] passed!

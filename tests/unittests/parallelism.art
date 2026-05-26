@@ -466,6 +466,57 @@ do [
 ]
 
 
+topic "channel — cross-process fan-in (child → parent send)"
+do [
+
+    Results: channel.bounded: 50 'results
+
+    workers: new []
+    loop 1..3 'k [
+        'workers ++ do.async.isolated [
+            send channel 'results 100
+            send channel 'results 200
+        ]
+    ]
+
+    wait.all workers
+
+    received: new []
+    loop 1..6 'k [
+        'received ++ receive Results
+    ]
+    unplug Results
+
+    ensure -> 6 = size received
+    ensure -> [100 100 100 200 200 200] = sort received
+    passed
+
+]
+
+
+topic "channel — cross-process dict payload fidelity"
+do [
+
+    Reports: channel.bounded: 20 'reports
+
+    w: do.async.isolated [
+        send channel 'reports #[id: 1 name: "alpha"]
+        send channel 'reports #[id: 2 name: "beta"]
+    ]
+    wait w
+
+    r1: receive Reports
+    r2: receive Reports
+    unplug Reports
+
+    ensure -> "alpha" = r1\name
+    ensure -> "beta"  = r2\name
+    ensure -> 3       = r1\id + r2\id
+    passed
+
+]
+
+
 topic "socket — connect.async parallel fan-out"
 do [
 
