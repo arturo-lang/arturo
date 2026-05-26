@@ -524,6 +524,34 @@ when not defined(WEB):
         # full (or unbuffered) — park the sender
         c.senders.addLast((v: v, f: result))
 
+    proc chanReceive*(c: VChannel): Future[Value] =
+        ## park-or-pop semantics. Returns a future that completes
+        ## with the next value — either popped from the buffer, taken
+        ## directly from a parked sender, or awaited from a future
+        ## sender. Closed empty channel resolves to `:null`.
+        result = newFuture[Value]("channel.receive")
+        if c.buffer.len > 0:
+            let v = c.buffer.popFirst()
+            # if a sender was parked because we were full, move its
+            # value into the freed slot and wake it.
+            if c.senders.len > 0:
+                let s = c.senders.popFirst()
+                c.buffer.addLast(s.v)
+                s.f.complete()
+            result.complete(v)
+            return
+        if c.senders.len > 0:
+            # unbuffered case: hand directly from parked sender
+            let s = c.senders.popFirst()
+            s.f.complete()
+            result.complete(s.v)
+            return
+        if c.closed:
+            result.complete(VNULL)
+            return
+        # empty — park the receiver
+        c.receivers.addLast(result)
+
 #=======================================
 # Subprocess-isolated path (`do.async.isolated`)
 #=======================================
