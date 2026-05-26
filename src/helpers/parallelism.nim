@@ -767,6 +767,8 @@ when not defined(WEB):
         ## mark the channel closed. all parked receivers wake with
         ## `:null` (and drain any remaining buffered items first via
         ## subsequent recvs). all parked senders fail with an error.
+        ## Any remote receivers parked across-process get a DELIVER
+        ## null so child VMs don't hang forever.
         if c.closed:
             return
         c.closed = true
@@ -779,6 +781,12 @@ when not defined(WEB):
         while c.senders.len > 0:
             let s = c.senders.popFirst()
             s.f.fail(newException(CatchableError, "send on closed channel"))
+        # remote receivers (cross-process) get DELIVER null so child
+        # VMs awaiting on `receive Ch` unblock cleanly
+        if remoteReceivers.hasKey(c.name):
+            while remoteReceivers[c.name].len > 0:
+                let rr = remoteReceivers[c.name].popFirst()
+                writeDeliverRecord(rr.inbound, rr.uid, "null")
 
 #=======================================
 # Subprocess-isolated path (`do.async.isolated`)
