@@ -122,6 +122,13 @@ proc defineModule*(moduleName: string) =
                     picked = s.v
                     have = true
                 if not have:
+                    # closed channel with nothing buffered → DELIVER null
+                    # so child receives unblock cleanly
+                    if c.closed:
+                        let (ok, rr) = popRemoteReceiver(name)
+                        if ok:
+                            writeDeliverRecord(rr.inbound, rr.uid, "null")
+                            return true
                     return false
                 let (ok, rr) = popRemoteReceiver(name)
                 if not ok:
