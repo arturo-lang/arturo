@@ -506,6 +506,45 @@ when not defined(WEB):
             await sleepAsync(20)
     {.pop.}
 
+    {.push warning[GcUnsafe2]: off.}
+    proc tailChannelFile*(path: string, alive: proc(): bool {.gcsafe.}) {.async, gcsafe.} =
+        ## Sibling of `tailEventChannel` for cross-process channel records.
+        ## Same 2-line wire format (`name\npayloadSrc\n`), but each record
+        ## routes through `dispatchInboundChannel` instead of the event
+        ## dispatcher — i.e. delivers to a specific local `:channel` by
+        ## name rather than broadcasting.
+        var pos: int64 = 0
+        while true:
+            block oneRound:
+                var f: File
+                if not open(f, path, fmRead):
+                    break oneRound
+                defer: f.close()
+                f.setFilePos(pos)
+                var name: string
+                var payloadSrc: string
+                while f.readLine(name):
+                    if not f.readLine(payloadSrc):
+                        break
+                    pos = f.getFilePos()
+                    if inboundChannelDispatcher.isNil: continue
+                    try:
+                        {.cast(gcsafe).}:
+                            let parsed = doParse(payloadSrc, isFile=false)
+                            var payload = VNULL
+                            if not parsed.isNil:
+                                let savedSP = SP
+                                execUnscoped(parsed)
+                                if SP > savedSP:
+                                    payload = stack.pop()
+                            dispatchInboundChannel(name, payload)
+                    except CatchableError:
+                        discard
+            if not alive():
+                break
+            await sleepAsync(20)
+    {.pop.}
+
     #=======================================
     # Channel primitives
     #=======================================
