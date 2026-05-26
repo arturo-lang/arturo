@@ -163,6 +163,16 @@ proc defineModule*(moduleName: string) =
             asyncCheck tailChannelFile(ownChannelInbound,
                 proc(): bool {.gcsafe.} = true)
 
+        # Register the proxy-receive hook for cross-process `receive Ch`.
+        # Only relevant in a child VM (outbound file open) — otherwise
+        # the hook stays nil and `receive` falls through to local
+        # `chanReceive`.
+        if outboundChannelFileOpen:
+            setProxyReceiveHook(proc(c: VChannel): Future[Value] {.gcsafe.} =
+                {.cast(gcsafe).}:
+                    return proxyReceive(c)
+            )
+
         # Register the outbound emitter for cross-process `send Ch v`.
         # Uniform 4-line SEND record: "SEND", name, codified-payload, "".
         setOutboundChannelEmitter(proc(name: string, payload: Value): bool {.gcsafe.} =
