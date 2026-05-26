@@ -505,6 +505,113 @@ when not defined(WEB):
                 return (false, Future[Value](nil))
             return (true, proxyReceiveHook(c))
 
+    # Per-process channel state (moved here from library/Channels.nim
+    # so the library file stays just builtins + imports).
+    var channelsByName*: Table[string, VChannel] = initTable[string, VChannel]()
+    var outboundChannelFile*: File
+    var outboundChannelFileOpen*: bool = false
+    var ownChannelInbound*: string = ""
+    var pendingProxyRecvs*: Table[string, Future[Value]] = initTable[string, Future[Value]]()
+
+    proc proxyReceive*(c: VChannel): Future[Value] =
+        let uid = genReceiveUid()
+        result = newFuture[Value]("channel.proxyReceive")
+        pendingProxyRecvs[uid] = result
+        try:
+            outboundChannelFile.writeLine("RECV")
+            outboundChannelFile.writeLine(c.name)
+            outboundChannelFile.writeLine(uid)
+            outboundChannelFile.writeLine(ownChannelInbound)
+            outboundChannelFile.flushFile()
+        except IOError:
+            pendingProxyRecvs.del(uid)
+            result.complete(VNULL)
+
+    proc initChannels*() =
+        ## Wire up the cross-process channel hooks. Called once from
+        ## library/Streams.nim's defineModule.
+        setInboundChannelDispatcher(proc(name: string, payload: Value) {.gcsafe.} =
+            {.cast(gcsafe).}:
+                if channelsByName.hasKey(name):
+                    discard chanSend(channelsByName[name], payload)
+        )
+
+        setRemoteReceiverFulfiller(proc(name: string): bool {.gcsafe.} =
+            {.cast(gcsafe).}:
+                if not channelsByName.hasKey(name):
+                    return false
+                let c = channelsByName[name]
+                var picked: Value
+                var have = false
+                if c.buffer.len > 0:
+                    picked = c.buffer.popFirst()
+                    have = true
+                    if c.senders.len > 0:
+                        let s = c.senders.popFirst()
+                        c.buffer.addLast(s.v)
+                        s.f.complete()
+                elif c.senders.len > 0:
+                    let s = c.senders.popFirst()
+                    s.f.complete()
+                    picked = s.v
+                    have = true
+                if not have:
+                    if c.closed:
+                        let (ok, rr) = popRemoteReceiver(name)
+                        if ok:
+                            writeDeliverRecord(rr.inbound, rr.uid, "null")
+                            return true
+                    return false
+                let (ok, rr) = popRemoteReceiver(name)
+                if not ok:
+                    c.buffer.addFirst(picked)
+                    return false
+                writeDeliverRecord(rr.inbound, rr.uid, codify(picked, safeStrings = true))
+                return true
+        )
+
+        setDeliverDispatcher(proc(uid: string, payload: Value) {.gcsafe.} =
+            {.cast(gcsafe).}:
+                if pendingProxyRecvs.hasKey(uid):
+                    let fut = pendingProxyRecvs[uid]
+                    pendingProxyRecvs.del(uid)
+                    fut.complete(payload)
+        )
+
+        let path = getEnv("ARTURO_CHANNEL_FILE")
+        if path.len > 0:
+            try:
+                if open(outboundChannelFile, path, fmAppend):
+                    outboundChannelFileOpen = true
+            except CatchableError:
+                discard
+
+        ownChannelInbound = getEnv("ARTURO_CHANNEL_INBOUND")
+        if ownChannelInbound.len > 0:
+            asyncCheck tailChannelFile(ownChannelInbound,
+                proc(): bool {.gcsafe.} = true)
+
+        if outboundChannelFileOpen:
+            setProxyReceiveHook(proc(c: VChannel): Future[Value] {.gcsafe.} =
+                {.cast(gcsafe).}:
+                    return proxyReceive(c)
+            )
+
+        setOutboundChannelEmitter(proc(name: string, payload: Value): bool {.gcsafe.} =
+            {.cast(gcsafe).}:
+                if not outboundChannelFileOpen:
+                    return false
+                try:
+                    outboundChannelFile.writeLine("SEND")
+                    outboundChannelFile.writeLine(name)
+                    outboundChannelFile.writeLine(codify(payload, safeStrings = true))
+                    outboundChannelFile.writeLine("")
+                    outboundChannelFile.flushFile()
+                    return true
+                except IOError:
+                    return false
+        )
+
     proc dispatchInboundChannel(name: string, payload: Value) {.gcsafe.} =
         {.cast(gcsafe).}:
             if not inboundChannelDispatcher.isNil:
