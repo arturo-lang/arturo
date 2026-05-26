@@ -533,19 +533,6 @@ proc defineModule*(moduleName: string) =
             if checkAttr("times"):
                 times = aTimes.i
 
-            # `do.async <code>`, default is in-process: a cooperative
-            # fiber inside this VM. Sub-ms spawn, parent `Syms` shallow-
-            # copied at spawn time, real `VMError`s preserved.
-            #
-            # `.isolated` opts back into the subprocess path (fresh
-            # VM, full process isolation, no closure capture). Same
-            # behavior as `do.async` had before in-VM spawn landed;
-            # kept reachable for sandboxing / globally-stomping
-            # bytecode walkers / true OS-scheduler parallelism.
-            #
-            # `:string` input is always routed to the subprocess path.
-            # The in-process spawn doesn't fetch URLs and the parser
-            # belongs there too; strings keep subprocess for v1.
             when not defined(WEB):
                 if hadAttr("async"):
                     let isolated = hadAttr("isolated")
@@ -555,10 +542,6 @@ proc defineModule*(moduleName: string) =
                     if (not isolated) and xKind in {Block, Bytecode}:
                         push ParallelismHelper.spawnInProcessDoBlock(x, taskName)
                     else:
-                        # `codify` gives source-faithful Arturo code
-                        # (preserving Label colons, Literal quotes, …);
-                        # the wrapper inside `runInChildProcess` injects
-                        # a leading `null` for void-safety
                         let src =
                             case xKind
                                 of Block, Bytecode: codify(x)
@@ -568,11 +551,7 @@ proc defineModule*(moduleName: string) =
                     return
 
                 if hadAttr("isolated"):
-                    # `do.isolated [block]`, sync subprocess execution.
-                    # Sugar for `wait do.async.isolated [block]`: fresh
-                    # VM, no closure capture, blocks caller until the
-                    # child finishes. Returns the child's result (or
-                    # `:error` if it raised).
+                    # sugar for `wait do.async.isolated [block]`
                     let src =
                         case xKind
                             of Block, Bytecode: codify(x)
@@ -582,9 +561,7 @@ proc defineModule*(moduleName: string) =
                     push ParallelismHelper.drainTask(tsk.tsk, -1)
                     return
 
-            # `do task` is sugar for `wait task` - drain the future once.
-            # Honors `.timeout` the same way `wait` does: on timeout we
-            # return a `:error` value and leave the task pending.
+            # `do task` is sugar for `wait task`.
             if xKind == Task:
                 when not defined(WEB):
                     let timeoutMs =
