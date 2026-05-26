@@ -552,6 +552,23 @@ when not defined(WEB):
         # empty — park the receiver
         c.receivers.addLast(result)
 
+    proc chanClose*(c: VChannel) =
+        ## mark the channel closed. all parked receivers wake with
+        ## `:null` (and drain any remaining buffered items first via
+        ## subsequent recvs). all parked senders fail with an error.
+        if c.closed:
+            return
+        c.closed = true
+        # buffered items stay readable until drained; only parked
+        # receivers with no buffer to satisfy them wake now.
+        while c.receivers.len > 0 and c.buffer.len == 0:
+            let r = c.receivers.popFirst()
+            r.complete(VNULL)
+        # parked senders fail — can't deliver to a closed channel
+        while c.senders.len > 0:
+            let s = c.senders.popFirst()
+            s.f.fail(newException(CatchableError, "send on closed channel"))
+
 #=======================================
 # Subprocess-isolated path (`do.async.isolated`)
 #=======================================
