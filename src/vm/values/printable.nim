@@ -522,6 +522,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Event        :
             dumpPrimitive(v.evt.name, v)
 
+        of Channel      :
+            when not defined(WEB):
+                dumpPrimitive(v.chn.name, v)
+
         of Bytecode     : 
             dumpBlockStart(v)
 
