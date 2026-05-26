@@ -568,7 +568,8 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
 
             dumpBlockEnd()
 
-        else            : discard
+        of Nothing      : discard
+        of ANY          : discard
 
     if not isLast:
         stdoutWrite "\n"
