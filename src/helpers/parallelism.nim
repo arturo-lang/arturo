@@ -821,17 +821,23 @@ when not defined(WEB):
         let inboundFile = genTempPath("arturo-inb-", ".art")
         writeFile(inboundFile, "")
         registerChildInbound(inboundFile)
-        # Cross-process channel file — child writes `send Ch v` records
-        # here, parent tails and routes by name into local `:channel`s.
-        # Half-duplex v1: child → parent only.
+        # Cross-process channel file — child writes `send Ch v` and
+        # RECV requests here, parent tails and routes by name into
+        # local `:channel`s (SEND) or registers remote receivers (RECV).
         let chanFile = genTempPath("arturo-chn-", ".art")
         writeFile(chanFile, "")
+        # Inbound channel-records pipe — parent writes DELIVER records
+        # here for this specific child; child tails it and resolves
+        # pending proxy `receive` futures by UID.
+        let chanInbound = genTempPath("arturo-cin-", ".art")
+        writeFile(chanInbound, "")
         var childEnv = newStringTable(modeCaseSensitive)
         for k, v in envPairs():
             childEnv[k] = v
         childEnv["ARTURO_EVENT_FILE"] = evtFile
         childEnv["ARTURO_EVENT_INBOUND"] = inboundFile
         childEnv["ARTURO_CHANNEL_FILE"] = chanFile
+        childEnv["ARTURO_CHANNEL_INBOUND"] = chanInbound
         # void-safety trick: prepend `null` *inside* the user's block so the
         # block always has a value even if the user's last expression doesn't
         # push (e.g. ends with `print`). if the user does push a real value,
@@ -905,6 +911,9 @@ when not defined(WEB):
             except CatchableError: discard
         if fileExists(chanFile):
             try: removeFile(chanFile)
+            except CatchableError: discard
+        if fileExists(chanInbound):
+            try: removeFile(chanInbound)
             except CatchableError: discard
         unregisterChildInbound(inboundFile)
         if fileExists(inboundFile):
