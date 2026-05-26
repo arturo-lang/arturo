@@ -250,7 +250,13 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if x.kind == Channel:
-                    coopWait chanSend(x.chn, y)
+                    # When running in a child VM with `ARTURO_CHANNEL_FILE`
+                    # set, route across-process. Parent's `tailChannelFile`
+                    # picks it up and delivers into its local channel of
+                    # the same name. Otherwise fall through to local
+                    # cooperative send.
+                    if not emitToOutboundChannel(x.chn.name, y):
+                        coopWait chanSend(x.chn, y)
                 else:
                     let asChunk = hadAttr("chunk")
                     let message =
