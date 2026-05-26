@@ -322,7 +322,7 @@ template fetchParamsBlock() {.dirty.} =
             params.add(item.s)
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
-    let preevaled = evalOrGet(z)
+    let preevaled {.used.} = evalOrGet(z)
     let withIndex: Value = 
         if checkAttr("with"):
             aWith
