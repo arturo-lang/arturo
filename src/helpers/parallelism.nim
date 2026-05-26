@@ -995,6 +995,30 @@ when not defined(WEB):
             except CatchableError: discard
         result = newTask(tsk)
 
+    # in-process async socket connect. for TCP, awaits the handshake; for
+    # UDP, no-op (UDP is connectionless). `postProcess` builds the final
+    # Value (typically a `:socket` wrapping `sock`) — keeps `vsocket` /
+    # `newSocket` plumbing out of this helper.
+    proc connectAsync(sock: AsyncSocket, address: string, port: Port,
+                      isUDP: bool,
+                      postProcess: proc(): Value): Future[Value] {.async.} =
+        if not isUDP:
+            await sock.connect(address, port)
+        return postProcess()
+
+    # convenience: kick off an in-process async `connect` and return a
+    # `:task` resolving to whatever `postProcess` builds. cancel closes
+    # the underlying socket to abort an in-flight handshake.
+    proc spawnAsyncConnect*(sock: AsyncSocket, address: string, port: Port,
+                            isUDP: bool,
+                            postProcess: proc(): Value): Value =
+        let tsk = VTask(state: taskPending)
+        tsk.future = connectAsync(sock, address, port, isUDP, postProcess)
+        tsk.cancelHandle = proc() =
+            try: sock.close()
+            except CatchableError: discard
+        result = newTask(tsk)
+
     # in-process async HTTP request via Nim's `AsyncHttpClient`. the response
     # is awaited, the body is drained, and the caller-provided `buildResponse`
     # closure converts the raw fields into a Value (so the response shape
