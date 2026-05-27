@@ -218,32 +218,16 @@ proc defineModule*(moduleName: string) =
             },
             returns     = {String,Any,Task},
             example     = """
-            server: listen 18966
-            print "started server connection..."
-
             client: accept server
-            print ["accepted incoming connection from:" client]
-
-            keepGoing: true
-            while [keepGoing][
-                message: receive client
-                print ["received message:" message]
-
-                if message = "exit" [
-                    unplug client
-                    keepGoing: false
-                ]
-            ]
-
-            unplug server
+            message: receive client
             ..........
-            ; read-with-deadline via `:task`
+            ; with deadline
             t: receive.async client
-            r: wait.timeout: 5000 t          ; → :error on 5s deadline
+            r: wait.timeout: 5000 t      ; :error on timeout
             ..........
-            ; receive from a channel
+            ; from a channel
             Jobs: channel 'jobs
-            v: receive Jobs                  ; parks until something sent
+            v: receive Jobs              ; parks until something sent
             """:
                 #=======================================================
                 if x.kind == Channel:

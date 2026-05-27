@@ -19,11 +19,7 @@
 # Libraries
 #=======================================
 
-# Mirrors `Tasks.nim`'s WEB-gating: the dispatcher-driven scheduling
-# this module relies on (and the OS-level signal hooks for built-in
-# events like `CtrlC`) aren't available on the JS backend. The
-# `:event` *value* itself is fine on WEB, only the surrounding
-# machinery is gated.
+# Dispatcher + signal hooks unusable on JS; gate the machinery.
 when not defined(WEB):
     import asyncdispatch
     import os
@@ -56,26 +52,14 @@ when not defined(WEB):
             once: bool      ## if true, drop from subscribers after the next fire
             handler: EventHandler
 
-    # Subscribers indexed by event name. Each `on e [...]` appends a
-    # subscription here; `emit` looks up by name and schedules each
-    # handler on the next dispatcher tick.
+    # Subscribers keyed by event name.
     var subscribers: Table[string, seq[Subscription]]
     var nextSubscriberId: int = 0
 
-    # When this VM is running as a `do.async` subprocess, the parent
-    # creates a temp file and passes its path via `ARTURO_EVENT_FILE`.
-    # We open it for append here and write one `[name payload]` record
-    # per `emit` so the parent's dispatcher (which tails the file) can
-    # fire its own handlers. Nil when running as the top-level VM;
-    # `emit` then is purely local. We picked a file rather than an OS
-    # pipe to dodge platform-specific fd-inheritance plumbing.
+    # Child-side outbound emit file (`ARTURO_EVENT_FILE`). Nil on top-level VM.
     var emitChannel: File = nil
 
-    # Set by the `BeforeExit` drain so the inbound tail loop (which is
-    # otherwise an infinite `sleepAsync(20)` pump) knows to exit
-    # cleanly. Without this, the drain's `while hasPendingOperations`
-    # would spin forever, the tail's pending `sleepAsync(20)` is
-    # never not-pending.
+    # Flips inbound tail's `alive` to false during `BeforeExit` drain.
     var shuttingDown: bool = false
 
 #=======================================
@@ -86,16 +70,7 @@ when not defined(WEB):
     proc dispatchEvent(name: string, payload: Value) {.gcsafe.}
 
     proc enqueueEmit(handler: EventHandler, payload: Value) =
-        ## Schedule a handler invocation on the next dispatcher tick.
-        ## Avoids reentrancy surprises: `emit` never runs handlers
-        ## synchronously, they fire from `sleepAsync(0)`'s callback.
-        ##
-        ## We bind the payload as a plain global symbol and `execUnscoped`
-        ## the handler body directly, same idiom `loop` uses for its
-        ## iterator var. Going through `callFunction` here would push args
-        ## + re-enter `execFunction`, which deadlocks the VM when the
-        ## dispatcher is being driven from inside another VM call (e.g.
-        ## mid-`wait`).
+        ## Schedule handler on next dispatcher tick (avoids reentrancy).
         let cap = handler
         let pay = payload
         sleepAsync(0).addCallback(proc() {.gcsafe.} =
@@ -105,16 +80,10 @@ when not defined(WEB):
                         Syms[cap.param] = pay
                     execUnscoped(cap.body)
                 except CatchableError as e:
-                    # v1 policy: a raising handler doesn't poison the
-                    # queue, log a warning and move on. Revisit if we
-                    # want an UnhandledError event later.
                     echo "Events: handler raised: " & e.msg
         )
 
     proc initEmitChannel() =
-        ## If we were spawned by a parent VM with cross-process emit
-        ## enabled, the parent will have placed the channel file path
-        ## under `ARTURO_EVENT_FILE`. Open it once at module init.
         let path = getEnv("ARTURO_EVENT_FILE")
         if path.len == 0: return
         try:
@@ -125,24 +94,14 @@ when not defined(WEB):
             discard
 
     proc initInboundChannel() =
-        ## Symmetric to `initEmitChannel`: when running as a child, the
-        ## parent's path lives in `ARTURO_EVENT_INBOUND`. We launch a
-        ## long-running async tail that dispatches every parent-emitted
-        ## record into our local subscriber table, so `on E [...]` in
-        ## a child fires when the parent does `emit E`.
-        ##
-        ## The tail's `alive` predicate always returns true: the child
-        ## stays subscribed for as long as it lives, and the loop
-        ## terminates naturally when the process exits.
         let path = getEnv("ARTURO_EVENT_INBOUND")
         if path.len == 0: return
         asyncCheck tailEventChannel(path,
             proc(): bool {.gcsafe.} = not shuttingDown)
 
     proc dispatchEvent(name: string, payload: Value) {.gcsafe.} =
-        ## Look up subscribers for the named event and enqueue each on
-        ## the next dispatcher tick. Shared by the `emit` builtin and
-        ## the OS-level hooks for built-in events (`CtrlC`, `SigTerm`, …).
+        ## Enqueue each subscriber for `name` on next tick. Shared by
+        ## `emit` and OS-signal hooks (CtrlC etc.).
         {.cast(gcsafe).}:
             if subscribers.hasKey(name):
                 var oneShotIds: seq[int]
@@ -151,18 +110,13 @@ when not defined(WEB):
                     if sub.once:
                         oneShotIds.add(sub.id)
                 if oneShotIds.len > 0:
-                    # Drop fired-once subscriptions from the registry.
-                    # Their already-queued invocation still fires on
-                    # the next tick, we only stop *future* fires.
                     var keep: seq[Subscription]
                     for sub in subscribers[name]:
                         if sub.id notin oneShotIds:
                             keep.add(sub)
                     subscribers[name] = keep
 
-# TODO(Events): per-handler unsubscribe, `off E` clears *all* handlers
-#  for an event today. Per-handler removal would need handles returned
-#  from `on`. Add when someone needs it.
+# TODO(Events): per-handler unsubscribe via `on`-returned handles.
 
 #=======================================
 # Definitions
@@ -217,26 +171,16 @@ proc defineModule*(moduleName: string) =
             returns     = {Nothing,Integer},
             example     = """
             DataReady: event 'data-ready
-            on.with:'payload DataReady [
-                print ["got:" payload]
-            ]
+            on.with:'payload DataReady [ print ["got:" payload] ]
             ..........
-            ; no payload binding:
-            on CtrlC [
-                print "graceful shutdown..."
-            ]
+            on CtrlC [ print "graceful shutdown..." ]
             ..........
-            ; task callbacks:
+            ; task callbacks
             t: do.async [pause 200 42]
-            on.done.with:'r t [ print ["succeeded:" r] ]
-            on.failed.with:'e t [ print ["failed:" e] ]
-            on.finished.with:'r t [ print ["settled:" r] ]
-            wait t
+            on.done.with:'r t [ print ["ok:" r] ]
+            on.failed.with:'e t [ print ["fail:" e] ]
             ..........
-            ; one-shot handler:
             on.once E [ print "fires once" ]
-            emit E   ; → fires once
-            emit E   ; → no-op (handler auto-removed)
             """:
                 #=======================================================
                 var handler = EventHandler(body: y)
@@ -288,18 +232,8 @@ proc defineModule*(moduleName: string) =
                                 payload = fin.read()
 
                             if mode == "finished" or mode == state:
-                                # Fire synchronously from inside the
-                                # `addCallback` rather than re-queuing
-                                # via `enqueueEmit`. The callback is
-                                # already running on the dispatcher
-                                # tick that processed the future, and
-                                # we're inside the parent's `wait`
-                                # call, same VM context that
-                                # `execUnscoped` is happy with. This
-                                # drops the user-visible "two-tick"
-                                # latency: the handler now fires
-                                # before `wait t` returns, no extra
-                                # dispatcher pump needed.
+                                # Fire synchronously (we're already inside
+                                # the future's dispatcher callback).
                                 try:
                                     if cap.param.len > 0:
                                         Syms[cap.param] = payload
@@ -337,28 +271,13 @@ proc defineModule*(moduleName: string) =
                     if checkAttr("with"): aWith
                     else: VNULL
                 dispatchEvent(x.evt.name, payload)
-                # Cross-process leg: if we're a `do.async` child, also
-                # ship `[name payload]` up the pipe so the parent's
-                # dispatcher fires its own subscribers. Best-effort;
-                # parent-died errors are dropped silently.
-                # Built-in events are local-only. A child's `emit CtrlC`
-                # making the parent's CtrlC handler fire would almost
-                # always be a footgun. Same logic in reverse: parent's
-                # `emit BeforeExit` shouldn't spuriously trigger child
-                # shutdown handlers. User events propagate normally.
+                # Built-in events stay local; user events propagate cross-process.
                 let isBuiltIn = x.evt.name in [
                     "CtrlC", "BeforeExit", "SigTerm", "SigHup"
                 ]
                 if not isBuiltIn:
                     if not emitChannel.isNil:
-                        # Child → parent. Two-line wire format per event:
-                        #   line 1: raw event name (plain ASCII identifier)
-                        #   line 2: payload, `express.safe`-codified
-                        # We tried `[name payload]` as one line but Arturo's
-                        # parser splits `#[...]` (dict literal) into `#`
-                        # plus a plain block when it lives inside another
-                        # block, so dict payloads round-tripped wrong.
-                        # Two lines side-step that entirely.
+                        # child → parent: 2-line record (name + codified payload)
                         try:
                             emitChannel.writeLine(x.evt.name)
                             emitChannel.writeLine(codify(payload, safeStrings = true))
@@ -395,14 +314,9 @@ proc defineModule*(moduleName: string) =
             """:
                 #=======================================================
                 if xKind == Event:
-                    # Bulk removal: drops every handler registered for
-                    # the named event. Doesn't touch task `addCallback`s
-                    # (Nim's Future has no callback-removal API).
                     subscribers.del(x.evt.name)
                 else:
-                    # Per-handler removal by id. Linear scan, fine for
-                    # the subscriber counts we expect; revisit with a
-                    # secondary id→(name, index) index if it ever bites.
+                    # per-handler removal by id (linear scan)
                     let targetId = x.i
                     block found:
                         for evtName, subs in subscribers.mpairs:
@@ -466,17 +380,11 @@ proc defineModule*(moduleName: string) =
                     quit(128 + int(SIGHUP))
             )
 
-        # Process exit → emit `BeforeExit`. Same drain trick as `CtrlC`:
-        # without pumping the dispatcher one final time, queued handlers
-        # would be discarded at process teardown.
+        # Process exit → emit `BeforeExit`, drain dispatcher (bounded ~2s).
         addExitProc(proc() {.noconv.} =
             {.cast(gcsafe).}:
                 shuttingDown = true
                 dispatchEvent("BeforeExit", VNULL)
-                # Cap the drain in case anything else (besides the
-                # inbound tail) is permanently pending. 100 ticks at
-                # 20ms ceiling = 2s max, plenty for a real handler,
-                # bounded so we never spin forever.
                 var drainTicks = 0
                 try:
                     while hasPendingOperations() and drainTicks < 100:
@@ -486,11 +394,7 @@ proc defineModule*(moduleName: string) =
                     discard
         )
 
-        # SIGINT → emit `CtrlC`. Nim invokes the hook on the main thread
-        # at a safe point (not in signal context), so scheduling on the
-        # dispatcher is fine. We drain the queue here because Nim's
-        # runtime terminates the program once the hook returns;
-        # otherwise the user's handler would never get to run.
+        # SIGINT → emit `CtrlC`, drain (Nim invokes hook at safe point).
         setControlCHook(proc() {.noconv.} =
             {.cast(gcsafe).}:
                 dispatchEvent("CtrlC", VNULL)

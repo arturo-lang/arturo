@@ -452,13 +452,9 @@ template fetchIterableItemsForParallel(defaultReturn: untyped) {.dirty.} =
         return
 
 template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.dirty.} =
-    ## Parallel sibling of `iterateBlock`, each item runs in its own
-    ## cooperative fiber. Drains in input order via a sliding-window
-    ## semaphore (`.parallel: N` caps in-flight; bare `.parallel` is
-    ## unbounded). For each drained fiber the resolved value (or
-    ## `:error` / `:null` for failed/cancelled) is pushed on the stack
-    ## before `act` runs, so callers reuse the exact `act` they pass
-    ## to `iterateBlock` (e.g. `res[cntr] = stack.pop()`).
+    ## Parallel sibling of `iterateBlock`. One fiber per item, sliding
+    ## window (`.parallel: N`), drains in input order. Resolved value
+    ## pushed before `act` (mirrors sync convention).
     when withCounter:
         var cntr = 0
     when withCap:
@@ -501,21 +497,11 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
                 pSlot =
                     if pe of VError: newError(VError(pe))
                     else:            newError(RuntimeErr, pe.msg)
-        # Body-result-on-stack convention mirrors the sync iteration
-        # path: the resolved value is pushed before `act` runs so that
-        # acts written for sync (`stack.pop()`) work unchanged. After
-        # `act` we truncate any residue back to the pre-iteration
-        # baseline, handles the case where `act` is `discard` (e.g.
-        # `loop`) and would otherwise leak a slot per iteration.
         when withCap:
             captured = blo[pDrain]
         let preSP = SP
         push(pSlot)
-        # Aliases mirror the sync `iteratorLoop` locals so that an `act`
-        # written for either path can reference `indx` / `keepGoing`
-        # without a compile error. Parallel iteration drains in input
-        # order and never breaks early, so `indx == pDrain` and
-        # `keepGoing` is a write-only no-op.
+        # Aliases so sync `act` can reference indx/keepGoing.
         let indx {.inject, used.} = pDrain
         var keepGoing {.inject, used.} = true
         act
@@ -526,12 +512,8 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
         pDrain += 1
 
 template parallelShortCircuit(answerOnHit: Value, defaultAnswer: Value, hitWhen: untyped) {.dirty.} =
-    ## Short-circuit parallel evaluation, used by `every?.parallel` /
-    ## `some?.parallel`. Spawns one fiber per item (up to `pCap` in
-    ## flight); the first fiber whose body's result satisfies
-    ## `hitWhen` (`pBodyResult` is the popped body value) decides the
-    ## answer. All remaining in-flight fibers are cancelled. If no
-    ## fiber hits, the iteration completes with `defaultAnswer`.
+    ## Used by `every?.parallel` / `some?.parallel`. First fiber whose
+    ## body matches `hitWhen` decides; remaining fibers cancelled.
     if unlikely(yKind != Literal):
         Error_OperationNotPermitted("`.parallel` requires a single literal param (e.g. `'x`)")
     if unlikely(hasIndex):
@@ -610,11 +592,7 @@ template runParallelBranch(
     parallelAct: untyped,
     parallelPost: untyped
 ) {.dirty.} =
-    ## Wrap the `.parallel` attr handling pattern. Caller declares
-    ## `let aParallel = popAttr("parallel")` and runs `prepareIteration`
-    ## first. If `aParallel` is set, this validates → materializes →
-    ## runs `parallelInit` → spawns/drains fibers running `parallelAct`
-    ## → runs `parallelPost` → returns from the surrounding builtin.
+    ## `.parallel` attr handler. Validates, runs init → spawn/drain → post.
     when not defined(WEB):
         if not aParallel.isNil:
             if aParallel.kind notin tParallel:
@@ -634,20 +612,9 @@ template doIterate(
     itAct: untyped,             # code to run per iteration
     itPost: untyped             # code to run once after iteration
 ) {.dirty.} =
-    ## The main iterator helper for every method
-    ## that doesn't require any special handling,
-    ## e.g. for Range and Block values
-    ##
-    ## Builtins that opt into `.parallel` declare a local
-    ## `let aParallel = popAttr("parallel")` *before* calling this
-    ## template. The dirty-template lookup picks it up from the
-    ## surrounding scope; sync-only builtins simply don't declare
-    ## the symbol, so `when declared(aParallel)` short-circuits and
-    ## the parallel branch is never compiled in.
-    ##
-    ## `itPre` runs once *inside* the chosen path (parallel /
-    ## Range-sync / Block-sync) so it can size buffers via the
-    ## injected `sourceLen` (= the iteration's known item count).
+    ## Main iterator helper. `.parallel`-aware builtins predeclare
+    ## `let aParallel = popAttr("parallel")` so the parallel branch
+    ## compiles in via `when declared`.
     const itLit     {.used.} = AcceptsLit  in caps
     const itCap     {.used.} = WithCap     in caps
     const itCounter {.used.} = WithCounter in caps

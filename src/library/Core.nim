@@ -492,39 +492,19 @@ proc defineModule*(moduleName: string) =
             ; On the other hand, simple variables can be used without
             ; issues, as 'pi in this example
             ..........
-            ; concurrent evaluation, returns a `:task` immediately;
-            ; the body runs in a cooperative fiber inside this same VM.
-            ; closures are captured (parent symbols shallow-copied at
-            ; spawn time) and real `:error` values are preserved.
+            ; concurrent evaluation, returns a `:task`
             x: 10
             t: do.async [ x + 32 ]
-            print wait t
-            ; 42
+            print wait t                  ; 42
             ..........
-            ; ⚠ closure capture is SHALLOW-COPY: the spawned block sees
-            ; parent symbols at spawn time, but writes do NOT leak back
-            ; to the parent. Each `do.async` (and each `.parallel` body)
-            ; gets its own private copy of the symbol table.
+            ; ⚠ closure capture is shallow-copy: writes do NOT leak back
             u: 1
             wait do.async [ u: 99 ]
-            print u
-            ; 1
-            ; (parent's `u` untouched, fiber's copy was incremented)
-            ;
-            ; if you want results back, return them and use `wait`:
-            new-u: wait do.async [ 99 ]
-            ; or accumulate via `map.parallel` + reduce:
-            results: map.parallel 1..10 'i [ i * 2 ]
-            print sum results
+            print u                       ; 1
             ..........
-            ; opt-in subprocess flavor: fresh VM, no closure capture,
-            ; true OS-process isolation. Use this when you want a
-            ; sandboxed evaluation, when the spawned code may stomp
-            ; global state, or when you genuinely need OS-scheduler
-            ; parallelism for CPU-bound work.
+            ; subprocess flavor: fresh VM, no closure capture
             t: do.async.isolated [ print "fresh VM" ]
             wait t
-            ; fresh VM
         """:
             #=======================================================
             var times = 1

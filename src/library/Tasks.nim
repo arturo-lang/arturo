@@ -19,10 +19,7 @@
 # Libraries
 #=======================================
 
-# `asyncdispatch` and `osproc` transitively pull in `nativesockets`, which
-# uses procs (e.g. `cstringArrayToSeq`) that aren't available on the JS
-# backend. The `:task` value and its operations only make sense outside
-# WEB mode anyway, so we gate the whole module on it.
+# `asyncdispatch`/`osproc` unusable on JS; gate the whole module.
 when not defined(WEB):
     import asyncdispatch
     import osproc
@@ -81,34 +78,20 @@ proc defineModule*(moduleName: string) =
             },
             returns     = {Any,Block},
             example     = """
-            ; (draft) once `request.async` lands, this is the natural shape:
-            ;
-            ; t: request.async "https://example.com"
-            ; data: wait t
+            t: request.async "https://example.com" #[]
+            data: wait t
             ..........
-            ; fan-out: fire N tasks, block until all settle
-            tasks: map ["alice" "bob" "carol"] 'name [
-                request.async ~"https://api.example.com/users/|name|" #[]
-            ]
+            ; fan-out: settle all
+            tasks: map urls 'u -> request.async u #[]
             results: wait.all tasks
             ..........
-            ; settle for the first 3 of 5 mirrors that respond, useful
-            ; for redundant-fetch patterns. results come back in
-            ; completion order (NOT input order), unlike `wait.all`.
-            mirrors: map mirror-urls 'u [request.async u #[]]
-            top3: wait.any: 3 mirrors                ; block of 3 results
-            ; pair with `.cancel` to abort the remaining 2 once we have 3:
-            top3: wait.any.cancel: 3 mirrors
+            ; settle for first N (completion order)
+            top3: wait.any: 3 tasks
+            top3: wait.any.cancel: 3 tasks       ; abort remaining
             """:
                 #=======================================================
                 if (hadAttr("all")):
-                    # accept a block of tasks; block until each settles, return
-                    # their resolved values in input order. failed tasks
-                    # surface as `:error` values in their slot; cancelled
-                    # tasks surface as `:null` (matching bare `wait`).
-                    # with `.timeout`: any task still pending when the budget
-                    # runs out gets a timeout `:error` slot; the task itself
-                    # is left untouched (still pending, caller can wait again).
+                    # block until each task settles, return values in input order
                     for t in x.a:
                         if unlikely(t.kind != Task):
                             Error_OperationNotPermitted("`wait.all` expects a block of :task values")
@@ -133,25 +116,15 @@ proc defineModule*(moduleName: string) =
                                 resolved[i] = VNULL
                             else:
                                 t.tsk.state = taskFailed
-                                # In-process fibers raise the original
-                                # `VError` (with kind, hint, context).
-                                # Subprocess-backed tasks raise a generic
-                                # exception, fall back to `RuntimeErr`.
                                 resolved[i] =
                                     if e of VError: newError(VError(e))
                                     else:           newError(RuntimeErr, e.msg)
                     push newBlock(resolved)
                 elif (hadAttr("first")):
-                    # accept a block of tasks; block until the first one
-                    # settles and return its value (or `:error` if the
-                    # winner failed). the rest are left alone, pass
-                    # `.cancel` to also abort them.
+                    # first to settle wins (success or failure); `.cancel` aborts the rest
                     for t in x.a:
                         if unlikely(t.kind != Task):
                             Error_OperationNotPermitted("`wait.first` expects a block of :task values")
-                    # `winner` settles when *any* underlying future settles
-                    # (success OR failure), so we don't hang if the fastest
-                    # task happens to be the failing one.
                     let winner = newFuture[Value]("Tasks.waitFirst")
                     for t in x.a:
                         let cap = t
@@ -163,10 +136,6 @@ proc defineModule*(moduleName: string) =
                                         winner.complete(VNULL)
                                     else:
                                         cap.tsk.state = taskFailed
-                                        # Preserve real `VError` (kind,
-                                        # hint, context) from in-process
-                                        # fibers; subprocess tasks fall
-                                        # back to `RuntimeErr`.
                                         let err = fin.error
                                         winner.complete(
                                             if err of VError: newError(VError(err))
@@ -177,10 +146,6 @@ proc defineModule*(moduleName: string) =
                                         cap.tsk.state = taskDone
                                     winner.complete(fin.read())
                         )
-                    # `.timeout`: if no task settles within the budget, complete
-                    # the winner with a timeout `:error`. underlying tasks are
-                    # left untouched (still pending), pair with `.cancel` to
-                    # also abort them.
                     if checkAttr("timeout"):
                         let timer = sleepAsync(timeoutMsOf(aTimeout))
                         timer.addCallback(proc() {.gcsafe.} =
@@ -195,11 +160,7 @@ proc defineModule*(moduleName: string) =
                             cancelTask(t)
                     push res
                 elif (checkAttr("any")):
-                    # accept a block of tasks; block until the first N
-                    # settle and return their values in COMPLETION order
-                    # (the fastest one ends up at index 0). Failed slots
-                    # surface as `:error`, cancelled as `:null`;
-                    # matching the rest of the `wait` family.
+                    # block until first N settle, return values in completion order
                     let target = aAny.i
                     if target < 1:
                         Error_OperationNotPermitted("`wait.any` count must be >= 1")
@@ -246,10 +207,6 @@ proc defineModule*(moduleName: string) =
                 elif x.tsk.state == taskCancelled:
                     push VNULL
                 else:
-                    # optional `.timeout`: race the task's future against a
-                    # sleep timer; on timeout return `:error` and leave the
-                    # task pending (timeout is a wait-side concept, the
-                    # work itself isn't broken, the user can wait again).
                     var timedOut = false
                     if checkAttr("timeout"):
                         let ms = timeoutMsOf(aTimeout)
@@ -258,30 +215,16 @@ proc defineModule*(moduleName: string) =
                     if timedOut:
                         push newError(RuntimeErr, "wait timed out")
                     else:
-                        # `coopWait` drives the dispatcher AND our fiber
-                        # scheduler until the future settles. if the
-                        # underlying work raised, surface it as an `:error`
-                        # value rather than letting the exception escape
-                        # into the VM.
+                        # Surface raises as `:error`; cancellation as `:null`.
                         try:
                             let res = ParallelismHelper.coopWait x.tsk.future
                             x.tsk.state = taskDone
                             push res
                         except CatchableError as e:
-                            # if the task was cancelled mid-await, the producer's
-                            # cancel hook closed an underlying handle and the
-                            # in-flight future raised here. that's not a failure,
-                            # so we still return `:null` to match cancelled-before-
-                            # wait behavior. a genuine error otherwise.
                             if x.tsk.state == taskCancelled:
                                 push VNULL
                             else:
                                 x.tsk.state = taskFailed
-                                # Preserve real `VError` (kind, hint,
-                                # context) from in-process fibers; fall
-                                # back to `RuntimeErr` for subprocess
-                                # tasks where the underlying error type
-                                # is opaque.
                                 push (
                                     if e of VError: newError(VError(e))
                                     else:           newError(RuntimeErr, e.msg)
