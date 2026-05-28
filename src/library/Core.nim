@@ -521,7 +521,8 @@ proc defineModule*(moduleName: string) =
                         if checkAttr("as"): aAs.s
                         else: ""
                     if (not isolated) and xKind in {Block, Bytecode}:
-                        push ParallelismHelper.spawnInProcessDoBlock(x, taskName)
+                        let lazy = hadAttr("lazy")
+                        push ParallelismHelper.spawnInProcessDoBlock(x, taskName, eager = not lazy)
                     else:
                         let src =
                             case xKind
