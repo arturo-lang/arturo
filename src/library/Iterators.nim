@@ -462,10 +462,11 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
 
     if unlikely(yKind != Literal):
         Error_OperationNotPermitted("`.parallel` requires a single literal param (e.g. `'x`)")
-    if unlikely(hasIndex):
-        Error_OperationNotPermitted("`.parallel` cannot combine with `.with` index")
 
     let pName = y.s
+    let pIdxName =
+        if hasIndex: withIndex.s
+        else:        ""
     let pBody = z.a
     let pCap =
         if aParallel.kind == Integer:
@@ -480,7 +481,12 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
     var pDrain = 0
     while pDrain < blo.len:
         while pSpawn < blo.len and (pSpawn - pDrain) < pCap:
-            let wrapper = newBlock(@[newLabel(pName), blo[pSpawn]] & pBody)
+            let wrapper =
+                if pIdxName.len > 0:
+                    newBlock(@[newLabel(pIdxName), newInteger(pSpawn),
+                               newLabel(pName), blo[pSpawn]] & pBody)
+                else:
+                    newBlock(@[newLabel(pName), blo[pSpawn]] & pBody)
             pTasks[pSpawn] = ParallelismHelper.spawnInProcessDoBlock(wrapper)
             pSpawn += 1
         let pT = pTasks[pDrain]
@@ -516,10 +522,11 @@ template parallelShortCircuit(answerOnHit: Value, defaultAnswer: Value, hitWhen:
     ## body matches `hitWhen` decides; remaining fibers cancelled.
     if unlikely(yKind != Literal):
         Error_OperationNotPermitted("`.parallel` requires a single literal param (e.g. `'x`)")
-    if unlikely(hasIndex):
-        Error_OperationNotPermitted("`.parallel` cannot combine with `.with` index")
 
     let pName = y.s
+    let pIdxName =
+        if hasIndex: withIndex.s
+        else:        ""
     let pBody = z.a
     let pCap =
         if aParallel.kind == Integer:
@@ -538,7 +545,12 @@ template parallelShortCircuit(answerOnHit: Value, defaultAnswer: Value, hitWhen:
         {.cast(gcsafe).}:
             if pSpawn >= blo.len or pWinner.finished: return
             let pIdx = pSpawn
-            let pWrap = newBlock(@[newLabel(pName), blo[pIdx]] & pBody)
+            let pWrap =
+                if pIdxName.len > 0:
+                    newBlock(@[newLabel(pIdxName), newInteger(pIdx),
+                               newLabel(pName), blo[pIdx]] & pBody)
+                else:
+                    newBlock(@[newLabel(pName), blo[pIdx]] & pBody)
             let pT = ParallelismHelper.spawnInProcessDoBlock(pWrap)
             pTasks[pIdx] = pT
             pSpawn += 1

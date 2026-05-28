@@ -45,6 +45,10 @@
 >> map.parallel — order preserved
 [+] passed!
 
+>> .parallel + .with: index injection
+[+] passed!
+[+] passed!
+
 >> loop.async — fan-out side-effect loop
 [+] passed!
 

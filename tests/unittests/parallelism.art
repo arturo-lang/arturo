@@ -183,6 +183,26 @@ do [
 ]
 
 
+topic ".parallel + .with: index injection"
+do [
+
+    ; loop.parallel with index
+    seen: new []
+    loop.parallel.with:'i @["a" "b" "c"] 'x [
+        'seen ++ ~"|i|=|x|"
+    ]
+    drain
+    ensure -> ["0=a" "1=b" "2=c"] = sort seen
+    passed
+
+    ; map.parallel with index preserves order
+    ensure -> ["0:x" "1:y" "2:z"] = map.parallel.with:'k @["x" "y" "z"] 'v -> ~"|k|:|v|"
+    drain
+    passed
+
+]
+
+
 topic "loop.async — fan-out side-effect loop"
 do [
 
