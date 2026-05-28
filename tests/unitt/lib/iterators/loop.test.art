@@ -1,0 +1,53 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "loop over a range visits every element" [
+        acc: []
+        loop 1..5 'x [
+            'acc ++ x
+        ]
+        expects -> equal? [1 2 3 4 5] acc
+    ]
+
+    it "loop over an empty block does nothing" [
+        n: 0
+        loop [] 'x [
+            inc 'n
+        ]
+        expects -> zero? n
+    ]
+
+    it "loop over a string visits every char" [
+        n: 0
+        loop "abc" 'c [
+            inc 'n
+        ]
+        expects -> equal? 3 n
+    ]
+
+    it "loop over an integer iterates 1..n" [
+        acc: []
+        loop 4 'x [
+            'acc ++ x
+        ]
+        expects -> equal? [1 2 3 4] acc
+    ]
+
+    it "loop with multi-param block consumes elements in pairs" [
+        acc: []
+        loop 1..6 [a b][
+            'acc ++ @[@[a b]]
+        ]
+        expects -> equal? [[1 2] [3 4] [5 6]] acc
+    ]
+
+    it "loop.with provides an index" [
+        acc: []
+        loop.with:'i ["a" "b" "c"] 'x [
+            'acc ++ @[@[i x]]
+        ]
+        expects -> equal? [[0 "a"] [1 "b"] [2 "c"]] acc
+    ]
+
+]

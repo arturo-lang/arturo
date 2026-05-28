@@ -12,6 +12,8 @@
 
 when not defined(WEB):
     import asyncdispatch, httpClient, os
+    when defined(ssl):
+        import std/net as netmod
 
 when not defined(WEB):
     import helpers/url
@@ -47,7 +49,17 @@ proc getSource*(src: string): DataSource {.inline.} =
                 return (GetSym("_portable").d["embed"].d[src].s, FileData)
                             
         if src.isUrl():
-            let content = waitFor (newAsyncHttpClient().getContent(src))
+            # match `spawnAsyncReadUrl` / `spawnAsyncDownload`: use a
+            # permissive SSL context. plain `newAsyncHttpClient()` hangs
+            # on HTTPS hosts that redirect (google.com, raw.githubusercontent,
+            # …) under the async client.
+            when defined(ssl):
+                let client = newAsyncHttpClient(
+                    sslContext = netmod.newContext(verifyMode = CVerifyNone)
+                )
+            else:
+                let client = newAsyncHttpClient()
+            let content = waitFor client.getContent(src)
             result = (content, WebData)
         elif src.fileExists():
             result = (readFile(src), FileData)

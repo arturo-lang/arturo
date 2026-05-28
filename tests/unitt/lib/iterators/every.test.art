@@ -1,0 +1,33 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "every? on empty block is vacuously true" [
+        expects -> equal? true every? [] => true
+    ]
+
+    it "every? when all elements satisfy predicate" [
+        expects -> equal? true every? 1..5 'x -> x > 0
+    ]
+
+    it "every? returns false when one element fails" [
+        expects -> equal? false every? 1..5 'x -> even? x
+    ]
+
+    it "every? with always-false predicate over non-empty input" [
+        expects -> equal? false every? 1..5 'x -> x > 10
+    ]
+
+    it "every? with strict-bound predicate is true at the boundary" [
+        expects -> equal? true every? 1..5 'x -> x < 6
+    ]
+
+    it "every?.with using index" [
+        expects -> equal? false every?.with:'i 1..5 'x -> i > 5
+    ]
+
+    it "every? with multi-param block" [
+        expects -> equal? true every? 1..6 [x y] -> odd? x + y
+    ]
+
+]

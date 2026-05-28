@@ -1,0 +1,643 @@
+; Parallelism / concurrency unit tests.
+;
+; Covers the surface added on `add-new-Task-value`:
+;   :task value, do.async (in-process fiber + .isolated subprocess),
+;   wait / wait.all / wait.first[.cancel] / wait.timeout,
+;   cancel / finished? / failed?,
+;   error propagation as :error,
+;   :event + on / emit / off / on.once + task callbacks,
+;   fan-out iterators: map.async, loop.async, map.parallel,
+;   every?.parallel, some?.parallel, select.parallel.
+
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+; small in-process task that flushes the fiber scheduler between iterator
+; topics. plain `pause` from main isn't enough; an explicit task is.
+drain: $[] -> wait do.async [pause 20]
+
+
+topic ":task value"
+do [
+
+    t: do.async [40 + 2]
+    ensure -> :task = type t
+    passed
+
+    ensure -> 42 = wait t
+    passed
+
+    ensure -> finished? t
+    ensure -> not? failed? t
+    passed
+
+]
+
+
+topic "do.async — in-process closure capture"
+do [
+
+    x: 10
+    ensure -> 42 = wait do.async [x + 32]
+    passed
+
+    y: [1 2 3]
+    ensure -> 6 = wait do.async [sum y]
+    passed
+
+]
+
+
+topic "do.async — :error fidelity"
+do [
+
+    e: wait do.async [1 / 0]
+    ensure -> :error = type e
+    passed
+
+    ensure -> :errorKind = type e\kind
+    ensure -> string? e\message
+    passed
+
+]
+
+
+topic "wait.all — order preserved"
+do [
+
+    ts: map 1..5 'i [do.async [i * 10]]
+    ensure -> [10 20 30 40 50] = wait.all ts
+    passed
+
+]
+
+
+topic "wait.all — failures slot in as :error"
+do [
+
+    ts: @[do.async [10] do.async [1 / 0] do.async [30]]
+    rs: wait.all ts
+    ensure -> 3 = size rs
+    ensure -> 10 = rs\0
+    ensure -> :error = type rs\1
+    ensure -> 30 = rs\2
+    passed
+
+]
+
+
+topic "wait.first[.cancel]"
+do [
+
+    t1: do.async [pause 500 'late]
+    t2: do.async [pause 50 'early]
+    ensure -> 'early = wait.first.cancel @[t1 t2]
+    passed
+
+]
+
+
+topic "wait.timeout — bare wait with budget"
+do [
+
+    t: do.async [pause 1000]
+    r: wait.timeout: 50 t
+    ensure -> :error = type r
+    cancel t
+    passed
+
+    fast: do.async [40 + 2]
+    ensure -> 42 = wait.timeout: 5000 fast
+    passed
+
+]
+
+
+topic "cancel"
+do [
+
+    t: do.async [pause 5000]
+    cancel t
+    ensure -> null = wait t
+    ensure -> not? failed? t
+    passed
+
+]
+
+
+topic "pause from main pumps the fiber scheduler"
+do [
+
+    t: do.async [pause 200 99]
+    pause 400
+    ensure -> finished? t
+    ensure -> 99 = wait t
+    passed
+
+]
+
+
+topic "do.async.isolated — subprocess flavor"
+do [
+
+    ensure -> 7 = wait do.async.isolated [3 + 4]
+    passed
+
+    ensure -> 15 = wait do.async.isolated [sum 1..5]
+    passed
+
+]
+
+
+topic "do.isolated — sync subprocess execution"
+do [
+
+    ensure -> 42 = do.isolated [40 + 2]
+    passed
+
+    ; subprocess scope: closure-capture doesn't reach in
+    ; (same as `do.async.isolated`)
+    parent: 99
+    ensure -> 7 = do.isolated [3 + 4]
+    passed
+
+]
+
+
+topic "map.async — fan-out parallel map"
+do [
+
+    ensure -> [1 4 9 16 25] = map.async 1..5 'x [x * x]
+    drain
+    passed
+
+]
+
+
+topic "map.parallel — order preserved"
+do [
+
+    ensure -> [1 4 9 16 25] = map.parallel 1..5 'x [x * x]
+    drain
+    passed
+
+]
+
+
+topic ".parallel + .with: index injection"
+do [
+
+    ; loop.parallel with index
+    seen: new []
+    loop.parallel.with:'i @["a" "b" "c"] 'x [
+        'seen ++ ~"|i|=|x|"
+    ]
+    drain
+    ensure -> ["0=a" "1=b" "2=c"] = sort seen
+    passed
+
+    ; map.parallel with index preserves order
+    ensure -> ["0:x" "1:y" "2:z"] = map.parallel.with:'k @["x" "y" "z"] 'v -> ~"|k|:|v|"
+    drain
+    passed
+
+]
+
+
+topic "loop.async — fan-out side-effect loop"
+do [
+
+    acc: []
+    loop.async 1..4 'x [ 'acc ++ x * x ]
+    drain
+    ensure -> [1 4 9 16] = sort acc
+    passed
+
+]
+
+
+topic "select.parallel — order preserved"
+do [
+
+    ensure -> [2 4 6 8 10] = select.parallel 1..10 'n -> even? n
+    drain
+    passed
+
+]
+
+
+topic "every?.parallel"
+do [
+
+    ensure -> every?.parallel [2 4 6 8] 'n -> even? n
+    ensure -> not? every?.parallel [2 4 5 8] 'n -> even? n
+    drain
+    passed
+
+]
+
+
+topic "some?.parallel"
+do [
+
+    ensure -> some?.parallel [1 3 6 7] 'n -> even? n
+    ensure -> not? some?.parallel [1 3 5 7] 'n -> even? n
+    drain
+    passed
+
+]
+
+
+topic ":event value"
+do [
+
+    E: event 'sample
+    ensure -> :event = type E
+    passed
+
+]
+
+
+topic "on / emit — payload via .with:"
+do [
+
+    E: event 'payload
+    got: []
+    on.with:'p E [ 'got ++ p ]
+    emit.with: "a" E
+    emit.with: "b" E
+    drain
+    ensure -> ["a" "b"] = got
+    passed
+
+]
+
+
+topic "off — bulk unsubscribe"
+do [
+
+    E: event 'silenced
+    n: 0
+    on.with:'p E [ inc 'n ]
+    emit.with: 1 E
+    drain
+    off E
+    emit.with: 2 E
+    drain
+    ensure -> 1 = n
+    passed
+
+]
+
+
+topic "on.once — fires only once"
+do [
+
+    E: event 'oneshot
+    n: 0
+    on.once.with:'p E [ inc 'n ]
+    emit.with: 1 E
+    emit.with: 2 E
+    emit.with: 3 E
+    drain
+    ensure -> 1 = n
+    passed
+
+]
+
+
+topic "on .id + off id — per-handler unsubscribe"
+do [
+
+    E: event 'targeted
+    a: 0, b: 0
+    idA: on.id.with:'p E [ inc 'a ]
+    on.with:'p E [ inc 'b ]
+    emit.with: 1 E
+    drain
+    off idA
+    emit.with: 2 E
+    drain
+    ensure -> 1 = a
+    ensure -> 2 = b
+    passed
+
+]
+
+
+topic "task callbacks — on.done"
+do [
+
+    t: do.async [pause 50 99]
+    seen: []
+    on.done.with:'r t [ 'seen ++ r ]
+    wait t
+    drain
+    ensure -> [99] = seen
+    passed
+
+]
+
+
+topic "task callbacks — on.failed"
+do [
+
+    t: do.async [1 / 0]
+    failures: []
+    on.failed.with:'e t [ 'failures ++ type e ]
+    wait t
+    drain
+    ensure -> [:error] = failures
+    passed
+
+]
+
+
+topic ":channel value"
+do [
+
+    Ch: channel 'sample
+    ensure -> :channel = type Ch
+    passed
+
+]
+
+
+topic "channel — buffered send / receive"
+do [
+
+    Ch: channel.bounded: 5 'buf
+    send Ch 1
+    send Ch 2
+    send Ch 3
+    ensure -> 1 = receive Ch
+    ensure -> 2 = receive Ch
+    ensure -> 3 = receive Ch
+    passed
+
+]
+
+
+topic "channel — close drains buffer then yields :null"
+do [
+
+    Ch: channel.bounded: 5 'closing
+    send Ch 'first
+    send Ch 'second
+    unplug Ch
+    ensure -> 'first = receive Ch
+    ensure -> 'second = receive Ch
+    ensure -> null = receive Ch
+    passed
+
+]
+
+
+topic "channel — unbuffered cross-fiber"
+do [
+
+    Ch: channel 'sync
+    got: []
+    consumer: do.async [
+        keepGoing: true
+        while [keepGoing][
+            v: receive Ch
+            switch null? v [ keepGoing: false ][ 'got ++ v ]
+        ]
+    ]
+    producer: do.async [
+        loop 1..3 'i -> send Ch i * 10
+        unplug Ch
+    ]
+    wait.all @[producer consumer]
+    ensure -> [10 20 30] = got
+    passed
+
+]
+
+
+topic "channel — bounded fan-out workers"
+do [
+
+    Jobs: channel.bounded: 20 'jobs
+    results: []
+    workers: map 1..3 'w [
+        do.async [
+            keepGoing: true
+            while [keepGoing][
+                j: receive Jobs
+                switch null? j [ keepGoing: false ][ 'results ++ j ]
+            ]
+        ]
+    ]
+    loop 1..6 'i -> send Jobs i * 100
+    unplug Jobs
+    wait.all workers
+    ensure -> [100 200 300 400 500 600] = sort results
+    passed
+
+]
+
+
+topic "channel — polymorphic send / receive carry any value type"
+do [
+
+    Ch: channel.bounded: 5 'mixed
+    send Ch 42
+    send Ch "hello"
+    send Ch @[1 2 3]
+    send Ch #[k: "v"]
+    ensure -> 42       = receive Ch
+    ensure -> "hello"  = receive Ch
+    ensure -> [1 2 3]  = receive Ch
+    d: receive Ch
+    ensure -> "v"      = d\k
+    passed
+
+]
+
+
+topic "socket — listen / accept / receive / send round-trip"
+do [
+
+    srv: listen 19500
+    s: do.async [
+        client: accept srv
+        msg: receive client
+        send client (msg ++ "back")
+        unplug client
+    ]
+    pause 50
+    c: connect.to: "127.0.0.1" 19500
+    send c "hello "
+    ensure -> "hello back" = receive c
+    unplug c
+    wait s
+    unplug srv
+    passed
+
+]
+
+
+topic "socket — receive.async with .timeout"
+do [
+
+    srv: listen 19501
+    pump: do.async [
+        client: accept srv
+        pause 2000
+        unplug client
+    ]
+    pause 50
+    c: connect.to: "127.0.0.1" 19501
+    t: receive.async c
+    r: wait.timeout: 100 t
+    ensure -> :error = type r
+    cancel t
+    unplug c
+    cancel pump
+    unplug srv
+    passed
+
+]
+
+
+topic "channel — cross-process fan-in (child → parent send)"
+do [
+
+    Results: channel.bounded: 50 'results
+
+    workers: new []
+    loop 1..3 'k [
+        'workers ++ do.async.isolated [
+            send channel 'results 100
+            send channel 'results 200
+        ]
+    ]
+
+    wait.all workers
+
+    received: new []
+    loop 1..6 'k [
+        'received ++ receive Results
+    ]
+    unplug Results
+
+    ensure -> 6 = size received
+    ensure -> [100 100 100 200 200 200] = sort received
+    passed
+
+]
+
+
+topic "channel — cross-process worker pool (parent → child dispatch)"
+do [
+
+    Jobs:    channel.bounded: 20 'jobs
+    Results: channel.bounded: 20 'results
+
+    workers: new []
+    loop 1..3 'k [
+        'workers ++ do.async.isolated [
+            loop 1..2 'i [
+                j: receive channel 'jobs
+                send channel 'results j * 10
+            ]
+        ]
+    ]
+
+    loop 1..6 'i -> send Jobs i
+
+    received: new []
+    loop 1..6 'k -> 'received ++ receive Results
+
+    wait.all workers
+    unplug Jobs
+    unplug Results
+
+    ensure -> 6 = size received
+    ensure -> [10 20 30 40 50 60] = sort received
+    passed
+
+]
+
+
+topic "channel — cross-process close propagation (parent unplug wakes child)"
+do [
+
+    Jobs: channel.bounded: 10 'jobs
+
+    seen: new []
+    worker: do.async.isolated [
+        keepGoing: true
+        while [keepGoing][
+            j: receive channel 'jobs
+            switch null? j [
+                keepGoing: false
+            ][
+                send channel 'results j
+            ]
+        ]
+    ]
+
+    Results: channel.bounded: 10 'results
+    send Jobs 100
+    send Jobs 200
+    'seen ++ receive Results
+    'seen ++ receive Results
+    unplug Jobs                 ; should DELIVER null to child's pending recv
+    wait worker
+    unplug Results
+
+    ensure -> [100 200] = sort seen
+    passed
+
+]
+
+
+topic "channel — cross-process dict payload fidelity"
+do [
+
+    Reports: channel.bounded: 20 'reports
+
+    w: do.async.isolated [
+        send channel 'reports #[id: 1 name: "alpha"]
+        send channel 'reports #[id: 2 name: "beta"]
+    ]
+    wait w
+
+    r1: receive Reports
+    r2: receive Reports
+    unplug Reports
+
+    ensure -> "alpha" = r1\name
+    ensure -> "beta"  = r2\name
+    ensure -> 3       = r1\id + r2\id
+    passed
+
+]
+
+
+topic "socket — connect.async parallel fan-out"
+do [
+
+    servers: map [19502 19503 19504] 'p [
+        do.async [
+            sr: listen p
+            cl: accept sr
+            send cl "ok"
+            unplug cl
+            unplug sr
+        ]
+    ]
+    pause 50
+    tasks: map [19502 19503 19504] 'p -> connect.async.to: "127.0.0.1" p
+    socks: wait.all tasks
+    ensure -> 3 = size socks
+    loop socks 's [
+        ensure -> "ok" = receive s
+        unplug s
+    ]
+    wait.all servers
+    passed
+
+]

@@ -1,0 +1,33 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "some? on empty block is always false" [
+        expects -> equal? false some? [] => true
+    ]
+
+    it "some? finds at least one matching element" [
+        expects -> equal? true some? 1..5 'x -> even? x
+    ]
+
+    it "some? returns false when no element matches" [
+        expects -> equal? false some? 1..5 'x -> x > 10
+    ]
+
+    it "some? with strict-bound predicate is true at the boundary" [
+        expects -> equal? true some? 1..5 'x -> x < 6
+    ]
+
+    it "some? with always-true predicate over non-empty input" [
+        expects -> equal? true some? [1 2 3] 'x -> true
+    ]
+
+    it "some?.with using index" [
+        expects -> equal? true some?.with:'i 1..5 'x -> odd? i
+    ]
+
+    it "some? with multi-param block" [
+        expects -> equal? true some? 1..6 [x y] -> odd? x + y
+    ]
+
+]

@@ -1,0 +1,33 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "minimum returns element with lowest predicate value" [
+        expects -> equal? 17 minimum [4 17 20] 'x -> size factors.prime x
+    ]
+
+    it "minimum by identity yields the smallest element" [
+        expects -> equal? 1 minimum 1..5 'x -> x
+    ]
+
+    it "minimum.value returns @[element predicate]" [
+        expects -> equal? [1 1] minimum.value 1..5 'x -> x*x
+    ]
+
+    it "minimum over a block of integers" [
+        expects -> equal? 1 minimum [3 1 4 1 5 9 2] 'x -> x
+    ]
+
+    it "minimum of a single-element block" [
+        expects -> equal? 42 minimum [42] 'x -> x
+    ]
+
+    it "minimum.value of a single-element block returns @[elem elem]" [
+        expects -> equal? [42 42] minimum.value [42] 'x -> x
+    ]
+
+    it "minimum of strings by length" [
+        expects -> equal? "foo" minimum ["foo" "barbaz" "qux"] 'x -> size x
+    ]
+
+]

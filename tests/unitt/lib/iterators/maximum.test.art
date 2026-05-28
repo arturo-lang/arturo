@@ -1,0 +1,33 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "maximum returns element with highest predicate value" [
+        expects -> equal? 8 maximum 1..10 'x -> size factors.prime x
+    ]
+
+    it "maximum by identity yields the largest element" [
+        expects -> equal? 5 maximum 1..5 'x -> x
+    ]
+
+    it "maximum.value returns @[element predicate]" [
+        expects -> equal? [5 25] maximum.value 1..5 'x -> x*x
+    ]
+
+    it "maximum over a block of integers" [
+        expects -> equal? 9 maximum [3 1 4 1 5 9 2] 'x -> x
+    ]
+
+    it "maximum of a single-element block" [
+        expects -> equal? 42 maximum [42] 'x -> x
+    ]
+
+    it "maximum.value of a single-element block returns @[elem elem]" [
+        expects -> equal? [42 42] maximum.value [42] 'x -> x
+    ]
+
+    it "maximum of strings by length" [
+        expects -> equal? "barbaz" maximum ["foo" "barbaz" "qux"] 'x -> size x
+    ]
+
+]

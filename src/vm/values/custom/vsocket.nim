@@ -13,15 +13,15 @@ when not defined(WEB):
     # Libraries
     #=======================================
 
-    import hashes, nativesockets, net
+    import asyncnet, hashes, nativesockets, net
 
     #=======================================
     # Types
     #=======================================
 
-    type 
+    type
         VSocket* = ref object
-            socket*: Socket
+            socket*: AsyncSocket
             address*: string
             protocol*: Protocol
             port*: int
@@ -34,7 +34,7 @@ when not defined(WEB):
     # Overloads
     #=======================================
 
-    proc hash*(a: VSocket): Hash {.inline.} = 
+    proc hash*(a: VSocket): Hash {.inline.} =
         result = 1
         result = result !& hash(a.address)
         result = result !& hash(a.protocol)
@@ -58,7 +58,7 @@ when not defined(WEB):
     # Methods
     #=======================================
 
-    proc initSocket*(sock: Socket, proto: Protocol, address: string, port: Port): VSocket {.inline.} =
+    proc initSocket*(sock: AsyncSocket, proto: Protocol, address: string, port: Port): VSocket {.inline.} =
         result = VSocket(
             socket: sock,
             address: address,

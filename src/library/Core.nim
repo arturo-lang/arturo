@@ -26,6 +26,9 @@ import algorithm, hashes, options
 import sequtils, sugar
 
 when not defined(WEB):
+    import helpers/parallelism as ParallelismHelper
+
+when not defined(WEB):
     import oids, os
 
     import helpers/ffi
@@ -436,12 +439,16 @@ proc defineModule*(moduleName: string) =
         rule        = PrefixPrecedence,
         description = "evaluate and execute given code",
         args        = {
-            "code"  : {String,Block,Bytecode}
+            "code"  : {String,Block,Bytecode,Task}
         },
         attrs       = {
-            "times" : ({Integer},"repeat block execution given number of times")
+            "times"    : ({Integer},"repeat block execution given number of times"),
+            "async"    : ({Logical},"evaluate concurrently and return a `:task`"),
+            "isolated" : ({Logical},"with `.async`: run in a fresh child process instead of an in-VM fiber (slower spawn, no closure capture, full process isolation)"),
+            "as"       : ({String},"with `.async`: tag the resulting `:task` with a symbolic name (shown in `print` / `inspect` for debugging)"),
+            "timeout"  : ({Integer,Quantity},"with a `:task` arg: give up draining after the given duration (ms by default; accepts time `:quantity` like `2:s`); returns an `:error` value on timeout and leaves the task pending")
         },
-        returns     = {Any},
+        returns     = {Any,Task},
         example     = """
             do "print 123"                ; 123
             ..........
@@ -479,11 +486,25 @@ proc defineModule*(moduleName: string) =
                 hello "John Doe"
                 ; Hello John Doe
             ]
-    
+
             ; Note: always use imported functions inside a 'do block
             ; since they need to be evaluated beforehand.
             ; On the other hand, simple variables can be used without
             ; issues, as 'pi in this example
+            ..........
+            ; concurrent evaluation, returns a `:task`
+            x: 10
+            t: do.async [ x + 32 ]
+            print wait t                  ; 42
+            ..........
+            ; ⚠ closure capture is shallow-copy: writes do NOT leak back
+            u: 1
+            wait do.async [ u: 99 ]
+            print u                       ; 1
+            ..........
+            ; subprocess flavor: fresh VM, no closure capture
+            t: do.async.isolated [ print "fresh VM" ]
+            wait t
         """:
             #=======================================================
             var times = 1
@@ -491,6 +512,43 @@ proc defineModule*(moduleName: string) =
 
             if checkAttr("times"):
                 times = aTimes.i
+
+            when not defined(WEB):
+                if hadAttr("async"):
+                    let isolated = hadAttr("isolated")
+                    let taskName =
+                        if checkAttr("as"): aAs.s
+                        else: ""
+                    if (not isolated) and xKind in {Block, Bytecode}:
+                        push ParallelismHelper.spawnInProcessDoBlock(x, taskName)
+                    else:
+                        let src =
+                            case xKind
+                                of Block, Bytecode: codify(x)
+                                of String:          x.s
+                                else:               ""
+                        push ParallelismHelper.spawnAsTask(src, taskName)
+                    return
+
+                if hadAttr("isolated"):
+                    # sugar for `wait do.async.isolated [block]`
+                    let src =
+                        case xKind
+                            of Block, Bytecode: codify(x)
+                            of String:          x.s
+                            else:               ""
+                    let tsk = ParallelismHelper.spawnAsTask(src, "")
+                    push ParallelismHelper.drainTask(tsk.tsk, -1)
+                    return
+
+            # `do task` is sugar for `wait task`.
+            if xKind == Task:
+                when not defined(WEB):
+                    let timeoutMs =
+                        if checkAttr("timeout"): ParallelismHelper.timeoutMsOf(aTimeout)
+                        else: -1
+                    push ParallelismHelper.drainTask(x.tsk, timeoutMs)
+                return
 
             var evaled: Translation
             if xKind != String:

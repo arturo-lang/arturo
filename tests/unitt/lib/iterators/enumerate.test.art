@@ -1,0 +1,33 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "enumerate with empty block returns 0" [
+        expects -> equal? 0 enumerate [] => odd?
+    ]
+
+    it "enumerate counts odd numbers in range" [
+        expects -> equal? 5 enumerate 1..10 => odd?
+    ]
+
+    it "enumerate counts even numbers in range" [
+        expects -> equal? 5 enumerate 1..10 => even?
+    ]
+
+    it "enumerate with always-true predicate counts every element" [
+        expects -> equal? 5 enumerate [1 2 3 4 5] 'x -> x > 0
+    ]
+
+    it "enumerate with always-false predicate returns 0" [
+        expects -> equal? 0 enumerate [1 2 3 4 5] 'x -> x > 10
+    ]
+
+    it "enumerate.with using index" [
+        expects -> equal? 3 enumerate.with:'i ["a" "b" "c" "d"] 'x -> i < 3
+    ]
+
+    it "enumerate with multi-param block" [
+        expects -> equal? 3 enumerate 1..6 [x y] -> x < y
+    ]
+
+]

@@ -1,0 +1,41 @@
+import {unitt}!
+
+describe "Allowed Operations" [
+
+    it "filter with empty block" [
+        expects -> equal? [] filter [] => odd?
+    ]
+
+    it "filter drops elements matching predicate" [
+        expects -> equal? [2 4 6] filter [1 2 3 4 5 6] => odd?
+    ]
+
+    it "filter over a range" [
+        expects -> equal? [2 4] filter 1..5 'x -> odd? x
+    ]
+
+    it "filter with always-true predicate yields empty block" [
+        expects -> equal? [] filter [1 2 3] 'x -> true
+    ]
+
+    it "filter with always-false predicate keeps everything" [
+        expects -> equal? [1 2 3] filter [1 2 3] 'x -> false
+    ]
+
+    it "filter.with using index" [
+        expects -> equal? [10 30] filter.with:'i [10 20 30 40] 'x -> odd? i
+    ]
+
+    it "filter.first:n drops first n matches" [
+        expects -> equal? [2 4 5 6 7 8 9 10] filter.first:2 1..10 => odd?
+    ]
+
+    it "filter.last:n drops last n matches" [
+        expects -> equal? [1 2 3 4 5 6 8 10] filter.last:2 1..10 => odd?
+    ]
+
+    it "filter strings by length" [
+        expects -> equal? ["the" "fox" "dog"] filter ["the" "fox" "lazy" "dog"] 'w -> 3 < size w
+    ]
+
+]

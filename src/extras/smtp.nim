@@ -70,8 +70,8 @@ type
 
   ReplyError* = object of IOError
 
-  SmtpBase[SocketType] = ref object
-    sock: SocketType
+  SmtpBase*[SocketType] = ref object
+    sock*: SocketType
     address: string
     debug: bool
 
