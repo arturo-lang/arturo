@@ -4,6 +4,10 @@
 [+] passed!
 [+] passed!
 
+>> do.async — eager by default (.lazy opts out)
+[+] passed!
+[+] passed!
+
 >> do.async — in-process closure capture
 [+] passed!
 [+] passed!
