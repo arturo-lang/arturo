@@ -33,6 +33,35 @@ do [
 ]
 
 
+topic "do.async — eager by default (.lazy opts out)"
+do [
+
+    ; eager: prologue runs before do.async returns
+    log: new []
+    t: do.async [
+        'log ++ "fiber"
+        pause 100
+        1
+    ]
+    'log ++ "main"
+    wait t
+    ensure -> ["fiber" "main"] = log
+    passed
+
+    ; .lazy: prologue waits until scheduler tick
+    log2: new []
+    t2: do.async.lazy [
+        'log2 ++ "fiber"
+        1
+    ]
+    'log2 ++ "main"
+    wait t2
+    ensure -> ["main" "fiber"] = log2
+    passed
+
+]
+
+
 topic "do.async — in-process closure capture"
 do [
 
