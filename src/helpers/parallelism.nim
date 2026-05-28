@@ -827,7 +827,10 @@ when not defined(WEB):
 # for `.parallel` iterators.
 
 when not defined(WEB):
-    proc spawnInProcessDoBlock*(blk: Value, name: string = ""): Value =
+    proc spawnInProcessDoBlock*(blk: Value, name: string = "", eager: bool = false): Value =
+        ## `eager`: run the fiber until first yield before returning the task.
+        ## Default `false` keeps `.parallel` fan-out cheap (helper-direct
+        ## callers); `do.async` builtin opts-in unless `.lazy` set.
         let tsk = VTask(state: taskPending, name: name)
         let fut = newFuture[Value]("do.async")
         tsk.future = fut
@@ -863,6 +866,10 @@ when not defined(WEB):
                     scheduler.ready.add(cancelF)
 
         result = newTask(tsk)
+
+        if eager and onMainFiber():
+            # one slice from main: fiber runs until first yield or completion
+            runOneStep()
 
     # In-process async helpers via Nim's `asyncdispatch` family.
     # Errors escape; `wait` classifies (cancel → :null, else → :error).
