@@ -381,6 +381,12 @@ proc backup_remaining*(pBackup: PSqlite3_Backup): int32 {.cdecl, mylib, importc:
 
 proc sqlite3_sleep*(t: int64): int64 {.cdecl, mylib, importc: "sqlite3_sleep".}
 
+proc enable_load_extension*(db: PSqlite3, onof: int32): int32 {.cdecl, mylib,
+    importc: "sqlite3_enable_load_extension".}
+
+proc load_extension*(db: PSqlite3, zFile, zProc: cstring, pzErrMsg: ptr cstring): int32 {.cdecl, mylib,
+    importc: "sqlite3_load_extension".}
+
   #function sqlite3_key(db:Psqlite3; pKey:pointer; nKey:longint):longint;cdecl; external Sqlite3Lib name 'sqlite3_key';
   #function sqlite3_rekey(db:Psqlite3; pKey:pointer; nKey:longint):longint;cdecl; external Sqlite3Lib name 'sqlite3_rekey';
   #function sqlite3_sleep(_para1:longint):longint;cdecl; external Sqlite3Lib name 'sqlite3_sleep';
