@@ -1870,7 +1870,7 @@ proc defineModule*(moduleName: string) =
                         else:
                             x.d[$(y)] = z
                 of Object:
-                    if unlikely(x.magic.fetch(ChangingM)):
+                    if x.magic.fetch(ChangingM):
                         mgk(@[x, y])
                     if (x.magic.fetch(SetM) and (not hadAttr("field")) and (y.kind in {String,Word,Literal,Label}) and (y.s notin toSeq(x.proto.fields.keys()))):
                         mgk(@[x, y, z])
@@ -1880,7 +1880,7 @@ proc defineModule*(moduleName: string) =
                                 x.o[y.s] = z
                             else:
                                 x.o[$(y)] = z
-                    if unlikely(x.magic.fetch(ChangedM)):
+                    if x.magic.fetch(ChangedM):
                         mgk(@[x, y])
                 of Store:
                     when not defined(WEB):
@@ -2712,7 +2712,7 @@ proc defineModule*(moduleName: string) =
                         let values = toSeq(x.d.values)
                         push(newLogical(values[at] == y))
                     of Object:
-                        if unlikely(x.magic.fetch(ContainsQM)):
+                        if x.magic.fetch(ContainsQM):
                             pushAttr("at", aAt)
                             mgk(@[x, y]) # already pushes value
                         else:
@@ -2744,7 +2744,7 @@ proc defineModule*(moduleName: string) =
                             let values = toSeq(x.d.values)
                             push(newLogical(y in values))
                     of Object:
-                        if unlikely(x.magic.fetch(ContainsQM)):
+                        if x.magic.fetch(ContainsQM):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
@@ -2860,7 +2860,7 @@ proc defineModule*(moduleName: string) =
                         let values = toSeq(y.d.values)
                         push(newLogical(values[at] == x))
                     of Object:
-                        if unlikely(y.magic.fetch(ContainsQM)):
+                        if y.magic.fetch(ContainsQM):
                             pushAttr("at", aAt)
                             mgk(@[y, x]) # already pushes value
                         else:
@@ -2892,7 +2892,7 @@ proc defineModule*(moduleName: string) =
                             let values = toSeq(y.d.values)
                             push(newLogical(x in values))
                     of Object:
-                        if unlikely(y.magic.fetch(ContainsQM)):
+                        if y.magic.fetch(ContainsQM):
                             if hadAttr("deep"):
                                 pushAttr("deep", VTRUE)
 
@@ -2938,7 +2938,7 @@ proc defineModule*(moduleName: string) =
             if xKind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
             else:
-                if unlikely(x.magic.fetch(KeyQM)):
+                if x.magic.fetch(KeyQM):
                     mgk(@[x, y]) # already pushes value
                 else:
                     push(newLogical(x.o.hasKey(needle)))
