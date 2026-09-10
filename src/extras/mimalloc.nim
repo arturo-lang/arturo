@@ -93,7 +93,8 @@ when not defined(gcOrc):
   proc GC_enableMarkAndSweep() = discard
   proc GC_disableMarkAndSweep() = discard
 
-proc GC_setStrategy(strategy: GC_Strategy) = discard
+when declared(GC_Strategy):
+  proc GC_setStrategy(strategy: GC_Strategy) = discard
 
 proc getOccupiedMem(): int = discard
 proc getFreeMem(): int = discard
