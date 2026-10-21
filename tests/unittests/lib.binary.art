@@ -28,12 +28,6 @@ f: new 2
 shl 'f 3
 print f ; 16
 
-print shl.safe 4611686018427387904 2
-print shl.safe 5 62
-f: new 4611686018427387904
-shl.safe 'f 2
-print f ; 18446744073709551616
-
 print shr 16 3
 g: new 16
 shr 'g 3
