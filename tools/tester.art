@@ -34,6 +34,7 @@ canExecute?: function [scr][
             "runtime.NumberOutOfPermittedRange"
 
             "branching"
+            "lib.binary.bignum"
             "lib.comparison"
             "lib.files"
             "quantities"
