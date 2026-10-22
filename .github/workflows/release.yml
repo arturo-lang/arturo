@@ -23,7 +23,7 @@ jobs:
             version: ${{ steps.extract.outputs.version }}
             tag_name: ${{ steps.extract.outputs.tag_name }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                 ref: ${{ github.ref }}
             
@@ -145,7 +145,7 @@ jobs:
             - Validate
             - Build
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                 ref: ${{ needs.Validate.outputs.tag_name }}
                 fetch-depth: 0
