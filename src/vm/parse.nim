@@ -1295,7 +1295,9 @@ proc doParse*(input: string, isFile: bool = true): Value =
             if unlikely(not fileExists(filePath)):
                 Error_ScriptNotExists(input)
 
-        var stream = newFileStream(filePath)
+            var stream = newFileStream(filePath)
+        else:
+            var stream = newStringStream(filePath)
         lexbase.open(p, stream)
     else:
         var stream = newStringStream(input)
