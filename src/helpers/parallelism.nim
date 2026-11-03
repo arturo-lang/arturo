@@ -687,7 +687,7 @@ when not defined(WEB):
         let chanTailFut = tailChannelFile(chanFile, proc(): bool {.gcsafe.} =
             {.cast(gcsafe).}: proc1.running)
         while p.running and tsk.state != taskCancelled:
-            await sleepAsync(50)
+            await sleepAsync(1)
         if tsk.state == taskCancelled and p.running:
             terminateGroup(p)
             discard p.waitForExit()
@@ -773,7 +773,7 @@ when not defined(WEB):
         detachToOwnGroup(p)
         tsk.process = p
         while p.running and tsk.state != taskCancelled:
-            await sleepAsync(50)
+            await sleepAsync(1)
         if tsk.state == taskCancelled and p.running:
             terminateGroup(p)
             discard p.waitForExit()
