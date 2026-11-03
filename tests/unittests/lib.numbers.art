@@ -569,6 +569,18 @@ do [
 
 ]
 
+topic « factorial
+do [
+
+    ensure.that: "works with 0"         -> 1   = factorial 0
+    ensure.that: "works with :integer"  -> 120 = factorial 5
+    passed
+
+    ensure.that: "throws for negative values" -> throws? [factorial neg 1]
+    passed
+
+]
+
 topic « floor
 do [
 
