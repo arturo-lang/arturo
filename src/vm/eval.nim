@@ -32,6 +32,7 @@ import vm/profiler
 
 var
     StoredTranslations : Table[Hash, Translation]
+    InlinedCanStore    : bool
 
 #=======================================
 # Helpers
@@ -258,11 +259,11 @@ template optimizeConditional(
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
     if canWeOptimize:
-        let (rightNode,_) = generateAst(right.value, reuseArities=true)
+        let (rightNode, rightCanStore) = generateAst(right.value, reuseArities=true)
 
         when withLoop:
             var leftIt: VBinary
-            let (leftNode,_) = generateAst(left.value, reuseArities=true)
+            let (leftNode, leftCanStore) = generateAst(left.value, reuseArities=true)
 
         let stillProceed =
             when withLoop:
@@ -271,6 +272,9 @@ template optimizeConditional(
                 true
 
         if stillProceed:
+            InlinedCanStore = InlinedCanStore and rightCanStore
+            when withLoop:
+                InlinedCanStore = InlinedCanStore and leftCanStore
 
             when withLoop:
                 # separately ast+evaluate right child block     
@@ -513,8 +517,10 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     var consts: ValueArray
     var it: VBinary
 
-    let (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    var (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    InlinedCanStore = true
     evaluateBlock(astNode, consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
+    canStore = canStore and InlinedCanStore
     it.add(byte(opEnd))
 
     var res = Translation(constants: consts, instructions: it)
