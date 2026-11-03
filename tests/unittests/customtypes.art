@@ -68,3 +68,22 @@ print c = d
 print c <> d
 print sort @[c d]
 print sort.descending @[c d]
+
+;===========================
+; :THING
+;===========================
+
+define :thing [
+    init: method [v][ \val: v ]
+    show: method [][ prints ["" \val] ]
+
+    direct:     method [][ \show ]
+    viaIf:      method [][ if true [ \show ] ]
+    viaUnless:  method [][ unless false [ \show ] ]
+    viaWhile:   method [][ i: 0  while [i < 1][ \show  i: i + 1 ] ]
+]
+
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\direct ] print ""
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\viaIf ] print ""
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\viaUnless ] print ""
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\viaWhile ] print ""

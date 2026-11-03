@@ -33,3 +33,18 @@
 [ :block
     _six :label
 ]
+[ :block
+    4 :integer
+    \ :symbol
+    3 :integer
+]
+[ :block
+    4 :integer
+    \\ :symbol
+    3 :integer
+]
+[ :block
+    true :word
+    ∨ :symbol
+    false :word
+]

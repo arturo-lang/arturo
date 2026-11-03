@@ -714,7 +714,7 @@ proc defineModule*(moduleName: string) =
             factorial 20        ; => 2432902008176640000
         """:
             #=======================================================
-            if unlikely(x.iKind == BigInteger):
+            if unlikely(x.iKind == BigInteger or x.i < 0):
                 Error_InvalidOperation("factorial", valueKind(x, withBigInfo=true), "")
             else:
                 push(factorial(x.i))
