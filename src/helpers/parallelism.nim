@@ -15,7 +15,7 @@
 when not defined(WEB):
     import asyncdispatch, asyncfile, httpclient, httpcore
     import os, osproc
-    import std/tempfiles
+    import std/[monotimes, tempfiles]
     import streams, strtabs, strutils, times
     when defined(posix):
         import posix
@@ -635,6 +635,12 @@ when not defined(WEB):
         else:
             p.terminate()
 
+    proc pollInterval(started: MonoTime): int {.inline.} =
+        ## Child-process poll interval: ~10% of elapsed time, within 1..20ms.
+        ## Quick tasks get noticed right away; long ones settle at the
+        ## same 20ms rate as the event/channel tailers.
+        clamp(int((getMonoTime() - started).inMilliseconds div 10), 1, 20)
+
     # Spawn child Arturo process, return future settling on exit. Child
     # writes result to temp file; we inherit its stdio so `print` flows live.
     proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
@@ -686,8 +692,9 @@ when not defined(WEB):
             {.cast(gcsafe).}: proc1.running)
         let chanTailFut = tailChannelFile(chanFile, proc(): bool {.gcsafe.} =
             {.cast(gcsafe).}: proc1.running)
+        let started = getMonoTime()
         while p.running and tsk.state != taskCancelled:
-            await sleepAsync(50)
+            await sleepAsync(pollInterval(started))
         if tsk.state == taskCancelled and p.running:
             terminateGroup(p)
             discard p.waitForExit()
@@ -772,8 +779,9 @@ when not defined(WEB):
                              options = {poUsePath, poEvalCommand, poStdErrToStdOut})
         detachToOwnGroup(p)
         tsk.process = p
+        let started = getMonoTime()
         while p.running and tsk.state != taskCancelled:
-            await sleepAsync(50)
+            await sleepAsync(pollInterval(started))
         if tsk.state == taskCancelled and p.running:
             terminateGroup(p)
             discard p.waitForExit()
