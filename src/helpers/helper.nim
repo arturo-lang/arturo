@@ -17,6 +17,8 @@ import sugar
 when defined(DOCGEN):
     import re
 
+    import vm/version
+
 import helpers/sets
 import helpers/terminal
 
@@ -351,7 +353,9 @@ when defined(DOCGEN):
     
         ## Inserts documentation's information into the ValueDict 
         const 
-            repo = "https://github.com/arturo-lang/arturo/blob/v0.9.83/src/library/"
+            repo = "https://github.com/arturo-lang/arturo/blob/" &
+                   (if ArturoVersion.contains("-dev"): "master" else: "v" & ArturoVersion) &
+                   "/src/library/"
         
         info["example"] = newStringBlock(splitExamples(obj.val.info.example))
         
