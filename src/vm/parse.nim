@@ -987,12 +987,13 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         AddToken newPath(p.values[^1])
                     discard p.values.pop()
                 elif p.buf[p.bufpos+1]==Backslash: 
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                     AddToken newSymbol(doublebackslash)
                 elif p.buf[p.bufpos+1] == '/':
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                     AddToken newSymbol(logicalor)
                 else: 
+                    inc(p.bufpos)
                     AddToken newSymbol(backslash)
                     
             of PermittedIdentifiers_Start:
