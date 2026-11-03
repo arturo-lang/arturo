@@ -94,4 +94,25 @@ do [
 
     ]
 
+    topic "try/throws?: control flow"
+    do [
+
+        f: function [][ try [ return 1 ] 2 ]
+        g: function [][ not? throws? [ return 42 ] ]
+
+        ensure -> 1 = f
+        ensure -> 42 = g
+        passed
+
+        collected: []
+        loop 1..5 'i [ try [ if i = 3 -> break ] 'collected ++ i ]
+        ensure -> [1 2] = collected
+
+        collected: []
+        loop 1..4 'i [ try [ if i = 2 -> continue ] 'collected ++ i ]
+        ensure -> [1 3 4] = collected
+        passed
+
+    ]
+
 ]
