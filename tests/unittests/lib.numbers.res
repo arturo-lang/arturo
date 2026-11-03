@@ -76,6 +76,10 @@
 >> clamp - invalid operations
 [+] passed!
 
+>> factorial
+[+] passed!
+[+] passed!
+
 >> floor
 [+] passed!
 [+] passed!
