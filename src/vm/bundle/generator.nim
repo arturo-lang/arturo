@@ -23,7 +23,7 @@ when defined(DEV):
 import helpers/io
 import helpers/jsonobject
 
-import vm/[globals, vm, exec, parse, packager]
+import vm/[globals, vm, exec, parse, packager, version]
 import vm/values/[value, types]
 import vm/values/custom/[vlogical, vsymbol]
 
@@ -343,7 +343,10 @@ proc cloneArturo() =
     when defined(DEV):
         copyDirRecursively(getCurrentDir(), TmpFolder)
     else:
-        let (_, res) = execCmdEx("git clone https://github.com/arturo-lang/arturo.git " & TmpFolder)
+        let branch =
+            if ArturoVersion.contains("-dev"): ""
+            else: "--branch v" & ArturoVersion & " --depth 1 "
+        let (_, res) = execCmdEx("git clone " & branch & "https://github.com/arturo-lang/arturo.git " & TmpFolder)
         if res != 0:
             echo "\tsomething went wrong when cloning Arturo sources..."
             quit(1)
