@@ -126,6 +126,8 @@ proc defineModule*(moduleName: string) =
             try:
                 execUnscoped(x)
                 push(VFALSE)
+            except ReturnTriggered, BreakTriggered, ContinueTriggered:
+                raise
             except CatchableError, Defect, VError:
                 push(VTRUE)
 
@@ -170,6 +172,8 @@ proc defineModule*(moduleName: string) =
             try:
                 execUnscoped(x)
                 push(VNULL)
+            except ReturnTriggered, BreakTriggered, ContinueTriggered:
+                raise
             except VError as e:
                 push newError(e)
                 if verbose:
