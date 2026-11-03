@@ -22,3 +22,7 @@
 
 >> try: no errors
 [+] passed!
+
+>> try/throws?: control flow
+[+] passed!
+[+] passed!
