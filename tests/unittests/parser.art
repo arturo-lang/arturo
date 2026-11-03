@@ -12,3 +12,9 @@ inspect [three]
 inspect [four:]
 inspect [_ five:]
 inspect [_six:]
+
+; backslash symbols
+
+inspect [4 \ 3]
+inspect [4 \\ 3]
+inspect [true \/ false]
