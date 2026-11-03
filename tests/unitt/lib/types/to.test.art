@@ -50,6 +50,8 @@ for :binary [
     section :block []
     section :char [
         'K' ->> to :binary 75
+        'ø' ->> to :binary "ø"
+        '😄' ->> to :binary "😄"
     ]
 
     section :complex []

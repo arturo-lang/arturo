@@ -197,7 +197,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                     of Integer: return newInteger(ord(y.c))
                     of Floating: return newFloating(float(ord(y.c)))
                     of String: return newString($(y.c))
-                    of Binary: return newBinary(@[byte(ord(y.c))])
+                    of Binary: return newBinary(($(y.c)).mapIt(byte(ord(it))))
                     else: throwCannotConvert()
 
             of String:
