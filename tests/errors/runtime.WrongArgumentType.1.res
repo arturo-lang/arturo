@@ -12,10 +12,9 @@
       :null, :literal, :block
 
   ┃ File: tests/errors/runtime.WrongArgumentType.1.art
-  ┃ Line: 3
+  ┃ Line: 2
   ┃ 
   ┃    1 ║  print
-  ┃    2 ║      map
-  ┃    3 ║►         1..2
+  ┃    2 ║►     map
+  ┃    3 ║          1..2
   ┃    4 ║              3 
-  ┃    5 ║                  4

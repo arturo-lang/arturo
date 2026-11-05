@@ -8,8 +8,9 @@ doing sth: 12
       [integer? x]
 
   ┃ File: tests/errors/assertion.AssertionFailed.2.art
-  ┃ Line: 7
+  ┃ Line: 2
   ┃ 
-  ┃    5 ║  
-  ┃    6 ║  print ["doing sth:" doSth 2]
-  ┃    7 ║► print ["doing sth:" doSth [1 2 3]]
+  ┃    1 ║  doSth: function [x][
+  ┃    2 ║►     ensure -> integer? x
+  ┃    3 ║      return x+10
+  ┃    4 ║  ]
