@@ -40,6 +40,7 @@ import helpers/strings
 
 type
     Parser = object of BaseLexer
+        noLines: bool
         value: string
         values: seq[ValueArray]
         symbol: VSymbol
@@ -901,7 +902,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
     while true:
         setLen(p.value, 0)
         skip(p, scriptStr)
-        tokenLine = p.lineNumber
+        tokenLine = if p.noLines: 0 else: p.lineNumber
 
         case p.buf[p.bufpos]
             of EOF:
@@ -1294,6 +1295,7 @@ proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
     ## at the corresponding line
 
     var p: Parser
+    p.noLines = not (isFile or inFile)
 
     # open stream
     if isFile:
