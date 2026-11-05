@@ -100,3 +100,36 @@ do [
     ensure -> contains? output "Line: 2"
     passed
 ]
+
+topic "bytecode without its source"
+do [
+    execute ~{|sys\binary| -c "|fixture "bytecode"|"}
+    source: fixture "bytecode"
+    moved: source ++ ".moved"
+    rename source moved
+    output: execute ~{|sys\binary| --no-color -x "|source|.bcode"}
+    rename moved source
+    delete source ++ ".bcode"
+    ensure -> contains? output "Division by zero"
+    ensure -> contains? output "Line: 2"
+    passed
+]
+
+topic "line after `break`"
+do [
+    ensure -> contains? run "after-break" "Line: 1"
+    passed
+]
+
+topic "tasks in another process"
+do [
+    output: run "isolated-error"
+    ensure -> contains? output "isolated-error.art:1"
+    passed
+]
+
+topic "frames in tasks"
+do [
+    ensure -> ["false" "true"] = split.lines strip run "fibers-main"
+    passed
+]

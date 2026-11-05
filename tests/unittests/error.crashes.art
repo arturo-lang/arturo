@@ -21,8 +21,6 @@ do [
 
 topic "crashes are reported"
 do [
-    if sys\os <> 'windows [
-        ensure -> contains? run "stack-overflow" "Internal Error"
-    ]
+    ensure -> contains? run "stack-overflow" "Internal Error"
     passed
 ]

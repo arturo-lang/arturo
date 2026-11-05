@@ -28,3 +28,15 @@
 
 >> code running from bytecode
 [+] passed!
+
+>> bytecode without its source
+[+] passed!
+
+>> line after `break`
+[+] passed!
+
+>> tasks in another process
+[+] passed!
+
+>> frames in tasks
+[+] passed!
