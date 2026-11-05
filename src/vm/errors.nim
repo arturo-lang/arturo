@@ -345,6 +345,18 @@ proc panic(throw: bool, error: VError) =
 #=======================================
 
 #------------------------
+# Value Errors
+#------------------------
+
+proc Error_InvalidRegex*(pattern: string, reason: string) =
+    panic:
+        toError ValueErr, """
+            Invalid regular expression:
+                _$#_
+            $#
+        """ ~~ @[pattern, reason]
+
+#------------------------
 # Command-line Errors
 #------------------------
 
