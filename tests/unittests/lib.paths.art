@@ -17,3 +17,42 @@ do [
     ensure -> a = b\b
     passed
 ]
+
+topic « extract - URL detection
+do [
+
+    urls: [
+        "https://arturo-lang.io/llms.txt"                       "arturo-lang.io"
+        "https://x.org"                                         "x.org"
+        "https://x.org/a?t=page%7C47%7C63"                      "x.org"
+        "https://x.org:8443/Colorful%20numbers#top"             "x.org"
+        "https://en.wikipedia.org/wiki/Café"                    "en.wikipedia.org"
+        "https://user:pw@x.org/a"                               "x.org"
+        "http://myhost/path"                                    "myhost"
+        "http://localhost"                                      "localhost"
+        "http://localhost:8000/a%20b"                           "localhost"
+        "http://127.0.0.1:18999/"                               "127.0.0.1"
+        "http://[::1]:8000/x"                                   "::1"
+    ]
+    loop urls [url, host] ->
+        ensure -> host = extract.host url
+    passed
+
+    notUrls: [
+        "hello world"
+        "http://"
+        "http:// x.org"
+        "https://x.org/a b"
+        "https://x.org:abc/d"
+        "https://x.org!"
+        "ftp://x.org/a"
+        "www.x.org/a"
+        "localhost"
+        "localhost:8000 is down"
+        "http://localhost:8000/a b"
+        "/usr/local/x.art"
+    ]
+    loop notUrls 'str ->
+        ensure -> :dictionary = type extract.host str
+    passed
+]
