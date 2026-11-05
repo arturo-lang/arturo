@@ -356,20 +356,14 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         lastOpStore = -1
         it.addByte(op)
 
-    # TODO(Errors) Line number messed up at start of block
-    #  let's say we do 
-    #  ```
-    #  do [
-    #      print 3/0
-    #
-    #  ]
-    #  ```
-    #  The line of the error will be messed up. This wouldn't happen if it was
-    #  the second command within that block. (And I have no idea / don't remember)
-    #  why this could be happening... (Nor is it necessarily related to the evaluator)
-    #  labels: error handling, bug, evaluation, ast
-    template addEol(n: untyped): untyped =
-        it.addOpWithNumber(opEol, n, hasShortcut=false)
+    var lastLine: uint32 = 0
+
+    # Right before an instruction that may fail. Arguments are generated
+    # right-to-left, so this has to follow the generated code, not the source
+    template addEol(nd: Node): untyped =
+        if likely(not omitNewlines) and nd.line != 0 and nd.line != lastLine:
+            lastLine = nd.line
+            it.addOpWithNumber(opEol, lastLine, hasShortcut=false)
 
     #------------------------
     # MainLoop
@@ -413,7 +407,9 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                 else:
                     discard # won't reach here
 
-        if not alreadyProcessed:
+        if alreadyProcessed:
+            lastLine = 0
+        else:
 
             for instruction in traverse(item):
 
@@ -421,8 +417,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     of RootNode:
                         discard
                     of NewlineNode:
-                        if likely(not omitNewlines):
-                            addEol(instruction.line)
+                        discard
                     of ConstantValue:
                         var alreadyPut = false
                         let iv {.cursor.} = instruction.value
@@ -475,6 +470,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         if not alreadyPut:
                             addConst(instruction.value, opPush)
                     of VariableLoad:
+                        addEol(instruction)
                         addVariableLoad(instruction)
                     of AttributeNode:
                         addConst(instruction.value, opAttr)
@@ -485,10 +481,13 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                             lastOpStore = addConstAndGetIndex(instruction.value, opStore)
                             lastOpStorePos = it.len
                     of OtherCall:
+                        addEol(instruction)
                         addConst(instruction.value, opCall)
                     of BuiltinCall:
+                        addEol(instruction)
                         addSingleCommand(instruction.op)
                     of SpecialCall:
+                        addEol(instruction)
                         # TODO(VM/eval) nested `switch` calls are not being optimized
                         #  labels: vm, evaluator, performance, enhancement
                         addSingleCommand(instruction.op)
