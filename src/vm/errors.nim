@@ -288,17 +288,23 @@ proc printCodePreview(e: VError) =
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
             captureContext(e)
 
-            if e.context.file == "" or not fileExists(e.context.file):
+            if e.context.file == "":
                 return
 
             printError ""
+            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
+            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
+
+            # nothing to show, if the source isn't around
+            # (e.g. bytecode on its own)
+            if not fileExists(e.context.file):
+                return
+
             let fileContent = readFile(e.context.file)
             let codeLines = fileContent.splitLines()
             const linesBeforeAfter = 2
             let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
             let lineTo = min(len(codeLines)-1, e.context.line + (linesBeforeAfter-1))
-            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
-            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
             printError "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
             for lineNo in lineFrom..lineTo:
                 var line = codeLines[lineNo]
