@@ -375,6 +375,9 @@ proc execFunction*(fun: Value, fid: Hash) =
         if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
             popN argsL
             push memd
+            when not defined(WEB):
+                if not fpath.isNil():
+                    discardFrame()
             return
 
     pushScopeFrame()
@@ -460,6 +463,9 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
             popN argsL
             push memd
+            when not defined(WEB):
+                if not fpath.isNil():
+                    discardFrame()
             return
 
     prepareLeakless(fun.params)
