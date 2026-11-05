@@ -501,6 +501,10 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     when useStored:
         if not root.dynamic:
             vhash = hash(root)
+            if root.kind in {Block, Inline}:
+                for tok in root.a:
+                    vhash = vhash !& int(tok.ln)
+                vhash = !$vhash
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
                 return (storedTranslation, true)
 
