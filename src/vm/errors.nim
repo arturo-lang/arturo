@@ -197,6 +197,21 @@ proc captureContext*(e: VError) =
         e.context.line = CurrentLine
         e.context.file = currentFrame().path
 
+proc toVError*(e: ref Exception): VError =
+    ## Make whatever reached the top level printable:
+    ## not everything that gets there is an actual VError
+    if e of VError:
+        return VError(e)
+
+    let msg =
+        if e of BreakTriggered: "`break` outside of a loop"
+        elif e of ContinueTriggered: "`continue` outside of a loop"
+        elif e of ReturnTriggered: "`return` outside of a function"
+        else: e.msg
+
+    result = toError(RuntimeErr, msg)
+    result.captureContext()
+
 proc printError(s: string) =
     when not defined(WEB):
         stderr.writeLine s
