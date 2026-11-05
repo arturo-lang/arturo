@@ -348,17 +348,18 @@ proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
             Syms[i] = d
             result.del(i)
 
-proc pushDefinitionFrame(fun: Value): bool {.inline.} =
-    ## Run function in the frame of the file it was defined in.
-    ## Those from the entry script have no path: they only need
-    ## a frame of their own if called from another file's code
-    if (let fpath = fun.info.path; not fpath.isNil()):
-        pushFrame(fpath[], fromFile=true)
-        return true
-    if FSP > 1:
-        pushFrame(entryFrame())
-        return true
-    return false
+when not defined(WEB):
+    proc pushDefinitionFrame(fun: Value): bool {.inline.} =
+        ## Run function in the frame of the file it was defined in.
+        ## Those from the entry script have no path: they only need
+        ## a frame of their own if called from another file's code
+        if (let fpath = fun.info.path; not fpath.isNil()):
+            pushFrame(fpath[], fromFile=true)
+            return true
+        if FSP > 1:
+            pushFrame(entryFrame())
+            return true
+        return false
 
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
