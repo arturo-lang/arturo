@@ -570,9 +570,6 @@ proc processBlock*(
             when isLabel:
                 target.rollThrough()
 
-    proc addNewline(target: var Node) =
-        target.addChild(Node(kind: NewlineNode, line: currentLine))
-
     proc addTerminal(target: var Node, node: Node) =
         with target:
             rewindCallBranches()
@@ -801,10 +798,6 @@ proc processBlock*(
 
         if item.ln != 0:
             NodeLine = item.ln
-
-        if item.ln != currentLine:
-            currentLine = item.ln
-            current.addNewline()
 
         case item.kind:
             of Word:
