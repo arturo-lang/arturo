@@ -72,11 +72,10 @@ type
     NodeArray* = seq[Node]
 
     Node* = ref object
+        line*: uint32
         case kind*: NodeKind:
-            of RootNode, ConstantValue, VariableLoad:
+            of RootNode, ConstantValue, VariableLoad, NewlineNode:
                 discard
-            of NewlineNode:
-                line*: uint32
             else:
                 op*: OpCode
                 arity*: int8
@@ -87,6 +86,13 @@ type
         children*: NodeArray
 
     NodeObj = typeof(Node()[])
+
+var
+    NodeLine {.global.}: uint32 = 0
+
+func currentNodeLine(): uint32 {.inline.} =
+    {.cast(noSideEffect).}:
+        result = NodeLine
 
 #=======================================
 # Compile-Time Warnings
@@ -166,6 +172,7 @@ func addChildren*(node: Node, children: openArray[Node])  =
 #         node.parent = nil
 
 proc replaceNode(node: Node, newNode: Node) =
+    newNode.line = node.line
     newNode.parent = node.parent
     node.parent.children[node.parent.children.find(node)] = newNode
 
@@ -220,6 +227,7 @@ template newRootNode(): Node =
 
 template newTerminalNode(kn: NodeKind, va: Value): Node =
     Node(
+        line: currentNodeLine(),
         kind: kn,
         value: va
     )
@@ -232,6 +240,7 @@ template newVariable(v: Value): Node =
 
 template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): Node =
     Node(
+        line: currentNodeLine(),
         kind: kn,
         arity: ar,
         op: oper,
@@ -239,10 +248,10 @@ template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): N
     )
 
 func copyNode(node: Node): Node =
-    result = Node(kind: node.kind)
+    result = Node(kind: node.kind, line: node.line)
     case node.kind:
         of NewlineNode:
-            result.line = node.line
+            discard
         of ConstantValue, VariableLoad:
             result.value = node.value
         else:
@@ -484,6 +493,8 @@ proc processBlock*(
                         when processingArrow:
                             ArrowBlock[^1].add(nextNode)
                         i += 1
+                        if nextNode.ln != 0:
+                            NodeLine = nextNode.ln
                         target.addCall(aliased.name.s, fun=symfunc)
 
     proc getCallNode(name: string, arity: int8 = -1, fun: Value = nil): Node =
@@ -657,6 +668,8 @@ proc processBlock*(
             if nextNode.kind == Word:
                 if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
                     i += 1
+                    if nextNode.ln != 0:
+                        NodeLine = nextNode.ln
 
                     target.rewindCallBranches()
 
@@ -785,6 +798,9 @@ proc processBlock*(
 
     while i < nLen:
         let item = blok.a[i]
+
+        if item.ln != 0:
+            NodeLine = item.ln
 
         if item.ln != currentLine:
             currentLine = item.ln
@@ -980,6 +996,8 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
             for k,v in Syms.pairs:
                 if v.kind == Function:
                     {k: v.arity}
+
+    NodeLine = 0
 
     discard res.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
     return (res, CanStore)
