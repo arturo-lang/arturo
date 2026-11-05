@@ -268,12 +268,14 @@ template finalizeLeaklessOne*(): untyped =
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
     ## or other errors that are to be caught
+    let callerLine = CurrentLine
     try:
         tryDoing
     except BreakTriggered:
+        CurrentLine = callerLine
         return
     except ContinueTriggered:
-        discard
+        CurrentLine = callerLine
     except Defect as e:
         raise e 
     finally:
@@ -623,23 +625,17 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 # lines & error reporting
                 of opEol                : 
+                    i += 1
                     when not defined(NOERRORLINES):
-                        i += 1
                         CurrentLine = int(it[i])
-                    else:
-                        discard
                 of opEolX               :   
+                    i += 2
                     when not defined(NOERRORLINES):
-                        i += 2
                         CurrentLine = int(uint16(it[i-1]) shl 8 + byte(it[i]))
-                    else:
-                        discard
                 of opEolL               :
+                    i += 4
                     when not defined(NOERRORLINES):
-                        i += 4
                         CurrentLine = (int(it[i-3]) shl 24) or (int(it[i-2]) shl 16) or (int(it[i-1]) shl 8) or int(it[i])
-                    else:
-                        discard
 
                 of opDStore             : i += 1; dStoreByIndex(cnst, int(it[i]))
                 of opDStoreX            : i += 2; dStoreByIndex(cnst, int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
