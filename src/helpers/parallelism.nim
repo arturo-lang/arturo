@@ -658,6 +658,9 @@ when not defined(WEB):
     # Spawn child Arturo process, return future settling on exit. Child
     # writes result to temp file; we inherit its stdio so `print` flows live.
     proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
+        # The child only gets the block's code, without any lines:
+        # all we can tell is where it was spawned from
+        let spawnedFrom = ErrorContext(line: markerLine(CurrentLine), file: markerFile(CurrentLine))
         let arturoBin = getAppFilename()
         let resFile = genTempPath("arturo-task-", ".art")
         let errFile = genTempPath("arturo-err-", ".art")        ## VError kind+msg side-channel
@@ -757,7 +760,9 @@ when not defined(WEB):
                                 rebuiltMsg = dict.d["msg"].s
             except CatchableError:
                 discard
-            raise toError(rebuiltKind, rebuiltMsg)
+            let rebuilt = toError(rebuiltKind, rebuiltMsg)
+            rebuilt.context = spawnedFrom
+            raise rebuilt
         elif code == 0 and fileExists(resFile):
             let raw = readFile(resFile)
             removeFile(resFile)
