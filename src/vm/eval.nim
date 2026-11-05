@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import hashes, sugar, tables
+import hashes, tables
 
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
@@ -83,12 +83,6 @@ template addReplaceOpWithIndex(instructions: var VBinary, oper: OpCode, num: unt
     else:
         instructions[^1] = byte(oper)
         instructions.addByte(byte(num))
-
-proc cleanChildren(node: Node): seq[Node] =
-    result = collect:
-        for subnode in node.children:
-            if subnode.kind != NewlineNode:
-                subnode
 
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline.} =
     var indx = consts.indexOfValue(v)
@@ -244,9 +238,8 @@ template optimizeConditional(
 ): untyped =
     # let's keep some references
     # to the children
-    let cleanedChildren = cleanChildren(special)
-    let left {.cursor.} = cleanedChildren[0]
-    let right {.cursor.} = cleanedChildren[1]
+    let left {.cursor.} = special.children[0]
+    let right {.cursor.} = special.children[1]
 
     # can we optimize?
     var canWeOptimize = false
@@ -415,8 +408,6 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 
                 case instruction.kind:
                     of RootNode:
-                        discard
-                    of NewlineNode:
                         discard
                     of ConstantValue:
                         var alreadyPut = false
