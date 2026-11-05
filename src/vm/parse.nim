@@ -103,12 +103,12 @@ proc parseDataBlock*(blk: Value): Value
 template Empty(s: var string): bool =
     s.len == 0
 
-func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser)  =
-    token.ln = uint32(p.lineNumber)
+func addAnnotatedTokenToBlock(blok: var Value, token: Value, line: int)  =
+    token.ln = uint32(line)
     blok.a.add(token)
 
 template AddToken(token: untyped): untyped =
-    topBlock.addAnnotatedTokenToBlock(token, p)
+    topBlock.addAnnotatedTokenToBlock(token, tokenLine)
 
 template LastToken(): untyped = 
     topBlock.a[^1]
@@ -897,9 +897,11 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
     # if isSubBlock: topBlock = newBlock()
     # else: topBlock = newInline()
     let initialLine = p.lineNumber
+    var tokenLine: int
     while true:
         setLen(p.value, 0)
         skip(p, scriptStr)
+        tokenLine = p.lineNumber
 
         case p.buf[p.bufpos]
             of EOF:
