@@ -27,7 +27,7 @@ import vm/values/value
 func isUrl*(s: string): bool {.inline.} =
     when not defined(WEB):
         
-        return s.match(re"^(?:http(s)?:\/\/)?localhost:\d+") or s.match(re"^(?:http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\x80-\xff]+$")
+        return s.match(re"^(?:http(s)?:\/\/)?localhost:\d+") or s.match(re"^(?:http(s)?:\/\/)[\w\x80-\xff][\w.\-\x80-\xff]*[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\x80-\xff]*$")
     else:
         return false
 
