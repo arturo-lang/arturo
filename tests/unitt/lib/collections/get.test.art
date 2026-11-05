@@ -131,7 +131,7 @@ suite "get - block and ranges" [
 suite "get - bytecode" [
 
     test "provides metadata members" [
-        bt: to :bytecode [print "hello"]
+        bt: to.intrepid :bytecode [print "hello"]
         assert -> ["hello"] = bt\data
         assert -> [32 189 223] = bt\code
         assert -> ["hello"] = get bt 'data
