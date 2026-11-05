@@ -35,6 +35,7 @@ import vm/lib
 
 when not defined(WEB):
     import helpers/parallelism
+    import vm/errors
     import vm/exec
 
 #=======================================
@@ -75,12 +76,15 @@ when not defined(WEB):
         let pay = payload
         sleepAsync(0).addCallback(proc() {.gcsafe.} =
             {.cast(gcsafe).}:
+                let callerLine = CurrentLine
                 try:
                     if cap.param.len > 0:
                         Syms[cap.param] = pay
                     execUnscoped(cap.body)
                 except CatchableError as e:
-                    echo "Events: handler raised: " & e.msg
+                    showError(toVError(e))
+                finally:
+                    CurrentLine = callerLine
         )
 
     proc initEmitChannel() =
@@ -234,12 +238,15 @@ proc defineModule*(moduleName: string) =
                             if mode == "finished" or mode == state:
                                 # Fire synchronously (we're already inside
                                 # the future's dispatcher callback).
+                                let callerLine = CurrentLine
                                 try:
                                     if cap.param.len > 0:
                                         Syms[cap.param] = payload
                                     execUnscoped(cap.body)
                                 except CatchableError as e:
-                                    echo "Events: handler raised: " & e.msg
+                                    showError(toVError(e))
+                                finally:
+                                    CurrentLine = callerLine
                     )
 
                 if hadAttr("id"):
