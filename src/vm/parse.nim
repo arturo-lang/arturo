@@ -30,7 +30,7 @@ import lexbase, os, streams
 import strutils, tables, unicode
 
 import vm/[errors, values/value]
-import vm/values/custom/[vquantity, vsymbol]
+import vm/values/custom/[verror, vquantity, vsymbol]
 
 import helpers/strings
 
@@ -93,7 +93,7 @@ const
 # Forward declarations
 #=======================================
 
-proc doParse*(input: string, isFile: bool = true): Value
+proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value
 proc parseDataBlock*(blk: Value): Value 
 
 #=======================================
@@ -1283,9 +1283,13 @@ proc parseDataBlock*(blk: Value): Value =
     else:
         result = parseAsBlock(blk, i)
 
-proc doParse*(input: string, isFile: bool = true): Value =
+proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
     ## Parse a string or file path
     ## and return the result as a Block of values
+    ## 
+    ## Use ``inFile`` when ``input`` is the contents of the file
+    ## in the current frame, so that syntax errors are reported 
+    ## at the corresponding line
 
     var p: Parser
 
@@ -1307,6 +1311,12 @@ proc doParse*(input: string, isFile: bool = true): Value =
     try:
         # do parse    
         result = parseBlock(p, 0)
+    except VError as e:
+        if isFile:
+            e.context = ErrorContext(line: p.lineNumber, file: input)
+        elif inFile:
+            e.context.line = p.lineNumber
+        raise e
     except CatchableError as e:
         CurrentLine = p.lineNumber
         raise e
