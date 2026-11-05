@@ -1,0 +1,44 @@
+; helper functions
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+fixture: $[name] -> relative ~"errorpositions/|name|.art"
+run: $[name] -> execute ~{|sys\binary| --no-color "|fixture name|"}
+
+; tests
+
+topic "stray break, continue & return"
+do [
+    ensure -> contains? run "stray-break" "`break` outside of a loop"
+    ensure -> contains? run "stray-continue" "`continue` outside of a loop"
+    ensure -> contains? run "stray-return" "`return` outside of a function"
+    ensure -> contains? run "stray-break" "Line: 2"
+    passed
+]
+
+topic "invalid regex"
+do [
+    output: run "bad-regex"
+    ensure -> contains? output "Invalid regular expression"
+    ensure -> contains? output "Line: 2"
+    ensure -> throws? [to :regex "("]
+    passed
+]
+
+topic "function from the main script, called from a module"
+do [
+    output: run "callback-main"
+    ensure -> contains? output "callback-main.art"
+    ensure -> contains? output "Line: 5"
+    passed
+]
+
+topic "lines above 65535"
+do [
+    path: relative "errorpositions/generated-long.art"
+    write (repeat "\n" 69999) ++ "print 1/0\n" path
+    output: execute ~{|sys\binary| --no-color "|path|"}
+    delete path
+    ensure -> contains? output "Line: 70000"
+    passed
+]
