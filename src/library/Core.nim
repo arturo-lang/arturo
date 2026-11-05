@@ -566,12 +566,13 @@ proc defineModule*(moduleName: string) =
                     if tp==FileData:
                         pushFrame(x.s, fromFile=true)
 
-                    let parsed = doParse(src, isFile=false, inFile=(tp==FileData))
-                    if not parsed.isNil:
-                        execUnscoped(parsed)
-
-                    if tp==FileData:
-                        discardFrame()
+                    try:
+                        let parsed = doParse(src, isFile=false, inFile=(tp==FileData))
+                        if not parsed.isNil:
+                            execUnscoped(parsed)
+                    finally:
+                        if tp==FileData:
+                            discardFrame()
                 
                 currentTime += 1
 
