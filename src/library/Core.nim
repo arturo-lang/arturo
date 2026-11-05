@@ -1053,26 +1053,27 @@ proc defineModule*(moduleName: string) =
 
                             pushFrame(src, fromFile=true)
 
-                            if not lean:
-                                let parsed = doParse(src, isFile=true)
-                                if not parsed.isNil:
-                                    if importOnly.len > 0:
+                            try:
+                                if not lean:
+                                    let parsed = doParse(src, isFile=true)
+                                    if not parsed.isNil:
+                                        if importOnly.len > 0:
+                                            let got = execScopedModule(parsed, importOnly)
+                                            for k,v in got.pairs:
+                                                if importOnly.contains(k) or k.startsWith("__module"):
+                                                    SetSym(k, v)
+                                        else:
+                                            execUnscoped(parsed)
+                                else:
+                                    let parsed = doParse(src, isFile=true)
+                                    if not parsed.isNil:
                                         let got = execScopedModule(parsed, importOnly)
-                                        for k,v in got.pairs:
-                                            if importOnly.contains(k) or k.startsWith("__module"):
-                                                SetSym(k, v)
-                                    else:
-                                        execUnscoped(parsed)
-                            else:
-                                let parsed = doParse(src, isFile=true)
-                                if not parsed.isNil:
-                                    let got = execScopedModule(parsed, importOnly)
-                                    if multiple:
-                                        ret.add(newDictionary(got))
-                                    else:
-                                        push(newDictionary(got))
-
-                            discardFrame()              
+                                        if multiple:
+                                            ret.add(newDictionary(got))
+                                        else:
+                                            push(newDictionary(got))
+                            finally:
+                                discardFrame()
                         else:
                             Error_PackageNotFound(pkg)
 
