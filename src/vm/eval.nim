@@ -271,15 +271,15 @@ template optimizeConditional(
 
             when withLoop:
                 # separately ast+evaluate right child block     
-                evaluateBlock(leftNode, consts, leftIt)
+                evaluateBlock(leftNode, consts, leftIt, omitNewlines=omitNewlines)
                 it.add(leftIt)
             else:
                 # inline-evaluate left child
-                evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+                evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it, omitNewlines=omitNewlines)
 
             # separately ast+evaluate right child block     
             var rightIt: VBinary
-            evaluateBlock(rightNode, consts, rightIt)
+            evaluateBlock(rightNode, consts, rightIt, omitNewlines=omitNewlines)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
