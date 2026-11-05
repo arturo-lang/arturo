@@ -348,6 +348,18 @@ proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
             Syms[i] = d
             result.del(i)
 
+proc pushDefinitionFrame(fun: Value): bool {.inline.} =
+    ## Run function in the frame of the file it was defined in.
+    ## Those from the entry script have no path: they only need
+    ## a frame of their own if called from another file's code
+    if (let fpath = fun.info.path; not fpath.isNil()):
+        pushFrame(fpath[], fromFile=true)
+        return true
+    if FSP > 1:
+        pushFrame(entryFrame())
+        return true
+    return false
+
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
     ## 
@@ -364,9 +376,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     let argsL = len(fun.params)
 
     when not defined(WEB):
-        var fpath: ref string
-        if (fpath = fun.info.path; not fpath.isNil()):
-            pushFrame(fpath[], fromFile=true)
+        let framed = pushDefinitionFrame(fun)
 
     let callerLine = CurrentLine
 
@@ -384,7 +394,7 @@ proc execFunction*(fun: Value, fid: Hash) =
             popN argsL
             push memd
             when not defined(WEB):
-                if not fpath.isNil():
+                if framed:
                     discardFrame()
             return
 
@@ -412,7 +422,7 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     finally:
         when not defined(WEB):
-            if not fpath.isNil():
+            if framed:
                 discardFrame()
 
         if fun.memoize:
@@ -454,9 +464,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
     let argsL = len(fun.params)
 
     when not defined(WEB):
-        var fpath: ref string
-        if (fpath = fun.info.path; not fpath.isNil()):
-            pushFrame(fpath[], fromFile=true)
+        let framed = pushDefinitionFrame(fun)
 
     let callerLine = CurrentLine
 
@@ -474,7 +482,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
             popN argsL
             push memd
             when not defined(WEB):
-                if not fpath.isNil():
+                if framed:
                     discardFrame()
             return
 
@@ -498,7 +506,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     finally:
         when not defined(WEB):
-            if not fpath.isNil():
+            if framed:
                 discardFrame()
 
         if fun.memoize:
@@ -516,9 +524,7 @@ proc execMethod*(meth: Value, fid: Hash) =
     ##   overwrite the value in the outer scope
 
     when not defined(WEB):
-        var fpath: ref string
-        if (fpath = meth.info.path; not fpath.isNil()):
-            pushFrame(fpath[], fromFile=true)
+        let framed = pushDefinitionFrame(meth)
 
     let callerLine = CurrentLine
 
@@ -550,7 +556,7 @@ proc execMethod*(meth: Value, fid: Hash) =
         releaseScopeFrame(frame)
 
         when not defined(WEB):
-            if not fpath.isNil():
+            if framed:
                 discardFrame()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
