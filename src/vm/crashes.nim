@@ -16,11 +16,13 @@
 # Libraries
 #=======================================
 
-when not defined(windows):
+when defined(windows):
+    import winlean
+else:
     import posix
 
-    import vm/errors
-    import vm/runtime
+import vm/errors
+import vm/runtime
 
 #=======================================
 # Variables
@@ -34,32 +36,58 @@ when not defined(windows):
 # Helpers
 #=======================================
 
-when not defined(windows):
-    # Only async-signal-safe stuff here: no allocations whatsoever
+when defined(windows):
+    const
+        AccessViolation = 0xC0000005'u32
+        StackOverflow = 0xC00000FD'u32
+        ContinueSearch = 0.clong
+        ReservedStack = 65536.culong
 
-    proc say(s: cstring) =
+    proc c_write(fd: cint, buf: cstring, count: cuint): cint {.importc: "_write", header: "<io.h>".}
+    proc c_exit(code: cint) {.importc: "_exit", header: "<stdlib.h>", noreturn.}
+
+    proc SetUnhandledExceptionFilter(filter: pointer): pointer {.stdcall, dynlib: "kernel32", importc.}
+    proc SetThreadStackGuarantee(size: ptr culong): WINBOOL {.stdcall, dynlib: "kernel32", importc.}
+
+# Only async-signal-safe stuff here: no allocations whatsoever
+
+proc say(s: cstring) =
+    when defined(windows):
+        discard c_write(2, s, cuint(s.len))
+    else:
         discard posix.write(2, s, s.len)
 
-    proc sayNumber(num: int) =
-        var buffer: array[20, char]
-        var i = buffer.len
-        var n = num
-        while true:
-            dec(i)
-            buffer[i] = char(ord('0') + n mod 10)
-            n = n div 10
-            if n == 0: break
-        discard posix.write(2, addr buffer[i], buffer.len - i)
+proc sayNumber(num: int) =
+    var buffer: array[21, char]
+    var i = buffer.high
+    var n = num
+    while true:
+        dec(i)
+        buffer[i] = char(ord('0') + n mod 10)
+        n = n div 10
+        if n == 0: break
+    say(cast[cstring](addr buffer[i]))
 
-    proc crashHandler(sig: cint) {.noconv.} =
-        say("\n══╡ Internal Error ╞══\n\n  Invalid memory access or stack overflow\n")
-        if FSP > 0 and markerFile(CurrentLine).len > 0:
-            say("\n  ┃ File: ")
-            say(cstring(markerFile(CurrentLine)))
-            say("\n  ┃ Line: ")
-            sayNumber(markerLine(CurrentLine))
-            say("\n")
+proc reportCrash() =
+    say("\n══╡ Internal Error ╞══\n\n  Invalid memory access or stack overflow\n")
+    if FSP > 0 and markerFile(CurrentLine).len > 0:
+        say("\n  ┃ File: ")
+        say(cstring(markerFile(CurrentLine)))
+        say("\n  ┃ Line: ")
+        sayNumber(markerLine(CurrentLine))
         say("\n")
+    say("\n")
+
+when defined(windows):
+    proc crashFilter(pointers: pointer): clong {.stdcall.} =
+        let code = cast[ptr ptr uint32](pointers)[][]
+        if code != AccessViolation and code != StackOverflow:
+            return ContinueSearch
+        reportCrash()
+        c_exit(139)
+else:
+    proc crashHandler(sig: cint) {.noconv.} =
+        reportCrash()
         exitnow(128 + sig)
 
 #=======================================
@@ -69,7 +97,11 @@ when not defined(windows):
 proc setupCrashHandler*() =
     ## Make sure crashes are reported, 
     ## replacing any previous handler
-    when not defined(windows):
+    when defined(windows):
+        var reserved = ReservedStack
+        discard SetThreadStackGuarantee(addr reserved)
+        discard SetUnhandledExceptionFilter(cast[pointer](crashFilter))
+    else:
         var stk: Stack
         var old: Stack
         stk.ss_sp = addr signalStack
