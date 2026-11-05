@@ -53,11 +53,11 @@ when not defined(windows):
 
     proc crashHandler(sig: cint) {.noconv.} =
         say("\n══╡ Internal Error ╞══\n\n  Invalid memory access or stack overflow\n")
-        if FSP > 0 and currentFrame().path.len > 0:
+        if FSP > 0 and markerFile(CurrentLine).len > 0:
             say("\n  ┃ File: ")
-            say(cstring(currentFrame().path))
+            say(cstring(markerFile(CurrentLine)))
             say("\n  ┃ Line: ")
-            sayNumber(CurrentLine)
+            sayNumber(markerLine(CurrentLine))
             say("\n")
         say("\n")
         exitnow(128 + sig)

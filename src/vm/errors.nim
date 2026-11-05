@@ -189,13 +189,53 @@ func `~~`*(s: string, inputs: seq[string]): string =
 
 # Error messages
 
+# Line markers also say which file they come from: 
+# the upper bits are an index into SourceFiles, with 0 being 
+# the entry script. Frames alone can't tell: a block runs
+# wherever it's passed to, not where it was written
+
+const
+    LineBits = 20
+    LineMask = (1 shl LineBits) - 1
+    UnknownFile = 4095
+
+var SourceFiles: seq[string] = @[""]
+
+proc sourceFileId*(path: string): int =
+    ## Get id of given source file, registering it if needed
+    if FSP == 0 or path == entryFrame().path:
+        return 0
+
+    result = SourceFiles.find(path)
+    if result == -1:
+        if SourceFiles.len >= UnknownFile:
+            return UnknownFile
+        SourceFiles.add(path)
+        result = SourceFiles.len - 1
+
+func lineMarker*(line: int, fileId: int): int {.inline.} =
+    (fileId shl LineBits) or min(line, LineMask)
+
+func markerLine*(marker: int): int {.inline.} =
+    marker and LineMask
+
+proc markerFile*(marker: int): lent string =
+    ## Get source file of given line marker. 
+    ## No copies: this is also used from the crash handler
+    let id = marker shr LineBits
+    if marker == 0 or id == UnknownFile:
+        return currentFrame().path
+    if id == 0:
+        return entryFrame().path
+    return SourceFiles[id]
+
 proc captureContext*(e: VError) =
     ## Record the current file & line in given error.
     ## To be called when the error is raised: by the time it reaches
     ## any handler, the frames it was raised in will be long gone
     if e.context.file == "" and FSP > 0:
-        e.context.line = CurrentLine
-        e.context.file = currentFrame().path
+        e.context.line = markerLine(CurrentLine)
+        e.context.file = markerFile(CurrentLine)
 
 proc toVError*(e: ref Exception): VError =
     ## Make whatever reached the top level printable:
@@ -405,6 +445,14 @@ proc Error_NotEnoughParameters*(name: string) =
 #------------------------
 # Package Errors
 #------------------------
+
+proc Error_CircularImport*(path: string) =
+    panic:
+        toError PackageErr, """
+            Circular import:
+                _$#_
+            is already being imported
+        """ ~~ @[path]
 
 func Error_PackageNotFound*(pkg: string) =
     panic:

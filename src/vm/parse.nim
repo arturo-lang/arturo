@@ -29,7 +29,7 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-import vm/[errors, values/value]
+import vm/[errors, runtime, values/value]
 import vm/values/custom/[verror, vquantity, vsymbol]
 
 import helpers/strings
@@ -41,6 +41,7 @@ import helpers/strings
 type
     Parser = object of BaseLexer
         noLines: bool
+        fileId: int
         value: string
         values: seq[ValueArray]
         symbol: VSymbol
@@ -902,7 +903,7 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
     while true:
         setLen(p.value, 0)
         skip(p, scriptStr)
-        tokenLine = if p.noLines: 0 else: p.lineNumber
+        tokenLine = if p.noLines: 0 else: lineMarker(p.lineNumber, p.fileId)
 
         case p.buf[p.bufpos]
             of EOF:
@@ -1296,6 +1297,10 @@ proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
 
     var p: Parser
     p.noLines = not (isFile or inFile)
+    if isFile:
+        p.fileId = sourceFileId(input)
+    elif inFile:
+        p.fileId = sourceFileId(currentFrame().path)
 
     # open stream
     if isFile:
@@ -1319,10 +1324,11 @@ proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
         if isFile:
             e.context = ErrorContext(line: p.lineNumber, file: input)
         elif inFile:
-            e.context.line = p.lineNumber
+            e.context = ErrorContext(line: p.lineNumber, file: currentFrame().path)
         raise e
     except CatchableError as e:
-        CurrentLine = p.lineNumber
+        if not p.noLines:
+            CurrentLine = lineMarker(p.lineNumber, p.fileId)
         raise e
 
     # close lexer
