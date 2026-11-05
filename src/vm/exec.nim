@@ -368,6 +368,8 @@ proc execFunction*(fun: Value, fid: Hash) =
         if (fpath = fun.info.path; not fpath.isNil()):
             pushFrame(fpath[], fromFile=true)
 
+    let callerLine = CurrentLine
+
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -406,7 +408,7 @@ proc execFunction*(fun: Value, fid: Hash) =
             ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
-        discard
+        CurrentLine = callerLine
 
     finally:
         when not defined(WEB):
@@ -456,6 +458,8 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         if (fpath = fun.info.path; not fpath.isNil()):
             pushFrame(fpath[], fromFile=true)
 
+    let callerLine = CurrentLine
+
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -490,7 +494,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
             ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
-        discard
+        CurrentLine = callerLine
 
     finally:
         when not defined(WEB):
@@ -516,6 +520,8 @@ proc execMethod*(meth: Value, fid: Hash) =
         if (fpath = meth.info.path; not fpath.isNil()):
             pushFrame(fpath[], fromFile=true)
 
+    let callerLine = CurrentLine
+
     pushScopeFrame()
 
     for arg in meth.mparams:
@@ -532,7 +538,7 @@ proc execMethod*(meth: Value, fid: Hash) =
             ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
-        discard
+        CurrentLine = callerLine
 
     finally:
         var frame = popScopeFrame()
@@ -560,6 +566,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     var
         i   {.register.}: int = 0
         op  {.register.}: OpCode
+
+    let callerLine = CurrentLine
 
     while true:
         {.computedGoTo.}
@@ -940,6 +948,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of RSRV16               : discard
 
                 of opEnd                :
+                    CurrentLine = callerLine
                     break
 
         i += 1
