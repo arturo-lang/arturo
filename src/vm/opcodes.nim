@@ -345,7 +345,7 @@ type
         
         opRet           = 0xDC      # ()                #                   #
 
-        RSRV15          = 0xDD      #
+        opEolL          = 0xDD      # (line,lineB,lineC,lineD) #            #
         RSRV16          = 0xDE      #
 
         # the end

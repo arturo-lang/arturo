@@ -633,6 +633,12 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                         CurrentLine = int(uint16(it[i-1]) shl 8 + byte(it[i]))
                     else:
                         discard
+                of opEolL               :
+                    when not defined(NOERRORLINES):
+                        i += 4
+                        CurrentLine = (int(it[i-3]) shl 24) or (int(it[i-2]) shl 16) or (int(it[i-1]) shl 8) or int(it[i])
+                    else:
+                        discard
 
                 of opDStore             : i += 1; dStoreByIndex(cnst, int(it[i]))
                 of opDStoreX            : i += 2; dStoreByIndex(cnst, int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
@@ -950,7 +956,6 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opRet                :
                     discard
 
-                of RSRV15               : discard
                 of RSRV16               : discard
 
                 of opEnd                :

@@ -540,6 +540,9 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
                 elif op in {opPushX, opStoreX, opDStore, opCallX, opLoadX, opStorlX, opEolX, opJmpIfX, opJmpIfNotX, opJmpIfEqX, opJmpIfNeX, opJmpIfGtX, opJmpIfGeX, opJmpIfLtX, opJmpIfLeX, opGotoX, opGoupX}:
                     j += 2
                     instrs.add(newInteger(int(uint16(v.trans.instructions[j-1]) shl 8 + byte(v.trans.instructions[j]))))
+                elif op == opEolL:
+                    j += 4
+                    instrs.add(newInteger((int(v.trans.instructions[j-3]) shl 24) or (int(v.trans.instructions[j-2]) shl 16) or (int(v.trans.instructions[j-1]) shl 8) or int(v.trans.instructions[j])))
 
                 j += 1
 
