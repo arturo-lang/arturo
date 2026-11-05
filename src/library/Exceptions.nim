@@ -124,12 +124,14 @@ proc defineModule*(moduleName: string) =
             ; => true
         """:
             #=======================================================
+            let callerLine = CurrentLine
             try:
                 execUnscoped(x)
                 push(VFALSE)
             except ReturnTriggered, BreakTriggered, ContinueTriggered:
                 raise
             except CatchableError, Defect, VError:
+                CurrentLine = callerLine
                 push(VTRUE)
 
     builtin "try",
@@ -170,17 +172,20 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             let verbose = hadAttr "verbose" 
+            let callerLine = CurrentLine
             try:
                 execUnscoped(x)
                 push(VNULL)
             except ReturnTriggered, BreakTriggered, ContinueTriggered:
                 raise
             except VError as e:
+                CurrentLine = callerLine
                 push newError(e)
                 if verbose:
                     showError(e)
             except CatchableError, Defect:
                 let e = getCurrentException()
+                CurrentLine = callerLine
                 push newError(e)
                 if verbose:
                     showError(VError(e))
