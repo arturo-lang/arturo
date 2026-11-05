@@ -93,6 +93,7 @@ proc defineModule*(moduleName: string) =
             elif xkind == ErrorKind:
                 error.msg = x.errkind.label
 
+            captureContext(error)
             raise error 
 
     # TODO(Exceptions/throws?) rename function?
