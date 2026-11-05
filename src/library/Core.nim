@@ -63,6 +63,8 @@ proc replacingAmpersands(va: Value, what: Value): Value =
             theBlock.a.add(v)
     return theBlock
 
+var ImportsInProgress: seq[string]
+
 #=======================================
 # Definitions
 #=======================================
@@ -1053,6 +1055,11 @@ proc defineModule*(moduleName: string) =
                             if not src.fileExists():
                                 Error_PackageNotValid(pkg)
 
+                            let importing = absolutePath(src)
+                            if importing in ImportsInProgress or importing == absolutePath(entryFrame().path):
+                                Error_CircularImport(pkg)
+
+                            ImportsInProgress.add(importing)
                             pushFrame(src, fromFile=true)
 
                             try:
@@ -1076,6 +1083,7 @@ proc defineModule*(moduleName: string) =
                                             push(newDictionary(got))
                             finally:
                                 discardFrame()
+                                discard ImportsInProgress.pop()
                         else:
                             Error_PackageNotFound(pkg)
 
