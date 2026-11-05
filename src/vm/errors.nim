@@ -231,12 +231,7 @@ proc printErrorMessage(e: VError) =
 proc printCodePreview(e: VError) =
     when (not defined(NOERRORLINES)) and (not defined(BUNDLE)) and (not defined(WEB)):
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
-            if e.context.file == "":
-                e.context.line = CurrentLine
-                if (let pcf = postCurrentFrame(); not pcf.isNil):
-                    e.context.file = pcf.path
-                else:
-                    e.context.file = currentFrame().path
+            captureContext(e)
 
             if e.context.file == "" or not fileExists(e.context.file):
                 return
