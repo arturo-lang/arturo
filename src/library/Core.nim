@@ -1009,16 +1009,18 @@ proc defineModule*(moduleName: string) =
                     let (src, path) = getBundledResource(x.s)
                     pushFrame(path, fromFile=true)
 
-                    let parsed = doParse(src, isFile=false)
-                    if not parsed.isNil:
-                        if importOnly.len > 0:
-                            let got = execScopedModule(parsed, importOnly)
-                            for k,v in got.pairs:
-                                if importOnly.contains(k) or k.startsWith("__module"):
-                                    SetSym(k, v)
-                        else:
-                            execUnscoped(parsed)
-                    discardFrame()
+                    try:
+                        let parsed = doParse(src, isFile=false, inFile=true)
+                        if not parsed.isNil:
+                            if importOnly.len > 0:
+                                let got = execScopedModule(parsed, importOnly)
+                                for k,v in got.pairs:
+                                    if importOnly.contains(k) or k.startsWith("__module"):
+                                        SetSym(k, v)
+                            else:
+                                execUnscoped(parsed)
+                    finally:
+                        discardFrame()
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]
