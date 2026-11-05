@@ -42,3 +42,61 @@ do [
     ensure -> contains? output "Line: 70000"
     passed
 ]
+
+topic "triple-nested imports"
+do [
+    output: run "triple-main"
+    ensure -> contains? output "triple-c.art"
+    ensure -> contains? output "Line: 3"
+
+    output: run "triple-after-main"
+    ensure -> contains? output "triple-after-main.art"
+    ensure -> contains? output "Line: 4"
+    passed
+]
+
+topic "block from the main script, run by a nested module"
+do [
+    output: run "block-main"
+    ensure -> contains? output "block-main.art"
+    ensure -> contains? output "Line: 6"
+    passed
+]
+
+topic "circular imports"
+do [
+    output: run "circular-main"
+    ensure -> contains? output "Circular import"
+    ensure -> contains? output "circular-b.art"
+    ensure -> contains? output "Line: 3"
+    passed
+]
+
+topic "event handlers"
+do [
+    output: run "event-handler"
+    ensure -> contains? output "Division by zero"
+    ensure -> contains? output "Line: 4"
+    ensure -> contains? output "still running"
+    passed
+]
+
+topic "failed tasks"
+do [
+    output: run "task-error"
+    ensure -> contains? output "task-error.art:3"
+    ensure -> not? contains? output "Async traceback"
+    passed
+]
+
+topic "code running from bytecode"
+do [
+    execute ~{|sys\binary| -c "|fixture "bytecode"|"}
+    compiled: (fixture "bytecode") ++ ".bcode"
+    output: execute ~{|sys\binary| --no-color -x "|compiled|"}
+    delete compiled
+    ensure -> not? contains? output ".bcode"
+    ensure -> contains? output "bytecode.art"
+    ensure -> contains? output "Line: 2"
+    passed
+]
