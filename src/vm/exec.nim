@@ -78,6 +78,9 @@ template pushByIndex(idx: int):untyped =
 
 proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
+        if unlikely(SP < 1):
+            Error_NotEnoughArguments(cnst[idx].s & ":", 1)
+
         var stackTop {.cursor.} = stack.peek(0)
 
         SetSym(cnst[idx].s, stackTop, safe=true)
@@ -86,6 +89,9 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
 
 proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
+        if unlikely(SP < 1):
+            Error_NotEnoughArguments(cnst[idx].s & ":", 1)
+
         var stackTop {.cursor.} = stack.peek(0)
 
         SetDictSym(cnst[idx].s, stackTop, safe=true)
