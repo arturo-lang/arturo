@@ -566,7 +566,7 @@ proc defineModule*(moduleName: string) =
                     if tp==FileData:
                         pushFrame(x.s, fromFile=true)
 
-                    let parsed = doParse(src, isFile=false)
+                    let parsed = doParse(src, isFile=false, inFile=(tp==FileData))
                     if not parsed.isNil:
                         execUnscoped(parsed)
 
