@@ -10,6 +10,7 @@
 ##
 ## Swapped in/out by the scheduler around each fiber resume/suspend.
 ## Shallow-copies `Syms` at spawn (closure capture); writes don't leak.
+## Frames are copied at spawn too: fibers interleave, so they can't share a stack.
 ## Other shared globals (`Aliases`, `LibraryModules`, `ScopeFramePool`,
 ## `Stores`, `Config`, `Dumper`) stay truly global, never swapped.
 
@@ -19,7 +20,7 @@
 
 import tables
 
-import vm/[globals, stack]
+import vm/[errors, globals, runtime, stack]
 import vm/values/value
 
 #=======================================
@@ -34,6 +35,9 @@ type
         syms*: SymTable
         dictSyms*: seq[ValueDict]
         scopeStack*: seq[SymTable]
+        frames*: seq[Frame]         ## inherited at spawn
+        imports*: seq[string]
+        line*: int
         cancelRequested*: bool      ## flipped by `cancel`; checked at each yield
 
 #=======================================
@@ -48,6 +52,9 @@ proc newVMContext*(parentSyms: SymTable): VMContext =
         syms: parentSyms,
         dictSyms: @[],
         scopeStack: @[],
+        frames: FrameStack[0..<FSP],
+        imports: ImportsInProgress,
+        line: CurrentLine,
         cancelRequested: false
     )
     newSeq(result.stack, StackSize)
@@ -60,6 +67,11 @@ proc swapOutTo*(ctx: VMContext) =
     ctx.syms        = move Syms
     ctx.dictSyms    = move DictSyms
     ctx.scopeStack  = move ScopeStack
+    ctx.imports     = move ImportsInProgress
+    ctx.line        = CurrentLine
+    ctx.frames.setLen(FSP)
+    for i in 0..<FSP:
+        ctx.frames[i] = move FrameStack[i]
     SP = 0
 
 proc swapInFrom*(ctx: VMContext) =
@@ -70,3 +82,8 @@ proc swapInFrom*(ctx: VMContext) =
     Syms        = move ctx.syms
     DictSyms    = move ctx.dictSyms
     ScopeStack  = move ctx.scopeStack
+    ImportsInProgress = move ctx.imports
+    CurrentLine = ctx.line
+    FSP         = ctx.frames.len
+    for i in 0..<FSP:
+        FrameStack[i] = move ctx.frames[i]

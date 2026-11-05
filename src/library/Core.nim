@@ -63,7 +63,12 @@ proc replacingAmpersands(va: Value, what: Value): Value =
             theBlock.a.add(v)
     return theBlock
 
-var ImportsInProgress: seq[string]
+when not defined(WEB):
+    proc enterImport(path: string, name: string) =
+        let importing = absolutePath(path)
+        if importing in ImportsInProgress or importing == absolutePath(entryFrame().path):
+            Error_CircularImport(name)
+        ImportsInProgress.add(importing)
 
 #=======================================
 # Definitions
@@ -1009,6 +1014,7 @@ proc defineModule*(moduleName: string) =
 
                 when defined(BUNDLE):
                     let (src, path) = getBundledResource(x.s)
+                    enterImport(path, x.s)
                     pushFrame(path, fromFile=true)
 
                     try:
@@ -1023,6 +1029,7 @@ proc defineModule*(moduleName: string) =
                                 execUnscoped(parsed)
                     finally:
                         discardFrame()
+                        discard ImportsInProgress.pop()
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]
@@ -1055,11 +1062,7 @@ proc defineModule*(moduleName: string) =
                             if not src.fileExists():
                                 Error_PackageNotValid(pkg)
 
-                            let importing = absolutePath(src)
-                            if importing in ImportsInProgress or importing == absolutePath(entryFrame().path):
-                                Error_CircularImport(pkg)
-
-                            ImportsInProgress.add(importing)
+                            enterImport(src, pkg)
                             pushFrame(src, fromFile=true)
 
                             try:

@@ -37,6 +37,7 @@ var
     # the path stack
     FrameStack*     {.global.}  : seq[Frame]       ## The main frame stack
     FSP*            {.global.}  : int
+    ImportsInProgress* {.global.} : seq[string]    ## to catch circular imports
 
 #---------------------
 # Methods
