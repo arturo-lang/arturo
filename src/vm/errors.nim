@@ -189,6 +189,14 @@ func `~~`*(s: string, inputs: seq[string]): string =
 
 # Error messages
 
+proc captureContext*(e: VError) =
+    ## Record the current file & line in given error.
+    ## To be called when the error is raised: by the time it reaches
+    ## any handler, the frames it was raised in will be long gone
+    if e.context.file == "" and FSP > 0:
+        e.context.line = CurrentLine
+        e.context.file = currentFrame().path
+
 proc printError(s: string) =
     when not defined(WEB):
         stderr.writeLine s
@@ -311,6 +319,8 @@ proc showError*(e: VError) =
             printError ""
 
 func panic(error: VError) =
+    {.cast(noSideEffect).}:
+        captureContext(error)
     raise error
 
 proc panic(throw: bool, error: VError) =
