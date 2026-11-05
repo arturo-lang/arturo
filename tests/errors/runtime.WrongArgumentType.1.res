@@ -1,9 +1,10 @@
-══╡ Type Error ╞══════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+
+══╡ Type Error ╞════════════════════════════════════════════════════ <script> ══
 
   Erroneous type found
 
   Cannot call function:
-      map collection params condition ◄
+      map collection params action ◄
   
   Wrong argument (at position 2): 
       3 :integer
@@ -18,3 +19,4 @@
   ┃    2 ║►     map
   ┃    3 ║          1..2
   ┃    4 ║              3 
+

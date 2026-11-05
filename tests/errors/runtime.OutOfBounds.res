@@ -1,7 +1,7 @@
 zero
 one
 
-══╡ Index Error ╞═════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+══╡ Index Error ╞═══════════════════════════════════════════════════ <script> ══
 
   Cannot resolve requested index
 
@@ -10,10 +10,10 @@ one
   
   For value:
       [ :block
-              zero :string
-              one :string
-              two :string
-              three :string
+          zero :string
+          one :string
+          two :string
+          three :string
       ...
 
   ┃ File: tests/errors/runtime.OutOfBounds.art
@@ -25,4 +25,6 @@ one
   ┃    6 ║  print arr\2
   ┃    7 ║  print arr\3
 
-  Hint: Given Block contains 4 items; so, a valid index should fall within 0..3
+  Hint: Given Block contains 4 items; so, a valid index should
+        fall within 0..3
+
