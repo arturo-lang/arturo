@@ -41,7 +41,7 @@ var
 func indexOfValue(a: ValueArray, item: Value): int {.inline.}=
     result = 0
     for i in items(a):
-        if consideredEqual(item, i) and (item.kind notin {Block, Inline} or item.ln == i.ln): return
+        if (item.kind notin {Block, Inline} or item.ln == i.ln) and consideredEqual(item, i): return
         inc(result)
     result = -1
 
