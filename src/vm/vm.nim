@@ -23,7 +23,7 @@ when defined(WEB):
     import jsffi, json
 
 when not defined(WEB):
-    import vm/crashes
+    import vm/faults
 
 import helpers/jsonobject
 when not defined(WEB):

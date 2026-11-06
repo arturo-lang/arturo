@@ -3,7 +3,7 @@
 # Programming Language + Bytecode VM compiler
 # (c) 2019-2026 Yanis Zafirópulos
 #
-# @file: vm/crashes.nim
+# @file: vm/faults.nim
 #=======================================================
 
 ## Reporting of fatal crashes (invalid memory access, stack overflow).
