@@ -110,6 +110,16 @@ var
     PipeParent : Node
     CanStore   : bool
 
+proc getArity(s: string): int8 {.inline.} =
+    ## get the arity of given symbol, or -1 if it's not a function:
+    ## first check what the code being compiled has (re)defined,
+    ## and then the actual symbol table
+    if TmpArities.len > 0:
+        let overlaid = TmpArities.getOrDefault(s, -2)
+        if overlaid != -2: return overlaid
+    let v = Syms.getOrDefault(s, nil)
+    result = if not v.isNil and v.kind == Function: v.arity else: -1
+
 #=======================================
 # Constants
 #=======================================
@@ -598,7 +608,7 @@ proc processBlock*(
             var baseNode = newVariable(basePath)
         else:
             var baseNode = 
-                if TmpArities.getOrDefault(basePath.s, -1) == 0:
+                if getArity(basePath.s) == 0:
                     newCallNode(OtherCall, 0, basePath)
                 else:
                     newVariable(basePath)
@@ -637,7 +647,7 @@ proc processBlock*(
         if i < nLen - 1:
             var nextNode {.cursor.} = blok.a[i+1]
             if nextNode.kind == Word:
-                if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
+                if (let funcArity = getArity(nextNode.s); funcArity != -1):
                     i += 1
                     if nextNode.ln != 0:
                         NodeLine = nextNode.ln
@@ -733,7 +743,7 @@ proc processBlock*(
             subblock = @[subnode]
             if subnode.kind==Word:
                 # check if it's a function
-                if (let funcArity = TmpArities.getOrDefault(subnode.s, -1); funcArity != -1):
+                if (let funcArity = getArity(subnode.s); funcArity != -1):
                     # automatically "push" all its required arguments
                     for j in 0..(funcArity-1):
                         let arg = newWord("_" & $(j))
@@ -774,7 +784,7 @@ proc processBlock*(
             of Word:
                 when processingArrow: ArrowBlock[^1].add(item)
                 
-                var funcArity = TmpArities.getOrDefault(item.s, -1)
+                var funcArity = getArity(item.s)
                 if funcArity != -1:
                     current.addCall(item.s, funcArity)
                 else:
