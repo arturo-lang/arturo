@@ -292,7 +292,7 @@ func set*(z: Rat, x: int): Rat =
         elif x.fitsLLP64ULong:
             mpq_set_ui(result[], x.culong, 1)
         else:
-            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_set_si(result[], (x shr 32).int32.clong, 1)
             mpq_mul_2exp(result[], result[], 32)
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:
