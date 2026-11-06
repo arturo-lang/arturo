@@ -52,7 +52,6 @@ type
     NodeKind* = enum
         RootNode            # Root node of the AST
 
-        
         # TerminalNode
         ConstantValue       # Terminal node of the AST containing a value
         VariableLoad        # Load a variable
