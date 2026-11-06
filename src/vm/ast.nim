@@ -34,7 +34,7 @@
 #=======================================
 
 import sequtils, strutils
-import sugar, tables, unicode, std/with
+import tables, unicode, std/with
 
 import vm/[globals, values/value, values/comparison, values/operators, values/types]
 import vm/values/printable
@@ -962,10 +962,7 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
     CanStore = true
 
     when not reuseArities:
-        TmpArities = collect:
-            for k,v in Syms.pairs:
-                if v.kind == Function:
-                    {k: v.arity}
+        TmpArities.clear()
 
     NodeLine = 0
 
