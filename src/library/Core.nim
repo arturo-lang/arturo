@@ -258,13 +258,7 @@ proc defineModule*(moduleName: string) =
                     else:
                         fun.action()()
                 else:
-                    var fid: Hash
-                    if xKind in {Literal,String}:
-                        fid = hash(x.s)
-                    else:
-                        fid = hash(fun)
-
-                    execMethod(fun, fid)
+                    execMethod(fun)
 
     # TODO(Core\case) could add `.match` option
     #  that would actually allow us to match and 

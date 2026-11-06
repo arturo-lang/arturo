@@ -65,7 +65,7 @@ var
 
 proc execFunction*(fun: Value, fid: Hash)
 proc execFunctionInline*(fun: Value, fid: Hash)
-proc execMethod*(meth: Value, fid: Hash)
+proc execMethod*(meth: Value)
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
@@ -156,7 +156,7 @@ proc callMethod*(f: Value, methName: string, args: ValueArray) =
         if unlikely(SP < f.marity):
             Error_NotEnoughArguments(methName, f.marity)
 
-        execMethod(f, hash(methName))
+        execMethod(f)
 
 template callMethod*(f: Value, methName: string = "<closure>"):untyped =
     ## Take a Method value, 
@@ -165,7 +165,7 @@ template callMethod*(f: Value, methName: string = "<closure>"):untyped =
         if unlikely(SP < f.marity):
             Error_NotEnoughArguments(methName, f.marity)
 
-        execMethod(f, hash(methName))
+        execMethod(f)
 
 template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
@@ -517,7 +517,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
         finalizeLeakless()
 
-proc execMethod*(meth: Value, fid: Hash) =
+proc execMethod*(meth: Value) =
     ## Execute given Method value with scoping
     ## 
     ## This means:
