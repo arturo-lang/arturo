@@ -352,13 +352,15 @@ proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
 
 when not defined(WEB):
     proc pushDefinitionFrame(fun: Value): bool {.inline.} =
-        ## Run function in the frame of the file it was defined in.
-        ## Those from the entry script have no path: they only need
-        ## a frame of their own if called from another file's code
+        ## Run function in the frame of the file it was defined in,
+        ## unless that's where we already are. (Those from the entry
+        ## script have no path: their file is that of the entry frame)
         if (let fpath = fun.info.path; not fpath.isNil()):
+            if currentFrame().path == fpath[]:
+                return false
             pushFrame(fpath[], fromFile=true)
             return true
-        if FSP > 1:
+        if FSP > 1 and currentFrame().path != entryFrame().path:
             pushFrame(entryFrame())
             return true
         return false
