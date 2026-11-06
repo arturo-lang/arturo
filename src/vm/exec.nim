@@ -623,22 +623,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of opConstN             : stack.push(VNULL)
 
-                # lines & error reporting
-                of opEol                : 
-                    i += 1
-                    when not defined(NOERRORLINES):
-                        CurrentLine = int(it[i])
-                of opEolX               :   
-                    i += 2
-                    when not defined(NOERRORLINES):
-                        CurrentLine = int(uint16(it[i-1]) shl 8 + byte(it[i]))
-                of opEolY               :
-                    i += 4
-                    when not defined(NOERRORLINES):
-                        CurrentLine = (int(it[i-3]) shl 24) or (int(it[i-2]) shl 16) or (int(it[i-1]) shl 8) or int(it[i])
-
                 of opDStore             : i += 1; dStoreByIndex(cnst, int(it[i]))
                 of opDStoreX            : i += 2; dStoreByIndex(cnst, int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
+
+                of RSRV15               : discard
+                of RSRV16               : discard
 
                 # [0x20-0x2F]
                 # push values
@@ -871,7 +860,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xC0-0xDF]
+                # [0xC0-0xE0]
                 # no operation
                 of opNop                : discard
 
@@ -953,7 +942,19 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opRet                :
                     discard
 
-                of RSRV16               : discard
+                # lines & error reporting
+                of opEol                : 
+                    i += 1
+                    when not defined(NOERRORLINES):
+                        CurrentLine = int(it[i])
+                of opEolX               :   
+                    i += 2
+                    when not defined(NOERRORLINES):
+                        CurrentLine = int(uint16(it[i-1]) shl 8 + byte(it[i]))
+                of opEolY               :
+                    i += 4
+                    when not defined(NOERRORLINES):
+                        CurrentLine = (int(it[i-3]) shl 24) or (int(it[i-2]) shl 16) or (int(it[i-1]) shl 8) or int(it[i])
 
                 of opEnd                :
                     CurrentLine = callerLine

@@ -64,14 +64,13 @@ type
 
         opConstN        = 0x1B      # ()                       #                   # null
 
-        # lines & error reporting
-        opEol           = 0x1C      # (line)                   #                   #
-        opEolX          = 0x1D      # (line,lineB)             #                   #
-
         # dictionary keys storage
 
-        opDStore        = 0x1E      # (idx)                    # rvalue            #
-        opDStoreX       = 0x1F      # (idx,idxB)               # rvalue            #
+        opDStore        = 0x1C      # (idx)                    # rvalue            #
+        opDStoreX       = 0x1D      # (idx,idxB)               # rvalue            #
+
+        RSRV15          = 0x1E      #
+        RSRV16          = 0x1F      #
  
         # [0x20-0x2F]
         # push values
@@ -302,7 +301,7 @@ type
         # LOW-LEVEL OPERATIONS
         #---------------------------------
 
-        # [0xC0-0xDF]
+        # [0xC0-0xE0]
         # no operation
         opNop           = 0xC0      # ()                       #                   # 
 
@@ -345,11 +344,13 @@ type
         
         opRet           = 0xDC      # ()                       #                   #
 
-        opEolY          = 0xDD     # (line,lineB,lineC,lineD) #                   #
-        RSRV16          = 0xDE      #
+        # lines & error reporting
+        opEol           = 0xDD      # (line)                   #                   #
+        opEolX          = 0xDE      # (line,lineB)             #                   #
+        opEolY          = 0xDF      # (line,lineB,lineC,lineD) #                   #
 
         # the end
-        opEnd           = 0xDF      # ()                       #                   #
+        opEnd           = 0xE0      # ()                       #                   #
 
 when false:
     #=======================================
