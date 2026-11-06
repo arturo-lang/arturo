@@ -374,6 +374,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i > y.i
+
     const numericKinds = {Integer, Rational, Floating, Quantity}
 
     if x.kind in numericKinds or y.kind in numericKinds:
