@@ -246,7 +246,7 @@ proc pushScopeFrame*() {.inline.} =
     if ScopeFramePool.len > 0:
         ScopeStack.add(ScopeFramePool.pop())
     else:
-        ScopeStack.add(initTable[string, Value](initialSize = 4))
+        ScopeStack.add(initTable[string, Value](initialSize = 3))
 
 proc popScopeFrame*(): SymTable {.inline.} =
     ## Pop the topmost scope frame
