@@ -117,9 +117,9 @@ proc callFunction*(f: Value, fnName: string, args: ValueArray) =
                 Error_NotEnoughArguments(fnName, f.arity)
 
             if f.inline: 
-                if safeToProceed: execFunctionInline(f, hash(fnName))
-                else: execFunction(f, hash(fnName))
-            else: execFunction(f, hash(fnName))
+                if safeToProceed: execFunctionInline(f, (if f.memoize: hash(fnName) else: 0))
+                else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
+            else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
     else:
         f.action()()
 
@@ -137,9 +137,9 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
                     if stack.peek(i).kind==Function:
                         safeToProceed = false
                         break
-                if safeToProceed: execFunctionInline(f, hash(fnName))
-                else: execFunction(f, hash(fnName))
-            else: execFunction(f, hash(fnName))
+                if safeToProceed: execFunctionInline(f, (if f.memoize: hash(fnName) else: 0))
+                else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
+            else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
     else:
         f.action()()
 
