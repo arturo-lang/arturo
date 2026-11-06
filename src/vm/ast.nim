@@ -411,7 +411,7 @@ proc processBlock*(
             elif params.value.kind == Block:
                 TmpArities[target.value.s] = int8(params.value.a.countIt(it.kind != Type))
         else:
-            TmpArities.del(target.value.s)
+            TmpArities[target.value.s] = -1
  
     #------------------------
     # Helper Functions
