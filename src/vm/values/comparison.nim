@@ -452,6 +452,8 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             return false
 
 proc `<=`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i <= y.i
     x < y or x == y
 
 proc `>=`*(x: Value, y: Value): bool {.inline.}=
