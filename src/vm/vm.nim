@@ -241,7 +241,7 @@ when not defined(WEB):
 
     proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
         ## Takes compiled Arturo bytecode and executes it.
-        setupCrashHandler()
+        setupFaultHandler()
         handleVMErrors:
             initialize(args, filename, isFile=true)
 
@@ -249,7 +249,7 @@ when not defined(WEB):
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, withData=""): Translation {.exportc:"run".} =
         ## Takes a string of Arturo code and executes it.
-        setupCrashHandler()
+        setupFaultHandler()
         handleVMErrors:
 
             # TODO(VM/vm) Would it make sense to `GC_disableMarkAndSweep`?
@@ -281,7 +281,7 @@ when not defined(WEB):
             return evaled
     
     proc run*(bl: proc()) =
-        setupCrashHandler()
+        setupFaultHandler()
         handleVMErrors:
             if not initialized:
                 initialize(

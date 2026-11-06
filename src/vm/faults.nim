@@ -6,7 +6,7 @@
 # @file: vm/faults.nim
 #=======================================================
 
-## Reporting of fatal crashes (invalid memory access, stack overflow).
+## Reporting of fatal faults (invalid memory access, stack overflow).
 ## 
 ## We can't recover from these: with goto-based exceptions, raising
 ## from a signal handler (as `std/segfaults` does) just re-runs the 
@@ -68,7 +68,7 @@ proc sayNumber(num: int) =
         if n == 0: break
     say(cast[cstring](addr buffer[i]))
 
-proc reportCrash() =
+proc reportFault() =
     say("\n══╡ Internal Error ╞══\n\n  Invalid memory access or stack overflow\n")
     if FSP > 0 and markerFile(CurrentLine).len > 0:
         say("\n  ┃ File: ")
@@ -79,28 +79,28 @@ proc reportCrash() =
     say("\n")
 
 when defined(windows):
-    proc crashFilter(pointers: pointer): clong {.stdcall.} =
+    proc faultFilter(pointers: pointer): clong {.stdcall.} =
         let code = cast[ptr ptr uint32](pointers)[][]
         if code != AccessViolation and code != StackOverflow:
             return ContinueSearch
-        reportCrash()
+        reportFault()
         c_exit(139)
 else:
-    proc crashHandler(sig: cint) {.noconv.} =
-        reportCrash()
+    proc faultHandler(sig: cint) {.noconv.} =
+        reportFault()
         exitnow(128 + sig)
 
 #=======================================
 # Methods
 #=======================================
 
-proc setupCrashHandler*() =
-    ## Make sure crashes are reported, 
+proc setupFaultHandler*() =
+    ## Make sure faults are reported,
     ## replacing any previous handler
     when defined(windows):
         var reserved = ReservedStack
         discard SetThreadStackGuarantee(addr reserved)
-        discard SetUnhandledExceptionFilter(cast[pointer](crashFilter))
+        discard SetUnhandledExceptionFilter(cast[pointer](faultFilter))
     else:
         var stk: Stack
         var old: Stack
@@ -110,7 +110,7 @@ proc setupCrashHandler*() =
         discard sigaltstack(stk, old)
 
         var action: Sigaction
-        action.sa_handler = crashHandler
+        action.sa_handler = faultHandler
         action.sa_flags = SA_ONSTACK
         discard sigemptyset(action.sa_mask)
         discard sigaction(SIGSEGV, action, nil)

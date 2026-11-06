@@ -221,7 +221,7 @@ func markerLine*(marker: int): int {.inline.} =
 
 proc markerFile*(marker: int): lent string =
     ## Get source file of given line marker. 
-    ## No copies: this is also used from the crash handler
+    ## No copies: this is also used from the fault handler
     let id = marker shr LineBits
     if marker == 0 or id == UnknownFile:
         return currentFrame().path
