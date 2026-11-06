@@ -31,6 +31,13 @@ const
     GMP = defined(GMP)
 
 #=======================================
+# Helpers
+#=======================================
+
+template bothNormalIntegers(x, y: Value): bool =
+    x.kind == Integer and y.kind == Integer and x.iKind == NormalInteger and y.iKind == NormalInteger
+
+#=======================================
 # Forward declarations
 #=======================================
 
@@ -70,6 +77,9 @@ when defined(GMP):
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool =
+    if bothNormalIntegers(x, y):
+        return x.i == y.i
+
     const 
         numericKinds = {Integer, Rational, Floating, Quantity}
         errorKinds = {Error, ErrorKind}
