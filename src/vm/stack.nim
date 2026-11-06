@@ -42,7 +42,7 @@ var
 
 # Main stack
 
-proc push*(v: Value) = 
+proc push*(v: sink Value) {.inline.} =
     # TODO(Stack/push) performance enhancements?
     #  this was a `template` that we converted into a `proc` so that
     #  we could get the whole project to compile with Nim 2.0.8
