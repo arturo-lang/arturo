@@ -378,11 +378,6 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     let argsL = len(fun.params)
 
-    when not defined(WEB):
-        let framed = pushDefinitionFrame(fun)
-
-    let callerLine = CurrentLine
-
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -396,10 +391,12 @@ proc execFunction*(fun: Value, fid: Hash) =
         if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
             popN argsL
             push memd
-            when not defined(WEB):
-                if framed:
-                    discardFrame()
             return
+
+    when not defined(WEB):
+        let framed = pushDefinitionFrame(fun)
+
+    let callerLine = CurrentLine
 
     pushScopeFrame()
 
@@ -466,11 +463,6 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
  
     let argsL = len(fun.params)
 
-    when not defined(WEB):
-        let framed = pushDefinitionFrame(fun)
-
-    let callerLine = CurrentLine
-
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -484,10 +476,12 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
         if (let memd = getMemoized(fid, memoizedParams); not memd.isNil):
             popN argsL
             push memd
-            when not defined(WEB):
-                if framed:
-                    discardFrame()
             return
+
+    when not defined(WEB):
+        let framed = pushDefinitionFrame(fun)
+
+    let callerLine = CurrentLine
 
     prepareLeakless(fun.params)
 
