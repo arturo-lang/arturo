@@ -264,7 +264,7 @@ func set*(z: Int, x: int): Int =
         elif x.fitsLLP64ULong:
             mpz_init_set_ui(result[], x.culong)
         else:
-            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_init_set_si(result[], (x shr 32).int32.clong)
             mpz_mul_2exp(result[], result[], 32)
             mpz_add_ui(result[], result[], (x.uint32))
     else:
