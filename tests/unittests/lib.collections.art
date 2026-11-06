@@ -480,16 +480,16 @@ topic "get - :bytecode"
 do [
     bt: to.intrepid :bytecode [print "hello"]
     ensure -> ["hello"] = bt\data
-    ensure -> [32 189 223] = bt\code
+    ensure -> [32 189 224] = bt\code
     passed
     ensure -> ["hello"] = get bt 'data
-    ensure -> [32 189 223] = get bt 'code
+    ensure -> [32 189 224] = get bt 'code
     passed
     ensure -> ["hello"] = get bt "data"
-    ensure -> [32 189 223] = get bt "code"
+    ensure -> [32 189 224] = get bt "code"
     passed
     ensure -> ["hello"] = bt\["data"]
-    ensure -> [32 189 223] = bt\["code"]
+    ensure -> [32 189 224] = bt\["code"]
     passed
 ]
 

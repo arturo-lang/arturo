@@ -133,13 +133,13 @@ suite "get - bytecode" [
     test "provides metadata members" [
         bt: to.intrepid :bytecode [print "hello"]
         assert -> ["hello"] = bt\data
-        assert -> [32 189 223] = bt\code
+        assert -> [32 189 224] = bt\code
         assert -> ["hello"] = get bt 'data
-        assert -> [32 189 223] = get bt 'code
+        assert -> [32 189 224] = get bt 'code
         assert -> ["hello"] = get bt "data"
-        assert -> [32 189 223] = get bt "code"
+        assert -> [32 189 224] = get bt "code"
         assert -> ["hello"] = bt\["data"]
-        assert -> [32 189 223] = bt\["code"]
+        assert -> [32 189 224] = bt\["code"]
     ]
 
 ]
