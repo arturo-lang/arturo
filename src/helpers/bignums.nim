@@ -181,7 +181,7 @@ func newRat*(x, y: int): Rat =
         elif x.fitsLLP64ULong:
             mpz_set_ui(nref, x.culong)
         else:
-            mpz_set_ui(nref, (x shr 32).uint32)
+            mpz_set_si(nref, (x shr 32).int32.clong)
             mpz_mul_2exp(nref, nref, 32)
             mpz_add_ui(nref, nref, (x.uint32))
 
@@ -190,7 +190,7 @@ func newRat*(x, y: int): Rat =
         elif y.fitsLLP64ULong:
             mpz_set_ui(dref, y.culong)
         else:
-            mpz_set_ui(dref, (y shr 32).uint32)
+            mpz_set_si(dref, (y shr 32).int32.clong)
             mpz_mul_2exp(dref, dref, 32)
             mpz_add_ui(dref, dref, (y.uint32))
     else:
