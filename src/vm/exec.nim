@@ -626,8 +626,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opDStore             : i += 1; dStoreByIndex(cnst, int(it[i]))
                 of opDStoreX            : i += 2; dStoreByIndex(cnst, int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
 
-                of RSRV15               : discard
-                of RSRV16               : discard
+                of RSRV1                  : discard
+                of RSRV2                  : discard
 
                 # [0x20-0x2F]
                 # push values
@@ -776,7 +776,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     else:               DoShl()
                 of opShr                : arithmeticFastpathB(DoShr, normalIntegerShr)
 
-                of RSRV1                : discard
+                of RSRV3                  : discard
 
                 # [0x90-0x9F]
                 # logical operators
@@ -796,11 +796,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opGet                : DoGet()
                 of opSet                : DoSet()
 
-                of RSRV2                : discard
-                of RSRV3                : discard   
-                of RSRV4                : discard
-                of RSRV5                : discard
-                of RSRV6                : discard
+                of RSRV4                  : discard
+                of RSRV5                  : discard   
+                of RSRV6                  : discard
+                of RSRV7                  : discard
+                of RSRV8                  : discard
 
                 # [0xA0-0xAF]
                 # branching
@@ -809,9 +809,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opSwitch             : DoSwitch()
                 of opWhile              : DoWhile()
 
-                of RSRV7                : discard
-                of RSRV8                : discard
-                of RSRV9                : discard
+                of RSRV9                  : discard
+                of RSRV10                 : discard
+                of RSRV11                 : discard
 
                 of opReturn             : DoReturn()
                 of opBreak              : DoBreak()
@@ -826,9 +826,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     stack.push(VINTEGERT)
                     DoTo()
 
-                of RSRV10               : discard
-                of RSRV11               : discard
-                of RSRV12               : discard
+                of RSRV12                 : discard
+                of RSRV13                 : discard
+                of RSRV14                 : discard
 
                 # [0xB0-0xBF]
                 # generators          
@@ -853,8 +853,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # i/o operations
                 of opPrint              : DoPrint()
 
-                of RSRV13               : discard
-                of RSRV14               : discard
+                of RSRV15                 : discard
+                of RSRV16                 : discard
 
                 #---------------------------------
                 # LOW-LEVEL OPERATIONS

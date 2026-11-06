@@ -69,8 +69,8 @@ type
         opDStore        = 0x1C      # (idx)                    # rvalue            #
         opDStoreX       = 0x1D      # (idx,idxB)               # rvalue            #
 
-        RSRV15          = 0x1E      #
-        RSRV16          = 0x1F      #
+        RSRV1           = 0x1E      #
+        RSRV2           = 0x1F      #
  
         # [0x20-0x2F]
         # push values
@@ -220,7 +220,7 @@ type
         opShl           = 0x8D      # ()                       # x,y               # result
         opShr           = 0x8E      # ()                       # x,y               # result
 
-        RSRV1           = 0x8F      #
+        RSRV3           = 0x8F      #
 
         # [0x90-0x9F]
         # logical operators
@@ -240,11 +240,11 @@ type
         opGet           = 0x99      # ()                       # obj,key           # result
         opSet           = 0x9A      # ()                       # obj,key,rvalue    #
 
-        RSRV2           = 0x9B      #
-        RSRV3           = 0x9C      #
-        RSRV4           = 0x9D      #
-        RSRV5           = 0x9E      #
-        RSRV6           = 0x9F      #
+        RSRV4           = 0x9B      #
+        RSRV5           = 0x9C      #
+        RSRV6           = 0x9D      #
+        RSRV7           = 0x9E      #
+        RSRV8           = 0x9F      #
 
         # [0xA0-0xAF]
         # branching
@@ -257,18 +257,18 @@ type
         opBreak         = 0xA5      # ()                       #                   #
         opContinue      = 0xA6      # ()                       #      
         
-        RSRV7           = 0xA7      #
-        RSRV8           = 0xA8      #
-        RSRV9           = 0xA9      #
+        RSRV9           = 0xA7      #
+        RSRV10          = 0xA8      #
+        RSRV11          = 0xA9      #
 
         # converters
         opTo            = 0xAA      # ()                       # tp,value          # result
         opToS           = 0xAB      # ()                       # value             # result
         opToI           = 0xAC      # ()                       # value             # result
 
-        RSRV10           = 0xAD      #    
-        RSRV11           = 0xAE      #
-        RSRV12           = 0xAF      #
+        RSRV12          = 0xAD      #
+        RSRV13          = 0xAE      #
+        RSRV14          = 0xAF      #
 
         # [0xB0-0xBF]
         # generators
@@ -294,8 +294,8 @@ type
         # i/o operations
         opPrint         = 0xBD      # ()                       # value             #
 
-        RSRV13          = 0xBE      #
-        RSRV14          = 0xBF      #
+        RSRV15          = 0xBE      #
+        RSRV16          = 0xBF      #
 
         #---------------------------------
         # LOW-LEVEL OPERATIONS
