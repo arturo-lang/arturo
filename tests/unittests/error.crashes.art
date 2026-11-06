@@ -1,0 +1,26 @@
+; helper functions
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+fixture: $[name] -> relative ~"errorpositions/|name|.art"
+run: $[name] -> execute ~{|sys\binary| --no-color "|fixture name|"}
+
+; tests
+
+topic "missing arguments in arithmetic operations"
+do [
+    ensure -> contains? run "missing-add-args" "Not enough parameters"
+    passed
+]
+
+topic "nothing to store"
+do [
+    ensure -> contains? run "missing-store-value" "Not enough parameters"
+    passed
+]
+
+topic "crashes are reported"
+do [
+    ensure -> contains? run "stack-overflow" "Internal Error"
+    passed
+]

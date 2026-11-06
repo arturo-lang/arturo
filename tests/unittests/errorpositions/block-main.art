@@ -1,0 +1,8 @@
+import relative "block-a.art"
+
+do [
+    first [
+        y: 1
+        y / 0
+    ]
+]

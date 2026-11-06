@@ -81,10 +81,7 @@ const
 #=======================================
 
 var
-    # CurrentContext* : string    = ReplContext
-    # CurrentPath*    : string    = ""
     CurrentLine*    : int       = 0
-    ExecStack*      : seq[int]  = @[]
 
     IsRepl*         : bool = false
 
@@ -189,6 +186,69 @@ func `~~`*(s: string, inputs: seq[string]): string =
 
 # Error messages
 
+# Line markers also say which file they come from: 
+# the upper bits are an index into SourceFiles, with 0 being 
+# the entry script. Frames alone can't tell: a block runs
+# wherever it's passed to, not where it was written
+
+const
+    LineBits = 20
+    LineMask = (1 shl LineBits) - 1
+    UnknownFile = 4095
+
+var SourceFiles: seq[string] = @[""]
+
+proc sourceFileId*(path: string): int =
+    ## Get id of given source file, registering it if needed
+    if FSP == 0 or path == entryFrame().path:
+        return 0
+
+    result = SourceFiles.find(path)
+    if result == -1:
+        if SourceFiles.len >= UnknownFile:
+            return UnknownFile
+        SourceFiles.add(path)
+        result = SourceFiles.len - 1
+
+func lineMarker*(line: int, fileId: int): int {.inline.} =
+    (fileId shl LineBits) or min(line, LineMask)
+
+func markerLine*(marker: int): int {.inline.} =
+    marker and LineMask
+
+proc markerFile*(marker: int): lent string =
+    ## Get source file of given line marker. 
+    ## No copies: this is also used from the fault handler
+    let id = marker shr LineBits
+    if marker == 0 or id == UnknownFile:
+        return currentFrame().path
+    if id == 0:
+        return entryFrame().path
+    return SourceFiles[id]
+
+proc captureContext*(e: VError) =
+    ## Record the current file & line in given error.
+    ## To be called when the error is raised: by the time it reaches
+    ## any handler, the frames it was raised in will be long gone
+    if e.context.file == "" and FSP > 0:
+        e.context.line = markerLine(CurrentLine)
+        e.context.file = markerFile(CurrentLine)
+
+proc toVError*(e: ref Exception): VError =
+    ## Make whatever reached the top level printable:
+    ## not everything that gets there is an actual VError
+    if e of VError:
+        return VError(e)
+
+    let msg =
+        if e of BreakTriggered: "`break` outside of a loop"
+        elif e of ContinueTriggered: "`continue` outside of a loop"
+        elif e of ReturnTriggered: "`return` outside of a function"
+        else: e.msg
+
+    result = toError(RuntimeErr, msg)
+    result.captureContext()
+
 proc printError(s: string) =
     when not defined(WEB):
         stderr.writeLine s
@@ -223,24 +283,25 @@ proc printErrorMessage(e: VError) =
 proc printCodePreview(e: VError) =
     when (not defined(NOERRORLINES)) and (not defined(BUNDLE)) and (not defined(WEB)):
         if (not IsRepl) and (e.kind != CmdlineErr) and (e.kind != ProgramErr) :
-            if e.context.file == "":
-                e.context.line = CurrentLine
-                if (let pcf = postCurrentFrame(); not pcf.isNil):
-                    e.context.file = pcf.path
-                else:
-                    e.context.file = currentFrame().path
+            captureContext(e)
 
-            if e.context.file == "" or not fileExists(e.context.file):
+            if e.context.file == "":
                 return
 
             printError ""
+            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
+            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
+
+            # nothing to show, if the source isn't around
+            # (e.g. bytecode on its own)
+            if not fileExists(e.context.file):
+                return
+
             let fileContent = readFile(e.context.file)
             let codeLines = fileContent.splitLines()
             const linesBeforeAfter = 2
             let lineFrom = max(0, e.context.line - (linesBeforeAfter+1))
             let lineTo = min(len(codeLines)-1, e.context.line + (linesBeforeAfter-1))
-            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "File: " & fg(grayColor) & e.context.file
-            printError "  " & fg(grayColor) & "{VertLine} ".fmt & bold(grayColor) & "Line: " & fg(grayColor) & $(e.context.line)
             printError "  " & fg(grayColor) & "{VertLine} ".fmt & resetColor
             for lineNo in lineFrom..lineTo:
                 var line = codeLines[lineNo]
@@ -311,6 +372,8 @@ proc showError*(e: VError) =
             printError ""
 
 func panic(error: VError) =
+    {.cast(noSideEffect).}:
+        captureContext(error)
     raise error
 
 proc panic(throw: bool, error: VError) =
@@ -323,6 +386,18 @@ proc panic(throw: bool, error: VError) =
 #=======================================
 # Constructors
 #=======================================
+
+#------------------------
+# Value Errors
+#------------------------
+
+proc Error_InvalidRegex*(pattern: string, reason: string) =
+    panic:
+        toError ValueErr, """
+            Invalid regular expression:
+                _$#_
+            $#
+        """ ~~ @[pattern, reason]
 
 #------------------------
 # Command-line Errors
@@ -373,6 +448,14 @@ proc Error_NotEnoughParameters*(name: string) =
 #------------------------
 # Package Errors
 #------------------------
+
+proc Error_CircularImport*(path: string) =
+    panic:
+        toError PackageErr, """
+            Circular import:
+                _$#_
+            is already being imported
+        """ ~~ @[path]
 
 func Error_PackageNotFound*(pkg: string) =
     panic:

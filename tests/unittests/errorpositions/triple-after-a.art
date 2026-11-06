@@ -1,0 +1,2 @@
+import relative "triple-after-b.art"
+print 1

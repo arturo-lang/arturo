@@ -116,9 +116,7 @@ proc defineModule*(moduleName: string) =
                                 resolved[i] = VNULL
                             else:
                                 t.tsk.state = taskFailed
-                                resolved[i] =
-                                    if e of VError: newError(VError(e))
-                                    else:           newError(RuntimeErr, e.msg)
+                                resolved[i] = ParallelismHelper.newTaskError(e)
                     push newBlock(resolved)
                 elif (hadAttr("first")):
                     # first to settle wins (success or failure); `.cancel` aborts the rest
@@ -138,8 +136,7 @@ proc defineModule*(moduleName: string) =
                                         cap.tsk.state = taskFailed
                                         let err = fin.error
                                         winner.complete(
-                                            if err of VError: newError(VError(err))
-                                            else:             newError(RuntimeErr, err.msg)
+                                            ParallelismHelper.newTaskError(err)
                                         )
                                 else:
                                     if cap.tsk.state == taskPending:
@@ -187,9 +184,7 @@ proc defineModule*(moduleName: string) =
                                         # fibers carry the real kind+hint;
                                         # subprocess fall back to `RuntimeErr`.
                                         let err = fin.error
-                                        resolved =
-                                            if err of VError: newError(VError(err))
-                                            else:             newError(RuntimeErr, err.msg)
+                                        resolved = ParallelismHelper.newTaskError(err)
                                 else:
                                     if cap.tsk.state == taskPending:
                                         cap.tsk.state = taskDone
@@ -226,8 +221,7 @@ proc defineModule*(moduleName: string) =
                             else:
                                 x.tsk.state = taskFailed
                                 push (
-                                    if e of VError: newError(VError(e))
-                                    else:           newError(RuntimeErr, e.msg)
+                                    ParallelismHelper.newTaskError(e)
                                 )
 
         builtin "cancel",

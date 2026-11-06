@@ -1,7 +1,7 @@
 John
 Doe
 
-══╡ Index Error ╞═════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+══╡ Index Error ╞═══════════════════════════════════════════════════ <script> ══
 
   Cannot resolve requested index
 
@@ -10,9 +10,9 @@ Doe
   
   For value:
       [ :dictionary
-              name     :        John :string
-              surname  :        Doe :string
-              age      :        34 :integer
+          name    : John :string
+          surname : Doe :string
+          age     : 34 :integer
       ]
 
   ┃ File: tests/errors/runtime.KeyNotFound.art
@@ -24,5 +24,6 @@ Doe
   ┃   10 ║  print dict\age
 
   Hint: Perhaps you meant... surname ?
-                       or... age ?
-                       or... name ?
+                             or... age ?
+                             or... name ?
+

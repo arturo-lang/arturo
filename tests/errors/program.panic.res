@@ -1,5 +1,6 @@
 done
->> Program | File: program.panic.art
-     error | Line: 3
-           | 
-           | System crashed
+
+══╡ Program Error ╞═════════════════════════════════════════════════ <script> ══
+
+  System crashed
+

@@ -473,6 +473,8 @@ template normalIntegerShrI*(x: var Value, y: int): untyped =
 template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for unary arithmetic ops on a NormalInteger operand -
     ## on any other operand kind, it defaults to the normal ``slowOp``.
+    if unlikely(SP < 1):
+        Error_NotEnoughArguments(toLowerAscii(astToStr(slowOp)[2..^1]), 1)
     let xv {.cursor.} = stack.sTop()
     when defined(WEB):
         # JS backend trips the case-object guard if we pre-fetch `iKind`
@@ -492,6 +494,8 @@ template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
 template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for binary arithmetic ops on two NormalInteger operands -
     ## on any other operand kind, it defaults to the normal ``slowOp``
+    if unlikely(SP < 2):
+        Error_NotEnoughArguments(toLowerAscii(astToStr(slowOp)[2..^1]), 2)
     let xv {.cursor.} = stack.peek(0)
     let yv {.cursor.} = stack.peek(1)
     when defined(WEB):
