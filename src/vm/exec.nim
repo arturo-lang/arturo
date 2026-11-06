@@ -234,16 +234,26 @@ template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
 
     let toRestoreKeys {.inject, cursor.} = protected
-    var toRestore {.inject.} = newSeq[Value](toRestoreKeys.len)
-    for li in 0 ..< toRestoreKeys.len:
-        toRestore[li] = Syms.getOrDefault(leaklessKey(toRestoreKeys, li), nil)
+    var toRestoreOne {.inject.}: Value = nil
+    var toRestore {.inject.}: seq[Value]
+
+    if toRestoreKeys.len == 1:
+        toRestoreOne = Syms.getOrDefault(leaklessKey(toRestoreKeys, 0), nil)
+    else:
+        toRestore = newSeq[Value](toRestoreKeys.len)
+        for li in 0 ..< toRestoreKeys.len:
+            toRestore[li] = Syms.getOrDefault(leaklessKey(toRestoreKeys, li), nil)
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
 
-    for li in 0 ..< toRestore.len:
-        if toRestore[li].isNil: Syms.del(leaklessKey(toRestoreKeys, li))
-        else: Syms[leaklessKey(toRestoreKeys, li)] = move toRestore[li]
+    if toRestoreKeys.len == 1:
+        if toRestoreOne.isNil: Syms.del(leaklessKey(toRestoreKeys, 0))
+        else: Syms[leaklessKey(toRestoreKeys, 0)] = move toRestoreOne
+    else:
+        for li in 0 ..< toRestore.len:
+            if toRestore[li].isNil: Syms.del(leaklessKey(toRestoreKeys, li))
+            else: Syms[leaklessKey(toRestoreKeys, li)] = move toRestore[li]
 
 template prepareLeaklessOne*(protected: string | Value): untyped =
     ## Prepare for leak-less block execution
