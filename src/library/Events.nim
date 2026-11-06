@@ -70,21 +70,26 @@ when not defined(WEB):
 when not defined(WEB):
     proc dispatchEvent(name: string, payload: Value) {.gcsafe.}
 
+    proc runHandler(handler: EventHandler, payload: Value) =
+        ## Run handler, reporting any errors:
+        ## whatever got interrupted just carries on
+        let callerLine = CurrentLine
+        try:
+            if handler.param.len > 0:
+                Syms[handler.param] = payload
+            execUnscoped(handler.body)
+        except CatchableError as e:
+            showError(toVError(e))
+        finally:
+            CurrentLine = callerLine
+
     proc enqueueEmit(handler: EventHandler, payload: Value) =
         ## Schedule handler on next dispatcher tick (avoids reentrancy).
         let cap = handler
         let pay = payload
         sleepAsync(0).addCallback(proc() {.gcsafe.} =
             {.cast(gcsafe).}:
-                let callerLine = CurrentLine
-                try:
-                    if cap.param.len > 0:
-                        Syms[cap.param] = pay
-                    execUnscoped(cap.body)
-                except CatchableError as e:
-                    showError(toVError(e))
-                finally:
-                    CurrentLine = callerLine
+                runHandler(cap, pay)
         )
 
     proc initEmitChannel() =
@@ -238,15 +243,7 @@ proc defineModule*(moduleName: string) =
                             if mode == "finished" or mode == state:
                                 # Fire synchronously (we're already inside
                                 # the future's dispatcher callback).
-                                let callerLine = CurrentLine
-                                try:
-                                    if cap.param.len > 0:
-                                        Syms[cap.param] = payload
-                                    execUnscoped(cap.body)
-                                except CatchableError as e:
-                                    showError(toVError(e))
-                                finally:
-                                    CurrentLine = callerLine
+                                runHandler(cap, payload)
                     )
 
                 if hadAttr("id"):
