@@ -1297,10 +1297,14 @@ proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
 
     var p: Parser
     p.noLines = not (isFile or inFile)
-    if isFile:
-        p.fileId = sourceFileId(input)
-    elif inFile:
-        p.fileId = sourceFileId(currentFrame().path)
+
+    let sourcePath =
+        if isFile: input
+        elif inFile: currentFrame().path
+        else: ""
+
+    if not p.noLines:
+        p.fileId = sourceFileId(sourcePath)
 
     # open stream
     if isFile:
@@ -1321,10 +1325,8 @@ proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
         # do parse    
         result = parseBlock(p, 0)
     except VError as e:
-        if isFile:
-            e.context = ErrorContext(line: p.lineNumber, file: input)
-        elif inFile:
-            e.context = ErrorContext(line: p.lineNumber, file: currentFrame().path)
+        if not p.noLines:
+            e.context = ErrorContext(line: p.lineNumber, file: sourcePath)
         raise e
     except CatchableError as e:
         if not p.noLines:
