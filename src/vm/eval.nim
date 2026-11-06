@@ -349,17 +349,17 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         lastOpStore = -1
         it.addByte(op)
 
-    var lastLine: uint32 = 0
+    var lastMarker: uint32 = 0
 
     # Right before an instruction that may fail. Arguments are generated
     # right-to-left, so this has to follow the generated code, not the source
     template addEol(nd: Node): untyped =
-        if likely(not omitNewlines) and nd.line != 0 and nd.line != lastLine:
-            lastLine = nd.line
-            if unlikely(lastLine > 65535):
-                it.addByte([byte(opEolY), byte(lastLine shr 24), byte(lastLine shr 16), byte(lastLine shr 8), byte(lastLine)])
+        if likely(not omitNewlines) and nd.line != 0 and nd.line != lastMarker:
+            lastMarker = nd.line
+            if lastMarker > 65535:
+                it.addByte([byte(opEolY), byte(lastMarker shr 24), byte(lastMarker shr 16), byte(lastMarker shr 8), byte(lastMarker)])
             else:
-                it.addOpWithNumber(opEol, lastLine, hasShortcut=false)
+                it.addOpWithNumber(opEol, lastMarker, hasShortcut=false)
 
     #------------------------
     # MainLoop
@@ -404,7 +404,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                     discard # won't reach here
 
         if alreadyProcessed:
-            lastLine = 0
+            lastMarker = 0
         else:
 
             for instruction in traverse(item):
