@@ -29,8 +29,8 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-import vm/[errors, values/value]
-import vm/values/custom/[vquantity, vsymbol]
+import vm/[errors, runtime, values/value]
+import vm/values/custom/[verror, vquantity, vsymbol]
 
 import helpers/strings
 
@@ -40,6 +40,8 @@ import helpers/strings
 
 type
     Parser = object of BaseLexer
+        noLines: bool
+        fileId: int
         value: string
         values: seq[ValueArray]
         symbol: VSymbol
@@ -93,7 +95,7 @@ const
 # Forward declarations
 #=======================================
 
-proc doParse*(input: string, isFile: bool = true): Value
+proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value
 proc parseDataBlock*(blk: Value): Value 
 
 #=======================================
@@ -103,12 +105,12 @@ proc parseDataBlock*(blk: Value): Value
 template Empty(s: var string): bool =
     s.len == 0
 
-func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser)  =
-    token.ln = uint32(p.lineNumber)
+func addAnnotatedTokenToBlock(blok: var Value, token: Value, line: int)  =
+    token.ln = uint32(line)
     blok.a.add(token)
 
 template AddToken(token: untyped): untyped =
-    topBlock.addAnnotatedTokenToBlock(token, p)
+    topBlock.addAnnotatedTokenToBlock(token, tokenLine)
 
 template LastToken(): untyped = 
     topBlock.a[^1]
@@ -897,9 +899,11 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
     # if isSubBlock: topBlock = newBlock()
     # else: topBlock = newInline()
     let initialLine = p.lineNumber
+    var tokenLine: int
     while true:
         setLen(p.value, 0)
         skip(p, scriptStr)
+        tokenLine = if p.noLines: 0 else: lineMarker(p.lineNumber, p.fileId)
 
         case p.buf[p.bufpos]
             of EOF:
@@ -1283,11 +1287,24 @@ proc parseDataBlock*(blk: Value): Value =
     else:
         result = parseAsBlock(blk, i)
 
-proc doParse*(input: string, isFile: bool = true): Value =
+proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
     ## Parse a string or file path
     ## and return the result as a Block of values
+    ## 
+    ## Use ``inFile`` when ``input`` is the contents of the file
+    ## in the current frame, so that syntax errors are reported 
+    ## at the corresponding line
 
     var p: Parser
+    p.noLines = not (isFile or inFile)
+
+    let sourcePath =
+        if isFile: input
+        elif inFile: currentFrame().path
+        else: ""
+
+    if not p.noLines:
+        p.fileId = sourceFileId(sourcePath)
 
     # open stream
     if isFile:
@@ -1307,8 +1324,13 @@ proc doParse*(input: string, isFile: bool = true): Value =
     try:
         # do parse    
         result = parseBlock(p, 0)
+    except VError as e:
+        if not p.noLines:
+            e.context = ErrorContext(line: p.lineNumber, file: sourcePath)
+        raise e
     except CatchableError as e:
-        CurrentLine = p.lineNumber
+        if not p.noLines:
+            CurrentLine = lineMarker(p.lineNumber, p.fileId)
         raise e
 
     # close lexer

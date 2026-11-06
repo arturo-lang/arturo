@@ -63,6 +63,22 @@ proc replacingAmpersands(va: Value, what: Value): Value =
             theBlock.a.add(v)
     return theBlock
 
+when not defined(WEB):
+    proc enterImport(path: string, name: string) =
+        let importing = absolutePath(path)
+        if importing in ImportsInProgress or importing == absolutePath(entryFrame().path):
+            Error_CircularImport(name)
+        ImportsInProgress.add(importing)
+
+    template importingFile(path: string, name: string, body: untyped) =
+        enterImport(path, name)
+        pushFrame(path, fromFile=true)
+        try:
+            body
+        finally:
+            discardFrame()
+            discard ImportsInProgress.pop()
+
 #=======================================
 # Definitions
 #=======================================
@@ -566,12 +582,13 @@ proc defineModule*(moduleName: string) =
                     if tp==FileData:
                         pushFrame(x.s, fromFile=true)
 
-                    let parsed = doParse(src, isFile=false)
-                    if not parsed.isNil:
-                        execUnscoped(parsed)
-
-                    if tp==FileData:
-                        discardFrame()
+                    try:
+                        let parsed = doParse(src, isFile=false, inFile=(tp==FileData))
+                        if not parsed.isNil:
+                            execUnscoped(parsed)
+                    finally:
+                        if tp==FileData:
+                            discardFrame()
                 
                 currentTime += 1
 
@@ -1006,18 +1023,16 @@ proc defineModule*(moduleName: string) =
 
                 when defined(BUNDLE):
                     let (src, path) = getBundledResource(x.s)
-                    pushFrame(path, fromFile=true)
-
-                    let parsed = doParse(src, isFile=false)
-                    if not parsed.isNil:
-                        if importOnly.len > 0:
-                            let got = execScopedModule(parsed, importOnly)
-                            for k,v in got.pairs:
-                                if importOnly.contains(k) or k.startsWith("__module"):
-                                    SetSym(k, v)
-                        else:
-                            execUnscoped(parsed)
-                    discardFrame()
+                    importingFile(path, x.s):
+                        let parsed = doParse(src, isFile=false, inFile=true)
+                        if not parsed.isNil:
+                            if importOnly.len > 0:
+                                let got = execScopedModule(parsed, importOnly)
+                                for k,v in got.pairs:
+                                    if importOnly.contains(k) or k.startsWith("__module"):
+                                        SetSym(k, v)
+                            else:
+                                execUnscoped(parsed)
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]
@@ -1050,28 +1065,25 @@ proc defineModule*(moduleName: string) =
                             if not src.fileExists():
                                 Error_PackageNotValid(pkg)
 
-                            pushFrame(src, fromFile=true)
-
-                            if not lean:
-                                let parsed = doParse(src, isFile=true)
-                                if not parsed.isNil:
-                                    if importOnly.len > 0:
+                            importingFile(src, pkg):
+                                if not lean:
+                                    let parsed = doParse(src, isFile=true)
+                                    if not parsed.isNil:
+                                        if importOnly.len > 0:
+                                            let got = execScopedModule(parsed, importOnly)
+                                            for k,v in got.pairs:
+                                                if importOnly.contains(k) or k.startsWith("__module"):
+                                                    SetSym(k, v)
+                                        else:
+                                            execUnscoped(parsed)
+                                else:
+                                    let parsed = doParse(src, isFile=true)
+                                    if not parsed.isNil:
                                         let got = execScopedModule(parsed, importOnly)
-                                        for k,v in got.pairs:
-                                            if importOnly.contains(k) or k.startsWith("__module"):
-                                                SetSym(k, v)
-                                    else:
-                                        execUnscoped(parsed)
-                            else:
-                                let parsed = doParse(src, isFile=true)
-                                if not parsed.isNil:
-                                    let got = execScopedModule(parsed, importOnly)
-                                    if multiple:
-                                        ret.add(newDictionary(got))
-                                    else:
-                                        push(newDictionary(got))
-
-                            discardFrame()              
+                                        if multiple:
+                                            ret.add(newDictionary(got))
+                                        else:
+                                            push(newDictionary(got))
                         else:
                             Error_PackageNotFound(pkg)
 

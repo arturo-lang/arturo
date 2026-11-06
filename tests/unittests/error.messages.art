@@ -1,0 +1,135 @@
+; helper functions
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+fixture: $[name] -> relative ~"errorpositions/|name|.art"
+run: $[name] -> execute ~{|sys\binary| --no-color "|fixture name|"}
+
+; tests
+
+topic "stray break, continue & return"
+do [
+    ensure -> contains? run "stray-break" "`break` outside of a loop"
+    ensure -> contains? run "stray-continue" "`continue` outside of a loop"
+    ensure -> contains? run "stray-return" "`return` outside of a function"
+    ensure -> contains? run "stray-break" "Line: 2"
+    passed
+]
+
+topic "invalid regex"
+do [
+    output: run "bad-regex"
+    ensure -> contains? output "Invalid regular expression"
+    ensure -> contains? output "Line: 2"
+    ensure -> throws? [to :regex "("]
+    passed
+]
+
+topic "function from the main script, called from a module"
+do [
+    output: run "callback-main"
+    ensure -> contains? output "callback-main.art"
+    ensure -> contains? output "Line: 5"
+    passed
+]
+
+topic "lines above 65535"
+do [
+    path: relative "errorpositions/generated-long.art"
+    write (repeat "\n" 69999) ++ "print 1/0\n" path
+    output: execute ~{|sys\binary| --no-color "|path|"}
+    delete path
+    ensure -> contains? output "Line: 70000"
+    passed
+]
+
+topic "triple-nested imports"
+do [
+    output: run "triple-main"
+    ensure -> contains? output "triple-c.art"
+    ensure -> contains? output "Line: 3"
+
+    output: run "triple-after-main"
+    ensure -> contains? output "triple-after-main.art"
+    ensure -> contains? output "Line: 4"
+    passed
+]
+
+topic "block from the main script, run by a nested module"
+do [
+    output: run "block-main"
+    ensure -> contains? output "block-main.art"
+    ensure -> contains? output "Line: 6"
+    passed
+]
+
+topic "circular imports"
+do [
+    output: run "circular-main"
+    ensure -> contains? output "Circular import"
+    ensure -> contains? output "circular-b.art"
+    ensure -> contains? output "Line: 3"
+    passed
+]
+
+topic "event handlers"
+do [
+    output: run "event-handler"
+    ensure -> contains? output "Division by zero"
+    ensure -> contains? output "Line: 4"
+    ensure -> contains? output "still running"
+    passed
+]
+
+topic "failed tasks"
+do [
+    output: run "task-error"
+    ensure -> contains? output "task-error.art:3"
+    ensure -> not? contains? output "Async traceback"
+    passed
+]
+
+topic "code running from bytecode"
+do [
+    execute ~{|sys\binary| -c "|fixture "bytecode"|"}
+    compiled: (fixture "bytecode") ++ ".bcode"
+    output: execute ~{|sys\binary| --no-color -x "|compiled|"}
+    delete compiled
+    ensure -> not? contains? output ".bcode"
+    ensure -> contains? output "bytecode.art"
+    ensure -> contains? output "Line: 2"
+    passed
+]
+
+topic "bytecode without its source"
+do [
+    execute ~{|sys\binary| -c "|fixture "bytecode"|"}
+    source: fixture "bytecode"
+    moved: source ++ ".moved"
+    rename source moved
+    output: execute ~{|sys\binary| --no-color -x "|source|.bcode"}
+    rename moved source
+    delete source ++ ".bcode"
+    ensure -> contains? output "Division by zero"
+    ensure -> contains? output "Line: 2"
+    passed
+]
+
+topic "line after `break`"
+do [
+    ensure -> contains? run "after-break" "Line: 1"
+    passed
+]
+
+topic "tasks in another process"
+do [
+    output: run "isolated-error"
+    ensure -> contains? output "isolated-error.art:1"
+    passed
+]
+
+topic "frames in tasks"
+do [
+    ensure -> ["false" "true"] = split.lines strip run "fibers-main"
+    passed
+]

@@ -32,7 +32,7 @@ when not defined(WEB):
     import helpers/terminal
 
 when not defined(WEB) and not defined(BUNDLE):
-    import parseopt, re
+    import parseopt, re, strutils
     import vm/[bytecode, env, errors, version]
 
 import vm/vm
@@ -278,7 +278,7 @@ when isMainModule and not defined(WEB):
                 discard writeBytecode(dataS, codeS, target, compressed=true)
 
             of readBcode:
-                let filename = code
+                let filename = if code.endsWith(".bcode"): code[0..^7] else: code
                 let bcode = readBytecode(code)
                 let parsed = doParse(bcode[0], isFile=false).a[0]
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)

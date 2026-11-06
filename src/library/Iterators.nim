@@ -500,9 +500,7 @@ template parallelIterateBlock(withCap:bool, withCounter:bool, act: untyped) {.di
                 pSlot = VNULL
             else:
                 pT.tsk.state = taskFailed
-                pSlot =
-                    if pe of VError: newError(VError(pe))
-                    else:            newError(RuntimeErr, pe.msg)
+                pSlot = ParallelismHelper.newTaskError(pe)
         when withCap:
             captured = blo[pDrain]
         let preSP = SP

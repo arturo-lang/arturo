@@ -18,9 +18,6 @@
 # TODO(VM/ast) show warning in case `else` is preceded by `if` - and not `if?`
 #  labels: vm, ast, enhancement, error handling
 
-# TODO(VM/ast) make sure all left-right checking are not Newlines
-#  labels: vm, ast, enhancement, unit-test
-
 # TODO(VM/ast) make it so that pipes work inside arrow blocks
 #  something like this could/should be working:
 #  ```red
@@ -55,8 +52,6 @@ type
     NodeKind* = enum
         RootNode            # Root node of the AST
 
-        NewlineNode         # Newline node
-        
         # TerminalNode
         ConstantValue       # Terminal node of the AST containing a value
         VariableLoad        # Load a variable
@@ -72,11 +67,10 @@ type
     NodeArray* = seq[Node]
 
     Node* = ref object
+        line*: uint32
         case kind*: NodeKind:
             of RootNode, ConstantValue, VariableLoad:
                 discard
-            of NewlineNode:
-                line*: uint32
             else:
                 op*: OpCode
                 arity*: int8
@@ -87,6 +81,13 @@ type
         children*: NodeArray
 
     NodeObj = typeof(Node()[])
+
+var
+    NodeLine {.global.}: uint32 = 0
+
+func currentNodeLine(): uint32 {.inline.} =
+    {.cast(noSideEffect).}:
+        result = NodeLine
 
 #=======================================
 # Compile-Time Warnings
@@ -114,8 +115,6 @@ var
 #=======================================
 
 const
-    NoStartingLine  = 1896618966'u32
-
     TerminalNode*   : set[NodeKind] = {ConstantValue, VariableLoad}
     CallNode*       : set[NodeKind] = {AttributeNode..SpecialCall}
 
@@ -123,7 +122,7 @@ const
 # Forward declarations
 #=======================================
 
-proc dumpNode*(node: Node, level = 0, single: static bool=false, showNewlines: static bool=false): string 
+proc dumpNode*(node: Node, level = 0, single: static bool=false): string 
 
 #=======================================
 # Helpers
@@ -141,7 +140,7 @@ func setOnlyChild(node: Node, child: Node)  =
 func addChild*(node: Node, child: Node)  =
     child.parent = node
     node.children.add(child)
-    if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
+    if node.kind in CallNode and child.kind != AttributeNode:
         node.params += 1
 
 func addChildToFront*(node: Node, child: Node): int  =
@@ -151,7 +150,7 @@ func addChildToFront*(node: Node, child: Node): int  =
 
     child.parent = node
     node.children.insert(child, result)
-    if node.kind in CallNode and child.kind notin {NewlineNode, AttributeNode}:
+    if node.kind in CallNode and child.kind != AttributeNode:
         node.params += 1
 
 func addChildren*(node: Node, children: openArray[Node])  =
@@ -166,6 +165,7 @@ func addChildren*(node: Node, children: openArray[Node])  =
 #         node.parent = nil
 
 proc replaceNode(node: Node, newNode: Node) =
+    newNode.line = node.line
     newNode.parent = node.parent
     node.parent.children[node.parent.children.find(node)] = newNode
 
@@ -176,10 +176,7 @@ proc replaceNode(node: Node, newNode: Node) =
 #     node.parent.children.insert(newNode, node.parent.children.find(node)+1)
 
 proc isLastChild(node: Node): bool =
-    var j = node.parent.children.len-1
-    while j >= 0 and node.parent.children[j].kind == NewlineNode:
-        j -= 1
-    return node.parent.children[j] == node
+    return node.parent.children[^1] == node
 
 #------------------------
 # Iterators
@@ -220,6 +217,7 @@ template newRootNode(): Node =
 
 template newTerminalNode(kn: NodeKind, va: Value): Node =
     Node(
+        line: currentNodeLine(),
         kind: kn,
         value: va
     )
@@ -232,6 +230,7 @@ template newVariable(v: Value): Node =
 
 template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): Node =
     Node(
+        line: currentNodeLine(),
         kind: kn,
         arity: ar,
         op: oper,
@@ -239,10 +238,8 @@ template newCallNode(kn: NodeKind, ar: int8, va: Value, oper: OpCode = opNop): N
     )
 
 func copyNode(node: Node): Node =
-    result = Node(kind: node.kind)
+    result = Node(kind: node.kind, line: node.line)
     case node.kind:
-        of NewlineNode:
-            result.line = node.line
         of ConstantValue, VariableLoad:
             result.value = node.value
         else:
@@ -260,22 +257,12 @@ proc processBlock*(
     root: Node, 
     blok: Value, 
     start = 0, 
-    startingLine: uint32 = NoStartingLine, 
     asDictionary: bool = false, 
     asFunction: bool = false, 
     processingArrow: static bool = false
 ): int =
     var i: int = start
     var nLen: int = blok.a.len
-
-    var currentLine: uint32 = 
-        if startingLine == NoStartingLine:
-            if i < nLen:
-                blok.a[i].ln
-            else:
-                0
-        else:
-            startingLine
 
     var current = root
 
@@ -417,11 +404,7 @@ proc processBlock*(
         var child = target.children[0]
 
         if child.kind in CallNode and child.op == opFunc:
-            var startIndex = 0
-            while child.children[startIndex].kind == NewlineNode:
-                startIndex += 1
-
-            let params {.cursor.} = child.children[startIndex]
+            let params {.cursor.} = child.children[0]
 
             if params.value.kind == Literal:
                 TmpArities[target.value.s] = 1
@@ -484,6 +467,8 @@ proc processBlock*(
                         when processingArrow:
                             ArrowBlock[^1].add(nextNode)
                         i += 1
+                        if nextNode.ln != 0:
+                            NodeLine = nextNode.ln
                         target.addCall(aliased.name.s, fun=symfunc)
 
     proc getCallNode(name: string, arity: int8 = -1, fun: Value = nil): Node =
@@ -559,9 +544,6 @@ proc processBlock*(
             when isLabel:
                 target.rollThrough()
 
-    proc addNewline(target: var Node) =
-        target.addChild(Node(kind: NewlineNode, line: currentLine))
-
     proc addTerminal(target: var Node, node: Node) =
         with target:
             rewindCallBranches()
@@ -636,7 +618,7 @@ proc processBlock*(
             
             if val.p[i].kind==Block:
                 var subNode = newRootNode()
-                discard subNode.processBlock(val.p[i], startingLine=currentLine, asDictionary=false)
+                discard subNode.processBlock(val.p[i], asDictionary=false)
                 newNode.addChildren(subNode.children)
             else:
                 newNode.addChild(newConstant(val.p[i]))
@@ -657,6 +639,8 @@ proc processBlock*(
             if nextNode.kind == Word:
                 if (let funcArity = TmpArities.getOrDefault(nextNode.s, -1); funcArity != -1):
                     i += 1
+                    if nextNode.ln != 0:
+                        NodeLine = nextNode.ln
 
                     target.rewindCallBranches()
 
@@ -664,9 +648,6 @@ proc processBlock*(
                     var toWrap: Node
 
                     var lastChild: Node = target.children[toSpot]
-                    while lastChild.kind==NewlineNode:
-                        toSpot -= 1
-                        lastChild = target.children[toSpot]
                     
                     toWrap = lastChild
 
@@ -711,13 +692,13 @@ proc processBlock*(
 
     proc addInline(target: var Node, val: Value) =
         var subNode = newRootNode()
-        discard subNode.processBlock(val, startingLine=currentLine, asDictionary=false)
+        discard subNode.processBlock(val, asDictionary=false)
 
         target.addTerminals(subNode.children)
 
     proc addArrowBlock(target: var Node, val: Value) =
         var subNode = newRootNode()
-        i = subNode.processBlock(val, start=i+1, startingLine=currentLine, asDictionary=false, processingArrow=true)
+        i = subNode.processBlock(val, start=i+1, asDictionary=false, processingArrow=true)
 
         let poppedArrowBlock = newBlock(ArrowBlock.pop())
         when processingArrow:
@@ -786,9 +767,8 @@ proc processBlock*(
     while i < nLen:
         let item = blok.a[i]
 
-        if item.ln != currentLine:
-            currentLine = item.ln
-            current.addNewline()
+        if item.ln != 0:
+            NodeLine = item.ln
 
         case item.kind:
             of Word:
@@ -922,7 +902,7 @@ proc processBlock*(
 # Output
 #=======================================
 
-proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines: static bool = false): string =
+proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
     template indentNode(): untyped =
         result &= "     ".repeat(level)
 
@@ -932,10 +912,6 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false, showNewlines:
             result &= "ROOT: \n"
             for child in node.children:
                 result &= dumpNode(child, level+1)
-        of NewlineNode:
-            when showNewlines:
-                indentNode()
-                result &= "NEWLINE: " & $(node.line) & "\n"
         of TerminalNode:
             indentNode()
             result &= "Constant: " & $(node.value)
@@ -980,6 +956,8 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
             for k,v in Syms.pairs:
                 if v.kind == Function:
                     {k: v.arity}
+
+    NodeLine = 0
 
     discard res.processBlock(parsed, asDictionary=asDictionary, asFunction=asFunction)
     return (res, CanStore)

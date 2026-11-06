@@ -261,7 +261,15 @@ template pushpopPath(newPath: string, action: untyped): untyped =
     action
     pathStack.delete((pathStack.len-1)..(pathStack.len-1))
 
+var analyzedFiles: seq[string]
+
 proc analyzeFile(conf: BundleConfig, filename: string) =
+    # once is enough, and imports may well be circular
+    let analyzed = absolutePath(filename)
+    if analyzed in analyzedFiles:
+        return
+    analyzedFiles.add(analyzed)
+
     let (dir, _, _) = splitFile(filename)
     pushpopPath dir:
         conf.analyzeBlock(filename, doParse(filename, isFile=true).a)

@@ -9,7 +9,7 @@
       speed
 
   ┃ File: tests/errors/runtime.CannotConvertDifferentDimensions.art
-  ┃ Line: 0
+  ┃ Line: 1
   ┃ 
-  ┃    1 ║  1`m --> `km/h
-  ┃    2 ║
+  ┃    1 ║► 1`m --> `km/h
+  ┃    2 ║  
