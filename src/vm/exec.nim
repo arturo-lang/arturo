@@ -116,10 +116,12 @@ proc callFunction*(f: Value, fnName: string, args: ValueArray) =
             if unlikely(SP < f.arity):
                 Error_NotEnoughArguments(fnName, f.arity)
 
-            if f.inline: 
-                if safeToProceed: execFunctionInline(f, (if f.memoize: hash(fnName) else: 0))
-                else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
-            else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
+            let fid = if f.memoize: hash(fnName) else: 0
+
+            if f.inline:
+                if safeToProceed: execFunctionInline(f, fid)
+                else: execFunction(f, fid)
+            else: execFunction(f, fid)
     else:
         f.action()()
 
@@ -131,15 +133,17 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             if unlikely(SP < f.arity):
                 Error_NotEnoughArguments(fnName, f.arity)
 
-            if f.inline: 
+            let fid = if f.memoize: hash(fnName) else: 0
+
+            if f.inline:
                 var safeToProceed = true
-                for i in 0..f.params.high:          
+                for i in 0..f.params.high:
                     if stack.peek(i).kind==Function:
                         safeToProceed = false
                         break
-                if safeToProceed: execFunctionInline(f, (if f.memoize: hash(fnName) else: 0))
-                else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
-            else: execFunction(f, (if f.memoize: hash(fnName) else: 0))
+                if safeToProceed: execFunctionInline(f, fid)
+                else: execFunction(f, fid)
+            else: execFunction(f, fid)
     else:
         f.action()()
 
