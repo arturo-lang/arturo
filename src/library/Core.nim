@@ -70,6 +70,15 @@ when not defined(WEB):
             Error_CircularImport(name)
         ImportsInProgress.add(importing)
 
+    template importingFile(path: string, name: string, body: untyped) =
+        enterImport(path, name)
+        pushFrame(path, fromFile=true)
+        try:
+            body
+        finally:
+            discardFrame()
+            discard ImportsInProgress.pop()
+
 #=======================================
 # Definitions
 #=======================================
@@ -1014,10 +1023,7 @@ proc defineModule*(moduleName: string) =
 
                 when defined(BUNDLE):
                     let (src, path) = getBundledResource(x.s)
-                    enterImport(path, x.s)
-                    pushFrame(path, fromFile=true)
-
-                    try:
+                    importingFile(path, x.s):
                         let parsed = doParse(src, isFile=false, inFile=true)
                         if not parsed.isNil:
                             if importOnly.len > 0:
@@ -1027,9 +1033,6 @@ proc defineModule*(moduleName: string) =
                                         SetSym(k, v)
                             else:
                                 execUnscoped(parsed)
-                    finally:
-                        discardFrame()
-                        discard ImportsInProgress.pop()
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]
@@ -1062,10 +1065,7 @@ proc defineModule*(moduleName: string) =
                             if not src.fileExists():
                                 Error_PackageNotValid(pkg)
 
-                            enterImport(src, pkg)
-                            pushFrame(src, fromFile=true)
-
-                            try:
+                            importingFile(src, pkg):
                                 if not lean:
                                     let parsed = doParse(src, isFile=true)
                                     if not parsed.isNil:
@@ -1084,9 +1084,6 @@ proc defineModule*(moduleName: string) =
                                             ret.add(newDictionary(got))
                                         else:
                                             push(newDictionary(got))
-                            finally:
-                                discardFrame()
-                                discard ImportsInProgress.pop()
                         else:
                             Error_PackageNotFound(pkg)
 
