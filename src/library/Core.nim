@@ -248,12 +248,13 @@ proc defineModule*(moduleName: string) =
 
                 if fun.kind == Function:
                     if fun.fnKind==UserFunction:
-                        var fid: Hash
-                        if xKind in {Literal,String}:
-                            fid = hash(x.s)
-                        else:
-                            fid = hash(fun)
-                            
+                        var fid: Hash = 0
+                        if fun.memoize:
+                            if xKind in {Literal,String}:
+                                fid = hash(x.s)
+                            else:
+                                fid = hash(fun)
+
                         execFunction(fun, fid)
                     else:
                         fun.action()()
