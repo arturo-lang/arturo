@@ -1265,7 +1265,7 @@ proc defineModule*(moduleName: string) =
             let isDistinct = hadAttr("distinct")
             let isPublic = hadAttr("public")
             
-            let argBlock {.cursor.} =
+            let argBlock =
                 if xKind == Block: 
                     requireValueBlock(x, {Word, Literal, Type})
                     x.a
