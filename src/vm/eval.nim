@@ -357,7 +357,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         if likely(not omitNewlines) and nd.line != 0 and nd.line != lastLine:
             lastLine = nd.line
             if unlikely(lastLine > 65535):
-                it.addByte([byte(opEolL), byte(lastLine shr 24), byte(lastLine shr 16), byte(lastLine shr 8), byte(lastLine)])
+                it.addByte([byte(opEolY), byte(lastLine shr 24), byte(lastLine shr 16), byte(lastLine shr 8), byte(lastLine)])
             else:
                 it.addOpWithNumber(opEol, lastLine, hasShortcut=false)
 

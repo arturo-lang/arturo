@@ -632,7 +632,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     i += 2
                     when not defined(NOERRORLINES):
                         CurrentLine = int(uint16(it[i-1]) shl 8 + byte(it[i]))
-                of opEolL               :
+                of opEolY               :
                     i += 4
                     when not defined(NOERRORLINES):
                         CurrentLine = (int(it[i-3]) shl 24) or (int(it[i-2]) shl 16) or (int(it[i-1]) shl 8) or int(it[i])
