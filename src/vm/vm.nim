@@ -218,6 +218,9 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     initialized = true
 
 template handleVMErrors(blk: untyped): untyped =
+    when not defined(WEB):
+        setupFaultHandler()
+
     try:
         blk
     except CatchableError, Defect:
@@ -241,7 +244,6 @@ when not defined(WEB):
 
     proc runBytecode*(code: Translation, filename: string, args: seq[string]) =
         ## Takes compiled Arturo bytecode and executes it.
-        setupFaultHandler()
         handleVMErrors:
             initialize(args, filename, isFile=true)
 
@@ -249,7 +251,6 @@ when not defined(WEB):
 
     proc run*(code: var string, args: seq[string], isFile: bool, doExecute: bool = true, withData=""): Translation {.exportc:"run".} =
         ## Takes a string of Arturo code and executes it.
-        setupFaultHandler()
         handleVMErrors:
 
             # TODO(VM/vm) Would it make sense to `GC_disableMarkAndSweep`?
@@ -281,7 +282,6 @@ when not defined(WEB):
             return evaled
     
     proc run*(bl: proc()) =
-        setupFaultHandler()
         handleVMErrors:
             if not initialized:
                 initialize(
