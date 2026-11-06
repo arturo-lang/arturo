@@ -35,6 +35,7 @@ canExecute?: function [scr][
             "runtime.SymbolNotFound"
 
             "branching"
+            "lib.arithmetic.bignum"
             "lib.binary.bignum"
             "lib.comparison"
             "lib.files"
