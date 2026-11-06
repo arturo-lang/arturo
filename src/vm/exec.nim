@@ -226,25 +226,24 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
 #  and https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/variadic%20function.art
 #  labels: bug, critical, library, vm, execution
 
+template leaklessKey*(keys: seq[string] | ValueArray, i: int): string =
+    when keys is ValueArray: keys[i].s
+    else: keys[i]
+
 template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
 
-    var toRestore{.inject.}: seq[(string,Value)] = 
-        collect:
-            for psym in protected:
-                when protected is ValueArray:
-                    (psym.s, Syms.getOrDefault(psym.s, nil))
-                else:
-                    (psym, Syms.getOrDefault(psym, nil))
+    let toRestoreKeys {.inject, cursor.} = protected
+    var toRestore {.inject.} = newSeq[Value](toRestoreKeys.len)
+    for li in 0 ..< toRestoreKeys.len:
+        toRestore[li] = Syms.getOrDefault(leaklessKey(toRestoreKeys, li), nil)
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
 
-    for (sym, val) in mitems(toRestore):
-        if val.isNil:
-            Syms.del(sym)
-        else:
-            Syms[sym] = move val
+    for li in 0 ..< toRestore.len:
+        if toRestore[li].isNil: Syms.del(leaklessKey(toRestoreKeys, li))
+        else: Syms[leaklessKey(toRestoreKeys, li)] = move toRestore[li]
 
 template prepareLeaklessOne*(protected: string | Value): untyped =
     ## Prepare for leak-less block execution
