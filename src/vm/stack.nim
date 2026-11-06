@@ -150,6 +150,7 @@ proc popAttr*(attr: string): Value {.inline.} =
     ## 
     ## **Hint:** Returns ``nil`` if attribute doesn't exist
     result = nil
+    if Attrs.len == 0: return
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
 
