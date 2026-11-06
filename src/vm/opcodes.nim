@@ -14,8 +14,6 @@
 
 import hashes, strutils
 
-import vm/values/custom/[vregex]
-
 #=======================================
 # Types 
 #=======================================
@@ -355,32 +353,6 @@ type
 #=======================================
 # Methods
 #=======================================
-
-proc parseOpCode*(x: string): OpCode =
-    var str = x.toLowerAscii().capitalizeAscii()
-    str = str.replaceAll(newRegexObj("i(\\d)$"), "I$1")
-             .replaceAll(newRegexObj("(\\w+)x$"), "$1X")
-             .replaceAll(newRegexObj("bt$"),"BT").replaceAll(newRegexObj("bf$"),"BF").replaceAll(newRegexObj("bm$"), "BM")
-             .replaceAll(newRegexObj("n$"), "N")
-             .replace("jumpifnot","jumpIfNot")
-             .replace("jumpif","jumpIf")
-             .multiReplace([
-                ("Bnot","BNot"),
-                ("Band","BAnd"),
-                ("Bor","BOr"),
-                ("Ife", "IfE"),
-                ("Tos", "ToS"),
-                ("Toi", "ToI"),
-                ("JmpifX", "JmpIfX"),
-                ("Jmpifn", "JmpIfN"),
-                ("Jmpifnx", "JmpIfNX")
-            ])
-    str = "op" & str
-
-    try:
-        return parseEnum[OpCode](str)
-    except CatchableError:
-        return opNop
 
 func stringify*(x: OpCode): string {.inline.} =
     result = $(x)
