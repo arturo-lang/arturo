@@ -81,10 +81,7 @@ const
 #=======================================
 
 var
-    # CurrentContext* : string    = ReplContext
-    # CurrentPath*    : string    = ""
     CurrentLine*    : int       = 0
-    ExecStack*      : seq[int]  = @[]
 
     IsRepl*         : bool = false
 
