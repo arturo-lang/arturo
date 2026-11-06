@@ -904,7 +904,7 @@ proc defineModule*(moduleName: string) =
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
-            let argBlock {.cursor.} =
+            let argBlock =
                 if xKind == Block: 
                     requireValueBlock(x, {Word, Literal, Type})
                     x.a
