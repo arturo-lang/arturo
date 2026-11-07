@@ -75,6 +75,7 @@ jobs:
               timeout-minutes: 15
               run: |
                 cd $GITHUB_WORKSPACE/arturo
+                git clone https://github.com/arturo-lang/examples.git ../examples
                 arturo -v
                 arturo tools/tester.art
 
