@@ -73,6 +73,16 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary)
 # Helpers
 #=======================================
 
+proc argValue(v: Value): Value {.inline.} =
+    ## Constant blocks are passed to functions by (shallow) copy:
+    ## the function may modify its argument, but never the constant
+    ## itself - whose translation may already be cached on it
+    if unlikely(v.readonly) and v.kind in {Block, Inline}:
+        result = if v.kind == Block: newBlock(v.a, v.data) else: newInline(v.a)
+        result.dynamic = v.dynamic
+    else:
+        result = v
+
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
@@ -421,7 +431,7 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, stack.pop())
+        SetSym(arg, argValue(stack.pop()))
 
     try:
         if not fun.bcode.isNil:
@@ -502,7 +512,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, stack.pop())
+        SetSym(arg, argValue(stack.pop()))
 
     try:
         if not fun.bcode.isNil:
@@ -544,7 +554,7 @@ proc execMethod*(meth: Value) =
 
     for arg in meth.mparams:
         # pop argument and set it
-        SetSym(arg, stack.pop())
+        SetSym(arg, argValue(stack.pop()))
 
     try:
         if not meth.mbcode.isNil:
