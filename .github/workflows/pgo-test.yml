@@ -125,6 +125,7 @@ jobs:
                 ext=""
                 if [ "${{ matrix.os }}" = "windows" ]; then ext=".exe"; fi
                 rc=0
+                git clone --depth 1 https://github.com/arturo-lang/examples.git ../examples
                 ./bin/pgo$ext tools/tester.art > suite.log 2>&1 || rc=$?
                 echo "tester rc: $rc"
                 sed -E 's/\x1b\[[0-9;]*m//g' suite.log > suite.txt
