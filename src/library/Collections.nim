@@ -1112,7 +1112,7 @@ proc defineModule*(moduleName: string) =
             else:
                 if xKind == String:
                     if x.s.len == 0: push(VNULL)
-                    else: push(newChar(toRunes(x.s)[^1]))
+                    else: push(newChar(x.s.lastRune(x.s.high)[0]))
                 elif xKind == Range:
                     if x.rng.infinite:
                         push(newFloating(Inf))
