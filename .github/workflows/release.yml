@@ -138,6 +138,7 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ needs.Validate.outputs.version }}
                 release: 'true'
+                pgo: 'true'
 
     Release:
         runs-on: ubuntu-latest
