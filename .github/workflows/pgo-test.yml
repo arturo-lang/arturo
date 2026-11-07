@@ -8,7 +8,7 @@ on:
 
 jobs:
     Measure:
-        name: ${{ matrix.os }}-${{ matrix.arch }}
+        name: ${{ matrix.os }}-${{ matrix.arch }} ${{ matrix.extra }}
         timeout-minutes: 90
         runs-on: ${{ matrix.runner }}
 
@@ -21,6 +21,7 @@ jobs:
                     - {os: macos,   arch: amd64, runner: macOS-15-intel,   cc: clang}
                     - {os: macos,   arch: arm64, runner: macos-latest,     cc: clang}
                     - {os: windows, arch: amd64, runner: windows-latest,   cc: gcc}
+                    - {os: windows, arch: amd64, runner: windows-latest,   cc: gcc, extra: "-flto"}
 
         defaults:
             run:
@@ -71,7 +72,7 @@ jobs:
                 if [ "${{ matrix.cc }}" = "clang" ]; then
                     export PGO_FLAGS="-fprofile-instr-generate"
                 else
-                    export PGO_FLAGS="-fprofile-generate -fprofile-update=single"
+                    export PGO_FLAGS="-fprofile-generate -fprofile-update=single ${{ matrix.extra }}"
                 fi
                 time ./build.nims --release --as instr --log $ARCH > instr.log 2>&1 || { tail -40 instr.log; exit 1; }
                 grep -c "fprofile" instr.log || true
@@ -101,7 +102,7 @@ jobs:
                 if [ "${{ matrix.cc }}" = "clang" ]; then
                     export PGO_FLAGS="-fprofile-instr-use=$PWD/arturo.profdata"
                 else
-                    export PGO_FLAGS="-fprofile-use -fprofile-correction -Wno-missing-profile"
+                    export PGO_FLAGS="-fprofile-use -fprofile-correction -Wno-missing-profile ${{ matrix.extra }}"
                 fi
                 time ./build.nims --release --as pgo --log $ARCH > pgo.log 2>&1 || { tail -40 pgo.log; exit 1; }
                 grep -c "fprofile" pgo.log || true
@@ -110,8 +111,9 @@ jobs:
             - name: Compare
               working-directory: arturo
               run: |
-                ext=$( [ "${{ matrix.os }}" = "windows" ] && echo .exe )
-                echo "## ${{ matrix.os }}-${{ matrix.arch }} (${{ matrix.cc }})" >> "$GITHUB_STEP_SUMMARY"
+                ext=""
+                if [ "${{ matrix.os }}" = "windows" ]; then ext=".exe"; fi
+                echo "## ${{ matrix.os }}-${{ matrix.arch }} (${{ matrix.cc }}) ${{ matrix.extra }}" >> "$GITHUB_STEP_SUMMARY"
                 echo "base: $(wc -c < bin/base$ext) bytes, pgo: $(wc -c < bin/pgo$ext) bytes" | tee -a "$GITHUB_STEP_SUMMARY"
                 echo >> "$GITHUB_STEP_SUMMARY"
                 perl tools/pgo/run.pl bench 5 bin/base$ext bin/pgo$ext
@@ -120,7 +122,18 @@ jobs:
               timeout-minutes: 20
               working-directory: arturo
               run: |
-                ext=$( [ "${{ matrix.os }}" = "windows" ] && echo .exe )
-                ./bin/pgo$ext tools/tester.art > suite.log 2>&1 && rc=0 || rc=$?
-                sed -E 's/\x1b\[[0-9;]*m//g' suite.log | grep -E "Tests executed|Tests succeeded|Success rate" | tee -a "$GITHUB_STEP_SUMMARY"
-                exit $rc
+                ext=""
+                if [ "${{ matrix.os }}" = "windows" ]; then ext=".exe"; fi
+                rc=0
+                ./bin/pgo$ext tools/tester.art > suite.log 2>&1 || rc=$?
+                echo "tester rc: $rc"
+                sed -E 's/\x1b\[[0-9;]*m//g' suite.log > suite.txt
+                grep -E "Tests executed|Tests succeeded|Success rate" suite.txt | tee -a "$GITHUB_STEP_SUMMARY" || true
+                if [ "$rc" != "0" ] || ! grep -q "Success rate: 100" suite.txt; then
+                    echo "--- end of the log:"
+                    tail -30 suite.txt
+                    echo "--- same thing, with the baseline binary:"
+                    ./bin/base$ext tools/tester.art > suite-base.log 2>&1 && echo "baseline rc: 0" || echo "baseline rc: $?"
+                    sed -E 's/\x1b\[[0-9;]*m//g' suite-base.log | grep -E "Tests executed|Tests succeeded|Success rate" || true
+                    exit 1
+                fi
