@@ -1,0 +1,126 @@
+name: "PGO test"
+
+on:
+    push:
+        branches:
+            - 'pgo-test'
+    workflow_dispatch:
+
+jobs:
+    Measure:
+        name: ${{ matrix.os }}-${{ matrix.arch }}
+        timeout-minutes: 90
+        runs-on: ${{ matrix.runner }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - {os: linux,   arch: amd64, runner: ubuntu-latest,    cc: gcc}
+                    - {os: linux,   arch: arm64, runner: ubuntu-24.04-arm, cc: gcc}
+                    - {os: macos,   arch: amd64, runner: macOS-15-intel,   cc: clang}
+                    - {os: macos,   arch: arm64, runner: macos-latest,     cc: clang}
+                    - {os: windows, arch: amd64, runner: windows-latest,   cc: gcc}
+
+        defaults:
+            run:
+                shell: ${{ (matrix.os == 'windows') && 'msys2 {0}' || 'bash' }}
+
+        steps:
+            - name: Set up dependencies and Nim
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                src: ${{ github.ref }}
+                create_artifact: 'false'
+
+            - name: Checkout sources
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo
+
+            - name: Prepare
+              run: |
+                [ "${{ matrix.os }}" = "windows" ] && pacman -S --noconfirm --needed perl
+                {
+                    if [ "${{ matrix.os }}" = "windows" ]; then
+                        echo 'export PATH="${{ github.workspace }}/nim/nim-2.4.0/bin":$PATH'
+                        echo 'ARCH=""'
+                    else
+                        echo 'ARCH="--arch ${{ matrix.arch }}"'
+                    fi
+                } > "$RUNNER_TEMP/pgoenv.sh"
+                cat "$RUNNER_TEMP/pgoenv.sh"
+                perl -v | head -2
+
+            - name: Build baseline
+              working-directory: arturo
+              run: |
+                . "$RUNNER_TEMP/pgoenv.sh"
+                time ./build.nims --release --as base --log $ARCH > base.log 2>&1 || { tail -40 base.log; exit 1; }
+                ls -la bin
+
+            - name: Build instrumented
+              working-directory: arturo
+              run: |
+                . "$RUNNER_TEMP/pgoenv.sh"
+                if [ "${{ matrix.cc }}" = "clang" ]; then
+                    export PGO_FLAGS="-fprofile-instr-generate"
+                else
+                    export PGO_FLAGS="-fprofile-generate -fprofile-update=single"
+                fi
+                time ./build.nims --release --as instr --log $ARCH > instr.log 2>&1 || { tail -40 instr.log; exit 1; }
+                grep -c "fprofile" instr.log || true
+                ls -la bin
+
+            - name: Train
+              timeout-minutes: 30
+              working-directory: arturo
+              run: |
+                export LLVM_PROFILE_FILE="$PWD/prof/%p.profraw"
+                mkdir -p prof
+                time perl tools/pgo/run.pl train bin/instr$( [ "${{ matrix.os }}" = "windows" ] && echo .exe )
+                if [ "${{ matrix.cc }}" = "clang" ]; then
+                    ls prof | wc -l
+                    xcrun llvm-profdata merge -o arturo.profdata prof/*.profraw
+                    ls -la arturo.profdata
+                else
+                    echo "gcda files: $(find .cache -name '*.gcda' | wc -l)"
+                    find .cache -name '*.gcda' | head -3
+                    [ "$(find .cache -name '*.gcda' | wc -l)" -gt 0 ]
+                fi
+
+            - name: Build with profile
+              working-directory: arturo
+              run: |
+                . "$RUNNER_TEMP/pgoenv.sh"
+                if [ "${{ matrix.cc }}" = "clang" ]; then
+                    export PGO_FLAGS="-fprofile-instr-use=$PWD/arturo.profdata"
+                else
+                    export PGO_FLAGS="-fprofile-use -fprofile-correction -Wno-missing-profile"
+                fi
+                time ./build.nims --release --as pgo --log $ARCH > pgo.log 2>&1 || { tail -40 pgo.log; exit 1; }
+                grep -c "fprofile" pgo.log || true
+                ls -la bin
+
+            - name: Compare
+              working-directory: arturo
+              run: |
+                ext=$( [ "${{ matrix.os }}" = "windows" ] && echo .exe )
+                echo "## ${{ matrix.os }}-${{ matrix.arch }} (${{ matrix.cc }})" >> "$GITHUB_STEP_SUMMARY"
+                echo "base: $(wc -c < bin/base$ext) bytes, pgo: $(wc -c < bin/pgo$ext) bytes" | tee -a "$GITHUB_STEP_SUMMARY"
+                echo >> "$GITHUB_STEP_SUMMARY"
+                perl tools/pgo/run.pl bench 5 bin/base$ext bin/pgo$ext
+
+            - name: Run tests with the PGO binary
+              timeout-minutes: 20
+              working-directory: arturo
+              run: |
+                ext=$( [ "${{ matrix.os }}" = "windows" ] && echo .exe )
+                ./bin/pgo$ext tools/tester.art > suite.log 2>&1 && rc=0 || rc=$?
+                sed -E 's/\x1b\[[0-9;]*m//g' suite.log | grep -E "Tests executed|Tests succeeded|Success rate" | tee -a "$GITHUB_STEP_SUMMARY"
+                exit $rc
