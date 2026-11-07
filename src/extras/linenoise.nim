@@ -27,9 +27,14 @@ import os
 #  the problem is that - although it "works" - different characters are not shown at all:
 #  e.g. accented characters, or ø - our symbol for null
 #  labels: bug, 3rd-party, repl
-{.compile("linenoise/linenoise.c", "-I" & parentDir(currentSourcePath())).}
-{.compile("linenoise/stringbuf.c", "-I" & parentDir(currentSourcePath())).}
-{.compile("linenoise/utf8.c", "-I" & parentDir(currentSourcePath())).}
+
+# we compile each file separately (not as an amalgamation),
+# so the utf8 helpers must not be static
+const LinenoiseFlags = "-I" & parentDir(currentSourcePath()) & " -DUTF8_STATIC="
+
+{.compile("linenoise/linenoise.c", LinenoiseFlags).}
+{.compile("linenoise/stringbuf.c", LinenoiseFlags).}
+{.compile("linenoise/utf8.c", LinenoiseFlags).}
 
 #=======================================
 # Types

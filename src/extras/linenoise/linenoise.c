@@ -155,8 +155,8 @@
 
 /* ctrl('A') -> 0x01 */
 #define ctrl(C) ((C) - '@')
-/* meta('a') ->  0xe1 */
-#define meta(C) ((C) | 0x80)
+/* meta('a') ->  -0xe1 */
+#define meta(C) -((C) | 0x80)
 
 /* Use -ve numbers here to co-exist with normal unicode chars */
 enum {
@@ -180,6 +180,7 @@ enum {
 
 static int history_max_len = LINENOISE_DEFAULT_HISTORY_MAX_LEN;
 static int history_len = 0;
+static int history_index = 0;
 static char **history = NULL;
 
 /* Structure to contain the status of the current (being edited) line */
@@ -195,7 +196,9 @@ struct current {
     stringbuf *capture; /* capture buffer, or NULL for none. Always null terminated */
     stringbuf *output;  /* used only during refreshLine() - output accumulator */
 #if defined(USE_TERMIOS)
-    int fd;     /* Terminal fd */
+    int fdin;      /* Terminal input fd */
+    int fdout;     /* Terminal output fd */
+    int pending; /* pending char fd_read_char() */
 #elif defined(USE_WINCONSOLE)
     HANDLE outh; /* Console output handle */
     HANDLE inh; /* Console input handle */
@@ -225,7 +228,7 @@ static void set_current(struct current *current, const char *str);
 static int fd_isatty(struct current *current)
 {
 #ifdef USE_TERMIOS
-    return isatty(current->fd);
+    return isatty(current->fdin);
 #else
     (void)current;
     return 0;
@@ -339,7 +342,8 @@ donedigits:
 #define DRL(ARGS...) fprintf(dfh, ARGS)
 static FILE *dfh;
 
-static void DRL_CHAR(int ch)
+/* debug output - codepoint or control char */
+static void DRL_CODEPOINT(int ch)
 {
     if (ch < ' ') {
         DRL("^%c", ch + '@');
@@ -351,19 +355,35 @@ static void DRL_CHAR(int ch)
         DRL("%c", ch);
     }
 }
+
+/* debug output - null terminated string */
 static void DRL_STR(const char *str)
 {
     while (*str) {
         int ch;
         int n = utf8_tounicode(str, &ch);
         str += n;
-        DRL_CHAR(ch);
+        DRL_CODEPOINT(ch);
+    }
+}
+
+/* debug output - first character (grapheme cluster) of str */
+static void DRL_CHAR(const char *str)
+{
+    int bytes = utf8_char_bytes(str, -1);
+    while (bytes) {
+        int ch;
+        int n = utf8_tounicode(str, &ch);
+        DRL_CODEPOINT(ch);
+        bytes -= n;
+        str += n;
     }
 }
 #else
 #define DRL(...)
-#define DRL_CHAR(ch)
+#define DRL_CODEPOINT(ch)
 #define DRL_STR(str)
+#define DRL_CHAR(str)
 #endif
 
 #if defined(USE_WINCONSOLE)
@@ -395,11 +415,19 @@ static int isUnsupportedTerm(void) {
 static int enableRawMode(struct current *current) {
     struct termios raw;
 
-    current->fd = STDIN_FILENO;
+    current->fdin = STDIN_FILENO;
+    current->fdout = STDOUT_FILENO;
     current->cols = 0;
 
-    if (!isatty(current->fd) || isUnsupportedTerm() ||
-        tcgetattr(current->fd, &orig_termios) == -1) {
+    if (getenv("LINENOISE_ASSUME_TTY")) {
+        /* Set no buffering on stdout */
+        setvbuf(stdout, NULL, _IONBF, 0);
+        rawmode = 2;
+        return 0;
+    }
+
+    if (!isatty(current->fdin) || isUnsupportedTerm() ||
+        tcgetattr(current->fdin, &orig_termios) == -1) {
 fatal:
         errno = ENOTTY;
         return -1;
@@ -425,8 +453,11 @@ fatal:
      * We want read to return every single byte, without timeout. */
     raw.c_cc[VMIN] = 1; raw.c_cc[VTIME] = 0; /* 1 byte, no timer */
 
-    /* put terminal in raw mode after flushing */
-    if (tcsetattr(current->fd,TCSADRAIN,&raw) < 0) {
+    /* put terminal in raw mode. Because we aren't changing any output
+     * settings we don't need to use TCSADRAIN and I have seen that hang on
+     * OpenBSD when running under a pty
+     */
+    if (tcsetattr(current->fdin,TCSANOW,&raw) < 0) {
         goto fatal;
     }
     rawmode = 1;
@@ -435,14 +466,16 @@ fatal:
 
 static void disableRawMode(struct current *current) {
     /* Don't even check the return value as it's too late. */
-    if (rawmode && tcsetattr(current->fd,TCSADRAIN,&orig_termios) != -1)
-        rawmode = 0;
+    if (rawmode == 1) {
+        tcsetattr(current->fdin,TCSANOW,&orig_termios);
+    }
+    rawmode = 0;
 }
 
 /* At exit we'll try to fix the terminal to the initial conditions. */
 static void linenoiseAtExit(void) {
-    if (rawmode) {
-        tcsetattr(STDIN_FILENO, TCSADRAIN, &orig_termios);
+    if (rawmode == 1) {
+        tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
     }
     linenoiseHistoryFree();
 }
@@ -465,7 +498,7 @@ static void outputChars(struct current *current, const char *buf, int len)
         sb_append_len(current->output, buf, len);
     }
     else {
-        IGNORE_RC(write(current->fd, buf, len));
+        IGNORE_RC(write(current->fdout, buf, len));
     }
 }
 
@@ -534,25 +567,31 @@ void linenoiseClearScreen(void)
 }
 
 /**
- * Reads a char from 'fd', waiting at most 'timeout' milliseconds.
+ * Reads a char from 'current->fd', waiting at most 'timeout' milliseconds.
  *
  * A timeout of -1 means to wait forever.
  *
  * Returns -1 if no char is received within the time or an error occurs.
  */
-static int fd_read_char(int fd, int timeout)
+static int fd_read_char(struct current *current, int timeout)
 {
     struct pollfd p;
     unsigned char c;
 
-    p.fd = fd;
+    if (current->pending) {
+        c = current->pending;
+        current->pending = 0;
+        return c;
+    }
+
+    p.fd = current->fdin;
     p.events = POLLIN;
 
     if (poll(&p, 1, timeout) == 0) {
         /* timeout */
         return -1;
     }
-    if (read(fd, &c, 1) != 1) {
+    if (read(current->fdin, &c, 1) != 1) {
         return -1;
     }
     return c;
@@ -570,15 +609,19 @@ static int fd_read(struct current *current)
     int i;
     int c;
 
-    if (read(current->fd, &buf[0], 1) != 1) {
+    if (current->pending) {
+        buf[0] = current->pending;
+        current->pending = 0;
+    }
+    else if (read(current->fdin, &buf[0], 1) != 1) {
         return -1;
     }
-    n = utf8_charlen(buf[0]);
+    n = utf8_bytelen(buf[0]);
     if (n < 1) {
         return -1;
     }
     for (i = 1; i < n; i++) {
-        if (read(current->fd, &buf[i], 1) != 1) {
+        if (read(current->fdin, &buf[i], 1) != 1) {
             return -1;
         }
     }
@@ -586,7 +629,7 @@ static int fd_read(struct current *current)
     utf8_tounicode(buf, &c);
     return c;
 #else
-    return fd_read_char(current->fd, -1);
+    return fd_read_char(current, -1);
 #endif
 }
 
@@ -599,6 +642,15 @@ static int queryCursor(struct current *current, int* cols)
 {
     struct esc_parser parser;
     int ch;
+    /* Unfortunately we don't have any persistent state, so assume
+     * a process will only ever interact with one terminal at a time.
+     */
+    static int query_cursor_failed;
+
+    if (query_cursor_failed) {
+        /* If it ever fails, don't try again */
+        return 0;
+    }
 
     /* Should not be buffering this output, it needs to go immediately */
     assert(current->output == NULL);
@@ -608,7 +660,7 @@ static int queryCursor(struct current *current, int* cols)
 
     /* Parse the response: ESC [ rows ; cols R */
     initParseEscapeSeq(&parser, 'R');
-    while ((ch = fd_read_char(current->fd, 100)) > 0) {
+    while ((ch = fd_read_char(current, 100)) > 0) {
         switch (parseEscapeSequence(&parser, ch)) {
             default:
                 continue;
@@ -619,11 +671,14 @@ static int queryCursor(struct current *current, int* cols)
                 }
                 break;
             case EP_ERROR:
+                /* Push back the character that caused the error */
+                current->pending = ch;
                 break;
         }
         /* failed */
         break;
     }
+    query_cursor_failed = 1;
     return 0;
 }
 
@@ -633,6 +688,13 @@ static int queryCursor(struct current *current, int* cols)
 static int getWindowSize(struct current *current)
 {
     struct winsize ws;
+
+    const char *linenoise_cols = getenv("LINENOISE_COLS");
+    if (linenoise_cols) {
+        /* Just trust what we are given for testing */
+        current->cols = atoi(linenoise_cols);
+        return 0;
+    }
 
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 && ws.ws_col != 0) {
         current->cols = ws.ws_col;
@@ -690,9 +752,9 @@ static int getWindowSize(struct current *current)
  * If no additional char is received within a short time,
  * CHAR_ESCAPE is returned.
  */
-static int check_special(int fd)
+static int check_special(struct current *current)
 {
-    int c = fd_read_char(fd, 50);
+    int c = fd_read_char(current, 50);
     int c2;
 
     if (c < 0) {
@@ -703,7 +765,7 @@ static int check_special(int fd)
         return meta(c);
     }
 
-    c2 = fd_read_char(fd, 50);
+    c2 = fd_read_char(current, 50);
     if (c2 < 0) {
         return c2;
     }
@@ -726,7 +788,7 @@ static int check_special(int fd)
     }
     if (c == '[' && c2 >= '1' && c2 <= '8') {
         /* extended escape */
-        c = fd_read_char(fd, 50);
+        c = fd_read_char(current, 50);
         if (c == '~') {
             switch (c2) {
                 case '2':
@@ -745,7 +807,7 @@ static int check_special(int fd)
         }
         while (c != -1 && c != '~') {
             /* .e.g \e[12~ or '\e[11;2~   discard the complete sequence */
-            c = fd_read_char(fd, 50);
+            c = fd_read_char(current, 50);
         }
     }
 
@@ -780,30 +842,37 @@ static int utf8_getchars(char *buf, int c)
 }
 #endif
 
-/**
- * Returns the unicode character at the given offset,
- * or -1 if none.
+/* Returns the length (in bytes) of the character at the given character position in current->buf,
+ * and stores the byte offset in *offset. If there is no character at that position, returns -1.
+ * and *offset is unchanged.
  */
-static int get_char(struct current *current, int pos)
+static int get_char_offset(struct current *current, int pos, int *offset)
 {
     if (pos >= 0 && pos < sb_chars(current->buf)) {
-        int c;
         int i = utf8_index(sb_str(current->buf), pos);
-        (void)utf8_tounicode(sb_str(current->buf) + i, &c);
-        return c;
+        int n = utf8_char_bytes(sb_str(current->buf) + i, -1);
+        *offset = i;
+        return n;
     }
     return -1;
 }
 
-static int char_display_width(int ch)
+/**
+ * Returns the unicode character at the given character position in current->buf,
+ * or -1 if none.
+ *
+ * Note that this only returns the first codepoint of a grapheme cluster (character)
+ *
+ */
+static int get_char(struct current *current, int pos)
 {
-    if (ch < ' ') {
-        /* control chars take two positions */
-        return 2;
+    int offset;
+    if (get_char_offset(current, pos, &offset) >= 0) {
+        int c;
+        (void)utf8_tounicode(sb_str(current->buf) + offset, &c);
+        return c;
     }
-    else {
-        return utf8_width(ch);
-    }
+    return -1;
 }
 
 #ifndef NO_COMPLETION
@@ -814,7 +883,7 @@ static linenoiseHintsCallback *hintsCallback = NULL;
 static linenoiseFreeHintsCallback *freeHintsCallback = NULL;
 static void *hintsUserdata = NULL;
 
-static void beep() {
+static void beep(void) {
 #ifdef USE_TERMIOS
     fprintf(stderr, "\x7");
     fflush(stderr);
@@ -841,8 +910,8 @@ static int completeLine(struct current *current) {
         while(!stop) {
             /* Show completion or original buffer */
             if (i < lc.len) {
-                int chars = utf8_strlen(lc.cvec[i], -1);
-                refreshLineAlt(current, current->prompt, lc.cvec[i], chars);
+                int display_cols = utf8_str_dispwidth(lc.cvec[i]);
+                refreshLineAlt(current, current->prompt, lc.cvec[i], display_cols);
             } else {
                 refreshLine(current);
             }
@@ -907,6 +976,22 @@ void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *callback)
 
 #endif
 
+/* Like utf8_str_dispwidth, but only for the first charlen characters of str.
+ */
+static int utf8_str_dispwidth_len(const char *str, int charlen)
+{
+    int width = 0;
+    while (*str && charlen) {
+        int w;
+        int c;
+        int n = utf8_inspect(str, &c, &w);
+        width += w;
+        str += n;
+        charlen--;
+    }
+    return width;
+}
+
 
 static const char *reduceSingleBuf(const char *buf, int availcols, int *cursor_pos)
 {
@@ -914,55 +999,59 @@ static const char *reduceSingleBuf(const char *buf, int availcols, int *cursor_p
      * If necessary, strip chars off the front of buf until *cursor_pos
      * fits within availcols
      */
-    int needcols = 0;
-    int pos = 0;
     int new_cursor_pos = *cursor_pos;
-    const char *pt = buf;
+    const char *pt;
 
     DRL("reduceSingleBuf: availcols=%d, cursor_pos=%d\n", availcols, *cursor_pos);
-
-    while (*pt) {
-        int ch;
-        int n = utf8_tounicode(pt, &ch);
+    /* Debug print the initial state */
+    int col = 0;
+    int pos = 0;
+    for (pt = buf; *pt; ) {
+        int w;
+        int c;
+        if (pos == *cursor_pos) {
+            DRL("<cursor>");
+        }
+        DRL_CHAR(pt);
+        int n = utf8_inspect(pt, &c, &w);
+        if (col < availcols && col + w >= availcols) {
+            DRL("<avail>");
+        }
+        col += w;
         pt += n;
+    }
+    DRL("\n");
 
-        needcols += char_display_width(ch);
-
-        /* If we need too many cols, strip
-         * chars off the front of buf to make it fit.
-         * We keep 3 extra cols to the right of the cursor.
-         * 2 for possible wide chars, 1 for the last column that
-         * can't be used.
-         */
-        while (needcols >= availcols - 3) {
-            n = utf8_tounicode(buf, &ch);
-            buf += n;
-            needcols -= char_display_width(ch);
-            DRL_CHAR(ch);
-
+    pt = buf;
+    while (*pt) {
+        /* Find the column of the cursor position */
+        int cursor_col = utf8_str_dispwidth_len(buf, new_cursor_pos);
+        DRL("cursor_col of pos=%d is %d vs availcols=%d\n", new_cursor_pos, cursor_col, availcols);
+        if (cursor_col > availcols) {
+            /* Cursor is not visible, so strip one char off the beginning */
+            int w;
+            int c;
+            int n = utf8_inspect(pt, &c, &w);
+            DRL("remove char from front of buffer: ");
+            DRL_CHAR(pt);
+            DRL("\n");
+            pt += n;
             /* and adjust the apparent cursor position */
             new_cursor_pos--;
-
-            if (buf == pt) {
-                /* can't remove more than this */
-                break;
-            }
+            continue;
         }
-
-        if (pos++ == *cursor_pos) {
-            break;
-        }
-
+        /* done */
+        break;
     }
     DRL("<snip>");
-    DRL_STR(buf);
-    DRL("\nafter reduce, needcols=%d, new_cursor_pos=%d\n", needcols, new_cursor_pos);
+    DRL_STR(pt);
+    DRL("\nafter reduce, new_cursor_pos=%d\n", new_cursor_pos);
 
     /* Done, now new_cursor_pos contains the adjusted cursor position
      * and buf points to he adjusted start
      */
     *cursor_pos = new_cursor_pos;
-    return buf;
+    return pt;
 }
 
 static int mlmode = 0;
@@ -996,15 +1085,15 @@ static int refreshShowHints(struct current *current, const char *buf, int availc
                 DRL("<hint bold=%d,color=%d>", bold, color);
                 pt = hint;
                 while (*pt) {
-                    int ch;
-                    int n = utf8_tounicode(pt, &ch);
-                    int width = char_display_width(ch);
+                    int width;
+                    int c;
+                    int n = utf8_inspect(pt, &c, &width);
 
                     if (width >= availcols) {
                         DRL("<hinteol>");
                         break;
                     }
-                    DRL_CHAR(ch);
+                    DRL_CHAR(pt);
 
                     availcols -= width;
                     outputChars(current, pt, n);
@@ -1032,7 +1121,7 @@ static void refreshStart(struct current *current)
 static void refreshEnd(struct current *current)
 {
     /* Output everything at once */
-    IGNORE_RC(write(current->fd, sb_str(current->output), sb_len(current->output)));
+    IGNORE_RC(write(current->fdout, sb_str(current->output), sb_len(current->output)));
     sb_free(current->output);
     current->output = NULL;
 }
@@ -1045,7 +1134,7 @@ static void refreshStartChars(struct current *current)
 static void refreshNewline(struct current *current)
 {
     DRL("<nl>");
-    outputChars(current, "\n", 1);
+    outputChars(current, "\r\n", 2);
 }
 
 static void refreshEndChars(struct current *current)
@@ -1117,7 +1206,7 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
     while (*pt) {
         int width;
         int ch;
-        int n = utf8_tounicode(pt, &ch);
+        int n = utf8_inspect(pt, &ch, &width);
 
         if (visible && ch == CHAR_ESCAPE) {
             /* The start of an escape sequence, so not visible */
@@ -1133,7 +1222,9 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
             displayrow++;
         }
         else {
-            width = visible * utf8_width(ch);
+            if (!visible) {
+                width = 0;
+            }
 
             displaycol += width;
             if (displaycol >= current->cols) {
@@ -1145,7 +1236,7 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
                 displayrow++;
             }
 
-            DRL_CHAR(ch);
+            DRL_CHAR(pt);
 #ifdef USE_WINCONSOLE
             if (visible) {
                 outputChars(current, pt, n);
@@ -1190,16 +1281,21 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
     notecursor = -1;
 
     while (*pt) {
-        int ch;
-        int n = utf8_tounicode(pt, &ch);
-        int width = char_display_width(ch);
+        int width;
+        int c;
+        int n = utf8_inspect(pt, &c, &width);
+        if (c < ' ') {
+            /* Control chars take up 2 spaces since we show them as ^X */
+            width = 2;
+        }
 
         if (currentpos == cursor_pos) {
             /* (e') wherever we output this character is where we want the cursor */
+            DRL("<cn>");
             notecursor = 1;
         }
 
-        if (displaycol + width >= current->cols) {
+        if (displaycol + width > current->cols) {
             if (mlmode == 0) {
                 /* In single line mode stop once we print as much as we can on one line */
                 DRL("<slmode>");
@@ -1219,15 +1315,15 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
             DRL("<cursor>");
         }
 
-        displaycol += width;
-
-        if (ch < ' ') {
-            outputControlChar(current, ch + '@');
+        if (c < ' ') {
+            outputControlChar(current, c + '@');
         }
         else {
             outputChars(current, pt, n);
         }
-        DRL_CHAR(ch);
+        displaycol += width;
+
+        DRL_CHAR(pt);
         if (width != 1) {
             DRL("<w=%d>", width);
         }
@@ -1351,21 +1447,25 @@ static int remove_char(struct current *current, int pos)
 }
 
 /**
- * Insert 'ch' at position 'pos'
+ * Insert character 'ch' of length 'chbytes' at position 'pos'
+ *
+ * Note that ch must contain no more than one character
+ * (i.e. consume no more than one character position).
  *
  * Returns 1 if the line needs to be refreshed, 2 if not
  * and 0 if nothing was inserted (no room)
  */
-static int insert_char(struct current *current, int pos, int ch)
+static int insert_char(struct current *current, int pos, const char *ch, int chbytes)
 {
+    int rc = 0;
     if (pos >= 0 && pos <= sb_chars(current->buf)) {
-        char buf[MAX_UTF8_LEN + 1];
-        int offset = utf8_index(sb_str(current->buf), pos);
-        int n = utf8_getchars(buf, ch);
-        int rc = 1;
+        /* Verify that it is a single character */
+        int c;
+        int width;
+        int n = utf8_inspect(ch, &c, &width);
+        assert(n == chbytes);
 
-        /* null terminate since sb_insert() requires it */
-        buf[n] = 0;
+        rc = 1;
 
         /* Now we try to optimise in the simple but very common case that:
          * - outputChars() can be used directly (not win32)
@@ -1374,7 +1474,6 @@ static int insert_char(struct current *current, int pos, int ch)
          * - no hints are being shown
          */
         if (current->output && pos == current->pos && pos == sb_chars(current->buf)) {
-            int width = char_display_width(ch);
             if (current->colsright > width) {
                 /* Yes, can optimise */
                 current->colsright -= width;
@@ -1382,8 +1481,12 @@ static int insert_char(struct current *current, int pos, int ch)
                 rc = 2;
             }
         }
-        sb_insert(current->buf, offset, buf);
-        if (current->pos >= pos) {
+        /* Remember the old character count in case this does not increase
+         * the character count
+         */
+        int oldchars = sb_chars(current->buf);
+        sb_insert_chars(current->buf, pos, ch, chbytes);
+        if (current->pos >= pos && oldchars != sb_chars(current->buf)) {
             current->pos++;
         }
         if (rc == 2) {
@@ -1393,12 +1496,22 @@ static int insert_char(struct current *current, int pos, int ch)
             }
             else {
                 /* optimised output */
-                outputChars(current, buf, n);
+                outputChars(current, ch, n);
             }
         }
-        return rc;
     }
-    return 0;
+    return rc;
+}
+
+/* Like insert_char but takes a unicode codepoint and converts it to utf-8 before inserting.
+ * Returns the same as insert_char()
+ */
+static int insert_codepoint(struct current *current, int pos, int c)
+{
+    char buf[MAX_UTF8_LEN];
+    int n = utf8_getchars(buf, c);
+    int ret = insert_char(current, pos, buf, n);
+    return ret;
 }
 
 /**
@@ -1445,20 +1558,23 @@ static int remove_chars(struct current *current, int pos, int n)
  * Inserts the characters (string) 'chars' at the cursor position 'pos'.
  *
  * Returns 0 if no chars were inserted or non-zero otherwise.
+ *
  */
 static int insert_chars(struct current *current, int pos, const char *chars)
 {
     int inserted = 0;
 
+    /* We insert one "character" at a time, which may include multiple codepoints */
+
     while (*chars) {
-        int ch;
-        int n = utf8_tounicode(chars, &ch);
-        if (insert_char(current, pos, ch) == 0) {
+        /* Get a whole character */
+        int bytes = utf8_char_bytes(chars, -1);
+        if (insert_char(current, pos, chars, bytes) == 0) {
             break;
         }
         inserted++;
         pos++;
-        chars += n;
+        chars += bytes;
     }
     return inserted;
 }
@@ -1466,6 +1582,7 @@ static int insert_chars(struct current *current, int pos, const char *chars)
 static int skip_space_nonspace(struct current *current, int dir, int check_is_space)
 {
     int moved = 0;
+    /* need to reimplement this taking into account glyths/grapheme clusters */
     int checkoffset = (dir < 0) ? -1 : 0;
     int limit = (dir < 0) ? 0 : sb_chars(current->buf);
     while (current->pos != limit && (get_char(current, current->pos + checkoffset) == ' ') == check_is_space) {
@@ -1483,6 +1600,26 @@ static int skip_space(struct current *current, int dir)
 static int skip_nonspace(struct current *current, int dir)
 {
     return skip_space_nonspace(current, dir, 0);
+}
+
+static void set_history_index(struct current *current, int new_index)
+{
+    if (history_len > 1) {
+        /* Update the current history entry before to
+         * overwrite it with the next one. */
+        free(history[history_len - 1 - history_index]);
+        history[history_len - 1 - history_index] = strdup(sb_str(current->buf));
+        /* Show the new entry */
+        history_index = new_index;
+        if (history_index < 0) {
+            history_index = 0;
+        } else if (history_index >= history_len) {
+            history_index = history_len - 1;
+        } else {
+            set_current(current, history[history_len - 1 - history_index]);
+            refreshLine(current);
+        }
+    }
 }
 
 /**
@@ -1518,23 +1655,35 @@ static int reverseIncrementalSearch(struct current *current)
         }
 #ifdef USE_TERMIOS
         if (c == CHAR_ESCAPE) {
-            c = check_special(current->fd);
+            c = check_special(current);
         }
 #endif
-        if (c == ctrl('P') || c == SPECIAL_UP) {
+        if (c == ctrl('R')) {
             /* Search for the previous (earlier) match */
             if (searchpos > 0) {
                 searchpos--;
             }
             skipsame = 1;
         }
-        else if (c == ctrl('N') || c == SPECIAL_DOWN) {
+        else if (c == ctrl('S')) {
             /* Search for the next (later) match */
             if (searchpos < history_len) {
                 searchpos++;
             }
             searchdir = 1;
             skipsame = 1;
+        }
+        else if (c == ctrl('P') || c == SPECIAL_UP) {
+            /* Exit Ctrl-R mode and go to the previous history line from the current search pos */
+            set_history_index(current, history_len - searchpos);
+            c = 0;
+            break;
+        }
+        else if (c == ctrl('N') || c == SPECIAL_DOWN) {
+            /* Exit Ctrl-R mode and go to the next history line from the current search pos */
+            set_history_index(current, history_len - searchpos - 2);
+            c = 0;
+            break;
         }
         else if (c >= ' ' && c <= '~') {
             /* >= here to allow for null terminator */
@@ -1565,8 +1714,9 @@ static int reverseIncrementalSearch(struct current *current)
                     continue;
                 }
                 /* Copy the matching line and set the cursor position */
+                history_index = history_len - 1 - searchpos;
                 set_current(current,history[searchpos]);
-                current->pos = utf8_strlen(history[searchpos], p - history[searchpos]);
+                current->pos = utf8_charcount(history[searchpos], p - history[searchpos]);
                 break;
             }
         }
@@ -1580,25 +1730,25 @@ static int reverseIncrementalSearch(struct current *current)
     if (c == ctrl('G') || c == ctrl('C')) {
         /* ctrl-g terminates the search with no effect */
         set_current(current, "");
+        history_index = 0;
         c = 0;
     }
     else if (c == ctrl('J')) {
         /* ctrl-j terminates the search leaving the buffer in place */
+        history_index = 0;
         c = 0;
     }
-
     /* Go process the char normally */
     refreshLine(current);
     return c;
 }
 
 static int linenoiseEdit(struct current *current) {
-    int history_index = 0;
+    history_index = 0;
 
     refreshLine(current);
 
     while(1) {
-        int dir = -1;
         int c = fd_read(current);
 
 #ifndef NO_COMPLETION
@@ -1617,7 +1767,7 @@ static int linenoiseEdit(struct current *current) {
 
 #ifdef USE_TERMIOS
         if (c == CHAR_ESCAPE) {   /* escape sequence */
-            c = check_special(current->fd);
+            c = check_special(current);
         }
 #endif
         if (c == -1) {
@@ -1717,15 +1867,24 @@ static int linenoiseEdit(struct current *current) {
             if (current->pos > 0 && current->pos <= sb_chars(current->buf)) {
                 /* If cursor is at end, transpose the previous two chars */
                 int fixer = (current->pos == sb_chars(current->buf));
-                c = get_char(current, current->pos - fixer);
-                remove_char(current, current->pos - fixer);
-                insert_char(current, current->pos - 1, c);
-                refreshLine(current);
+                int offset;
+                int n = get_char_offset(current, current->pos - fixer, &offset);
+                assert(n > 0);
+                /* We need to copy this char before we remove it so we can reinsert it
+                 * This size should be good enough for all practical purposes. If not, do nothing
+                 */
+                char buf[32];
+                if (n <= (int)sizeof(buf)) {
+                    memcpy(buf, sb_str(current->buf) + offset, n);
+                    remove_char(current, current->pos - fixer);
+                    insert_char(current, current->pos - 1, buf, n);
+                    refreshLine(current);
+                }
             }
             break;
         case ctrl('V'):    /* ctrl-v */
             /* Insert the ^V first */
-            if (insert_char(current, current->pos, c)) {
+            if (insert_codepoint(current, current->pos, c)) {
                 refreshLine(current);
                 /* Now wait for the next char. Can insert anything except \0 */
                 c = fd_read(current);
@@ -1734,7 +1893,7 @@ static int linenoiseEdit(struct current *current) {
                 remove_char(current, current->pos - 1);
                 if (c > 0) {
                     /* Insert the actual char, can't be error or null */
-                    insert_char(current, current->pos, c);
+                    insert_codepoint(current, current->pos, c);
                 }
                 refreshLine(current);
             }
@@ -1753,36 +1912,19 @@ static int linenoiseEdit(struct current *current) {
                 refreshLine(current);
             }
             break;
-        case SPECIAL_PAGE_UP:
-          dir = history_len - history_index - 1; /* move to start of history */
-          goto history_navigation;
-        case SPECIAL_PAGE_DOWN:
-          dir = -history_index; /* move to 0 == end of history, i.e. current */
-          goto history_navigation;
+        case SPECIAL_PAGE_UP: /* move to start of history */
+          set_history_index(current, history_len - 1);
+          break;
+        case SPECIAL_PAGE_DOWN: /* move to 0 == end of history, i.e. current */
+          set_history_index(current, 0);
+          break;
         case ctrl('P'):
         case SPECIAL_UP:
-            dir = 1;
-          goto history_navigation;
+            set_history_index(current, history_index + 1);
+            break;
         case ctrl('N'):
         case SPECIAL_DOWN:
-history_navigation:
-            if (history_len > 1) {
-                /* Update the current history entry before to
-                 * overwrite it with tne next one. */
-                free(history[history_len - 1 - history_index]);
-                history[history_len - 1 - history_index] = strdup(sb_str(current->buf));
-                /* Show the new entry */
-                history_index += dir;
-                if (history_index < 0) {
-                    history_index = 0;
-                    break;
-                } else if (history_index >= history_len) {
-                    history_index = history_len - 1;
-                    break;
-                }
-                set_current(current, history[history_len - 1 - history_index]);
-                refreshLine(current);
-            }
+            set_history_index(current, history_index - 1);
             break;
         case ctrl('A'): /* Ctrl+a, go to the start of the line */
         case SPECIAL_HOME:
@@ -1823,7 +1965,7 @@ history_navigation:
             }
             /* Only tab is allowed without ^V */
             if (c == '\t' || c >= ' ') {
-                if (insert_char(current, current->pos, c) == 1) {
+                if (insert_codepoint(current, current->pos, c) == 1) {
                     refreshLine(current);
                 }
             }
