@@ -31,6 +31,7 @@ build() {
     fi
     echo "took $(( $(date +%s) - start ))s, fprofile mentions: $(grep -c fprofile "$name.log" || true)"
     ls -la "bin/$name$ext"
+    grep -m3 -E "config:|version:|nim (c|cpp) " "$name.log" | cut -c1-300 || true
     echo 'print 1 + 1' > smoke.art
     rc=0
     "./bin/$name$ext" smoke.art || rc=$?
@@ -120,6 +121,11 @@ perl tools/pgo/run.pl bench 5 $bins
 failed=0
 for b in $bins; do
     echo "::group::tests with $b"
+    # some tests call `arturo` by name: make sure it's this one
+    rm -rf testbin
+    mkdir -p testbin
+    cp "$b" "testbin/arturo$ext"
+    export PATH="$PWD/testbin:$PATH"
     rc=0
     "./$b" tools/tester.art > suite.log 2>&1 || rc=$?
     sed -E 's/\x1b\[[0-9;]*m//g' suite.log > suite.txt
