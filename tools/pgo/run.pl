@@ -54,16 +54,17 @@ elsif ($cmd eq "bench") {
             }
         }
     }
-    my $out = "| snippet | " . join(" | ", @names) . " | change |\n|---|" . ("---|" x (@names + 1)) . "\n";
+    my @others = 1..$#bins;
+    my $out = "| snippet | " . join(" | ", @names) . " | " . join(" | ", map { "$names[$_] vs $names[0]" } @others) . " |\n|---|" . ("---|" x (@names + @others)) . "\n";
     my @tot = (0) x @bins;
     for my $f (@files) {
         (my $l = $f) =~ s/\.art$//;
         my @v = @{$best{$f}};
         $tot[$_] += $v[$_] for 0..$#v;
         my $flag = join("", map { $_ ? " rc=$_" : "" } @{$rc{$f}});
-        $out .= sprintf("| %s%s | %s | %+.1f%% |\n", $l, $flag, join(" | ", map { sprintf("%.3f", $_) } @v), 100 * ($v[-1] - $v[0]) / $v[0]);
+        $out .= sprintf("| %s%s | %s | %s |\n", $l, $flag, join(" | ", map { sprintf("%.3f", $_) } @v), join(" | ", map { sprintf("%+.1f%%", 100 * ($v[$_] - $v[0]) / $v[0]) } @others));
     }
-    $out .= sprintf("| **TOTAL** | %s | **%+.1f%%** |\n", join(" | ", map { sprintf("%.2f", $_) } @tot), 100 * ($tot[-1] - $tot[0]) / $tot[0]);
+    $out .= sprintf("| **TOTAL** | %s | %s |\n", join(" | ", map { sprintf("%.2f", $_) } @tot), join(" | ", map { sprintf("**%+.1f%%**", 100 * ($tot[$_] - $tot[0]) / $tot[0]) } @others));
     print $out;
     if (my $s = $ENV{GITHUB_STEP_SUMMARY}) {
         open(my $h, ">>", $s) or die;
