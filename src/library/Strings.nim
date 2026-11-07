@@ -681,8 +681,13 @@ proc defineModule*(moduleName: string) =
                 else:
                     res = x.s
 
-                let Interpolated    = nre.re"\|([^\|]+)\|"
-                let Embeddable      = re.re"(?s)(\<\|\|.*?\|\|\>)"
+                var Interpolated {.global.}: nre.Regex
+                var Embeddable {.global.}: re.Regex
+
+                if templated:
+                    if Embeddable.isNil: Embeddable = re.re"(?s)(\<\|\|.*?\|\|\>)"
+                elif Interpolated.isNil:
+                    Interpolated = nre.re"\|([^\|]+)\|"
 
                 if templated:
                     var keepGoing = true

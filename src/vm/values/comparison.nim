@@ -31,6 +31,13 @@ const
     GMP = defined(GMP)
 
 #=======================================
+# Helpers
+#=======================================
+
+template bothNormalIntegers(x, y: Value): bool =
+    x.kind == Integer and y.kind == Integer and x.iKind == NormalInteger and y.iKind == NormalInteger
+
+#=======================================
 # Forward declarations
 #=======================================
 
@@ -70,6 +77,9 @@ when defined(GMP):
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool =
+    if bothNormalIntegers(x, y):
+        return x.i == y.i
+
     const 
         numericKinds = {Integer, Rational, Floating, Quantity}
         errorKinds = {Error, ErrorKind}
@@ -285,6 +295,9 @@ proc `==`*(x: Value, y: Value): bool =
 #  labels: enhancement,values,open discussion,unit-test
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i < y.i
+
     const numericKinds = {Integer, Rational, Floating, Quantity}
 
     if x.kind in numericKinds or y.kind in numericKinds:
@@ -361,6 +374,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             return false
 
 proc `>`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i > y.i
+
     const numericKinds = {Integer, Rational, Floating, Quantity}
 
     if x.kind in numericKinds or y.kind in numericKinds:
@@ -436,9 +452,13 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             return false
 
 proc `<=`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i <= y.i
     x < y or x == y
 
 proc `>=`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i >= y.i
     x > y or x == y
 
 # TODO(VM/values/comparison) Should we convert `!=` into a template?
