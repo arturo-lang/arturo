@@ -1,0 +1,68 @@
+name: "Package check"
+
+# temporary: run every file of every package published on pkgr.art
+# with master and with this branch, and compare the results
+
+on:
+    push:
+        branches:
+            - 'readonly-block-cache'
+    workflow_dispatch:
+
+jobs:
+    Compare:
+        name: ${{ matrix.os }}-${{ matrix.arch }}
+        timeout-minutes: 120
+        runs-on: ${{ matrix.runner }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - {os: linux, arch: amd64, runner: ubuntu-latest}
+                    - {os: macos, arch: arm64, runner: macos-latest}
+
+        steps:
+            - name: Install Arturo (master)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                src: refs/heads/master
+
+            - name: Checkout sources
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo
+
+            - name: Build this branch
+              working-directory: arturo
+              run: |
+                ./build.nims --as pr --log > build.log 2>&1 || { tail -40 build.log; exit 1; }
+                cp "$(command -v arturo)" bin/master
+                bin/master -v
+                bin/pr -v
+
+            - name: Fetch & install all packages
+              working-directory: arturo
+              run: ./tools/pkgcheck/fetch.sh "$RUNNER_TEMP/pkgs"
+
+            - name: Compare
+              working-directory: arturo
+              run: |
+                perl tools/pkgcheck/compare.pl "$RUNNER_TEMP/pkgs" "$HOME" bin/master bin/pr "$RUNNER_TEMP/out" \
+                    grace/src/grace.art mathjax/docs/example.art mermaid/docs/example.art grafito/examples/sample11.art \
+                    | tee -a "$GITHUB_STEP_SUMMARY"
+
+            - name: Show differences
+              if: failure()
+              run: |
+                cd "$RUNNER_TEMP/out"
+                for a in *.a; do
+                    echo "::group::${a%.a}"
+                    diff "$a" "${a%.a}.b" | head -60
+                    echo "::endgroup::"
+                done
