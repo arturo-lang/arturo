@@ -292,11 +292,11 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
     proc tryOptimizedCompilation(config: BuildConfig) =
         ## Profile-guided build: instrumented build,
         ## training run, then the final build
-        let baseFlags = flags
+        let baseLen = flags.len
 
         log "building instrumented binary..."
         pgoCleanUp()
-        flags = baseFlags & pgoFlags(generate=true)
+        flags.add pgoFlags(generate=true)
         config.tryCompilation()
 
         log "training..."
@@ -305,7 +305,8 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
             panic "Could not collect any profile data. Please try again without --pgo and report it."
 
         log "building optimized binary..."
-        flags = baseFlags & pgoFlags(generate=false)
+        flags.setLen(baseLen)
+        flags.add pgoFlags(generate=false)
         config.tryCompilation()
 
     proc main() =
