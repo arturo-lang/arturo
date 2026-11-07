@@ -1,0 +1,4 @@
+aFunctionWithAQuiteLongDescriptiveNameForNoParticularReason: function [x][ x + 1 ]
+s: 0
+loop 1..1500000 'i [ s: aFunctionWithAQuiteLongDescriptiveNameForNoParticularReason s ]
+print s

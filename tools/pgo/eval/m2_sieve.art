@@ -1,0 +1,16 @@
+n: 2000000
+flags: array.of: n + 1 true
+i: 2
+count: 0
+while [i =< n][
+    if flags\[i] [
+        count: count + 1
+        j: i * 2
+        while [j =< n][
+            flags\[j]: false
+            j: j + i
+        ]
+    ]
+    i: i + 1
+]
+print count

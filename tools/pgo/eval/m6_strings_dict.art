@@ -1,0 +1,9 @@
+d: #[]
+loop 1..200000 'i [
+    k: "k" ++ to :string i % 100
+    d\[k]: i
+]
+print size d
+s: ""
+loop 1..200000 'i [ s: upper "abc" ]
+print s

@@ -1,0 +1,13 @@
+classify: function [x][
+    case x % 4 [
+        0 -> "zero"
+        1 -> "one"
+        2 -> "two"
+        any -> "other"
+    ]
+]
+n: 0
+loop 1..400000 'i [
+    if "two" = classify i -> n: n + 1
+]
+print n

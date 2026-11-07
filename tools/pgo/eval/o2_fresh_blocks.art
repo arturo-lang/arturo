@@ -1,0 +1,3 @@
+s: 0
+loop 1..40000 'i [ s: s + do @[to :word "add" i 1] ]
+print s

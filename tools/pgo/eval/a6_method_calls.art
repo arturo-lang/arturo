@@ -1,0 +1,8 @@
+define :pt [
+    init: method [x][ this\x: x ]
+    plus: method [k][ this\x + k ]
+]
+q: to :pt [3]!
+s: 0
+loop 1..400000 'i [ s: q\plus s ]
+print s

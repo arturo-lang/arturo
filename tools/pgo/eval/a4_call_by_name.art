@@ -1,0 +1,4 @@
+f: function [x][ x + 1 ]
+s: 0
+loop 1..600000 'i [ s: call 'f @[s] ]
+print s

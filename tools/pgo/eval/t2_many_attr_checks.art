@@ -1,0 +1,9 @@
+s: 0
+loop 1..300000 'i [
+    x: round 2.567
+    y: join ["a" "b"]
+    z: replace "hello" "l" "L"
+    w: upper "x"
+    s: s + size y
+]
+print s

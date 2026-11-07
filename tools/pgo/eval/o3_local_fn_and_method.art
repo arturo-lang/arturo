@@ -1,0 +1,13 @@
+define :pt [
+    init: method [x][ this\x: x ]
+    get: method [][ this\x ]
+]
+f: function [q][
+    helper: function [v][ v + 1 ]
+    other: function [v][ v + 2 ]
+    helper other q\get
+]
+q: to :pt [3]!
+s: 0
+loop 1..40000 'i [ s: s + f q ]
+print s

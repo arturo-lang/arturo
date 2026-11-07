@@ -1,0 +1,12 @@
+define :pt [
+    init: method [x y][
+        this\x: x
+        this\y: y
+    ]
+    dist2: method [][ (this\x * this\x) + this\y * this\y ]
+]
+f: function [q][ q\dist2 ]
+q: to :pt [3 4]!
+s: 0
+loop 1..40000 'i [ s: s + f q ]
+print s

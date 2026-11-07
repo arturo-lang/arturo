@@ -1,0 +1,6 @@
+s: 0
+loop 1..25 'k [
+    r: select map 1..100000 'x -> x * 2 'y -> 0 = y % 3
+    s: s + fold r [a b][a + b]
+]
+print s

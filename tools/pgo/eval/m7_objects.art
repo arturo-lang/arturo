@@ -1,0 +1,10 @@
+define :acc [
+    init: method [v][ this\v: v ]
+    add: method [k][ this\v: this\v + k ]
+    value: method [][ this\v ]
+]
+run: function [a n][
+    loop 1..n 'i [ a\add i ]
+    a\value
+]
+print run to :acc [0]! 300000

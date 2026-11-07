@@ -1,0 +1,13 @@
+big: function [x][
+    a: x + 1
+    b: a * 2
+    c: b - a
+    d: c + a + b
+    e: d - c
+    g: e + 1
+    h: g - 1
+    h - e + x + 1
+]
+s: 0
+loop 1..400000 'i [ s: call var 'big @[s] ]
+print s

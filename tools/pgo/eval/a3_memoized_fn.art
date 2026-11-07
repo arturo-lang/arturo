@@ -1,0 +1,4 @@
+f: function [x].memoize [ x + 1 ]
+s: 0
+loop 1..500000 'i [ s: s + f i % 100 ]
+print s

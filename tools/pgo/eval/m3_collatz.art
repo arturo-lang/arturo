@@ -1,0 +1,14 @@
+collatz: function [n][
+    steps: 0
+    while [n <> 1][
+        switch 0 = n % 2 -> n: n / 2 -> n: 1 + 3 * n
+        steps: steps + 1
+    ]
+    steps
+]
+best: 0
+loop 1..60000 'i [
+    c: collatz i
+    if c > best -> best: c
+]
+print best
