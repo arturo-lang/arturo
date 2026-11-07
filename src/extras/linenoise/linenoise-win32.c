@@ -383,7 +383,24 @@ static int fd_read(struct current *current)
                 else if (k->wVirtualKeyCode == VK_CONTROL)
                     continue;
                 else {
-                    return k->uChar.UnicodeChar;
+                    /* [arturo] characters outside the BMP (e.g. emoji) arrive as
+                     * two utf-16 surrogates: combine them into one code point */
+                    static WCHAR high_surrogate = 0;
+                    WCHAR wc = k->uChar.UnicodeChar;
+                    if (wc >= 0xD800 && wc <= 0xDBFF) {
+                        high_surrogate = wc;
+                        continue;
+                    }
+                    if (wc >= 0xDC00 && wc <= 0xDFFF) {
+                        int cp;
+                        if (high_surrogate == 0) {
+                            continue;
+                        }
+                        cp = 0x10000 + ((high_surrogate - 0xD800) << 10) + (wc - 0xDC00);
+                        high_surrogate = 0;
+                        return cp;
+                    }
+                    return wc;
                 }
             }
         }
