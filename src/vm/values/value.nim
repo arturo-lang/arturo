@@ -29,8 +29,7 @@ when defined(WEB):
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
-when (not defined(GMP)) and (not defined(WEB)):
-   import vm/errors
+import vm/errors
 
 import vm/opcodes
 
@@ -466,9 +465,16 @@ func newRegex*(rx: sink VRegex): Value {.inline.} =
     ## create Regex value from VRegex
     Value(kind: Regex, rx: rx)
 
-func newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
+proc newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
     ## create Regex value from string
-    newRegex(newRegexObj(rx, rflags))
+    when not defined(WEB):
+        try:
+            newRegex(newRegexObj(rx, rflags))
+        except CatchableError as e:
+            Error_InvalidRegex(rx, e.msg.splitLines()[0])
+            VNULL
+    else:
+        newRegex(newRegexObj(rx, rflags))
 
 func newColor*(l: VColor): Value {.inline.} =
     ## create Color value from VColor

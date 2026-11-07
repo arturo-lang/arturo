@@ -63,6 +63,22 @@ proc replacingAmpersands(va: Value, what: Value): Value =
             theBlock.a.add(v)
     return theBlock
 
+when not defined(WEB):
+    proc enterImport(path: string, name: string) =
+        let importing = absolutePath(path)
+        if importing in ImportsInProgress or importing == absolutePath(entryFrame().path):
+            Error_CircularImport(name)
+        ImportsInProgress.add(importing)
+
+    template importingFile(path: string, name: string, body: untyped) =
+        enterImport(path, name)
+        pushFrame(path, fromFile=true)
+        try:
+            body
+        finally:
+            discardFrame()
+            discard ImportsInProgress.pop()
+
 #=======================================
 # Definitions
 #=======================================
@@ -232,23 +248,18 @@ proc defineModule*(moduleName: string) =
 
                 if fun.kind == Function:
                     if fun.fnKind==UserFunction:
-                        var fid: Hash
-                        if xKind in {Literal,String}:
-                            fid = hash(x.s)
-                        else:
-                            fid = hash(fun)
-                            
+                        var fid: Hash = 0
+                        if fun.memoize:
+                            if xKind in {Literal,String}:
+                                fid = hash(x.s)
+                            else:
+                                fid = hash(fun)
+
                         execFunction(fun, fid)
                     else:
                         fun.action()()
                 else:
-                    var fid: Hash
-                    if xKind in {Literal,String}:
-                        fid = hash(x.s)
-                    else:
-                        fid = hash(fun)
-
-                    execMethod(fun, fid)
+                    execMethod(fun)
 
     # TODO(Core\case) could add `.match` option
     #  that would actually allow us to match and 
@@ -566,12 +577,13 @@ proc defineModule*(moduleName: string) =
                     if tp==FileData:
                         pushFrame(x.s, fromFile=true)
 
-                    let parsed = doParse(src, isFile=false)
-                    if not parsed.isNil:
-                        execUnscoped(parsed)
-
-                    if tp==FileData:
-                        discardFrame()
+                    try:
+                        let parsed = doParse(src, isFile=false, inFile=(tp==FileData))
+                        if not parsed.isNil:
+                            execUnscoped(parsed)
+                    finally:
+                        if tp==FileData:
+                            discardFrame()
                 
                 currentTime += 1
 
@@ -892,7 +904,7 @@ proc defineModule*(moduleName: string) =
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
-            let argBlock {.cursor.} =
+            let argBlock =
                 if xKind == Block: 
                     requireValueBlock(x, {Word, Literal, Type})
                     x.a
@@ -1006,18 +1018,16 @@ proc defineModule*(moduleName: string) =
 
                 when defined(BUNDLE):
                     let (src, path) = getBundledResource(x.s)
-                    pushFrame(path, fromFile=true)
-
-                    let parsed = doParse(src, isFile=false)
-                    if not parsed.isNil:
-                        if importOnly.len > 0:
-                            let got = execScopedModule(parsed, importOnly)
-                            for k,v in got.pairs:
-                                if importOnly.contains(k) or k.startsWith("__module"):
-                                    SetSym(k, v)
-                        else:
-                            execUnscoped(parsed)
-                    discardFrame()
+                    importingFile(path, x.s):
+                        let parsed = doParse(src, isFile=false, inFile=true)
+                        if not parsed.isNil:
+                            if importOnly.len > 0:
+                                let got = execScopedModule(parsed, importOnly)
+                                for k,v in got.pairs:
+                                    if importOnly.contains(k) or k.startsWith("__module"):
+                                        SetSym(k, v)
+                            else:
+                                execUnscoped(parsed)
                 else:
                     var verspec = (true, NoPackageVersion)
                     var pkgs: seq[string]
@@ -1050,28 +1060,25 @@ proc defineModule*(moduleName: string) =
                             if not src.fileExists():
                                 Error_PackageNotValid(pkg)
 
-                            pushFrame(src, fromFile=true)
-
-                            if not lean:
-                                let parsed = doParse(src, isFile=true)
-                                if not parsed.isNil:
-                                    if importOnly.len > 0:
+                            importingFile(src, pkg):
+                                if not lean:
+                                    let parsed = doParse(src, isFile=true)
+                                    if not parsed.isNil:
+                                        if importOnly.len > 0:
+                                            let got = execScopedModule(parsed, importOnly)
+                                            for k,v in got.pairs:
+                                                if importOnly.contains(k) or k.startsWith("__module"):
+                                                    SetSym(k, v)
+                                        else:
+                                            execUnscoped(parsed)
+                                else:
+                                    let parsed = doParse(src, isFile=true)
+                                    if not parsed.isNil:
                                         let got = execScopedModule(parsed, importOnly)
-                                        for k,v in got.pairs:
-                                            if importOnly.contains(k) or k.startsWith("__module"):
-                                                SetSym(k, v)
-                                    else:
-                                        execUnscoped(parsed)
-                            else:
-                                let parsed = doParse(src, isFile=true)
-                                if not parsed.isNil:
-                                    let got = execScopedModule(parsed, importOnly)
-                                    if multiple:
-                                        ret.add(newDictionary(got))
-                                    else:
-                                        push(newDictionary(got))
-
-                            discardFrame()              
+                                        if multiple:
+                                            ret.add(newDictionary(got))
+                                        else:
+                                            push(newDictionary(got))
                         else:
                             Error_PackageNotFound(pkg)
 
@@ -1258,7 +1265,7 @@ proc defineModule*(moduleName: string) =
             let isDistinct = hadAttr("distinct")
             let isPublic = hadAttr("public")
             
-            let argBlock {.cursor.} =
+            let argBlock =
                 if xKind == Block: 
                     requireValueBlock(x, {Word, Literal, Type})
                     x.a

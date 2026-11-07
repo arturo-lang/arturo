@@ -97,7 +97,7 @@ func newInt*(x: int = 0): Int =
         elif x.fitsLLP64ULong:
             mpz_init_set_ui(result[], x.culong)
         else:
-            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_init_set_si(result[], (x shr 32).int32.clong)
             mpz_mul_2exp(result[], result[], 32)
             mpz_add_ui(result[], result[], (x.uint32))
     else:
@@ -162,7 +162,7 @@ func newRat*(x: int = 0): Rat =
         elif x.fitsLLP64ULong:
             mpq_set_ui(result[], x.culong, 1)
         else:
-            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_set_si(result[], (x shr 32).int32.clong, 1)
             mpq_mul_2exp(result[], result[], 32)
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:
@@ -181,7 +181,7 @@ func newRat*(x, y: int): Rat =
         elif x.fitsLLP64ULong:
             mpz_set_ui(nref, x.culong)
         else:
-            mpz_set_ui(nref, (x shr 32).uint32)
+            mpz_set_si(nref, (x shr 32).int32.clong)
             mpz_mul_2exp(nref, nref, 32)
             mpz_add_ui(nref, nref, (x.uint32))
 
@@ -190,7 +190,7 @@ func newRat*(x, y: int): Rat =
         elif y.fitsLLP64ULong:
             mpz_set_ui(dref, y.culong)
         else:
-            mpz_set_ui(dref, (y shr 32).uint32)
+            mpz_set_si(dref, (y shr 32).int32.clong)
             mpz_mul_2exp(dref, dref, 32)
             mpz_add_ui(dref, dref, (y.uint32))
     else:
@@ -264,7 +264,7 @@ func set*(z: Int, x: int): Int =
         elif x.fitsLLP64ULong:
             mpz_init_set_ui(result[], x.culong)
         else:
-            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_init_set_si(result[], (x shr 32).int32.clong)
             mpz_mul_2exp(result[], result[], 32)
             mpz_add_ui(result[], result[], (x.uint32))
     else:
@@ -292,7 +292,7 @@ func set*(z: Rat, x: int): Rat =
         elif x.fitsLLP64ULong:
             mpq_set_ui(result[], x.culong, 1)
         else:
-            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_set_si(result[], (x shr 32).int32.clong, 1)
             mpq_mul_2exp(result[], result[], 32)
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:

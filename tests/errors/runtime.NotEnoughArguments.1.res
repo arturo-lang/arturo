@@ -11,9 +11,9 @@ hello
       1
 
   ┃ File: tests/errors/runtime.NotEnoughArguments.1.art
-  ┃ Line: 3
+  ┃ Line: 2
   ┃ 
   ┃    1 ║  hello: "hello"
-  ┃    2 ║  print
-  ┃    3 ║► print "hello"
+  ┃    2 ║► print
+  ┃    3 ║  print "hello"
   ┃    4 ║  print 2

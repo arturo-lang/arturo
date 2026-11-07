@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import hashes, sugar, tables
+import hashes, tables
 
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
@@ -41,7 +41,7 @@ var
 func indexOfValue(a: ValueArray, item: Value): int {.inline.}=
     result = 0
     for i in items(a):
-        if consideredEqual(item, i): return
+        if (item.kind notin {Block, Inline} or item.ln == i.ln) and consideredEqual(item, i): return
         inc(result)
     result = -1
 
@@ -83,12 +83,6 @@ template addReplaceOpWithIndex(instructions: var VBinary, oper: OpCode, num: unt
     else:
         instructions[^1] = byte(oper)
         instructions.addByte(byte(num))
-
-proc cleanChildren(node: Node): seq[Node] =
-    result = collect:
-        for subnode in node.children:
-            if subnode.kind != NewlineNode:
-                subnode
 
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline.} =
     var indx = consts.indexOfValue(v)
@@ -244,9 +238,8 @@ template optimizeConditional(
 ): untyped =
     # let's keep some references
     # to the children
-    let cleanedChildren = cleanChildren(special)
-    let left {.cursor.} = cleanedChildren[0]
-    let right {.cursor.} = cleanedChildren[1]
+    let left {.cursor.} = special.children[0]
+    let right {.cursor.} = special.children[1]
 
     # can we optimize?
     var canWeOptimize = false
@@ -278,15 +271,15 @@ template optimizeConditional(
 
             when withLoop:
                 # separately ast+evaluate right child block     
-                evaluateBlock(leftNode, consts, leftIt)
+                evaluateBlock(leftNode, consts, leftIt, omitNewlines=omitNewlines)
                 it.add(leftIt)
             else:
                 # inline-evaluate left child
-                evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+                evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it, omitNewlines=omitNewlines)
 
             # separately ast+evaluate right child block     
             var rightIt: VBinary
-            evaluateBlock(rightNode, consts, rightIt)
+            evaluateBlock(rightNode, consts, rightIt, omitNewlines=omitNewlines)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
@@ -356,20 +349,17 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         lastOpStore = -1
         it.addByte(op)
 
-    # TODO(Errors) Line number messed up at start of block
-    #  let's say we do 
-    #  ```
-    #  do [
-    #      print 3/0
-    #
-    #  ]
-    #  ```
-    #  The line of the error will be messed up. This wouldn't happen if it was
-    #  the second command within that block. (And I have no idea / don't remember)
-    #  why this could be happening... (Nor is it necessarily related to the evaluator)
-    #  labels: error handling, bug, evaluation, ast
-    template addEol(n: untyped): untyped =
-        it.addOpWithNumber(opEol, n, hasShortcut=false)
+    var lastMarker: uint32 = 0
+
+    # Right before an instruction that may fail. Arguments are generated
+    # right-to-left, so this has to follow the generated code, not the source
+    template addEol(nd: Node): untyped =
+        if likely(not omitNewlines) and nd.line != 0 and nd.line != lastMarker:
+            lastMarker = nd.line
+            if lastMarker > 65535:
+                it.addByte([byte(opEolY), byte(lastMarker shr 24), byte(lastMarker shr 16), byte(lastMarker shr 8), byte(lastMarker)])
+            else:
+                it.addOpWithNumber(opEol, lastMarker, hasShortcut=false)
 
     #------------------------
     # MainLoop
@@ -413,16 +403,15 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                 else:
                     discard # won't reach here
 
-        if not alreadyProcessed:
+        if alreadyProcessed:
+            lastMarker = 0
+        else:
 
             for instruction in traverse(item):
 
                 case instruction.kind:
                     of RootNode:
                         discard
-                    of NewlineNode:
-                        if likely(not omitNewlines):
-                            addEol(instruction.line)
                     of ConstantValue:
                         var alreadyPut = false
                         let iv {.cursor.} = instruction.value
@@ -475,6 +464,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         if not alreadyPut:
                             addConst(instruction.value, opPush)
                     of VariableLoad:
+                        addEol(instruction)
                         addVariableLoad(instruction)
                     of AttributeNode:
                         addConst(instruction.value, opAttr)
@@ -485,10 +475,13 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                             lastOpStore = addConstAndGetIndex(instruction.value, opStore)
                             lastOpStorePos = it.len
                     of OtherCall:
+                        addEol(instruction)
                         addConst(instruction.value, opCall)
                     of BuiltinCall:
+                        addEol(instruction)
                         addSingleCommand(instruction.op)
                     of SpecialCall:
+                        addEol(instruction)
                         # TODO(VM/eval) nested `switch` calls are not being optimized
                         #  labels: vm, evaluator, performance, enhancement
                         addSingleCommand(instruction.op)
@@ -509,9 +502,23 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     var vhash {.used.}: Hash = -1
     
     when useStored:
+        # Read-only blocks (i.e. compiled constants) are copied on assignment
+        # and when passed to functions, while direct writes (`set`, paths)
+        # reset the cache: so, their translation can live on the value itself,
+        # and we can skip deep-hashing them on every execution
+        let cacheable = root.readonly and not root.dynamic and root.kind in {Block, Inline} and
+                        not isDictionary and not isFunctionBlock and not omitNewlines
+        if cacheable and not root.cachedTrans.isNil:
+            return (root.cachedTrans, true)
+
         if not root.dynamic:
             vhash = hash(root)
+            if root.kind in {Block, Inline}:
+                for tok in root.a:
+                    vhash = vhash !& int(tok.ln)
+                vhash = !$vhash
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
+                if cacheable: root.cachedTrans = storedTranslation
                 return (storedTranslation, true)
 
     var consts: ValueArray
@@ -529,6 +536,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     when useStored:
         if canStore and (vhash != -1):
             StoredTranslations[vhash] = res
+            if cacheable: root.cachedTrans = res
         return (res, canStore)
     else:
         return (res, false)

@@ -1,7 +1,7 @@
 true
 false
 
-══╡ Conversion Error ╞════════════════════════════════════════════════════════════════════════════════════ <script> ══
+══╡ Conversion Error ╞══════════════════════════════════════════════ <script> ══
 
   Problem when converting value to given type
 
@@ -18,5 +18,6 @@ false
   ┃    2 ║  print to :logical "false"
   ┃    3 ║► print to :logical "boom"
 
-  Hint: Make sure the passed string contains one of the supported values: `true`, `false`, or
-        `maybe`.
+  Hint: Make sure the passed string contains one of the
+        supported values: `true`, `false`, or `maybe`.
+

@@ -65,7 +65,7 @@ var
 
 proc execFunction*(fun: Value, fid: Hash)
 proc execFunctionInline*(fun: Value, fid: Hash)
-proc execMethod*(meth: Value, fid: Hash)
+proc execMethod*(meth: Value)
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
@@ -73,11 +73,24 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary)
 # Helpers
 #=======================================
 
+proc argValue(v: Value): Value {.inline.} =
+    ## Constant blocks are passed to functions by (shallow) copy:
+    ## the function may modify its argument, but never the constant
+    ## itself - whose translation may already be cached on it
+    if unlikely(v.readonly) and v.kind in {Block, Inline}:
+        result = if v.kind == Block: newBlock(v.a, v.data) else: newInline(v.a)
+        result.dynamic = v.dynamic
+    else:
+        result = v
+
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
 proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
+        if unlikely(SP < 1):
+            Error_NotEnoughArguments(cnst[idx].s & ":", 1)
+
         var stackTop {.cursor.} = stack.peek(0)
 
         SetSym(cnst[idx].s, stackTop, safe=true)
@@ -86,6 +99,9 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
 
 proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inline.}=
     hookProcProfiler("exec/storeByIndex"):
+        if unlikely(SP < 1):
+            Error_NotEnoughArguments(cnst[idx].s & ":", 1)
+
         var stackTop {.cursor.} = stack.peek(0)
 
         SetDictSym(cnst[idx].s, stackTop, safe=true)
@@ -110,10 +126,12 @@ proc callFunction*(f: Value, fnName: string, args: ValueArray) =
             if unlikely(SP < f.arity):
                 Error_NotEnoughArguments(fnName, f.arity)
 
-            if f.inline: 
-                if safeToProceed: execFunctionInline(f, hash(fnName))
-                else: execFunction(f, hash(fnName))
-            else: execFunction(f, hash(fnName))
+            let fid = if f.memoize: hash(fnName) else: 0
+
+            if f.inline:
+                if safeToProceed: execFunctionInline(f, fid)
+                else: execFunction(f, fid)
+            else: execFunction(f, fid)
     else:
         f.action()()
 
@@ -125,15 +143,17 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             if unlikely(SP < f.arity):
                 Error_NotEnoughArguments(fnName, f.arity)
 
-            if f.inline: 
+            let fid = if f.memoize: hash(fnName) else: 0
+
+            if f.inline:
                 var safeToProceed = true
-                for i in 0..f.params.high:          
+                for i in 0..f.params.high:
                     if stack.peek(i).kind==Function:
                         safeToProceed = false
                         break
-                if safeToProceed: execFunctionInline(f, hash(fnName))
-                else: execFunction(f, hash(fnName))
-            else: execFunction(f, hash(fnName))
+                if safeToProceed: execFunctionInline(f, fid)
+                else: execFunction(f, fid)
+            else: execFunction(f, fid)
     else:
         f.action()()
 
@@ -146,7 +166,7 @@ proc callMethod*(f: Value, methName: string, args: ValueArray) =
         if unlikely(SP < f.marity):
             Error_NotEnoughArguments(methName, f.marity)
 
-        execMethod(f, hash(methName))
+        execMethod(f)
 
 template callMethod*(f: Value, methName: string = "<closure>"):untyped =
     ## Take a Method value, 
@@ -155,7 +175,7 @@ template callMethod*(f: Value, methName: string = "<closure>"):untyped =
         if unlikely(SP < f.marity):
             Error_NotEnoughArguments(methName, f.marity)
 
-        execMethod(f, hash(methName))
+        execMethod(f)
 
 template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
@@ -216,25 +236,34 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
 #  and https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/variadic%20function.art
 #  labels: bug, critical, library, vm, execution
 
+template leaklessKey*(keys: seq[string] | ValueArray, i: int): string =
+    when keys is ValueArray: keys[i].s
+    else: keys[i]
+
 template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
 
-    var toRestore{.inject.}: seq[(string,Value)] = 
-        collect:
-            for psym in protected:
-                when protected is ValueArray:
-                    (psym.s, Syms.getOrDefault(psym.s, nil))
-                else:
-                    (psym, Syms.getOrDefault(psym, nil))
+    let toRestoreKeys {.inject, cursor.} = protected
+    var toRestoreOne {.inject.}: Value = nil
+    var toRestore {.inject.}: seq[Value]
+
+    if toRestoreKeys.len == 1:
+        toRestoreOne = Syms.getOrDefault(leaklessKey(toRestoreKeys, 0), nil)
+    else:
+        toRestore = newSeq[Value](toRestoreKeys.len)
+        for li in 0 ..< toRestoreKeys.len:
+            toRestore[li] = Syms.getOrDefault(leaklessKey(toRestoreKeys, li), nil)
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
 
-    for (sym, val) in mitems(toRestore):
-        if val.isNil:
-            Syms.del(sym)
-        else:
-            Syms[sym] = move val
+    if toRestoreKeys.len == 1:
+        if toRestoreOne.isNil: Syms.del(leaklessKey(toRestoreKeys, 0))
+        else: Syms[leaklessKey(toRestoreKeys, 0)] = move toRestoreOne
+    else:
+        for li in 0 ..< toRestore.len:
+            if toRestore[li].isNil: Syms.del(leaklessKey(toRestoreKeys, li))
+            else: Syms[leaklessKey(toRestoreKeys, li)] = move toRestore[li]
 
 template prepareLeaklessOne*(protected: string | Value): untyped =
     ## Prepare for leak-less block execution
@@ -262,12 +291,14 @@ template finalizeLeaklessOne*(): untyped =
 template handleBranching*(tryDoing, finalize: untyped): untyped =
     ## Wrapper for code that may throw *Break* or *Continue* signals, 
     ## or other errors that are to be caught
+    let callerLine = CurrentLine
     try:
         tryDoing
     except BreakTriggered:
+        CurrentLine = callerLine
         return
     except ContinueTriggered:
-        discard
+        CurrentLine = callerLine
     except Defect as e:
         raise e 
     finally:
@@ -342,6 +373,21 @@ proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
             Syms[i] = d
             result.del(i)
 
+when not defined(WEB):
+    proc pushDefinitionFrame(fun: Value): bool {.inline.} =
+        ## Run function in the frame of the file it was defined in,
+        ## unless that's where we already are. (Those from the entry
+        ## script have no path: their file is that of the entry frame)
+        if (let fpath = fun.info.path; not fpath.isNil()):
+            if currentFrame().path == fpath[]:
+                return false
+            pushFrame(fpath[], fromFile=true)
+            return true
+        if FSP > 1 and currentFrame().path != entryFrame().path:
+            pushFrame(entryFrame())
+            return true
+        return false
+
 proc execFunction*(fun: Value, fid: Hash) =
     ## Execute given Function value with scoping
     ## 
@@ -356,11 +402,6 @@ proc execFunction*(fun: Value, fid: Hash) =
     var memoizedParams: Value = nil
 
     let argsL = len(fun.params)
-
-    when not defined(WEB):
-        var fpath: ref string
-        if (fpath = fun.info.path; not fpath.isNil()):
-            pushFrame(fpath[], fromFile=true)
 
     if fun.memoize:
         memoizedParams = newBlock()
@@ -377,6 +418,11 @@ proc execFunction*(fun: Value, fid: Hash) =
             push memd
             return
 
+    when not defined(WEB):
+        let framed = pushDefinitionFrame(fun)
+
+    let callerLine = CurrentLine
+
     pushScopeFrame()
 
     if not fun.imports.isNil:
@@ -385,7 +431,7 @@ proc execFunction*(fun: Value, fid: Hash) =
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, stack.pop())
+        SetSym(arg, argValue(stack.pop()))
 
     try:
         if not fun.bcode.isNil:
@@ -397,11 +443,11 @@ proc execFunction*(fun: Value, fid: Hash) =
             ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
-        discard
+        CurrentLine = callerLine
 
     finally:
         when not defined(WEB):
-            if not fpath.isNil():
+            if framed:
                 discardFrame()
 
         if fun.memoize:
@@ -442,11 +488,6 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
  
     let argsL = len(fun.params)
 
-    when not defined(WEB):
-        var fpath: ref string
-        if (fpath = fun.info.path; not fpath.isNil()):
-            pushFrame(fpath[], fromFile=true)
-
     if fun.memoize:
         memoizedParams = newBlock()
 
@@ -462,11 +503,16 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
             push memd
             return
 
+    when not defined(WEB):
+        let framed = pushDefinitionFrame(fun)
+
+    let callerLine = CurrentLine
+
     prepareLeakless(fun.params)
 
     for arg in fun.params:
         # pop argument and set it
-        SetSym(arg, stack.pop())
+        SetSym(arg, argValue(stack.pop()))
 
     try:
         if not fun.bcode.isNil:
@@ -478,11 +524,11 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
             ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
-        discard
+        CurrentLine = callerLine
 
     finally:
         when not defined(WEB):
-            if not fpath.isNil():
+            if framed:
                 discardFrame()
 
         if fun.memoize:
@@ -490,7 +536,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
         finalizeLeakless()
 
-proc execMethod*(meth: Value, fid: Hash) =
+proc execMethod*(meth: Value) =
     ## Execute given Method value with scoping
     ## 
     ## This means:
@@ -500,15 +546,15 @@ proc execMethod*(meth: Value, fid: Hash) =
     ##   overwrite the value in the outer scope
 
     when not defined(WEB):
-        var fpath: ref string
-        if (fpath = meth.info.path; not fpath.isNil()):
-            pushFrame(fpath[], fromFile=true)
+        let framed = pushDefinitionFrame(meth)
+
+    let callerLine = CurrentLine
 
     pushScopeFrame()
 
     for arg in meth.mparams:
         # pop argument and set it
-        SetSym(arg, stack.pop())
+        SetSym(arg, argValue(stack.pop()))
 
     try:
         if not meth.mbcode.isNil:
@@ -520,7 +566,7 @@ proc execMethod*(meth: Value, fid: Hash) =
             ExecLoop(trans.constants, trans.instructions)
 
     except ReturnTriggered:
-        discard
+        CurrentLine = callerLine
 
     finally:
         var frame = popScopeFrame()
@@ -532,7 +578,7 @@ proc execMethod*(meth: Value, fid: Hash) =
         releaseScopeFrame(frame)
 
         when not defined(WEB):
-            if not fpath.isNil():
+            if framed:
                 discardFrame()
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary) =
@@ -548,6 +594,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
     var
         i   {.register.}: int = 0
         op  {.register.}: OpCode
+
+    let callerLine = CurrentLine
 
     while true:
         {.computedGoTo.}
@@ -594,22 +642,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
                 of opConstN             : stack.push(VNULL)
 
-                # lines & error reporting
-                of opEol                : 
-                    when not defined(NOERRORLINES):
-                        i += 1
-                        CurrentLine = int(it[i])
-                    else:
-                        discard
-                of opEolX               :   
-                    when not defined(NOERRORLINES):
-                        i += 2
-                        CurrentLine = int(uint16(it[i-1]) shl 8 + byte(it[i]))
-                    else:
-                        discard
-
                 of opDStore             : i += 1; dStoreByIndex(cnst, int(it[i]))
                 of opDStoreX            : i += 2; dStoreByIndex(cnst, int(uint16(it[i-1]) shl 8 + byte(it[i]))) 
+
+                of RSRV1                : discard
+                of RSRV2                : discard
 
                 # [0x20-0x2F]
                 # push values
@@ -758,7 +795,7 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     else:               DoShl()
                 of opShr                : arithmeticFastpathB(DoShr, normalIntegerShr)
 
-                of RSRV1                : discard
+                of RSRV3                : discard
 
                 # [0x90-0x9F]
                 # logical operators
@@ -778,11 +815,11 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opGet                : DoGet()
                 of opSet                : DoSet()
 
-                of RSRV2                : discard
-                of RSRV3                : discard   
                 of RSRV4                : discard
-                of RSRV5                : discard
+                of RSRV5                : discard   
                 of RSRV6                : discard
+                of RSRV7                : discard
+                of RSRV8                : discard
 
                 # [0xA0-0xAF]
                 # branching
@@ -791,9 +828,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opSwitch             : DoSwitch()
                 of opWhile              : DoWhile()
 
-                of RSRV7                : discard
-                of RSRV8                : discard
                 of RSRV9                : discard
+                of RSRV10               : discard
+                of RSRV11               : discard
 
                 of opReturn             : DoReturn()
                 of opBreak              : DoBreak()
@@ -808,9 +845,9 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     stack.push(VINTEGERT)
                     DoTo()
 
-                of RSRV10               : discard
-                of RSRV11               : discard
                 of RSRV12               : discard
+                of RSRV13               : discard
+                of RSRV14               : discard
 
                 # [0xB0-0xBF]
                 # generators          
@@ -835,14 +872,14 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 # i/o operations
                 of opPrint              : DoPrint()
 
-                of RSRV13               : discard
-                of RSRV14               : discard
+                of RSRV15               : discard
+                of RSRV16               : discard
 
                 #---------------------------------
                 # LOW-LEVEL OPERATIONS
                 #---------------------------------
 
-                # [0xC0-0xDF]
+                # [0xC0-0xE0]
                 # no operation
                 of opNop                : discard
 
@@ -924,10 +961,22 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                 of opRet                :
                     discard
 
-                of RSRV15               : discard
-                of RSRV16               : discard
+                # lines & error reporting
+                of opEol                : 
+                    i += 1
+                    when not defined(NOERRORLINES):
+                        CurrentLine = int(it[i])
+                of opEolX               :   
+                    i += 2
+                    when not defined(NOERRORLINES):
+                        CurrentLine = int(uint16(it[i-1]) shl 8 + byte(it[i]))
+                of opEolY               :
+                    i += 4
+                    when not defined(NOERRORLINES):
+                        CurrentLine = (int(it[i-3]) shl 24) or (int(it[i-2]) shl 16) or (int(it[i-1]) shl 8) or int(it[i])
 
                 of opEnd                :
+                    CurrentLine = callerLine
                     break
 
         i += 1

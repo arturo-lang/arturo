@@ -36,6 +36,7 @@ include ".config/arch.nims"
 include ".config/buildmode.nims"
 include ".config/devtools.nims"
 include ".config/who.nims"
+include ".config/pgo.nims"
 
 #=======================================
 # Constants
@@ -57,7 +58,7 @@ let
 
 type BuildConfig = tuple
     binary, version, bundle: string
-    shouldCompress, shouldInstall, shouldLog, generateBundle, isDeveloper: bool
+    shouldCompress, shouldInstall, shouldLog, generateBundle, isDeveloper, withPGO: bool
 
 func webVersion(config: BuildConfig): bool
 
@@ -85,6 +86,7 @@ func buildConfig(): BuildConfig =
         shouldLog:          false,
         generateBundle:     false,
         isDeveloper:        false,
+        withPGO:            false,
     )
 
 #=======================================
@@ -287,6 +289,26 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         if (let cd = config.compile(showFooter=true); cd != 0):
             panic "Compilation failed. Please try again with --log and report it.", cd
 
+    proc tryOptimizedCompilation(config: BuildConfig) =
+        ## Profile-guided build: instrumented build,
+        ## training run, then the final build
+        let baseLen = flags.len
+
+        log "building instrumented binary..."
+        pgoCleanUp()
+        flags.add pgoFlags(generate=true)
+        config.tryCompilation()
+
+        log "training..."
+        pgoTrain(config.binary)
+        unless pgoMergeProfile():
+            panic "Could not collect any profile data. Please try again without --pgo and report it."
+
+        log "building optimized binary..."
+        flags.setLen(baseLen)
+        flags.add pgoFlags(generate=false)
+        config.tryCompilation()
+
     proc main() =
         showHeader "install"
 
@@ -297,7 +319,10 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
             setBundlemodeUp()
 
         config.showInfo()
-        config.tryCompilation()
+        if config.withPGO:
+            config.tryOptimizedCompilation()
+        else:
+            config.tryCompilation()
         config.postProcess()
 
         if config.shouldInstall:
@@ -427,6 +452,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##     --debug -d                   enables debugging
     ##     --install -i                 installs the final binary
     ##     --log -l                     shows compilation logs
+    ##     --pgo                        profile-guided optimization (slower build, faster binary)
     ##     --raw                        disables compression
     ##     --release                    enable release config mode
     ##     --help
@@ -516,6 +542,12 @@ cmd build, "[default] Build arturo and optionally install the executable":
 
     if args.hasFlag("release"):
         releaseConfig()
+
+    if args.hasFlag("pgo"):
+        if config.webVersion:
+            warn "--pgo has no effect on web builds"
+        else:
+            config.withPGO = true
 
     config.buildArturo(targetDir/config.binary)
 

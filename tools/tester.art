@@ -32,8 +32,10 @@ canExecute?: function [scr][
     if sys\release='mini [
         if in? scr [
             "runtime.NumberOutOfPermittedRange"
+            "runtime.SymbolNotFound"
 
             "branching"
+            "lib.arithmetic.bignum"
             "lib.binary.bignum"
             "lib.comparison"
             "lib.files"
@@ -46,26 +48,40 @@ canExecute?: function [scr][
             "Bell numbers"
             "Benford's law"
             "Combinations and permutations"
+            "Currency"
             "Curzon numbers"
+            "Engel expansion"
+            "Exceptions"
             "Fermat pseudoprimes"
             "Hamming numbers"
             "IBAN"
             "Integer overflow"
             "Integer roots"
             "Jacobsthal numbers"
+            "Juggler sequence"
+            "Least m such that n!   m is prime"
             "Left factorials"
             "Long multiplication"
+            "Long primes"
             "Lucas-Lehmer test"
+            "Lychrel numbers"
             "Magic constant"
             "Miller-Rabin primality test"
+            "Minimum positive multiple in base 10 using only 0 and 1"
             "Modular exponentiation"
+            "Multiplicative order"
+            "Multiplicatively perfect numbers"
+            "N-smooth numbers"
             "Next special primes"
+            "Pell numbers"
             "Pell's equation"
             "Penta-power prime seeds"
             "Permutations - derangements"
+            "Pierpont primes"
             "Primorial numbers"
             "Quad-power prime seeds"
             "Repunit primes"
+            "RSA code"
             "Sequence of primorial primes"
             "Smallest power of 6 whose decimal expansion contains n"
             "Sort a list of object identifiers"
@@ -73,6 +89,8 @@ canExecute?: function [scr][
             "Sorting algorithms/Pancake sort"
             "Special factorials"
             "Square root by hand"
+            "Stirling numbers of the first kind"
+            "Stirling numbers of the second kind"
             "Super-d numbers"
             "Super-Poulet numbers"
             "Sylvester's sequence"
@@ -110,24 +128,20 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     loop tests 'test [
         script: replace test ".res" ".art"
         expected: read test
-        if title="Errors" [
-            expected: replace expected {═} ""
+        ; error reports are wrapped according to the terminal's width
+        ; and may include paths, so we only check for the words in them
+        normalize: function [output][
+            if title <> "Errors" -> return split.lines strip output
+            split.words replace replace output {═} "" "\\" "/"
         ]
-        expected: split.lines strip expected
+        expected: normalize expected
         friendlyName: decode.url extract.filename script
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve friendlyName 40) 70
         switch canExecute? friendlyName [
             ;tim: benchmark.get [
                 result: execute ~{|sys\binary| --no-color "|script|"}
-                cleanResult: ""
-                if title="Errors" [
-                    cleanResult: split.lines strip result
-                    result: replace result {═} ""
-                ]
-                result: split.lines strip result
-                if title <> "Errors" [
-                    cleanResult: result
-                ]
+                cleanResult: split.lines strip result
+                result: normalize result
 
             ;]
             ; indiTimes: indiTimes ++ #[
@@ -170,7 +184,7 @@ print color #gray ~"  Release: @|sys\release|\n"
 
 supertime: in's benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
-    ;runSet "Errors" "../tests/errors"
+    runSet "Errors" "../tests/errors"
     runSet "Examples" "../../examples/src/rosetta"
 ]
 
