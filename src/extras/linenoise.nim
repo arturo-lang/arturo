@@ -21,16 +21,9 @@ import os
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
-# TODO(extras/linenoise) UTF-8 support not working properly
-#  should add -DUSE_UTF8 for UTF-8 support
-#  to all following lines
-#  the problem is that - although it "works" - different characters are not shown at all:
-#  e.g. accented characters, or ø - our symbol for null
-#  labels: bug, 3rd-party, repl
-
 # we compile each file separately (not as an amalgamation),
 # so the utf8 helpers must not be static
-const LinenoiseFlags = "-I" & parentDir(currentSourcePath()) & " -DUTF8_STATIC="
+const LinenoiseFlags = "-I" & parentDir(currentSourcePath()) & " -DUTF8_STATIC= -DUSE_UTF8"
 
 {.compile("linenoise/linenoise.c", LinenoiseFlags).}
 {.compile("linenoise/stringbuf.c", LinenoiseFlags).}
