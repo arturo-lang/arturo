@@ -65,7 +65,7 @@ var
 
 proc execFunction*(fun: Value, fid: Hash)
 proc execFunctionInline*(fun: Value, fid: Hash)
-proc execMethod*(meth: Value, fid: Hash)
+proc execMethod*(meth: Value)
 
 proc ExecLoop*(cnst: ValueArray, it: VBinary)
 
@@ -116,10 +116,12 @@ proc callFunction*(f: Value, fnName: string, args: ValueArray) =
             if unlikely(SP < f.arity):
                 Error_NotEnoughArguments(fnName, f.arity)
 
-            if f.inline: 
-                if safeToProceed: execFunctionInline(f, hash(fnName))
-                else: execFunction(f, hash(fnName))
-            else: execFunction(f, hash(fnName))
+            let fid = if f.memoize: hash(fnName) else: 0
+
+            if f.inline:
+                if safeToProceed: execFunctionInline(f, fid)
+                else: execFunction(f, fid)
+            else: execFunction(f, fid)
     else:
         f.action()()
 
@@ -131,15 +133,17 @@ template callFunction*(f: Value, fnName: string = "<closure>"):untyped =
             if unlikely(SP < f.arity):
                 Error_NotEnoughArguments(fnName, f.arity)
 
-            if f.inline: 
+            let fid = if f.memoize: hash(fnName) else: 0
+
+            if f.inline:
                 var safeToProceed = true
-                for i in 0..f.params.high:          
+                for i in 0..f.params.high:
                     if stack.peek(i).kind==Function:
                         safeToProceed = false
                         break
-                if safeToProceed: execFunctionInline(f, hash(fnName))
-                else: execFunction(f, hash(fnName))
-            else: execFunction(f, hash(fnName))
+                if safeToProceed: execFunctionInline(f, fid)
+                else: execFunction(f, fid)
+            else: execFunction(f, fid)
     else:
         f.action()()
 
@@ -152,7 +156,7 @@ proc callMethod*(f: Value, methName: string, args: ValueArray) =
         if unlikely(SP < f.marity):
             Error_NotEnoughArguments(methName, f.marity)
 
-        execMethod(f, hash(methName))
+        execMethod(f)
 
 template callMethod*(f: Value, methName: string = "<closure>"):untyped =
     ## Take a Method value, 
@@ -161,7 +165,7 @@ template callMethod*(f: Value, methName: string = "<closure>"):untyped =
         if unlikely(SP < f.marity):
             Error_NotEnoughArguments(methName, f.marity)
 
-        execMethod(f, hash(methName))
+        execMethod(f)
 
 template callByName(symIndx: string):untyped =
     let fun = FetchSym(symIndx)
@@ -222,25 +226,34 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
 #  and https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/variadic%20function.art
 #  labels: bug, critical, library, vm, execution
 
+template leaklessKey*(keys: seq[string] | ValueArray, i: int): string =
+    when keys is ValueArray: keys[i].s
+    else: keys[i]
+
 template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
 
-    var toRestore{.inject.}: seq[(string,Value)] = 
-        collect:
-            for psym in protected:
-                when protected is ValueArray:
-                    (psym.s, Syms.getOrDefault(psym.s, nil))
-                else:
-                    (psym, Syms.getOrDefault(psym, nil))
+    let toRestoreKeys {.inject, cursor.} = protected
+    var toRestoreOne {.inject.}: Value = nil
+    var toRestore {.inject.}: seq[Value]
+
+    if toRestoreKeys.len == 1:
+        toRestoreOne = Syms.getOrDefault(leaklessKey(toRestoreKeys, 0), nil)
+    else:
+        toRestore = newSeq[Value](toRestoreKeys.len)
+        for li in 0 ..< toRestoreKeys.len:
+            toRestore[li] = Syms.getOrDefault(leaklessKey(toRestoreKeys, li), nil)
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
 
-    for (sym, val) in mitems(toRestore):
-        if val.isNil:
-            Syms.del(sym)
-        else:
-            Syms[sym] = move val
+    if toRestoreKeys.len == 1:
+        if toRestoreOne.isNil: Syms.del(leaklessKey(toRestoreKeys, 0))
+        else: Syms[leaklessKey(toRestoreKeys, 0)] = move toRestoreOne
+    else:
+        for li in 0 ..< toRestore.len:
+            if toRestore[li].isNil: Syms.del(leaklessKey(toRestoreKeys, li))
+            else: Syms[leaklessKey(toRestoreKeys, li)] = move toRestore[li]
 
 template prepareLeaklessOne*(protected: string | Value): untyped =
     ## Prepare for leak-less block execution
@@ -513,7 +526,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
         finalizeLeakless()
 
-proc execMethod*(meth: Value, fid: Hash) =
+proc execMethod*(meth: Value) =
     ## Execute given Method value with scoping
     ## 
     ## This means:

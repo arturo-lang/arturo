@@ -248,23 +248,18 @@ proc defineModule*(moduleName: string) =
 
                 if fun.kind == Function:
                     if fun.fnKind==UserFunction:
-                        var fid: Hash
-                        if xKind in {Literal,String}:
-                            fid = hash(x.s)
-                        else:
-                            fid = hash(fun)
-                            
+                        var fid: Hash = 0
+                        if fun.memoize:
+                            if xKind in {Literal,String}:
+                                fid = hash(x.s)
+                            else:
+                                fid = hash(fun)
+
                         execFunction(fun, fid)
                     else:
                         fun.action()()
                 else:
-                    var fid: Hash
-                    if xKind in {Literal,String}:
-                        fid = hash(x.s)
-                    else:
-                        fid = hash(fun)
-
-                    execMethod(fun, fid)
+                    execMethod(fun)
 
     # TODO(Core\case) could add `.match` option
     #  that would actually allow us to match and 
@@ -909,7 +904,7 @@ proc defineModule*(moduleName: string) =
             var memoize = (hadAttr("memoize"))
             var inline = (hadAttr("inline"))
 
-            let argBlock {.cursor.} =
+            let argBlock =
                 if xKind == Block: 
                     requireValueBlock(x, {Word, Literal, Type})
                     x.a
@@ -1270,7 +1265,7 @@ proc defineModule*(moduleName: string) =
             let isDistinct = hadAttr("distinct")
             let isPublic = hadAttr("public")
             
-            let argBlock {.cursor.} =
+            let argBlock =
                 if xKind == Block: 
                     requireValueBlock(x, {Word, Literal, Type})
                     x.a
