@@ -120,6 +120,7 @@ template SetArrayIndex*(arr: Value, indx: int, v: Value): untyped =
     if unlikely(indx < 0 or indx > (arr.a.len)-1):
         Error_OutOfBounds(indx, Dumper(arr), arr.a.len-1)
     arr.a[indx] = v
+    arr.cachedTrans = nil
 
 #---------------------
 # Symbol table
@@ -214,6 +215,7 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                     current = GetArrayIndex(current, p.i)
                 else:
                     current.a[p.i] = val
+                    current.cachedTrans = nil
             of Dictionary:
                 if pidx != pl.len - 1:
                     current = GetDictionaryKey(current, p.s)
