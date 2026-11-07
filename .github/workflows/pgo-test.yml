@@ -8,20 +8,26 @@ on:
 
 jobs:
     Measure:
-        name: ${{ matrix.os }}-${{ matrix.arch }} ${{ matrix.extra }}
-        timeout-minutes: 90
+        name: ${{ matrix.os }}-${{ matrix.arch }} ${{ matrix.mode }} ${{ matrix.extra }}
+        timeout-minutes: 120
         runs-on: ${{ matrix.runner }}
 
         strategy:
             fail-fast: false
             matrix:
                 include:
-                    - {os: linux,   arch: amd64, runner: ubuntu-latest,    cc: gcc}
-                    - {os: linux,   arch: arm64, runner: ubuntu-24.04-arm, cc: gcc}
-                    - {os: macos,   arch: amd64, runner: macOS-15-intel,   cc: clang}
-                    - {os: macos,   arch: arm64, runner: macos-latest,     cc: clang}
-                    - {os: windows, arch: amd64, runner: windows-latest,   cc: gcc}
-                    - {os: windows, arch: amd64, runner: windows-latest,   cc: gcc, extra: "-flto"}
+                    - {os: linux,   arch: amd64, mode: full, runner: ubuntu-latest,    cc: gcc}
+                    - {os: linux,   arch: amd64, mode: mini, runner: ubuntu-latest,    cc: gcc}
+                    - {os: linux,   arch: arm64, mode: full, runner: ubuntu-24.04-arm, cc: gcc}
+                    - {os: linux,   arch: arm64, mode: mini, runner: ubuntu-24.04-arm, cc: gcc}
+                    - {os: macos,   arch: amd64, mode: full, runner: macOS-15-intel,   cc: clang}
+                    - {os: macos,   arch: amd64, mode: mini, runner: macOS-15-intel,   cc: clang}
+                    - {os: macos,   arch: arm64, mode: full, runner: macos-latest,     cc: clang}
+                    - {os: macos,   arch: arm64, mode: mini, runner: macos-latest,     cc: clang}
+                    - {os: windows, arch: amd64, mode: full, runner: windows-latest,   cc: gcc}
+                    - {os: windows, arch: amd64, mode: mini, runner: windows-latest,   cc: gcc}
+                    - {os: windows, arch: amd64, mode: full, runner: windows-latest,   cc: gcc, extra: "-flto"}
+                    - {os: windows, arch: amd64, mode: mini, runner: windows-latest,   cc: gcc, extra: "-flto"}
 
         defaults:
             run:
@@ -35,6 +41,7 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
+                mode: ${{ matrix.mode }}
                 src: ${{ github.ref }}
                 create_artifact: 'false'
 
@@ -44,97 +51,61 @@ jobs:
                 submodules: recursive
                 path: arturo
 
-            - name: Prepare
-              run: |
-                [ "${{ matrix.os }}" = "windows" ] && pacman -S --noconfirm --needed perl
-                {
-                    if [ "${{ matrix.os }}" = "windows" ]; then
-                        echo 'export PATH="${{ github.workspace }}/nim/nim-2.4.0/bin":$PATH'
-                        echo 'ARCH=""'
-                    else
-                        echo 'ARCH="--arch ${{ matrix.arch }}"'
-                    fi
-                } > "$RUNNER_TEMP/pgoenv.sh"
-                cat "$RUNNER_TEMP/pgoenv.sh"
-                perl -v | head -2
-
-            - name: Build baseline
+            - name: Build, train, compare & test
               working-directory: arturo
+              env:
+                CCKIND: ${{ matrix.cc }}
+                MODE: ${{ matrix.mode }}
+                EXTRA: ${{ matrix.extra }}
+                ARCHFLAG: ${{ matrix.os != 'windows' && format('--arch {0}', matrix.arch) || '' }}
               run: |
-                . "$RUNNER_TEMP/pgoenv.sh"
-                time ./build.nims --release --as base --log $ARCH > base.log 2>&1 || { tail -40 base.log; exit 1; }
-                ls -la bin
-
-            - name: Build instrumented
-              working-directory: arturo
-              run: |
-                . "$RUNNER_TEMP/pgoenv.sh"
-                if [ "${{ matrix.cc }}" = "clang" ]; then
-                    export PGO_FLAGS="-fprofile-instr-generate"
-                else
-                    export PGO_FLAGS="-fprofile-generate -fprofile-update=single ${{ matrix.extra }}"
+                if [ "${{ matrix.os }}" = "windows" ]; then
+                    pacman -S --noconfirm --needed perl > /dev/null
+                    export PATH="${{ github.workspace }}/nim/nim-2.4.0/bin:$PATH"
                 fi
-                time ./build.nims --release --as instr --log $ARCH > instr.log 2>&1 || { tail -40 instr.log; exit 1; }
-                grep -c "fprofile" instr.log || true
-                ls -la bin
+                ./tools/pgo/ci.sh
 
-            - name: Train
-              timeout-minutes: 30
+    FreeBSD:
+        name: freebsd-amd64 ${{ matrix.mode }}
+        timeout-minutes: 150
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                mode: [full, mini]
+
+        steps:
+            - name: Checkout sources
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo
+
+            - name: Build, train, compare & test (in a FreeBSD VM)
+              uses: vmactions/freebsd-vm@v1
+              with:
+                usesh: true
+                sync: rsync
+                copyback: true
+                prepare: |
+                  pkg update -f
+                  pkg install -y bash git nim perl5 ca_root_nss
+                  if [ "${{ matrix.mode }}" = "full" ]; then
+                      pkg install -y gtk3 mpfr webkit2-gtk_41 pkgconf openssl
+                  fi
+                run: |
+                  cd arturo
+                  export PATH="/usr/local/nim/bin:$PATH"
+                  export CCKIND=clang MODE=${{ matrix.mode }}
+                  export GITHUB_STEP_SUMMARY="$PWD/summary.md"
+                  git config --global --add safe.directory '*'
+                  rc=0
+                  bash ./tools/pgo/ci.sh || rc=$?
+                  echo "$rc" > rc.txt
+
+            - name: Report
               working-directory: arturo
               run: |
-                export LLVM_PROFILE_FILE="$PWD/prof/%p.profraw"
-                mkdir -p prof
-                time perl tools/pgo/run.pl train bin/instr$( [ "${{ matrix.os }}" = "windows" ] && echo .exe )
-                if [ "${{ matrix.cc }}" = "clang" ]; then
-                    ls prof | wc -l
-                    xcrun llvm-profdata merge -o arturo.profdata prof/*.profraw
-                    ls -la arturo.profdata
-                else
-                    echo "gcda files: $(find .cache -name '*.gcda' | wc -l)"
-                    find .cache -name '*.gcda' | head -3
-                    [ "$(find .cache -name '*.gcda' | wc -l)" -gt 0 ]
-                fi
-
-            - name: Build with profile
-              working-directory: arturo
-              run: |
-                . "$RUNNER_TEMP/pgoenv.sh"
-                if [ "${{ matrix.cc }}" = "clang" ]; then
-                    export PGO_FLAGS="-fprofile-instr-use=$PWD/arturo.profdata"
-                else
-                    export PGO_FLAGS="-fprofile-use -fprofile-correction -Wno-missing-profile ${{ matrix.extra }}"
-                fi
-                time ./build.nims --release --as pgo --log $ARCH > pgo.log 2>&1 || { tail -40 pgo.log; exit 1; }
-                grep -c "fprofile" pgo.log || true
-                ls -la bin
-
-            - name: Compare
-              working-directory: arturo
-              run: |
-                ext=""
-                if [ "${{ matrix.os }}" = "windows" ]; then ext=".exe"; fi
-                echo "## ${{ matrix.os }}-${{ matrix.arch }} (${{ matrix.cc }}) ${{ matrix.extra }}" >> "$GITHUB_STEP_SUMMARY"
-                echo "base: $(wc -c < bin/base$ext) bytes, pgo: $(wc -c < bin/pgo$ext) bytes" | tee -a "$GITHUB_STEP_SUMMARY"
-                echo >> "$GITHUB_STEP_SUMMARY"
-                perl tools/pgo/run.pl bench 5 bin/base$ext bin/pgo$ext
-
-            - name: Run tests with the PGO binary
-              timeout-minutes: 20
-              working-directory: arturo
-              run: |
-                ext=""
-                if [ "${{ matrix.os }}" = "windows" ]; then ext=".exe"; fi
-                rc=0
-                git clone --depth 1 https://github.com/arturo-lang/examples.git ../examples
-                ./bin/pgo$ext tools/tester.art > suite.log 2>&1 || rc=$?
-                echo "tester rc: $rc"
-                sed -E 's/\x1b\[[0-9;]*m//g' suite.log > suite.txt
-                grep -E "Tests executed|Tests succeeded|Success rate" suite.txt | tee -a "$GITHUB_STEP_SUMMARY" || true
-                if [ "$rc" != "0" ] || ! grep -q "Success rate: 100" suite.txt; then
-                    echo "--- end of the log:"
-                    tail -30 suite.txt
-                    echo "--- same thing, with the baseline binary:"
-                    ./bin/base$ext tools/tester.art > suite-base.log 2>&1 && echo "baseline rc: 0" || echo "baseline rc: $?"
-                    sed -E 's/\x1b\[[0-9;]*m//g' suite-base.log | grep -E "Tests executed|Tests succeeded|Success rate" || true
-                    exit 1
-                fi
+                cat summary.md >> "$GITHUB_STEP_SUMMARY" || true
+                exit "$(cat rc.txt)"
