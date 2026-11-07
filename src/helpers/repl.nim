@@ -36,6 +36,7 @@ when not defined(WEB):
 
     var
         ReplInitialized = false
+        CurrentHint: string     # linenoise reads the returned hint after the callback returns
 
     #=======================================
     # C Exports
@@ -77,7 +78,8 @@ when not defined(WEB):
                 if (let tokenHint = hints.getOrDefault(token, nil); not tokenHint.isNil):
                     color = 35
                     bold = 0
-                    return (cstring)" " & tokenHint.s
+                    CurrentHint = " " & tokenHint.s
+                    return CurrentHint.cstring
             return nil
             
         if not ReplInitialized:
