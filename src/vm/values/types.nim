@@ -342,6 +342,7 @@ type
                Block:
                    a*       : ValueArray
                    data*    : Value
+                   cachedTrans* : Translation   # set only on read-only (constant) blocks
             of Module:
                 singleton*  : Value
             of Range:

@@ -502,6 +502,15 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     var vhash {.used.}: Hash = -1
     
     when useStored:
+        # Read-only blocks (i.e. compiled constants) are copied on assignment
+        # and when passed to functions, while direct writes (`set`, paths)
+        # reset the cache: so, their translation can live on the value itself,
+        # and we can skip deep-hashing them on every execution
+        let cacheable = root.readonly and not root.dynamic and root.kind in {Block, Inline} and
+                        not isDictionary and not isFunctionBlock and not omitNewlines
+        if cacheable and not root.cachedTrans.isNil:
+            return (root.cachedTrans, true)
+
         if not root.dynamic:
             vhash = hash(root)
             if root.kind in {Block, Inline}:
@@ -509,6 +518,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
                     vhash = vhash !& int(tok.ln)
                 vhash = !$vhash
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
+                if cacheable: root.cachedTrans = storedTranslation
                 return (storedTranslation, true)
 
     var consts: ValueArray
@@ -526,6 +536,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     when useStored:
         if canStore and (vhash != -1):
             StoredTranslations[vhash] = res
+            if cacheable: root.cachedTrans = res
         return (res, canStore)
     else:
         return (res, false)
