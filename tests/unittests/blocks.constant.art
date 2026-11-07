@@ -1,0 +1,63 @@
+; CONSTANT BLOCKS
+; literal blocks in the code are constants:
+; whatever happens to them at runtime, the code
+; they run must always be the current one
+
+; modifying a literal block passed as an argument
+; must not affect the next call
+
+f1: function [b][
+    do b
+    b\1: 5
+    do b
+]
+
+f1 [print 1]
+f1 [print 1]
+
+; ...not even in a loop
+
+f2: function [b][
+    do b
+    b\1: b\1 + 1
+]
+
+loop 1..3 'i [ f2 [print 1] ]
+
+; modifying it with `set`
+
+f3: function [b][
+    do b
+    set b 1 "x"
+    do b
+]
+
+f3 [print "a"]
+f3 [print "a"]
+
+; in-place operations on such an argument
+
+f4: function [b][
+    'b ++ 1
+    print b
+]
+
+f4 [0]
+f4 [0]
+
+; a literal block returned from a function
+
+f5: function [] -> [print "before"]
+do f5
+set f5 1 "after"
+do f5
+
+; ...while variables are still passed by reference
+
+x: [print 1]
+f6: function [b][
+    b\1: 2
+]
+do x
+f6 x
+do x
