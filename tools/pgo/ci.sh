@@ -2,16 +2,20 @@
 # temporary: build, train, compare & test on the CI, for measuring PGO
 #
 # env:
-#   CCKIND  gcc | clang
-#   MODE    full | mini
-#   EXTRA   extra flags for all release builds (e.g. -flto), optional
-#   ARCHFLAG e.g. "--arch amd64", optional
+#   PGO_CC     gcc | clang
+#   PGO_MODE   full | mini
+#   PGO_EXTRA  extra flags for all release builds (e.g. -flto), optional
+#   PGO_ARCH   e.g. "--arch amd64", optional
+#
+# (not MODE etc: env names are case-insensitive on Windows,
+#  and the setup action already sets `mode`)
 
 set -eu
 
-MODE="${MODE:-full}"
-EXTRA="${EXTRA:-}"
-ARCHFLAG="${ARCHFLAG:-}"
+MODE="${PGO_MODE:-full}"
+EXTRA="${PGO_EXTRA:-}"
+ARCHFLAG="${PGO_ARCH:-}"
+CCKIND="$PGO_CC"
 SUMMARY="${GITHUB_STEP_SUMMARY:-/dev/null}"
 
 ext=""

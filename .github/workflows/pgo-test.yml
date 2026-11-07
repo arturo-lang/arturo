@@ -54,10 +54,10 @@ jobs:
             - name: Build, train, compare & test
               working-directory: arturo
               env:
-                CCKIND: ${{ matrix.cc }}
-                MODE: ${{ matrix.mode }}
-                EXTRA: ${{ matrix.extra }}
-                ARCHFLAG: ${{ matrix.os != 'windows' && format('--arch {0}', matrix.arch) || '' }}
+                PGO_CC: ${{ matrix.cc }}
+                PGO_MODE: ${{ matrix.mode }}
+                PGO_EXTRA: ${{ matrix.extra }}
+                PGO_ARCH: ${{ matrix.os != 'windows' && format('--arch {0}', matrix.arch) || '' }}
               run: |
                 if [ "${{ matrix.os }}" = "windows" ]; then
                     pacman -S --noconfirm --needed perl > /dev/null
@@ -97,7 +97,7 @@ jobs:
                 run: |
                   cd arturo
                   export PATH="/usr/local/nim/bin:$PATH"
-                  export CCKIND=clang MODE=${{ matrix.mode }}
+                  export PGO_CC=clang PGO_MODE=${{ matrix.mode }}
                   export GITHUB_STEP_SUMMARY="$PWD/summary.md"
                   git config --global --add safe.directory '*'
                   rc=0
