@@ -1,0 +1,147 @@
+name: "PGO builds test"
+
+# temporary: release + pgo builds on every platform, through the setup action's `pgo` branch
+
+on:
+    push:
+        branches:
+            - 'pgo-builds'
+    workflow_dispatch:
+
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    Test:
+        runs-on: ${{ 
+            (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
+            (matrix.os == 'windows') && 'windows-latest' || 
+                                        'ubuntu-latest'  }}
+                                                                   
+        strategy:
+            fail-fast: false
+            matrix:
+                include: 
+                    - {os: linux,   arch: amd64}
+                    - {os: linux,   arch: amd64,    support: legacy}
+                    - {os: linux,   arch: amd64,    mode: mini}
+                    - {os: linux,   arch: arm64}
+                    - {os: linux,   arch: arm64,    support: legacy}
+                    - {os: linux,   arch: arm64,    mode: mini}
+                    - {os: freebsd, arch: amd64}
+                    - {os: freebsd, arch: amd64,    mode: mini}
+                    - {os: macos,   arch: amd64}
+                    - {os: macos,   arch: amd64,    mode: mini}
+                    - {os: macos,   arch: arm64}
+                    - {os: macos,   arch: arm64,    mode: mini}
+                    - {os: windows, arch: amd64}
+                    - {os: windows, arch: amd64,    mode: mini}
+                    - {os: web,     arch: js,       mode: mini}
+
+        defaults:
+            run:
+                shell: ${{ 
+                    (matrix.os == 'freebsd') && 'freebsd {0}' ||
+                    (matrix.os == 'windows') && 'msys2 {0}'   || 
+                                                'bash'        }}
+
+        steps:
+            - name: Checkout Arturo sources
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo
+                ref: ${{ github.ref }}
+                fetch-depth: 0
+
+            - name: Prepare artifact version
+              id: version
+              shell: bash
+              run: |
+                cd arturo
+                git_hash=$(git rev-parse --short HEAD)
+                
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    version="pr${{ github.event.pull_request.number }}.${git_hash}"
+                else
+                    version="${{ github.ref_name }}.${git_hash}"
+                fi
+                
+                echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+                echo "Building version: $version"
+
+            - name: Install Arturo
+              uses: arturo-lang/setup-arturo@pgo
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                mode: ${{ matrix.mode }}
+                support: ${{ matrix.support }}
+                src: ${{ github.ref }}
+                metadata: ${{ steps.version.outputs.VERSION }}
+                create_artifact: 'false'
+                release: 'true'
+                pgo: 'true'
+
+            - name: Check if tests should be skipped
+              id: check_skip
+              shell: bash
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
+                else
+                    COMMIT_MSG=$(git log -1 --pretty=%B HEAD)
+                fi
+                
+                if echo "$COMMIT_MSG" | grep -q "\[skip tests\]"; then
+                    echo "skip=true" >> "$GITHUB_OUTPUT"
+                else
+                    echo "skip=false" >> "$GITHUB_OUTPUT"
+                fi
+
+            - if: (env.arturoCanRun == 'true' || matrix.os == 'web') && steps.check_skip.outputs.skip != 'true'
+              name: Run tests
+              timeout-minutes: 15
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+
+                if [ "${{ matrix.os }}" = "web" ]; then
+                    mkdir -p bin
+                    cp "$HOME/.arturo/bin/arturo.js" bin/arturo.js
+                    fails=0
+                    for art in tests/web/*.art; do
+                        res="${art%.art}.res"
+                        [ -f "$res" ] || continue
+                        echo "--- $art"
+                        actual=$(node tools/run.js "$art")
+                        expected=$(cat "$res")
+                        if [ "$actual" = "$expected" ]; then
+                            echo "OK"
+                        else
+                            echo "FAIL"
+                            echo "expected: $expected"
+                            echo "actual:   $actual"
+                            fails=$((fails + 1))
+                        fi
+                    done
+                    exit $fails
+                else
+                    git clone https://github.com/arturo-lang/examples.git ../examples
+
+                    arturo -v
+                    if ! arturo tools/tester.art; then
+                        exit 1
+                    fi
+
+                    if [ "${{ matrix.mode }}" != "mini" ]; then
+                        arturo -p install unitt
+                        if ! arturo tools/unitt-tester.art; then
+                            exit 1
+                        fi
+                    fi
+                fi
