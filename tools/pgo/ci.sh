@@ -31,6 +31,15 @@ build() {
     fi
     echo "took $(( $(date +%s) - start ))s, fprofile mentions: $(grep -c fprofile "$name.log" || true)"
     ls -la "bin/$name$ext"
+    echo 'print 1 + 1' > smoke.art
+    rc=0
+    "./bin/$name$ext" smoke.art || rc=$?
+    echo "smoke test rc: $rc"
+    if [ "$rc" != "0" ]; then
+        command -v ldd > /dev/null 2>&1 && ldd "bin/$name$ext"
+        echo "::endgroup::"
+        exit 1
+    fi
     echo "::endgroup::"
 }
 
@@ -116,7 +125,8 @@ for b in $bins; do
     sed -E 's/\x1b\[[0-9;]*m//g' suite.log > suite.txt
     echo "tester rc: $rc"
     if [ "$rc" != "0" ] || ! grep -q "Success rate: 100" suite.txt; then
-        tail -40 suite.txt
+        grep -B12 "ERROR  ]" suite.txt || true
+        tail -25 suite.txt
         failed=1
     fi
     echo "::endgroup::"
