@@ -62,26 +62,30 @@ when not defined(WEB):
     #  As with Ctrl+D, given that it's based on the LineNoise library, this the place we should start looking first.
     #  labels: helpers, 3rd-party, enhancement
 
+    proc splitLastToken(buf: string): (string, string) =
+        # split (right-trimmed) input into everything before the word
+        # being typed & the word itself - which may also come right
+        # after a bracket, a quote or a colon (e.g. `[pri`, `'pri`)
+        let s = buf.strip(leading=false)
+        var i = s.high
+        while i >= 0 and s[i] notin Whitespace + {'[', '(', '\'', ':'}:
+            dec i
+        result = (s[0..i], s[i+1..^1])
+
     proc initRepl*(path: string, completionsArray: ValueArray = @[], hintsTable: ValueDict = initOrderedTable[string,Value]()) =
         completions = completionsArray
         hints = hintsTable
 
         proc completionsCback(buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.} =
-            var token = $(buf)
-            var copied = strip($(buf))
-            let tokenParts = splitWhitespace(token)
-            if tokenParts.len >= 1:
-                token = tokenParts[^1]
-                copied.removeSuffix(token)
+            let (copied, token) = splitLastToken($(buf))
+            if token.len >= 1:
                 for item in completions.map((x) => x.s).filter((x) => x.startsWith(token)):
                     linenoiseAddCompletion(lc, (copied & item).cstring)
 
 
         proc hintsCback(buf: constChar; color: var cint; bold: var cint, userdata: pointer): cstring {.cdecl.} =
-            var token = $(buf)
-            let tokenParts = splitWhitespace(token)
-            if tokenParts.len >= 1:
-                token = tokenParts[^1]
+            let token = splitLastToken($(buf))[1]
+            if token.len >= 1:
                 if (let tokenHint = hints.getOrDefault(token, nil); not tokenHint.isNil):
                     color = 35
                     bold = 0
