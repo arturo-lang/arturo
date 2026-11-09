@@ -133,6 +133,11 @@ SCENARIOS = [
     ("ctrl-c stops running code", ["while [true][]\r", CTRL_C, W('"ok"')],                "ok"),
     ("ctrl-c drops typed line",   ['write "no" "out.txt"', CTRL_C, W('"ok"')],            "ok"),
     ("ctrl-c at empty prompt",    [CTRL_C, W('"ok"')],                                    "ok"),
+    ("paste multi-line block",    ["f: function [x][\r    y: x * 2\r    y + 1\r]\r",
+                                   W("to :string f 20")],                                 "41"),
+    ("paste, then edit & enter",  ['a: 1\rb: 2', ' + a\r', W("to :string b")],           "3"),
+    ("recall multi-line entry",   ["x: 0\r", "x: x + 1\r" + W("to :string x"), UP, "\r"], "2"),
+    ("long line wraps",           [W('"' + "abcdefghij" * 30 + '"')],                     "abcdefghij" * 30),
 ]
 
 
