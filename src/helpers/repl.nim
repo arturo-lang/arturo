@@ -39,6 +39,7 @@ when not defined(WEB):
     var
         ReplInitialized = false
         CurrentHint: string     # linenoise reads the returned hint after the callback returns
+        CurrentIndent: string   # (same for the indentation of continuation lines)
 
     #=======================================
     # C Exports
@@ -72,6 +73,40 @@ when not defined(WEB):
             dec i
         result = (s[0..i], s[i+1..^1])
 
+    proc openBrackets(code: string): int =
+        # how many brackets are left open, ignoring
+        # anything inside strings, chars & comments
+        var i = 0
+        while i < code.len:
+            case code[i]:
+                of '"':
+                    inc i
+                    while i < code.len and code[i] notin {'"', '\n'}:
+                        if code[i] == '\\': inc i
+                        inc i
+                of '{':
+                    # curly-brace string (which may span many lines)
+                    var depth = 1
+                    inc i
+                    while i < code.len and depth > 0:
+                        if code[i] == '{': inc depth
+                        elif code[i] == '}': dec depth
+                        inc i
+                    if depth > 0: inc result
+                    continue
+                of ';':
+                    while i < code.len and code[i] != '\n': inc i
+                of '\'':
+                    # char literal, e.g. '['
+                    if i + 2 < code.len and code[i+2] == '\'': i += 2
+                of '[', '(': inc result
+                of ']', ')': dec result
+                else:
+                    # «-strings run until the end of the line
+                    if code.continuesWith("«", i):
+                        while i < code.len and code[i] != '\n': inc i
+            inc i
+
     proc initRepl*(path: string, completionsArray: ValueArray = @[], hintsTable: ValueDict = initOrderedTable[string,Value]()) =
         completions = completionsArray
         hints = hintsTable
@@ -93,6 +128,13 @@ when not defined(WEB):
                     return CurrentHint.cstring
             return nil
             
+        proc continuationCback(buf: constChar; userdata: pointer): cstring {.cdecl.} =
+            let open = openBrackets($(buf))
+            if open > 0:
+                CurrentIndent = repeat(' ', 4 * open)
+                return CurrentIndent.cstring
+            return nil
+
         if not ReplInitialized:
             if not fileExists(parentDir(path)):
                 createDir(parentDir(path))
@@ -105,6 +147,10 @@ when not defined(WEB):
 
             # wrap long lines, instead of scrolling them sideways
             linenoiseSetMultiLine(1)
+
+            # Enter with brackets still open: keep editing
+            # the same entry, on a new (indented) line
+            linenoiseSetContinuationCallback(continuationCback, nil)
 
             ReplInitialized = true
 

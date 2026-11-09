@@ -983,6 +983,16 @@ void linenoiseSetHintsCallback(linenoiseHintsCallback *callback, void *userdata)
     hintsUserdata = userdata;
 }
 
+/* [arturo] */
+static linenoiseContinuationCallback *continuationCallback = NULL;
+static void *continuationUserdata = NULL;
+
+void linenoiseSetContinuationCallback(linenoiseContinuationCallback *callback, void *userdata)
+{
+    continuationCallback = callback;
+    continuationUserdata = userdata;
+}
+
 void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *callback)
 {
     freeHintsCallback = callback;
@@ -1824,6 +1834,18 @@ static int linenoiseEdit(struct current *current) {
                 insert_char(current, current->pos, "\n", 1);
                 refreshLine(current);
                 break;
+            }
+            if (mlmode && continuationCallback) {
+                /* [arturo] entry not complete yet (e.g. open brackets):
+                 * continue on a new, indented line */
+                const char *indent = continuationCallback(sb_str(current->buf), continuationUserdata);
+                if (indent) {
+                    current->colsright = 0;
+                    insert_char(current, current->pos, "\n", 1);
+                    insert_chars(current, current->pos, indent);
+                    refreshLine(current);
+                    break;
+                }
             }
             history_len--;
             free(history[history_len]);
