@@ -231,7 +231,22 @@ static int fd_isatty(struct current *current)
 #ifdef USE_TERMIOS
     return isatty(current->fdin);
 #else
+    /* [arturo] a Cygwin/MSYS2 pty (e.g. in mintty) is a named pipe
+     * & the terminal echoes what's typed by itself */
+    typedef BOOL (WINAPI *GetFileInformationByHandleExFn)(HANDLE, int, LPVOID, DWORD);
+    GetFileInformationByHandleExFn getInfo = (GetFileInformationByHandleExFn)(void *)
+        GetProcAddress(GetModuleHandleA("kernel32.dll"), "GetFileInformationByHandleEx");
+    HANDLE h = GetStdHandle(STD_INPUT_HANDLE);
+    struct { DWORD len; WCHAR name[MAX_PATH]; } info;
     (void)current;
+
+    if (getInfo && GetFileType(h) == FILE_TYPE_PIPE &&
+        getInfo(h, 2 /* FileNameInfo */, &info, sizeof(info))) {
+        DWORD n = info.len / sizeof(WCHAR);
+        info.name[n < MAX_PATH ? n : MAX_PATH - 1] = 0;
+        return (wcsstr(info.name, L"msys-") || wcsstr(info.name, L"cygwin-")) &&
+               wcsstr(info.name, L"-pty");
+    }
     return 0;
 #endif
 }
