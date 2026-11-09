@@ -1298,7 +1298,11 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
         int width;
         int c;
         int n = utf8_inspect(pt, &c, &width);
-        if (c < ' ') {
+        if (c == '\t') {
+            /* [arturo] tabs are shown as spaces, up to the next tab stop */
+            width = 4 - displaycol % 4;
+        }
+        else if (c < ' ') {
             /* Control chars take up 2 spaces since we show them as ^X */
             width = 2;
         }
@@ -1344,7 +1348,10 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
             DRL("<cursor>");
         }
 
-        if (c < ' ') {
+        if (c == '\t') {
+            outputChars(current, "    ", width);
+        }
+        else if (c < ' ') {
             outputControlChar(current, c + '@');
         }
         else {
@@ -1445,7 +1452,7 @@ static int remove_char(struct current *current, int pos)
 #else
             char last = 0;
 #endif
-            if (current->colsleft > 0 && (last & 0x80) == 0) {
+            if (current->colsleft > 0 && (last & 0x80) == 0 && last >= ' ') {
                 /* Have cols on the left and not a UTF-8 char or continuation */
                 /* Yes, can optimise */
                 current->colsleft--;
@@ -1502,7 +1509,7 @@ static int insert_char(struct current *current, int pos, const char *ch, int chb
          * - there are enough columns available
          * - no hints are being shown
          */
-        if (current->output && pos == current->pos && pos == sb_chars(current->buf)) {
+        if (current->output && pos == current->pos && pos == sb_chars(current->buf) && c >= ' ') {
             if (current->colsright > width) {
                 /* Yes, can optimise */
                 current->colsright -= width;
@@ -1784,7 +1791,8 @@ static int linenoiseEdit(struct current *current) {
         /* Only autocomplete when the callback is set. It returns < 0 when
          * there was an error reading from fd. Otherwise it will return the
          * character that should be handled next. */
-        if (c == '\t' && current->pos == sb_chars(current->buf) && completionCallback != NULL) {
+        /* [arturo] a tab with more input already waiting is part of a paste, not a completion request */
+        if (c == '\t' && current->pos == sb_chars(current->buf) && completionCallback != NULL && !input_pending(current)) {
             c = completeLine(current);
         }
 #endif
