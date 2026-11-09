@@ -99,6 +99,9 @@ when not defined(WEB):
 
             linenoiseSetHintsCallback(hintsCback, nil)
 
+            # wrap long lines, instead of scrolling them sideways
+            linenoiseSetMultiLine(1)
+
             ReplInitialized = true
 
     #=======================================
