@@ -95,3 +95,27 @@ jobs:
                     fi
                     python3 .github/repl-test.py "$(command -v arturo)"
                 fi
+
+            - name: REPL tests (piped input)
+              continue-on-error: true
+              timeout-minutes: 5
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                if [ "${{ matrix.os }}" = "windows" ]; then
+                    PY=$(cygpath -u '${{ steps.py.outputs.python-path }}')
+                    BIN=$(command -v arturo)
+                    [ -f "$BIN.exe" ] && BIN="$BIN.exe"
+                    "$PY" .github/repl-test.py "$(cygpath -w "$BIN")" --piped
+                else
+                    python3 .github/repl-test.py "$(command -v arturo)" --piped
+                fi
+
+            - if: matrix.os == 'windows'
+              name: REPL tests (MSYS2 pty, as in mintty)
+              continue-on-error: true
+              timeout-minutes: 15
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                pacman -S --noconfirm --needed python >/dev/null
+                /usr/bin/python3 -c "import os, sys; print('python:', sys.platform, os.name)"
+                /usr/bin/python3 .github/repl-test.py "$(command -v arturo)"

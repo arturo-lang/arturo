@@ -202,6 +202,25 @@ def hints():
     return ok
 
 
+def piped():
+    """input that doesn't come from a terminal (linenoise falls back to plain line reading)"""
+    import subprocess
+    d = tempfile.mkdtemp(prefix="repltest")
+    env = dict(os.environ, HOME=d, USERPROFILE=d)
+    r = subprocess.run([BIN, "--repl"], input=b"print 1\n\nprint 2\n",
+                       capture_output=True, env=env, cwd=d, timeout=60)
+    out = r.stdout.decode("utf-8", "replace").replace("\r", "")
+    ok = "\n2\n" in out
+    print(("OK    " if ok else "FAIL  ") + "piped input with an empty line")
+    if not ok:
+        print(f"----- output (tail):\n{out[-600:]}\n-----")
+    shutil.rmtree(d, ignore_errors=True)
+    return ok
+
+
+if "--piped" in sys.argv:
+    sys.exit(0 if piped() else 1)
+
 results = [run(*s) for s in SCENARIOS]
 results.append(hints())
 if not WINDOWS:
