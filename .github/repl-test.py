@@ -10,6 +10,11 @@ import os, re, sys, time, shutil, tempfile, threading
 
 WINDOWS = os.name == "nt"
 BIN = sys.argv[1]
+
+if WINDOWS:
+    # CI runners may start us with Ctrl+C ignored, which children inherit
+    import ctypes
+    ctypes.windll.kernel32.SetConsoleCtrlHandler(None, False)
 ROWS, COLS = 40, 120
 
 LEFT, UP = "\x1b[D", "\x1b[A"
