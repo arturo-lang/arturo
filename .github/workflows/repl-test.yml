@@ -3,7 +3,7 @@ name: "REPL test (temporary)"
 on:
     push:
         branches:
-            - 'repl-utf8'
+            - 'better-repl'
     workflow_dispatch:
 
 concurrency:
