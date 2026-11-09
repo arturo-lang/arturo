@@ -138,6 +138,13 @@ SCENARIOS = [
     ("paste, then edit & enter",  ['a: 1\rb: 2', ' + a\r', W("to :string b")],           "3"),
     ("recall multi-line entry",   ["x: 0\r", "x: x + 1\r" + W("to :string x"), UP, "\r"], "2"),
     ("long line wraps",           [W('"' + "abcdefghij" * 30 + '"')],                     "abcdefghij" * 30),
+    ("tab completion after [",    ["write to :string first @[siz", "\t", '[1 2]] "out.txt"\r'], "2"),
+    ("paste with tabs",           ["g: function [x][\r\tx * 2\r]\r", W("to :string g 4")], "8"),
+    ("open bracket continues",    ["f: function [x][", "\r", "loop 1..x 'i [", "\r",
+                                   "write.append to :string i \"out.txt\"", "\r", "]", "\r",
+                                   "]", "\r", "f 3\r"],                                    "123"),
+    ("auto-indent & dedent",      ["b: [", "\r", "1", "\r", "]", "\r"],
+                                   ("history", "b: [\\n    1\\n]")),
 ]
 
 
@@ -152,8 +159,15 @@ def run(name, keys, expected, winsize=True):
             for k in keys:
                 r.send(k)
             time.sleep(0.5)
-            p = os.path.join(d, "out.txt")
-            got = open(p, "rb").read().decode("utf-8", "backslashreplace") if os.path.exists(p) else None
+            if isinstance(expected, tuple):
+                # ("history", text): check the saved history instead
+                expected = expected[1]
+                p = os.path.join(d, ".arturo", "history.lst")
+                got = open(p, "rb").read().decode("utf-8", "backslashreplace") if os.path.exists(p) else ""
+                got = expected if expected in got.splitlines() else got
+            else:
+                p = os.path.join(d, "out.txt")
+                got = open(p, "rb").read().decode("utf-8", "backslashreplace") if os.path.exists(p) else None
             if got != expected:
                 problems.append(f"expected {expected!r}, got {got!r}")
             r.send(CTRL_D)
