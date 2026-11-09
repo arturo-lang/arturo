@@ -16,6 +16,7 @@ when not defined(WEB):
 
     import sequtils, strutils, sugar, tables
     import extras/linenoise
+    import vm/errors
     import vm/values/value
 
     when defined(posix):
@@ -150,6 +151,7 @@ when not defined(WEB):
             stdout.flushFile()
 
         let got = linenoiseReadLine(prompt.cstring)
+        Interrupted = false     # a Ctrl+C while waiting for input shouldn't stop what comes next
         if got.isNil:
             return ("", true)
 

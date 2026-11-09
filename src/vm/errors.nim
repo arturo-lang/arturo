@@ -84,6 +84,7 @@ var
     CurrentLine*    : int       = 0
 
     IsRepl*         : bool = false
+    Interrupted*    : bool = false      ## set on Ctrl+C in the REPL, checked by the VM
 
 #=======================================
 # Web-runtime environment
@@ -794,6 +795,13 @@ func Error_StackUnderflow*() =
     panic:
         toError VMErr, """
             Stack underflow
+        """
+
+proc Error_Interrupted*() =
+    Interrupted = false
+    panic:
+        toError RuntimeErr, """
+            Interrupted
         """
 
 func Error_ConfigNotFound*(gkey: string, akey: string) =

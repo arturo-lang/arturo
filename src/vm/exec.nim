@@ -597,6 +597,8 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
     let callerLine = CurrentLine
 
+    if unlikely(Interrupted): Error_Interrupted()
+
     while true:
         {.computedGoTo.}
 
@@ -951,10 +953,12 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
 
                 of opGoup               :
+                    if unlikely(Interrupted): Error_Interrupted()
                     i += 1
                     i -= (int(it[i]) + 2)
 
                 of opGoupX              :
+                    if unlikely(Interrupted): Error_Interrupted()
                     i += 2
                     i -= (int(uint16(it[i-1]) shl 8 + byte(it[i])) + 3)
 
