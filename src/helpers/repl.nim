@@ -203,7 +203,8 @@ when not defined(WEB):
             p.events = POLLIN
             while true:
                 let r = poll(addr p, 1.Tnfds, 50.cint)
-                if r > 0 and (p.revents and POLLIN) != 0:
+                # (at the end of piped input, Linux reports just POLLHUP)
+                if r > 0 and (p.revents and (POLLIN or POLLHUP or POLLERR)) != 0:
                     break
                 if Interrupted:
                     break
