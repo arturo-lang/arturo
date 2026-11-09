@@ -215,6 +215,7 @@ struct current {
 };
 
 static int fd_read(struct current *current);
+static int input_pending(struct current *current);
 static int getWindowSize(struct current *current);
 static void cursorDown(struct current *current, int n);
 static void cursorUp(struct current *current, int n);
@@ -573,6 +574,19 @@ void linenoiseClearScreen(void)
  *
  * Returns -1 if no char is received within the time or an error occurs.
  */
+/* [arturo] is more input already waiting? (e.g. the rest of a paste) */
+static int input_pending(struct current *current)
+{
+    struct pollfd p;
+
+    if (current->pending) {
+        return 1;
+    }
+    p.fd = current->fdin;
+    p.events = POLLIN;
+    return poll(&p, 1, 10) > 0;
+}
+
 static int fd_read_char(struct current *current, int timeout)
 {
     struct pollfd p;
@@ -1295,6 +1309,21 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
             notecursor = 1;
         }
 
+        if (c == '\n' && mlmode) {
+            /* [arturo] show newlines (e.g. from pasted code) as actual line breaks */
+            if (notecursor == 1) {
+                cursorcol = displaycol;
+                cursorrow = displayrow;
+                notecursor = 0;
+            }
+            refreshNewline(current);
+            displaycol = 0;
+            displayrow++;
+            pt += n;
+            currentpos++;
+            continue;
+        }
+
         if (displaycol + width > current->cols) {
             if (mlmode == 0) {
                 /* In single line mode stop once we print as much as we can on one line */
@@ -1780,6 +1809,14 @@ static int linenoiseEdit(struct current *current) {
             break;
         case '\r':    /* enter/CR */
         case '\n':    /* LF */
+            if (mlmode && input_pending(current)) {
+                /* [arturo] more input is already waiting, so this is a paste:
+                 * keep the newline, instead of submitting the line */
+                current->colsright = 0;
+                insert_char(current, current->pos, "\n", 1);
+                refreshLine(current);
+                break;
+            }
             history_len--;
             free(history[history_len]);
             current->pos = sb_chars(current->buf);

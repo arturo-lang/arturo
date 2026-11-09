@@ -339,6 +339,23 @@ static void cursorDown(struct current *current, int n)
     setCursorXY(current);
 }
 
+/* [arturo] is more input already waiting? (e.g. the rest of a paste) */
+static int input_pending(struct current *current)
+{
+    INPUT_RECORD irec[64];
+    DWORD n, i;
+
+    if (!PeekConsoleInputW(current->inh, irec, 64, &n)) {
+        return 0;
+    }
+    for (i = 0; i < n; i++) {
+        if (irec[i].EventType == KEY_EVENT && irec[i].Event.KeyEvent.bKeyDown) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 static int fd_read(struct current *current)
 {
     while (1) {
