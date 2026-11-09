@@ -146,6 +146,7 @@ SCENARIOS = [
     ("auto-indent & dedent",      ["b: [", "\r", "1", "\r", "]", "\r"],
                                    ("history", "b: [\\n    1\\n]")),
     ("complete `lookup`",         ["looku", "\t", '"zip"\r'],                           ("history", 'lookup "zip"')),
+    ("double space continues",    ["x: 1 +  ", "\r", "2\r", W("to :string x")],        "3"),
     ("complete user symbols",     ["myValue: 42\r", "write to :string myV", "\t", '"out.txt"\r'], "42"),
 ]
 
