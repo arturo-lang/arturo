@@ -188,6 +188,19 @@ lookup: function [what :string :literal :regex :type][
 
 Repl: #[autocomplete?: true, hints?: true, verbose?: true]
 
+; terminal-only methods get auto-completions & hints too
+
+loop ["help" "lookup"] 'k [
+    'completions ++ k ++ " "
+    hints\[k]: join.with:" " keys get info.get k 'args
+]
+
+; anything not defined by now (or by the loop below) is user-defined
+
+Internal: #[]
+loop (keys symbols) ++ ["Internal" "userSymbols" "Got" "indentation" "command" "inp" "err" "StackSize"] 'k ->
+    Internal\[k]: true
+
 ; start the REPL
 
 while [true] [
@@ -195,9 +208,15 @@ while [true] [
     Got: null
 
     indentation: ""
-    
+
+    userSymbols: select keys symbols 'k -> not? key? Internal k
+    loop userSymbols 'k [
+        (function? var k)? [hints\[k]: join.with:" " keys get info.get k 'args]
+                           [if key? hints k -> remove 'hints .key k]
+    ]
+
     command: [input.repl .history: historyPath]
-    if Repl\autocomplete? -> append 'command [.complete: completions]
+    if Repl\autocomplete? -> append 'command [.complete: completions ++ map userSymbols 'k -> k ++ " "]
     if Repl\hints? -> append 'command [.hint: hints]
     append 'command ["$> "]
 
