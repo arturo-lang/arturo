@@ -13,7 +13,7 @@ BIN = sys.argv[1]
 ROWS, COLS = 40, 120
 
 LEFT, UP = "\x1b[D", "\x1b[A"
-BS, CTRL_D, CTRL_R, CTRL_U = "\x7f", "\x04", "\x12", "\x15"
+BS, CTRL_C, CTRL_D, CTRL_R, CTRL_U = "\x7f", "\x03", "\x04", "\x12", "\x15"
 
 
 class Repl:
@@ -125,6 +125,9 @@ SCENARIOS = [
     ("tab completion",         ['write to :string siz', "\t", '[1 2] "out.txt"\r'],      "2"),
     ("multi-line",             ["f: function [x][ \r", "x * 2 \r", "]\r",
                                 W("to :string f 21")],                                    "42"),
+    ("ctrl-c stops running code", ["while [true][]\r", CTRL_C, W('"ok"')],                "ok"),
+    ("ctrl-c drops typed line",   ['write "no" "out.txt"', CTRL_C, W('"ok"')],            "ok"),
+    ("ctrl-c at empty prompt",    [CTRL_C, W('"ok"')],                                    "ok"),
 ]
 
 
