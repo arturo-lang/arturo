@@ -112,7 +112,7 @@ print join @[
     orange "# Type " 
     orangeBold "info 'symbol"
     orange " for info about a specific symbol or built-in function" BR BR
-    orange "# For multi-line input, just add a blank space at the end of a line" BR
+    orange "# For multi-line input, leave a bracket open or end the line with two spaces" BR
     orange "# Use TAB for auto-completion, UP for navigating history" BR BR
     orange "# Launching interactive console - rock on! 🤘" BR
 ]
@@ -198,7 +198,7 @@ loop ["help" "lookup"] 'k [
 ; anything not defined by now (or by the loop below) is user-defined
 
 Internal: #[]
-loop (keys symbols) ++ ["Internal" "userSymbols" "Got" "indentation" "command" "inp" "err" "StackSize"] 'k ->
+loop (keys symbols) ++ ["Internal" "userSymbols" "Got" "command" "inp" "err" "StackSize"] 'k ->
     Internal\[k]: true
 
 ; start the REPL
@@ -206,8 +206,6 @@ loop (keys symbols) ++ ["Internal" "userSymbols" "Got" "indentation" "command" "
 while [true] [
     ;push null
     Got: null
-
-    indentation: ""
 
     userSymbols: select keys symbols 'k -> not? key? Internal k
     loop userSymbols 'k [
@@ -221,13 +219,6 @@ while [true] [
     append 'command ["$> "]
 
     inp: do command
-
-    while [suffix? inp " "][
-        if suffix? strip inp "[" [
-            indentation: indentation ++ "\t"
-        ]
-        inp: inp ++ "\n" ++ input ".. " ++ indentation
-    ]
 
     err: try.verbose [
         err: try.verbose to :block inp
