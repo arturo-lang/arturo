@@ -11,6 +11,9 @@ import os, re, sys, time, shutil, tempfile, threading
 WINDOWS = os.name == "nt"
 BIN = sys.argv[1]
 
+# don't choke on printing non-ascii output (e.g. cp1252 consoles)
+sys.stdout.reconfigure(errors="backslashreplace")
+
 if WINDOWS:
     # CI runners may start us with Ctrl+C ignored, which children inherit
     import ctypes
