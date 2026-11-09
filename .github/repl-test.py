@@ -221,8 +221,34 @@ def piped():
     return ok
 
 
+def mintty():
+    """input from a Cygwin/MSYS2 pty, as in mintty (the terminal itself echoes & edits the line)"""
+    d = tempfile.mkdtemp(prefix="repltest")
+    r = Repl(d)
+    cmd = 'print "zz" ++ "top"'
+    try:
+        r.wait_for("$>", 60)
+        r.send(cmd + "\r")
+        r.send("\r")
+        r.send(W('"ok"'))
+        time.sleep(0.5)
+        p = os.path.join(d, "out.txt")
+        got = open(p).read() if os.path.exists(p) else None
+        echoes = r.screen().count(cmd)
+    finally:
+        r.kill()
+    ok = got == "ok" and echoes == 1
+    print(("OK    " if ok else "FAIL  ") + f"MSYS2 pty: empty line & single echo (out.txt: {got!r}, echoes: {echoes})")
+    if not ok:
+        print(f"----- screen (tail):\n{r.screen()[-1500:]}\n-----")
+    shutil.rmtree(d, ignore_errors=True)
+    return ok
+
+
 if "--piped" in sys.argv:
     sys.exit(0 if piped() else 1)
+if "--mintty" in sys.argv:
+    sys.exit(0 if mintty() else 1)
 
 results = [run(*s) for s in SCENARIOS]
 results.append(hints())
