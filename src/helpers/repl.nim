@@ -43,6 +43,11 @@ when not defined(WEB):
     # C Exports
     #=======================================
 
+    # linenoise returns NULL both on EOF and on Ctrl+C
+    # - setting errno to EAGAIN for the latter
+    var CErrno {.importc: "errno", header: "<errno.h>".}: cint
+    let CEAGAIN {.importc: "EAGAIN", header: "<errno.h>".}: cint
+
     var
         completions {.exportc.} : ValueArray
         hints       {.exportc.} : ValueDict
@@ -142,17 +147,31 @@ when not defined(WEB):
                 let r = poll(addr p, 1.Tnfds, 50.cint)
                 if r > 0 and (p.revents and POLLIN) != 0:
                     break
+                if Interrupted:
+                    break
                 ParallelismHelper.pumpScheduler(0)
 
             if termiosTouched:
                 discard tcSetAttr(0, TCSANOW, addr savedTermios)
+
+            # Ctrl+C before typing anything: just give a fresh prompt
+            if Interrupted:
+                Interrupted = false
+                stdout.write("\n")
+                stdout.flushFile()
+                return ("", false)
+
             # Erase our manual prompt — linenoise will redraw it.
             stdout.write("\r\x1b[2K")
             stdout.flushFile()
 
+        CErrno = 0
         let got = linenoiseReadLine(prompt.cstring)
         Interrupted = false     # a Ctrl+C while waiting for input shouldn't stop what comes next
         if got.isNil:
+            # Ctrl+C: drop the line & give a fresh prompt (only Ctrl+D/EOF quits)
+            if CErrno == CEAGAIN:
+                return ("", false)
             return ("", true)
 
         linenoiseHistoryAdd(got)
