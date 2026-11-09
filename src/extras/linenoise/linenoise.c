@@ -2030,6 +2030,23 @@ static int linenoiseEdit(struct current *current) {
                 /* Don't insert meta chars that are not bound */
                 break;
             }
+            if ((c == ']' || c == ')') && mlmode && continuationCallback && !input_pending(current)) {
+                /* [arturo] typing a closing bracket on a line with nothing but
+                 * indentation (so far): go back one indentation level */
+                const char *s = sb_str(current->buf);
+                int b = utf8_index(s, current->pos);
+                int spaces = 0;
+                while (b - spaces > 0 && s[b - spaces - 1] == ' ') {
+                    spaces++;
+                }
+                if (spaces >= 4 && b - spaces > 0 && s[b - spaces - 1] == '\n') {
+                    int i;
+                    for (i = 0; i < 4; i++) {
+                        remove_char(current, current->pos - 1);
+                    }
+                    current->colsright = 0;
+                }
+            }
             /* Only tab is allowed without ^V */
             if (c == '\t' || c >= ' ') {
                 if (insert_codepoint(current, current->pos, c) == 1) {
