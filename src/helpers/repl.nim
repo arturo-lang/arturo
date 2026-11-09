@@ -129,9 +129,12 @@ when not defined(WEB):
             return nil
             
         proc continuationCback(buf: constChar; userdata: pointer): cstring {.cdecl.} =
-            let open = openBrackets($(buf))
-            if open > 0:
-                CurrentIndent = repeat(' ', 4 * open)
+            # continue on a new line, if there are brackets still open,
+            # or if the line ends with a double space
+            let code = $(buf)
+            let open = openBrackets(code)
+            if open > 0 or code.endsWith("  "):
+                CurrentIndent = repeat(' ', 4 * max(open, 0))
                 return CurrentIndent.cstring
             return nil
 
@@ -148,8 +151,8 @@ when not defined(WEB):
             # wrap long lines, instead of scrolling them sideways
             linenoiseSetMultiLine(1)
 
-            # Enter with brackets still open: keep editing
-            # the same entry, on a new (indented) line
+            # Enter with brackets still open (or after a double space):
+            # keep editing the same entry, on a new (indented) line
             linenoiseSetContinuationCallback(continuationCback, nil)
 
             ReplInitialized = true
