@@ -30,6 +30,7 @@ when not defined(WEB):
 
     const
         ReplHistoryPath = joinPath(joinPath(getHomeDir(), ".arturo"), "history.txt")
+        ReplHistoryMaxLen = 1000
 
     #=======================================
     # Variables
@@ -91,6 +92,7 @@ when not defined(WEB):
         if not ReplInitialized:
             if not fileExists(parentDir(path)):
                 createDir(parentDir(path))
+            discard linenoiseHistorySetMaxLen(ReplHistoryMaxLen)
             discard linenoiseHistoryLoad(path)
 
             discard linenoiseSetCompletionCallback(completionsCback, nil)
@@ -174,8 +176,9 @@ when not defined(WEB):
                 return ("", false)
             return ("", true)
 
-        linenoiseHistoryAdd(got)
-        discard linenoiseHistorySave(historyPath)
+        if not isEmptyOrWhitespace($(got)):
+            linenoiseHistoryAdd(got)
+            discard linenoiseHistorySave(historyPath)
         result = ($(got),false)
 
         free(got)
