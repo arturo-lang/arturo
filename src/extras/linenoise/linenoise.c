@@ -2097,7 +2097,8 @@ static stringbuf *sb_getline(FILE *fh)
         /* ignore the effect of character count for partial utf8 sequences */
         sb_append_len(sb, &ch, 1);
     }
-    if (n == 0 || sb->data == NULL) {
+    /* [arturo] an empty line is an empty string (not EOF) */
+    if (n == 0) {
         sb_free(sb);
         return NULL;
     }
@@ -2117,7 +2118,7 @@ char *linenoiseWithInitial(const char *prompt, const char *initial)
         fflush(stdout);
         sb = sb_getline(stdin);
         if (sb && !fd_isatty(&current)) {
-            printf("%s\n", sb_str(sb));
+            printf("%s\n", sb_len(sb) ? sb_str(sb) : "");
             fflush(stdout);
         }
     }
@@ -2259,6 +2260,11 @@ int linenoiseHistoryLoad(const char *filename) {
     while ((sb = sb_getline(fp)) != NULL) {
         /* Take the stringbuf and decode backslash escaped values */
         char *buf = sb_to_string(sb);
+        if (*buf == 0) {
+            /* [arturo] skip blank lines */
+            free(buf);
+            continue;
+        }
         char *dest = buf;
         const char *src;
 
