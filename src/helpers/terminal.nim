@@ -16,10 +16,12 @@ when not defined(WEB):
 when defined(WEB):
     import jsconsole
 
+import strutils
+
 when defined(windows):
-    import os, strutils
+    import os
 elif not defined(WEB):
-    import os, posix, strutils
+    import os, posix
 
 #=======================================
 # Windows API
@@ -122,6 +124,28 @@ proc closestExtended(r, g, b: int): int =
 
         16 + 36 * level(r) + 6 * level(g) + level(b)
 
+proc extendedColor(color: string, depth: ColorDepth): string =
+    ## the given color (one of the 256),
+    ## or the closest one the terminal can show
+    if depth != BasicColors:
+        return ";38;5;" & color
+
+    let c = parseInt(color)
+    let code =
+        if c < 8: 30 + c
+        elif c < 16: 90 + c - 8
+        elif c < 232:
+            # one of the 6x6x6 color cube
+            const levels = [0, 95, 135, 175, 215, 255]
+            let i = c - 16
+            closestBasic(levels[i div 36], levels[(i div 6) mod 6], levels[i mod 6])
+        else:
+            # one of the grays
+            let v = 8 + (c - 232) * 10
+            closestBasic(v, v, v)
+
+    ";" & $code
+
 proc rgbColor(r, g, b: int, depth: ColorDepth): string =
     ## the given RGB color, or the closest one the terminal can show
     case depth:
@@ -180,7 +204,7 @@ template underline*(color: string=""):string =
 
 template rgb*(color: string=""):string =
     if NoColors: ""
-    else: ";38;5;" & color
+    else: extendedColor(color, TerminalColors)
 
 template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
