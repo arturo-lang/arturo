@@ -226,8 +226,15 @@ loop ["help" "lookup"] 'k [
 ; anything not defined by now (or by the loop below) is user-defined
 
 __internal: #[]
-loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result" "__userCompletions"] 'k ->
+loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result" "__userCompletions" "__startup"] 'k ->
     __internal\[k]: true
+
+; the user's own startup file, if any
+; (e.g. for `Repl` settings or handy helpers)
+
+__startup: join.path @[path\home ".arturo" "repl.art"]
+if exists? __startup ->
+    try.verbose [do __startup]
 
 ; start the REPL
 
