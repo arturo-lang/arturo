@@ -19,7 +19,7 @@ when defined(WEB):
 import strutils
 
 when defined(windows):
-    import os, std/syncio
+    import os
 elif not defined(WEB):
     import os, posix
 
@@ -255,7 +255,7 @@ proc clearTerminal*() =
     else:
         # there's nothing to clear, if it's not a terminal
         if isTerminal():
-            when defined(windows):
+            when defined(windows) and not defined(nimscript):
                 # mintty & co. aren't consoles,
                 # but they do understand escape codes
                 var mode: uint32
