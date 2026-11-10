@@ -177,6 +177,13 @@ proc rgbColor(r, g, b: int, depth: ColorDepth): string =
         of ExtendedColors:  ";38;5;" & $closestExtended(r, g, b)
         of BasicColors:     ";" & $closestBasic(r, g, b)
 
+proc backgroundColor(color: string): string =
+    ## the background version of the given color
+    ## (e.g. ";31" -> "41", ";90" -> "100", ";38;5;208" -> "48;5;208")
+    if color.startsWith(";38;"): "48;" & color[4..^1]
+    elif color.startsWith(";9"): "10" & color[2..^1]
+    else: "4" & color[2..^1]
+
 #=======================================
 # Templates
 #=======================================
@@ -196,6 +203,10 @@ template bold*(color: string=""):string =
 template underline*(color: string=""):string = 
     if NoColors: ""
     else: "\e[4" & color & "m"
+
+template bg*(color: string):string =
+    if NoColors: ""
+    else: "\e[" & backgroundColor(color) & "m"
 
 template rgb*(color: string):string =
     if NoColors: ""
