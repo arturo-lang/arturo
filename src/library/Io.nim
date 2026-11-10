@@ -48,6 +48,28 @@ when defined(WEB):
         echo buffer
 
 #=======================================
+# Helpers
+#=======================================
+
+proc colorCode(c: VColor): string =
+    ## the terminal color code for the given color
+    ## (the standard ones use the terminal's own palette)
+    case c:
+        of clBlack:     blackColor
+        of clRed:       redColor
+        of clGreen:     greenColor
+        of clYellow:    yellowColor
+        of clBlue:      blueColor
+        of clMagenta:   magentaColor
+        of clOrange:    rgb("208")
+        of clCyan:      cyanColor
+        of clWhite:     whiteColor
+        of clGray:      grayColor
+        else:
+            let rgba = RGBfromColor(c)
+            rgb((rgba.r, rgba.g, rgba.b))
+
+#=======================================
 # Definitions
 #=======================================
 
@@ -91,32 +113,7 @@ proc defineModule*(moduleName: string) =
             print color #red.bold "Some text"          ; Some text (in red/bold)
         """:
             #=======================================================
-            var color = ""
-
-            case x.l:
-                of clBlack:
-                    color = blackColor
-                of clRed:
-                    color = redColor
-                of clGreen:
-                    color = greenColor
-                of clYellow:
-                    color = yellowColor
-                of clBlue:
-                    color = blueColor
-                of clMagenta:
-                    color = magentaColor
-                of clOrange:
-                    color = rgb("208")
-                of clCyan:
-                    color = cyanColor
-                of clWhite:
-                    color = whiteColor
-                of clGray:
-                    color = grayColor
-                else:
-                    let rgba = RGBfromColor(x.l)
-                    color = rgb((rgba.r, rgba.g, rgba.b))
+            let color = colorCode(x.l)
 
             var finalColor: string
 
