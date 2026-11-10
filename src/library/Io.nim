@@ -105,6 +105,7 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "bold"      : ({Logical},"bold font"),
             "underline" : ({Logical},"show underlined"),
+            "dim"       : ({Logical},"show dimmed"),
             "bg"        : ({Color},"use given background color"),
             "keep"      : ({Logical},"don't reset color at string end")
         },
@@ -132,6 +133,9 @@ proc defineModule*(moduleName: string) =
 
             if isBold and isUnderlined:
                 finalColor &= underline()
+
+            if hadAttr("dim"):
+                finalColor &= dim()
 
             if checkAttr("bg"):
                 finalColor &= bg(colorCode(aBg.l))
