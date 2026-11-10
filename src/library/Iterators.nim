@@ -1232,14 +1232,14 @@ proc defineModule*(moduleName: string) =
                 if doForever and (not aParallel.isNil):
                     Error_OperationNotPermitted("`.parallel` cannot combine with `.forever`")
             if doForever:
-                doIterate(set[IterCap]({}), true, VNULL):
+                doIterate(set[IterCap]({}), true, nil):
                     discard
                 do:
                     discard
                 do:
                     discard
             else:
-                doIterate(set[IterCap]({}), false, VNULL):
+                doIterate(set[IterCap]({}), false, nil):
                     discard
                 do:
                     discard
