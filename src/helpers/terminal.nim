@@ -53,6 +53,7 @@ const
 when defined(windows):
     const
         STD_OUTPUT_HANDLE = -11'i32
+        STD_ERROR_HANDLE = -12'i32
         ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004'u32
         FileNameInfo = 2'i32
 
@@ -62,6 +63,7 @@ when defined(windows):
 
 var
     NoColors* = false
+    NoErrorColors* = false          ## same, but for errors (that go to stderr)
     TerminalColors*: ColorDepth     ## how many colors the terminal can show
 
 #=======================================
@@ -207,24 +209,25 @@ template rgb*(color: tuple[r, g, b: int]):string =
 # Methods
 #=======================================
 
-proc isTerminal*(): bool =
-    ## is the output a terminal? (and not, e.g. a file or a pipe)
+proc isTerminal*(toStderr = false): bool =
+    ## is the output (or stderr) a terminal?
+    ## (and not, e.g. a file or a pipe)
     when defined(WEB):
         true
     elif defined(windows):
-        let h = getStdHandle(STD_OUTPUT_HANDLE)
+        let h = getStdHandle(if toStderr: STD_ERROR_HANDLE else: STD_OUTPUT_HANDLE)
         var mode: uint32
         getConsoleMode(h, mode) != 0 or isCygwinPty(h)
     else:
-        isatty(STDOUT_FILENO) == 1
+        isatty(if toStderr: STDERR_FILENO else: STDOUT_FILENO) == 1
 
-proc isColorFriendlyTerminal*(): bool =
+proc isColorFriendlyTerminal*(toStderr = false): bool =
     when defined(WEB):
         true
     else:
         let canShowColors =
             when defined(windows):
-                let h = getStdHandle(STD_OUTPUT_HANDLE)
+                let h = getStdHandle(if toStderr: STD_ERROR_HANDLE else: STD_OUTPUT_HANDLE)
                 var mode: uint32
                 if getConsoleMode(h, mode) != 0:
                     # a console: it understands colors (and the rest
@@ -236,7 +239,7 @@ proc isColorFriendlyTerminal*(): bool =
                     isCygwinPty(h)
             else:
                 # no colors, if it's not a terminal (e.g. `> file` or `| grep`)
-                isTerminal()
+                isTerminal(toStderr)
 
         # whatever the user explicitly asked for, goes
         # (see: https://no-color.org & https://force-color.org)
