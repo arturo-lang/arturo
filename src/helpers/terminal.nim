@@ -133,6 +133,8 @@ proc isColorFriendlyTerminal*(): bool =
         elif getEnv("FORCE_COLOR") notin ["", "0", "false"] or
              getEnv("CLICOLOR_FORCE") notin ["", "0"]:
             true
+        elif getEnv("TERM") == "dumb":
+            false
         else:
             isTerminal
 
