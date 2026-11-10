@@ -106,11 +106,22 @@ template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
 
+proc isTerminal*(): bool =
+    ## is the output a terminal? (and not, e.g. a file or a pipe)
+    when defined(WEB):
+        true
+    elif defined(windows):
+        let h = getStdHandle(STD_OUTPUT_HANDLE)
+        var mode: uint32
+        getConsoleMode(h, mode) != 0 or isCygwinPty(h)
+    else:
+        isatty(STDOUT_FILENO) == 1
+
 proc isColorFriendlyTerminal*(): bool =
     when defined(WEB):
         true
     else:
-        let isTerminal =
+        let canShowColors =
             when defined(windows):
                 let h = getStdHandle(STD_OUTPUT_HANDLE)
                 var mode: uint32
@@ -124,7 +135,7 @@ proc isColorFriendlyTerminal*(): bool =
                     isCygwinPty(h)
             else:
                 # no colors, if it's not a terminal (e.g. `> file` or `| grep`)
-                isatty(STDOUT_FILENO) == 1
+                isTerminal()
 
         # whatever the user explicitly asked for, goes
         # (see: https://no-color.org & https://force-color.org)
@@ -136,7 +147,7 @@ proc isColorFriendlyTerminal*(): bool =
         elif getEnv("TERM") == "dumb":
             false
         else:
-            isTerminal
+            canShowColors
 
 proc clearTerminal*() = 
     when defined(WEB):
