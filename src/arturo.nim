@@ -194,6 +194,7 @@ when isMainModule and not defined(WEB):
         var runConsole  = static readFile("src/scripts/console.art")
         var runUpdate   = static readFile("src/scripts/update.art")
         var muted: bool = not isColorFriendlyTerminal()
+        var mutedErrors: bool = not isColorFriendlyTerminal(toStderr=true)
         var bundleName: string = ""
 
         var unrecognizedOption = ""
@@ -230,6 +231,7 @@ when isMainModule and not defined(WEB):
                         # options
                         of "no-color":
                             muted = true
+                            mutedErrors = true
 
                         # experimental
                         of "c","compile":
@@ -248,6 +250,7 @@ when isMainModule and not defined(WEB):
         arguments = token.remainingArgs()
 
         setColors(muted = muted)
+        NoErrorColors = mutedErrors
 
         if action == noAction:
             if code == "":
@@ -298,6 +301,7 @@ when isMainModule and not defined(WEB):
     else:
         arguments = commandLineParams()
         NoColors = not isColorFriendlyTerminal()
+        NoErrorColors = not isColorFriendlyTerminal(toStderr=true)
         var bundleMain = static BundleMain
         discard run(bundleMain, arguments, isFile=false)#, withData=portable)
 else:
