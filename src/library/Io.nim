@@ -156,10 +156,12 @@ proc defineModule*(moduleName: string) =
             cursor true     ; (shows the cursor)
             """:
                 #=======================================================
-                if isTrue(x):
-                    stdout.showCursor()
-                else:
-                    stdout.hideCursor()
+                # (there's no cursor, if it's not a terminal)
+                if isTerminal():
+                    if isTrue(x):
+                        stdout.showCursor()
+                    else:
+                        stdout.hideCursor()
 
         builtin "goto",
             alias       = unaliased, 
@@ -177,7 +179,10 @@ proc defineModule*(moduleName: string) =
             goto 10 ø       ; (move cursor to column 10, same line)
             """:
                 #=======================================================
-                if xKind==Null:
+                # (there's no cursor, if it's not a terminal)
+                if not isTerminal():
+                    discard
+                elif xKind==Null:
                     if yKind==Null:
                         discard
                     else:
