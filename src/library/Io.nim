@@ -360,14 +360,16 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-            print terminal      ; [width:107 height:34]
+            print terminal      ; [width:107 height:34 tty?:true]
             terminal\width      ; => 107
+            terminal\tty?       ; => true (false, if output is piped/redirected)
             """:
                 #=======================================================
                 let size = terminalSize()
                 var ret = {
                     "width": newInteger(size[0]),
-                    "height": newInteger(size[1])
+                    "height": newInteger(size[1]),
+                    "tty?": newLogical(isTerminal())
                 }.toOrderedTable()
 
                 push(newDictionary(ret))
