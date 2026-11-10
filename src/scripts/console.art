@@ -207,7 +207,7 @@ lookup: function [what :string :literal :regex :type][
     discard unstack size stack
 ]
 
-Repl: #[autocomplete?: true, hints?: true, verbose?: true, timing?: true, cleanStack?: false]
+Repl: #[autocomplete?: true, hints?: true, verbose?: true, timing?: true, types?: true, cleanStack?: false]
 
 ; terminal-only methods get auto-completions & hints too
 
@@ -252,7 +252,10 @@ while [true] [
         if Repl\verbose? [
             ; (only what this entry left - not any older leftovers)
             if __stackSize < size stack -> __got: unstack 1
-            unless null? __got -> __result: render.once "=> |__got| |type __got|"
+            unless null? __got [
+                __result: render.once "=> |__got|"
+                if Repl\types? -> __result: __result ++ " :" ++ to :string type __got
+            ]
         ]
 
         __printResult __result __time
