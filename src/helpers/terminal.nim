@@ -149,8 +149,10 @@ proc isColorFriendlyTerminal*(): bool =
         else:
             canShowColors
 
-proc clearTerminal*() = 
+proc clearTerminal*() =
     when defined(WEB):
         console.clear()
     else:
-        clearScreen()
+        # there's nothing to clear, if it's not a terminal
+        if isTerminal():
+            clearScreen()
