@@ -19,7 +19,7 @@ when defined(WEB):
 import strutils
 
 when defined(windows):
-    import os
+    import os, std/syncio
 elif not defined(WEB):
     import os, posix
 
