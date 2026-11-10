@@ -204,6 +204,18 @@ template underline*(color: string=""):string =
     if NoColors: ""
     else: "\e[4" & color & "m"
 
+template dim*(color: string=""):string =
+    if NoColors: ""
+    else: "\e[2" & color & "m"
+
+template italic*(color: string=""):string =
+    if NoColors: ""
+    else: "\e[3" & color & "m"
+
+template strikethrough*(color: string=""):string =
+    if NoColors: ""
+    else: "\e[9" & color & "m"
+
 template bg*(color: string):string =
     if NoColors: ""
     else: "\e[" & backgroundColor(color) & "m"
