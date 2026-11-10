@@ -297,6 +297,7 @@ when isMainModule and not defined(WEB):
                 discard
     else:
         arguments = commandLineParams()
+        NoColors = not isColorFriendlyTerminal()
         var bundleMain = static BundleMain
         discard run(bundleMain, arguments, isFile=false)#, withData=portable)
 else:
