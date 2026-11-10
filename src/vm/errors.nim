@@ -804,6 +804,12 @@ proc Error_Interrupted*() =
             Interrupted
         """
 
+proc Error_StackOverflow*() =
+    panic:
+        toError RuntimeErr, """
+            Stack overflow (maximum recursion depth exceeded)
+        """
+
 func Error_ConfigNotFound*(gkey: string, akey: string) =
     panic:
         toError VMErr, """
