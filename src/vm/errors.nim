@@ -810,6 +810,12 @@ proc Error_StackOverflow*() =
             Stack overflow (maximum recursion depth exceeded)
         """
 
+proc Error_StackFull*() =
+    panic:
+        toError RuntimeErr, """
+            Stack overflow (too many values left on the stack)
+        """
+
 func Error_ConfigNotFound*(gkey: string, akey: string) =
     panic:
         toError VMErr, """

@@ -14,7 +14,7 @@
 
 import macros, strutils, tables
 
-import vm/profiler
+import vm/[errors, profiler]
 import vm/values/value
 
 #=======================================
@@ -41,6 +41,18 @@ var
 #=======================================
 
 # Main stack
+
+proc stackFull*() {.noinline.} =
+    ## a stack that's (almost) full is of no use anyway,
+    ## so let's empty it & report it
+    SP = 0
+    Error_StackFull()
+
+template stackAlmostFull*(): bool =
+    ## are we about to run out of stack?
+    ## (not checked on every push, for performance reasons,
+    ## so we leave enough room for whatever comes in between)
+    SP > Stack.len - 10000
 
 proc push*(v: sink Value) {.inline.} =
     # TODO(Stack/push) performance enhancements?
