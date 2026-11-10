@@ -16,7 +16,7 @@ when not defined(WEB):
 
     import sequtils, strutils, sugar, tables
     import extras/linenoise
-    import vm/errors
+    import vm/[errors, globals]
     import vm/values/value
 
     when defined(posix):
@@ -73,6 +73,24 @@ when not defined(WEB):
             dec i
         result = (s[0..i], s[i+1..^1])
 
+    proc keyCompletions(token: string): seq[string] =
+        # `d\ke` -> the matching keys of dictionary (or object) `d`
+        # (going as deep as needed, e.g. `d\a\b\ke`)
+        let parts = token.split('\\')
+        var v = Syms.getOrDefault(parts[0], nil)
+        for i in 1..parts.high:
+            if v.isNil or v.kind notin {Dictionary, Object}: return
+            if i < parts.high:
+                v = (if v.kind == Dictionary: v.d.getOrDefault(parts[i], nil) else: v.o.getOrDefault(parts[i], nil))
+            else:
+                let prefix = parts[0..^2].join("\\") & "\\"
+                if v.kind == Dictionary:
+                    for k in v.d.keys:
+                        if k.startsWith(parts[i]): result.add(prefix & k)
+                else:
+                    for k in v.o.keys:
+                        if k.startsWith(parts[i]): result.add(prefix & k)
+
     proc openBrackets(code: string): int =
         # how many brackets are left open, ignoring
         # anything inside strings, chars & comments
@@ -113,7 +131,10 @@ when not defined(WEB):
 
         proc completionsCback(buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.} =
             let (copied, token) = splitLastToken($(buf))
-            if token.len >= 1:
+            if '\\' in token:
+                for item in keyCompletions(token):
+                    linenoiseAddCompletion(lc, (copied & item).cstring)
+            elif token.len >= 1:
                 for item in completions.map((x) => x.s).filter((x) => x.startsWith(token)):
                     linenoiseAddCompletion(lc, (copied & item).cstring)
 
