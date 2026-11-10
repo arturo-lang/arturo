@@ -24,8 +24,31 @@ elif not defined(WEB):
     import os, posix
 
 #=======================================
-# Windows API
+# Types
 #=======================================
+
+type
+    ColorDepth* = enum
+        BasicColors     = 16            ## the 16 standard ones
+        ExtendedColors  = 256           ## the standard ones + 240 more
+        TrueColors      = 16_777_216    ## any RGB color
+
+#=======================================
+# Constants
+#=======================================
+
+const
+    noColor*     = "\e[0m"
+
+    blackColor*     = ";30"
+    redColor*       = ";31"
+    greenColor*     = ";32"
+    yellowColor*    = ";33"
+    blueColor*      = ";34"
+    magentaColor*   = ";35"
+    cyanColor*      = ";36"
+    whiteColor*     = ";37"
+    grayColor*      = ";90"
 
 when defined(windows):
     const
@@ -33,6 +56,19 @@ when defined(windows):
         ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004'u32
         FileNameInfo = 2'i32
 
+#=======================================
+# Global Variables
+#=======================================
+
+var
+    NoColors* = false
+    TerminalColors*: ColorDepth     ## how many colors the terminal can show
+
+#=======================================
+# Helpers
+#=======================================
+
+when defined(windows):
     proc getStdHandle(nStdHandle: int32): int {.stdcall, dynlib: "kernel32", importc: "GetStdHandle".}
     proc getConsoleMode(h: int, mode: var uint32): int32 {.stdcall, dynlib: "kernel32", importc: "GetConsoleMode".}
     proc setConsoleMode(h: int, mode: uint32): int32 {.stdcall, dynlib: "kernel32", importc: "SetConsoleMode".}
@@ -51,20 +87,6 @@ when defined(windows):
             name.add char(info[2+i] and 0x7F)
 
         ("msys-" in name or "cygwin-" in name) and "-pty" in name
-
-#=======================================
-# Types
-#=======================================
-
-type
-    ColorDepth* = enum
-        BasicColors     = 16            ## the 16 standard ones
-        ExtendedColors  = 256           ## the standard ones + 240 more
-        TrueColors      = 16_777_216    ## any RGB color
-
-#=======================================
-# Helpers
-#=======================================
 
 proc detectColorDepth(): ColorDepth =
     ## how many colors can the terminal show?
@@ -154,31 +176,6 @@ proc rgbColor(r, g, b: int, depth: ColorDepth): string =
         of BasicColors:     ";" & $closestBasic(r, g, b)
 
 #=======================================
-# Global Variables
-#=======================================
-
-var
-    NoColors* = false
-    TerminalColors* = detectColorDepth()   ## how many colors the terminal can show
-
-#=======================================
-# Constants
-#=======================================
-
-const
-    noColor*     = "\e[0m"
-
-    blackColor*     = ";30"
-    redColor*       = ";31"
-    greenColor*     = ";32"
-    yellowColor*    = ";33"
-    blueColor*      = ";34"
-    magentaColor*   = ";35"
-    cyanColor*      = ";36"
-    whiteColor*     = ";37"
-    grayColor*      = ";90"
-
-#=======================================
 # Templates
 #=======================================
 
@@ -205,6 +202,10 @@ template rgb*(color: string):string =
 template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
     else: rgbColor(color[0], color[1], color[2], TerminalColors)
+
+#=======================================
+# Methods
+#=======================================
 
 proc isTerminal*(): bool =
     ## is the output a terminal? (and not, e.g. a file or a pipe)
@@ -264,3 +265,9 @@ proc clearTerminal*() =
                     stdout.flushFile()
                     return
             clearScreen()
+
+#=======================================
+# Initialization
+#=======================================
+
+TerminalColors = detectColorDepth()
