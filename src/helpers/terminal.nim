@@ -91,6 +91,44 @@ proc detectColorDepth(): ColorDepth =
             of "3": result = max(result, TrueColors)
             else: discard
 
+proc closestBasic(r, g, b: int): int =
+    ## the closest of the 16 standard colors
+    ## (as a foreground color code: 30-37 or 90-97)
+    let brightness = (max(r, max(g, b)) * 2 + 127) div 255
+    if brightness == 0:
+        return 30
+
+    result = 30 + ((((b + 127) div 255) shl 2) or
+                   (((g + 127) div 255) shl 1) or
+                    ((r + 127) div 255))
+
+    if brightness == 2:
+        result += 60
+
+proc closestExtended(r, g, b: int): int =
+    ## the closest of the 256 colors
+    if r == g and g == b:
+        # one of the grays
+        if r < 8: 16
+        elif r > 248: 231
+        else: 232 + ((r - 8) * 48 + 247) div 494
+    else:
+        # one of the 6x6x6 color cube
+        # (its levels being: 0, 95, 135, 175, 215, 255)
+        proc level(v: int): int =
+            if v < 48: 0
+            elif v < 115: 1
+            else: (v - 35) div 40
+
+        16 + 36 * level(r) + 6 * level(g) + level(b)
+
+proc rgbColor(r, g, b: int, depth: ColorDepth): string =
+    ## the given RGB color, or the closest one the terminal can show
+    case depth:
+        of TrueColors:      ";38;2;" & $r & ";" & $g & ";" & $b
+        of ExtendedColors:  ";38;5;" & $closestExtended(r, g, b)
+        of BasicColors:     ";" & $closestBasic(r, g, b)
+
 #=======================================
 # Global Variables
 #=======================================
@@ -146,7 +184,7 @@ template rgb*(color: string=""):string =
 
 template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
-    else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
+    else: rgbColor(color[0], color[1], color[2], TerminalColors)
 
 proc isTerminal*(): bool =
     ## is the output a terminal? (and not, e.g. a file or a pipe)
