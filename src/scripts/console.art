@@ -245,13 +245,13 @@ while [true] [
     __inp: do __command
 
     __err: try.verbose [
-        __time: benchmark.get [__err: try.verbose to :block __inp]
-
         __stackSize: size stack
+        __time: benchmark.get [__err: try.verbose to :block __inp]
 
         __result: ""
         if Repl\verbose? [
-            if __stackSize > 0 -> __got: unstack 1
+            ; (only what this entry left - not any older leftovers)
+            if __stackSize < size stack -> __got: unstack 1
             unless null? __got -> __result: render.once "=> |__got| |type __got|"
         ]
 
