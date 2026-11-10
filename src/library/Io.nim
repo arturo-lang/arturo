@@ -360,16 +360,18 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-            print terminal      ; [width:107 height:34 tty?:true]
+            print terminal      ; [width:107 height:34 tty?:true colors:16777216]
             terminal\width      ; => 107
             terminal\tty?       ; => true (false, if output is piped/redirected)
+            terminal\colors     ; => 256 (0, if colors are off)
             """:
                 #=======================================================
                 let size = terminalSize()
                 var ret = {
                     "width": newInteger(size[0]),
                     "height": newInteger(size[1]),
-                    "tty?": newLogical(isTerminal())
+                    "tty?": newLogical(isTerminal()),
+                    "colors": newInteger(if NoColors: 0 else: ord(TerminalColors))
                 }.toOrderedTable()
 
                 push(newDictionary(ret))
