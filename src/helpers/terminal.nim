@@ -19,7 +19,7 @@ when defined(WEB):
 when defined(windows):
     import os, strutils
 elif not defined(WEB):
-    import posix
+    import os, posix
 
 #=======================================
 # Windows API
@@ -107,22 +107,34 @@ template rgb*(color: tuple[r, g, b: int]):string =
     else: ";38;2;" & $(color[0]) & ";" & $(color[1]) & ";" & $(color[2])
 
 proc isColorFriendlyTerminal*(): bool =
-    when defined(windows):
-        let h = getStdHandle(STD_OUTPUT_HANDLE)
-        var mode: uint32
-        if getConsoleMode(h, mode) != 0:
-            # a console: it understands colors (and the rest
-            # of the escape codes), only if we can turn them on
-            (mode and ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0 or
-            setConsoleMode(h, mode or ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0
-        else:
-            # not a console, but it could still be mintty & co.
-            isCygwinPty(h)
-    elif defined(WEB):
+    when defined(WEB):
         true
     else:
-        # no colors, if it's not a terminal (e.g. `> file` or `| grep`)
-        isatty(STDOUT_FILENO) == 1
+        let isTerminal =
+            when defined(windows):
+                let h = getStdHandle(STD_OUTPUT_HANDLE)
+                var mode: uint32
+                if getConsoleMode(h, mode) != 0:
+                    # a console: it understands colors (and the rest
+                    # of the escape codes), only if we can turn them on
+                    (mode and ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0 or
+                    setConsoleMode(h, mode or ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0
+                else:
+                    # not a console, but it could still be mintty & co.
+                    isCygwinPty(h)
+            else:
+                # no colors, if it's not a terminal (e.g. `> file` or `| grep`)
+                isatty(STDOUT_FILENO) == 1
+
+        # whatever the user explicitly asked for, goes
+        # (see: https://no-color.org & https://force-color.org)
+        if getEnv("NO_COLOR") != "":
+            false
+        elif getEnv("FORCE_COLOR") notin ["", "0", "false"] or
+             getEnv("CLICOLOR_FORCE") notin ["", "0"]:
+            true
+        else:
+            isTerminal
 
 proc clearTerminal*() = 
     when defined(WEB):
