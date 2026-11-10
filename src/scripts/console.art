@@ -227,7 +227,7 @@ while [true] [
 
         if Repl\verbose? [
             if __stackSize > 0 -> __got: unstack 1
-            unless null? __got -> print color #gray render.once "=> |__got|"
+            unless null? __got -> print color #gray render.once "=> |__got| |type __got|"
         ]
 
         print ""
