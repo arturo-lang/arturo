@@ -105,12 +105,15 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "bold"      : ({Logical},"bold font"),
             "underline" : ({Logical},"show underlined"),
+            "bg"        : ({Color},"use given background color"),
             "keep"      : ({Logical},"don't reset color at string end")
         },
         returns     = {String},
         example     = """
             print color #green "Hello!"                ; Hello! (in green)
             print color #red.bold "Some text"          ; Some text (in red/bold)
+            ..........
+            print color.bg:#blue #white "Some text"    ; Some text (in white, on blue)
         """:
             #=======================================================
             let color = colorCode(x.l)
@@ -129,6 +132,9 @@ proc defineModule*(moduleName: string) =
 
             if isBold and isUnderlined:
                 finalColor &= underline()
+
+            if checkAttr("bg"):
+                finalColor &= bg(colorCode(aBg.l))
 
             var res = finalColor & y.s
 
