@@ -120,12 +120,18 @@ proc defineModule*(moduleName: string) =
 
             var finalColor: string
 
-            if (hadAttr("bold")):
+            let isBold = hadAttr("bold")
+            let isUnderlined = hadAttr("underline")
+
+            if isBold:
                 finalColor = bold(color)
-            elif (hadAttr("underline")):
+            elif isUnderlined:
                 finalColor = underline(color)
             else:
                 finalColor = fg(color)
+
+            if isBold and isUnderlined:
+                finalColor &= underline()
 
             var res = finalColor & y.s
 
