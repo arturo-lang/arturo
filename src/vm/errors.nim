@@ -252,7 +252,12 @@ proc toVError*(e: ref Exception): VError =
 
 proc printError(s: string) =
     when not defined(WEB):
-        stderr.writeLine s
+        if NoErrorColors:
+            # (any colors already in there, e.g. from the
+            # message itself, have to go too)
+            stderr.writeLine s.replacef(re"\e[^m]+m", "")
+        else:
+            stderr.writeLine s
     else:
         echo s
 
@@ -362,6 +367,12 @@ proc showError*(e: VError) =
     when defined(WEB):
         showErrorWeb(e)
     else:
+        # errors go to stderr, which may be a terminal or not,
+        # regardless of stdout (e.g. `> out.txt` or `2> errors.txt`)
+        let noColors = NoColors
+        NoColors = NoErrorColors
+        defer: NoColors = noColors
+
         with e:
             printErrorHeader()
             printErrorKindDescription()
