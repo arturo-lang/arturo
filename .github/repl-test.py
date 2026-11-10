@@ -153,6 +153,7 @@ SCENARIOS = [
     ("complete user symbols",     ["myValue: 42\r", "write to :string myV", "\t", '"out.txt"\r'], "42"),
     ("complete dictionary keys",  ["myDict: #[alpha: #[beta: 7]]\r", "write to :string myDict\\al", "\t",
                                    "\\be", "\t", ' "out.txt"\r'],                         "7"),
+    ("runaway recursion",         ["f: function [x][f x + 1]\r", "f 1\r", W('"ok"')], "ok"),
     ("complete user options",     ["greet: function [x][\r;; options: [\r;;    loud: « shout\r;; ]\r",
                                    "x\r", "]\r", "greet.lo", "\t", "1\r"],               ("history", "greet.loud 1")),
 ]
