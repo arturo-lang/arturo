@@ -97,6 +97,25 @@ __printFList: function [sorted, ftype][
     ]
 ]
 
+__printResult: function [result, time][
+    ; the result (if any) & how long it took, at the far right
+    ms: scalar time
+    took: ""
+    if Repl\timing? ->
+        took: (ms < 1000)? -> ~"|round.to:2 ms| ms" -> ~"|round.to:2 ms / 1000| s"
+
+    width: dec terminal\width
+    unless empty? result [
+        line: result
+        if and? [not? empty? took][and? [not? contains? result "\n"][width >= 2 + (size result) + size took]] [
+            line: result ++ pad took width - size result
+            took: ""
+        ]
+        print color #gray line
+    ]
+    print (empty? took)? -> "" -> color #gray pad took width
+]
+
 ; print header
 
 clear
@@ -186,7 +205,7 @@ lookup: function [what :string :literal :regex :type][
     discard unstack size stack
 ]
 
-Repl: #[autocomplete?: true, hints?: true, verbose?: true]
+Repl: #[autocomplete?: true, hints?: true, verbose?: true, timing?: true]
 
 ; terminal-only methods get auto-completions & hints too
 
@@ -198,7 +217,7 @@ loop ["help" "lookup"] 'k [
 ; anything not defined by now (or by the loop below) is user-defined
 
 __internal: #[]
-loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize"] 'k ->
+loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result"] 'k ->
     __internal\[k]: true
 
 ; start the REPL
@@ -221,15 +240,16 @@ while [true] [
     __inp: do __command
 
     __err: try.verbose [
-        __err: try.verbose to :block __inp
+        __time: benchmark.get [__err: try.verbose to :block __inp]
 
         __stackSize: size stack
 
+        __result: ""
         if Repl\verbose? [
             if __stackSize > 0 -> __got: unstack 1
-            unless null? __got -> print color #gray render.once "=> |__got| |type __got|"
+            unless null? __got -> __result: render.once "=> |__got| |type __got|"
         ]
 
-        print ""
+        __printResult __result __time
     ]
 ]
