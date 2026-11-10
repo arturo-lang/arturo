@@ -19,7 +19,7 @@ when defined(WEB):
 when defined(windows):
     import os, strutils
 elif not defined(WEB):
-    import os, posix
+    import os, posix, strutils
 
 #=======================================
 # Windows API
@@ -51,11 +51,53 @@ when defined(windows):
         ("msys-" in name or "cygwin-" in name) and "-pty" in name
 
 #=======================================
+# Types
+#=======================================
+
+type
+    ColorDepth* = enum
+        BasicColors     = 16            ## the 16 standard ones
+        ExtendedColors  = 256           ## the standard ones + 240 more
+        TrueColors      = 16_777_216    ## any RGB color
+
+#=======================================
+# Helpers
+#=======================================
+
+proc detectColorDepth(): ColorDepth =
+    ## how many colors can the terminal show?
+    when defined(WEB):
+        TrueColors
+    else:
+        # Windows 10+ consoles, Windows Terminal & mintty
+        # can all show any color
+        result = when defined(windows): TrueColors else: BasicColors
+
+        when not defined(windows):
+            let term = getEnv("TERM")
+            let program = getEnv("TERM_PROGRAM")
+
+            if getEnv("COLORTERM").toLowerAscii() in ["truecolor", "24bit"] or
+               term.endsWith("-direct") or
+               program in ["iTerm.app", "WezTerm", "ghostty", "vscode"]:
+                result = TrueColors
+            elif "256color" in term or program == "Apple_Terminal":
+                result = ExtendedColors
+
+        # unless the user explicitly asked for more
+        # (see: https://force-color.org)
+        case getEnv("FORCE_COLOR"):
+            of "2": result = max(result, ExtendedColors)
+            of "3": result = max(result, TrueColors)
+            else: discard
+
+#=======================================
 # Global Variables
 #=======================================
 
 var
     NoColors* = false
+    TerminalColors* = detectColorDepth()   ## how many colors the terminal can show
 
 #=======================================
 # Constants
