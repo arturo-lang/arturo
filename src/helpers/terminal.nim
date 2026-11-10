@@ -198,7 +198,7 @@ template underline*(color: string=""):string =
     if NoColors: ""
     else: "\e[4" & color & "m"
 
-template rgb*(color: string=""):string =
+template rgb*(color: string):string =
     if NoColors: ""
     else: extendedColor(color, TerminalColors)
 
