@@ -48,6 +48,28 @@ when defined(WEB):
         echo buffer
 
 #=======================================
+# Helpers
+#=======================================
+
+proc colorCode(c: VColor): string =
+    ## the terminal color code for the given color
+    ## (the standard ones use the terminal's own palette)
+    case c:
+        of clBlack:     blackColor
+        of clRed:       redColor
+        of clGreen:     greenColor
+        of clYellow:    yellowColor
+        of clBlue:      blueColor
+        of clMagenta:   magentaColor
+        of clOrange:    rgb("208")
+        of clCyan:      cyanColor
+        of clWhite:     whiteColor
+        of clGray:      grayColor
+        else:
+            let rgba = RGBfromColor(c)
+            rgb((rgba.r, rgba.g, rgba.b))
+
+#=======================================
 # Definitions
 #=======================================
 
@@ -83,49 +105,48 @@ proc defineModule*(moduleName: string) =
         attrs       = {
             "bold"      : ({Logical},"bold font"),
             "underline" : ({Logical},"show underlined"),
+            "dim"       : ({Logical},"show dimmed"),
+            "italic"    : ({Logical},"show in italics"),
+            "strikethrough" : ({Logical},"show crossed out"),
+            "bg"        : ({Color},"use given background color"),
             "keep"      : ({Logical},"don't reset color at string end")
         },
         returns     = {String},
         example     = """
             print color #green "Hello!"                ; Hello! (in green)
             print color #red.bold "Some text"          ; Some text (in red/bold)
+            ..........
+            print color.bg:#blue #white "Some text"    ; Some text (in white, on blue)
         """:
             #=======================================================
-            var color = ""
-
-            case x.l:
-                of clBlack:
-                    color = blackColor
-                of clRed:
-                    color = redColor
-                of clGreen:
-                    color = greenColor
-                of clYellow:
-                    color = yellowColor
-                of clBlue:
-                    color = blueColor
-                of clMagenta:
-                    color = magentaColor
-                of clOrange:
-                    color = rgb("208")
-                of clCyan:
-                    color = cyanColor
-                of clWhite:
-                    color = whiteColor
-                of clGray:
-                    color = grayColor
-                else:
-                    let rgba = RGBfromColor(x.l)
-                    color = rgb((rgba.r, rgba.g, rgba.b))
+            let color = colorCode(x.l)
 
             var finalColor: string
 
-            if (hadAttr("bold")):
+            let isBold = hadAttr("bold")
+            let isUnderlined = hadAttr("underline")
+
+            if isBold:
                 finalColor = bold(color)
-            elif (hadAttr("underline")):
+            elif isUnderlined:
                 finalColor = underline(color)
             else:
                 finalColor = fg(color)
+
+            if isBold and isUnderlined:
+                finalColor &= underline()
+
+            if hadAttr("dim"):
+                finalColor &= dim()
+
+            if hadAttr("italic"):
+                finalColor &= italic()
+
+            if hadAttr("strikethrough"):
+                finalColor &= strikethrough()
+
+            if checkAttr("bg"):
+                finalColor &= bg(colorCode(aBg.l))
 
             var res = finalColor & y.s
 
@@ -150,10 +171,12 @@ proc defineModule*(moduleName: string) =
             cursor true     ; (shows the cursor)
             """:
                 #=======================================================
-                if isTrue(x):
-                    stdout.showCursor()
-                else:
-                    stdout.hideCursor()
+                # (there's no cursor, if it's not a terminal)
+                if isTerminal():
+                    if isTrue(x):
+                        stdout.showCursor()
+                    else:
+                        stdout.hideCursor()
 
         builtin "goto",
             alias       = unaliased, 
@@ -171,7 +194,10 @@ proc defineModule*(moduleName: string) =
             goto 10 ø       ; (move cursor to column 10, same line)
             """:
                 #=======================================================
-                if xKind==Null:
+                # (there's no cursor, if it's not a terminal)
+                if not isTerminal():
+                    discard
+                elif xKind==Null:
                     if yKind==Null:
                         discard
                     else:
@@ -354,14 +380,18 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-            print terminal      ; [width:107 height:34]
+            print terminal      ; [width:107 height:34 tty?:true colors:16777216]
             terminal\width      ; => 107
+            terminal\tty?       ; => true (false, if output is piped/redirected)
+            terminal\colors     ; => 256 (0, if colors are off)
             """:
                 #=======================================================
                 let size = terminalSize()
                 var ret = {
                     "width": newInteger(size[0]),
-                    "height": newInteger(size[1])
+                    "height": newInteger(size[1]),
+                    "tty?": newLogical(isTerminal()),
+                    "colors": newInteger(if NoColors: 0 else: ord(TerminalColors))
                 }.toOrderedTable()
 
                 push(newDictionary(ret))
