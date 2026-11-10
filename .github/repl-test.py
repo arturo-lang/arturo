@@ -151,6 +151,10 @@ SCENARIOS = [
     ("complete `lookup`",         ["looku", "\t", '"zip"\r'],                           ("history", 'lookup "zip"')),
     ("double space continues",    ["x: 1 +  ", "\r", "2\r", W("to :string x")],        "3"),
     ("complete user symbols",     ["myValue: 42\r", "write to :string myV", "\t", '"out.txt"\r'], "42"),
+    ("complete dictionary keys",  ["myDict: #[alpha: #[beta: 7]]\r", "write to :string myDict\\al", "\t",
+                                   "\\be", "\t", ' "out.txt"\r'],                         "7"),
+    ("complete user options",     ["greet: function [x][\r;; options: [\r;;    loud: « shout\r;; ]\r",
+                                   "x\r", "]\r", "greet.lo", "\t", "1\r"],               ("history", "greet.loud 1")),
 ]
 
 
