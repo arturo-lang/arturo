@@ -11,18 +11,20 @@
 __completions: map sort keys symbols => [& ++ " "]
 __hints: #[]
 
-loop symbols [k,v][
-    if function? var k [
-        att: get info.get k 'attrs
-        ats: keys att
-
-        if not? empty? ats [
-            '__completions ++ map ats 'at [
-                (:logical = first att\[at]\types)?  -> join @[k "." at " "]
-                                                    -> join @[k "." at ": "]
-            ]
-        ]
+__attrCompletions: function [k][
+    ; `func.option` completions, for all options of the given function
+    ; (options with no type are just flags, e.g. `loud` in `greet.loud`)
+    att: get info.get k 'attrs
+    map keys att 'at [
+        t: att\[at]\types
+        (or? [empty? t] [:logical = first t])?  -> join @[k "." at " "]
+                                                -> join @[k "." at ": "]
     ]
+]
+
+loop symbols [k,v][
+    if function? var k ->
+        '__completions ++ __attrCompletions k
 ]
 
 loop symbols [k,v][
@@ -217,7 +219,7 @@ loop ["help" "lookup"] 'k [
 ; anything not defined by now (or by the loop below) is user-defined
 
 __internal: #[]
-loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result"] 'k ->
+loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result" "__userCompletions"] 'k ->
     __internal\[k]: true
 
 ; start the REPL
@@ -227,13 +229,16 @@ while [true] [
     __got: null
 
     __userSymbols: select keys symbols 'k -> not? key? __internal k
+    __userCompletions: map __userSymbols 'k -> k ++ " "
     loop __userSymbols 'k [
-        (function? var k)? [__hints\[k]: join.with:" " keys get info.get k 'args]
-                           [if key? __hints k -> remove '__hints .key k]
+        (function? var k)? [
+            __hints\[k]: join.with:" " keys get info.get k 'args
+            '__userCompletions ++ __attrCompletions k
+        ][if key? __hints k -> remove '__hints .key k]
     ]
 
     __command: [input.repl .history: __historyPath]
-    if Repl\autocomplete? -> append '__command [.complete: __completions ++ map __userSymbols 'k -> k ++ " "]
+    if Repl\autocomplete? -> append '__command [.complete: __completions ++ __userCompletions]
     if Repl\hints? -> append '__command [.hint: __hints]
     append '__command ["$> "]
 
