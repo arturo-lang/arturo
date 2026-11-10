@@ -45,6 +45,34 @@ def pty(code, env={}, args=[]):
         os.close(master)
         return out.decode(errors="replace")
 
+def split(code, env, args, stderrToFile):
+    # one of stdout/stderr goes to a terminal, the other one to a file
+    # (returns whatever went to stderr)
+    import pty as ptym
+    env = {**BASE, "TERM": "xterm-256color", **env}
+    master, slave = ptym.openpty()
+    if stderrToFile:
+        p = subprocess.Popen([BIN] + args + ["-e", code], stdin=slave, stdout=slave, stderr=subprocess.PIPE, env=env)
+    else:
+        p = subprocess.Popen([BIN] + args + ["-e", code], stdin=slave, stdout=subprocess.DEVNULL, stderr=slave, env=env)
+    os.close(slave)
+    out = b""
+    while True:
+        try:
+            chunk = os.read(master, 4096)
+        except OSError:
+            break
+        if not chunk:
+            break
+        out += chunk
+    err = p.stderr.read() if stderrToFile else out
+    p.wait(timeout=60)
+    os.close(master)
+    return err.decode(errors="replace")
+
+def stdout_to_file(code, env={}, args=[]): return split(code, env, args, False)
+def stderr_to_file(code, env={}, args=[]): return split(code, env, args, True)
+
 F = {"FORCE_COLOR": "1"}
 
 # (name, runner, code, env, args, text, should it be there?)
@@ -76,9 +104,27 @@ checks = [
     ("colors, NO_COLOR",        pty,   'print terminal\\colors',   {"NO_COLOR": "1"}, [], "0", True),
     ("colors, terminal",        pty,   'print terminal\\colors',   {}, [], "256" if not WIN else "16777216", True),
 
-    # clear
+    # clear, cursor & goto
     ("clear, piped",            piped, 'clear print "x"',          {}, [], "2J", False),
+    ("cursor & goto, piped",    piped, 'cursor false goto 3 4 cursor true print "x"', {}, [], "\x1b", False),
+
+    # backgrounds & styles
+    ("bg, basic",               piped, 'print color.bg:#blue #white "x"', F, [], "37m\x1b[44m", True),
+    ("bg, 256 colors",          piped, 'print color.bg:#orange #black "x"', {**F, "TERM": "xterm-256color"}, [], "\x1b[48;5;208m", True),
+    ("bg, truecolor",           piped, 'print color.bg:#1e90ff #red "x"', {**F, "COLORTERM": "truecolor"}, [], "\x1b[48;2;30;144;255m", True),
+    ("dim",                     piped, 'print color.dim #red "x"',           F, [], "\x1b[2m", True),
+    ("italic",                  piped, 'print color.italic #red "x"',        F, [], "\x1b[3m", True),
+    ("strikethrough",           piped, 'print color.strikethrough #red "x"', F, [], "\x1b[9m", True),
+
+    # errors (stderr follows its own rules)
+    ("error, terminal",         pty,   'print 1 + "x"',            {}, [],  "31m", True),
 ]
+
+if os.name != "nt":
+    checks += [
+        ("error, stdout to file (stderr: terminal)", stdout_to_file, 'print 1 + "x"', {}, [], "31m", True),
+        ("error, stderr to file",                    stderr_to_file, 'print 1 + "x"', {}, [], "\x1b", False),
+    ]
 
 failed = 0
 for name, run, code, env, args, text, expected in checks:
