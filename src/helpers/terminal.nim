@@ -18,6 +18,8 @@ when defined(WEB):
 
 when defined(windows):
     import os, strutils
+elif not defined(WEB):
+    import posix
 
 #=======================================
 # Windows API
@@ -116,8 +118,11 @@ proc isColorFriendlyTerminal*(): bool =
         else:
             # not a console, but it could still be mintty & co.
             isCygwinPty(h)
-    else:
+    elif defined(WEB):
         true
+    else:
+        # no colors, if it's not a terminal (e.g. `> file` or `| grep`)
+        isatty(STDOUT_FILENO) == 1
 
 proc clearTerminal*() = 
     when defined(WEB):
