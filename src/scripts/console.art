@@ -35,6 +35,9 @@ loop symbols [k,v][
 
 __historyPath: join.path @[path\home ".arturo" "history.lst"]
 
+; a fancier prompt, if the terminal can show it
+__prompt: (terminal\unicode?)? -> color #magenta.bold "❯ " -> "$> "
+
 ; set all packager-related operations as verbose
 __VerbosePackager
 
@@ -240,7 +243,7 @@ while [true] [
     __command: [input.repl .history: __historyPath]
     if Repl\autocomplete? -> append '__command [.complete: __completions ++ __userCompletions]
     if Repl\hints? -> append '__command [.hint: __hints]
-    append '__command ["$> "]
+    append '__command [__prompt]
 
     __inp: do __command
 
