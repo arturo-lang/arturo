@@ -155,4 +155,12 @@ proc clearTerminal*() =
     else:
         # there's nothing to clear, if it's not a terminal
         if isTerminal():
+            when defined(windows):
+                # mintty & co. aren't consoles,
+                # but they do understand escape codes
+                var mode: uint32
+                if getConsoleMode(getStdHandle(STD_OUTPUT_HANDLE), mode) == 0:
+                    stdout.write("\e[H\e[2J")
+                    stdout.flushFile()
+                    return
             clearScreen()
