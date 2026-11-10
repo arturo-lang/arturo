@@ -8,8 +8,8 @@
 
 ; initialize environment
 
-completions: map sort keys symbols => [& ++ " "]
-hints: #[]
+__completions: map sort keys symbols => [& ++ " "]
+__hints: #[]
 
 loop symbols [k,v][
     if function? var k [
@@ -17,7 +17,7 @@ loop symbols [k,v][
         ats: keys att
 
         if not? empty? ats [
-            'completions ++ map ats 'at [
+            '__completions ++ map ats 'at [
                 (:logical = first att\[at]\types)?  -> join @[k "." at " "]
                                                     -> join @[k "." at ": "]
             ]
@@ -27,11 +27,11 @@ loop symbols [k,v][
 
 loop symbols [k,v][
     if function? var k [
-        hints\[k]: join.with:" " keys get info.get k 'args
+        __hints\[k]: join.with:" " keys get info.get k 'args
     ]
 ]
 
-historyPath: join.path @[path\home ".arturo" "history.lst"]
+__historyPath: join.path @[path\home ".arturo" "history.lst"]
 
 ; set all packager-related operations as verbose
 __VerbosePackager
@@ -65,15 +65,15 @@ Details: Details ++ {# arch     : |sys\cpu\arch|/|sys\os|}
 
 BR: "\n"
 
-orange: $[x][
+__orange: $[x][
     color #orange x
 ]
 
-orangeBold: $[x][
+__orangeBold: $[x][
     color #orange.bold x
 ]
 
-PrintFList: function [sorted, ftype][
+__printFList: function [sorted, ftype][
     llength: 80
 
     print repeat "-" llength
@@ -103,18 +103,18 @@ clear
 print join @[
     ~LongHeader BR BR
     color #gray ~Details BR BR
-    orange "# Type " 
-    orangeBold "help"
-    orange " to get a list of all available functions with a short description" BR 
-    orange "# Type "
-    orangeBold {lookup "something"} 
-    orange " to lookup a specific function by name/description or type" BR 
-    orange "# Type " 
-    orangeBold "info 'symbol"
-    orange " for info about a specific symbol or built-in function" BR BR
-    orange "# For multi-line input, leave a bracket open or end the line with two spaces" BR
-    orange "# Use TAB for auto-completion, UP for navigating history" BR BR
-    orange "# Launching interactive console - rock on! 🤘" BR
+    __orange "# Type " 
+    __orangeBold "help"
+    __orange " to get a list of all available functions with a short description" BR 
+    __orange "# Type "
+    __orangeBold {lookup "something"} 
+    __orange " to lookup a specific function by name/description or type" BR 
+    __orange "# Type " 
+    __orangeBold "info 'symbol"
+    __orange " for info about a specific symbol or built-in function" BR BR
+    __orange "# For multi-line input, leave a bracket open or end the line with two spaces" BR
+    __orange "# Use TAB for auto-completion, UP for navigating history" BR BR
+    __orange "# Launching interactive console - rock on! 🤘" BR
 ]
 
 ; terminal-only methods
@@ -126,7 +126,7 @@ help: function [][
     results: select sort keys symbols 'sym ->
         function?.builtin var sym
 
-    PrintFList results "available"
+    __printFList results "available"
 ]
 
 lookup: function [what :string :literal :regex :type][
@@ -151,7 +151,7 @@ lookup: function [what :string :literal :regex :type][
         ]
     ] [ ; not? type? what
         results: (select sort keys symbols 'sym ->
-            function? var sym) -- ["orange" "orangeBold" "PrintFList"]
+            function? var sym) -- ["__orange" "__orangeBold" "__printFList"]
 
         results: select results 'sym [
             finfo: get info.get sym 'description
@@ -182,7 +182,7 @@ lookup: function [what :string :literal :regex :type][
         ]
     ]
 
-    PrintFList results "found"
+    __printFList results "found"
     discard unstack size stack
 ]
 
@@ -191,43 +191,43 @@ Repl: #[autocomplete?: true, hints?: true, verbose?: true]
 ; terminal-only methods get auto-completions & hints too
 
 loop ["help" "lookup"] 'k [
-    'completions ++ k ++ " "
-    hints\[k]: join.with:" " keys get info.get k 'args
+    '__completions ++ k ++ " "
+    __hints\[k]: join.with:" " keys get info.get k 'args
 ]
 
 ; anything not defined by now (or by the loop below) is user-defined
 
-Internal: #[]
-loop (keys symbols) ++ ["Internal" "userSymbols" "Got" "command" "inp" "err" "StackSize"] 'k ->
-    Internal\[k]: true
+__internal: #[]
+loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize"] 'k ->
+    __internal\[k]: true
 
 ; start the REPL
 
 while [true] [
     ;push null
-    Got: null
+    __got: null
 
-    userSymbols: select keys symbols 'k -> not? key? Internal k
-    loop userSymbols 'k [
-        (function? var k)? [hints\[k]: join.with:" " keys get info.get k 'args]
-                           [if key? hints k -> remove 'hints .key k]
+    __userSymbols: select keys symbols 'k -> not? key? __internal k
+    loop __userSymbols 'k [
+        (function? var k)? [__hints\[k]: join.with:" " keys get info.get k 'args]
+                           [if key? __hints k -> remove '__hints .key k]
     ]
 
-    command: [input.repl .history: historyPath]
-    if Repl\autocomplete? -> append 'command [.complete: completions ++ map userSymbols 'k -> k ++ " "]
-    if Repl\hints? -> append 'command [.hint: hints]
-    append 'command ["$> "]
+    __command: [input.repl .history: __historyPath]
+    if Repl\autocomplete? -> append '__command [.complete: __completions ++ map __userSymbols 'k -> k ++ " "]
+    if Repl\hints? -> append '__command [.hint: __hints]
+    append '__command ["$> "]
 
-    inp: do command
+    __inp: do __command
 
-    err: try.verbose [
-        err: try.verbose to :block inp
+    __err: try.verbose [
+        __err: try.verbose to :block __inp
 
-        StackSize: size stack
+        __stackSize: size stack
 
         if Repl\verbose? [
-            if StackSize > 0 -> Got: unstack 1
-            unless null? Got -> print color #gray render.once "=> |Got|"
+            if __stackSize > 0 -> __got: unstack 1
+            unless null? __got -> print color #gray render.once "=> |__got|"
         ]
 
         print ""
