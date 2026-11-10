@@ -16,8 +16,8 @@ when not defined(WEB):
 when defined(WEB):
     import jsconsole
 
-when defined(windows):
-    import os
+when not defined(WEB):
+    import os, strutils
 
 #=======================================
 # Global Variables
@@ -81,9 +81,33 @@ proc isColorFriendlyTerminal*(): bool =
         existsEnv("TERM") or 
         ((not existsEnv("COMSPEC")) and (not existsEnv("PSModulePath")))
     else:
-        true        
+        true
 
-proc clearTerminal*() = 
+proc isUnicodeFriendlyTerminal*(): bool =
+    ## Can the terminal show non-ASCII symbols (e.g. `❯`)?
+    when defined(WEB):
+        true
+    elif defined(windows):
+        # Windows Terminal, MSYS2 (e.g. mintty) or some other
+        # modern terminal - the classic console's fonts lack them
+        existsEnv("WT_SESSION") or
+        existsEnv("MSYSTEM") or
+        existsEnv("TERM_PROGRAM")
+    else:
+        # the Linux console's fonts lack them too
+        if getEnv("TERM") in ["dumb", "linux"]:
+            return false
+
+        # otherwise, it's all about the locale
+        for v in ["LC_ALL", "LC_CTYPE", "LANG"]:
+            let locale = getEnv(v).toLowerAscii()
+            if locale != "":
+                return "utf-8" in locale or "utf8" in locale
+
+        # no locale set (e.g. on macOS), but a known terminal
+        existsEnv("TERM_PROGRAM")
+
+proc clearTerminal*() =
     when defined(WEB):
         console.clear()
     else:
