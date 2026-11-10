@@ -354,14 +354,18 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-            print terminal      ; [width:107 height:34]
+            print terminal      ; [width:107 height:34 unicode?:true colorful?:true]
             terminal\width      ; => 107
+            ..........
+            prompt: (terminal\unicode?)? -> "❯ " -> "> "
             """:
                 #=======================================================
                 let size = terminalSize()
                 var ret = {
                     "width": newInteger(size[0]),
-                    "height": newInteger(size[1])
+                    "height": newInteger(size[1]),
+                    "unicode?": newLogical(isUnicodeFriendlyTerminal()),
+                    "colorful?": newLogical(not NoColors)
                 }.toOrderedTable()
 
                 push(newDictionary(ret))
