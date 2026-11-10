@@ -19,6 +19,7 @@ if WINDOWS:
     import ctypes
     ctypes.windll.kernel32.SetConsoleCtrlHandler(None, False)
 ROWS, COLS = 40, 120
+PROMPT, PROMPTS = "<prompt>", ["$>", "\u276f"]   # (plain or fancy)
 
 LEFT, UP = "\x1b[D", "\x1b[A"
 BS, CTRL_C, CTRL_D, CTRL_R, CTRL_U = "\x7f", "\x03", "\x04", "\x12", "\x15"
@@ -76,7 +77,7 @@ class Repl:
     def wait_for(self, text, timeout):
         end = time.time() + timeout
         while time.time() < end:
-            if text in self.screen():
+            if any(t in self.screen() for t in (PROMPTS if text == PROMPT else [text])):
                 return True
             time.sleep(0.1)
         return False
@@ -168,7 +169,7 @@ def run(name, keys, expected, winsize=True):
     r = Repl(d, winsize)
     problems = []
     try:
-        if not r.wait_for("$>", 60):
+        if not r.wait_for(PROMPT, 60):
             problems.append("no prompt")
         else:
             for k in keys:
@@ -203,7 +204,7 @@ def hints():
     d = tempfile.mkdtemp(prefix="repltest")
     r = Repl(d)
     try:
-        r.wait_for("$>", 60)
+        r.wait_for(PROMPT, 60)
         r.send("function")
         ok = r.wait_for("arguments body", 5)
         r.send(CTRL_U + CTRL_D)
@@ -236,7 +237,7 @@ def mintty():
     r = Repl(d)
     cmd = 'print "zz" ++ "top"'
     try:
-        r.wait_for("$>", 60)
+        r.wait_for(PROMPT, 60)
         r.send(cmd + "\r")
         r.send("\r")
         r.send(W('"ok"'))
