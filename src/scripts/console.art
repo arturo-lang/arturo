@@ -36,7 +36,8 @@ loop symbols [k,v][
 __historyPath: join.path @[path\home ".arturo" "history.lst"]
 
 ; a fancier prompt, if the terminal can show it
-__prompt: (terminal\unicode?)? -> color.bold #ff5fff "❯ " -> "$> "
+; (in `Repl\promptColor`)
+__promptSymbol: (terminal\unicode?)? -> "❯ " -> "$> "
 
 ; set all packager-related operations as verbose
 __VerbosePackager
@@ -210,7 +211,7 @@ lookup: function [what :string :literal :regex :type][
     discard unstack size stack
 ]
 
-Repl: #[autocomplete?: true, hints?: true, verbose?: true, timing?: true, types?: true, cleanStack?: false]
+Repl: #[autocomplete?: true, hints?: true, verbose?: true, timing?: true, types?: true, cleanStack?: false, promptColor: #orange]
 
 ; terminal-only methods get auto-completions & hints too
 
@@ -222,7 +223,7 @@ loop ["help" "lookup"] 'k [
 ; anything not defined by now (or by the loop below) is user-defined
 
 __internal: #[]
-loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result" "__userCompletions" "__startup"] 'k ->
+loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result" "__userCompletions" "__startup" "__prompt" "__promptColor"] 'k ->
     __internal\[k]: true
 
 ; the user's own startup file, if any
@@ -250,6 +251,9 @@ while [true] [
     __command: [input.repl .history: __historyPath]
     if Repl\autocomplete? -> append '__command [.complete: __completions ++ __userCompletions]
     if Repl\hints? -> append '__command [.hint: __hints]
+    __promptColor: Repl\promptColor
+    unless color? __promptColor -> __promptColor: #orange
+    __prompt: color.bold __promptColor __promptSymbol
     append '__command [__prompt]
 
     __inp: do __command
