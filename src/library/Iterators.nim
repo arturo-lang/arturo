@@ -1063,8 +1063,11 @@ proc defineModule*(moduleName: string) =
                         else:
                             filteredItems += captured.len
 
-                        if elemLimit == filteredItems:
-                            stoppedAt = indx+1
+                        if filteredItems >= elemLimit:
+                            when captured is Value:
+                                stoppedAt = indx+1
+                            else:
+                                stoppedAt = indx+captured.len
                             keepGoing = false
                             break
             do:
