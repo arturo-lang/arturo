@@ -429,6 +429,45 @@ static int isUnsupportedTerm(void) {
     return 0;
 }
 
+/* [arturo] while editing, ask the terminal to tell keys apart
+ * (e.g. shift+enter from enter):
+ * - the kitty way, which terminals that don't support it, simply ignore
+ *   (see: https://sw.kovidgoyal.net/kitty/keyboard-protocol/)
+ * - the xterm way (modifyOtherKeys), but only for xterm itself & tmux
+ *   (at level 1, which leaves keys like ctrl+c as they are) */
+static int kittyKeys = 0;
+static int xtermKeys = 0;
+
+static void enableKeyReports(void) {
+    const char *term = getenv("TERM");
+    const char *program = getenv("TERM_PROGRAM");
+    if (term && (strcmp(term, "linux") == 0 || strcmp(term, "dumb") == 0)) {
+        return;
+    }
+    if (!program || strcmp(program, "Apple_Terminal") != 0) {
+        if (write(STDOUT_FILENO, "\x1b[>1u", 5) == 5) {
+            kittyKeys = 1;
+        }
+    }
+    if (getenv("XTERM_VERSION") || getenv("TMUX")) {
+        if (write(STDOUT_FILENO, "\x1b[>4;1m", 7) == 7) {
+            xtermKeys = 1;
+        }
+    }
+}
+
+static void disableKeyReports(void) {
+    if (kittyKeys) {
+        if (write(STDOUT_FILENO, "\x1b[<u", 4) < 0) {}
+        kittyKeys = 0;
+    }
+    if (xtermKeys) {
+        /* (back to whatever the user had set) */
+        if (write(STDOUT_FILENO, "\x1b[>4m", 5) < 0) {}
+        xtermKeys = 0;
+    }
+}
+
 static int enableRawMode(struct current *current) {
     struct termios raw;
 
@@ -478,12 +517,14 @@ fatal:
         goto fatal;
     }
     rawmode = 1;
+    enableKeyReports();
     return 0;
 }
 
 static void disableRawMode(struct current *current) {
     /* Don't even check the return value as it's too late. */
     if (rawmode == 1) {
+        disableKeyReports();
         tcsetattr(current->fdin,TCSANOW,&orig_termios);
     }
     rawmode = 0;
@@ -492,6 +533,7 @@ static void disableRawMode(struct current *current) {
 /* At exit we'll try to fix the terminal to the initial conditions. */
 static void linenoiseAtExit(void) {
     if (rawmode == 1) {
+        disableKeyReports();
         tcsetattr(STDIN_FILENO, TCSANOW, &orig_termios);
     }
     linenoiseHistoryFree();
@@ -774,6 +816,37 @@ static int getWindowSize(struct current *current)
 }
 
 /**
+ * [arturo] The key a terminal reported along with its modifiers
+ * (the kitty or the xterm way), as a key linenoise understands -
+ * or SPECIAL_NONE, if it's not one it cares about.
+ *
+ * Modifiers come as 1 + shift(1) + alt(2) + ctrl(4) + ...
+ * (and any lock keys, e.g. caps lock, are left out)
+ */
+static int modified_key(int key, int modifiers)
+{
+    int mods = (modifiers - 1) & 0x3F;
+
+    if (key == 13 && mods) {
+        return SPECIAL_NEWLINE;     /* e.g. shift+enter, alt+enter */
+    }
+    if (key == 27 && !mods) {
+        return CHAR_ESCAPE;
+    }
+    if (key >= 'a' && key <= 'z') {
+        if (mods == 4) return key & 0x1F;   /* e.g. ctrl+c */
+        if (mods == 2) return meta(key);    /* e.g. alt+b */
+    }
+    if (key > 0 && !mods) {
+        return key;                 /* just the key */
+    }
+    if (key >= 32 && key != 127 && mods == 1) {
+        return key;                 /* a shifted character, e.g. 'A' */
+    }
+    return SPECIAL_NONE;
+}
+
+/**
  * If CHAR_ESCAPE was received, reads subsequent
  * chars to determine if this is a known special key.
  *
@@ -821,8 +894,11 @@ static int check_special(struct current *current)
                 return SPECIAL_HOME;
         }
     }
-    if (c == '[' && c2 >= '1' && c2 <= '8') {
+    if (c == '[' && c2 >= '1' && c2 <= '9') {
         /* extended escape */
+        char seq[16];
+        int len = 0;
+        seq[len++] = c2;
         c = fd_read_char(current, 50);
         if (c == '~') {
             switch (c2) {
@@ -840,9 +916,26 @@ static int check_special(struct current *current)
                     return SPECIAL_END;
             }
         }
-        while (c != -1 && c != '~') {
-            /* .e.g \e[12~ or '\e[11;2~   discard the complete sequence */
+        /* [arturo] read the rest of the sequence (up to its final char),
+         * to catch shift+enter: \e[13;2u (kitty) or \e[27;2;13~ (xterm) */
+        while (c != -1 && ((c >= '0' && c <= '9') || c == ';')) {
+            if (len < (int)sizeof(seq) - 1) {
+                seq[len++] = c;
+            }
             c = fd_read_char(current, 50);
+        }
+        seq[len] = '\0';
+        if (c == 'u') {
+            /* [arturo] a key, the kitty way: \e[<key>;<modifiers>u */
+            const char *semi = strchr(seq, ';');
+            return modified_key(atoi(seq), semi ? atoi(semi + 1) : 1);
+        }
+        if (c == '~' && strncmp(seq, "27;", 3) == 0) {
+            /* [arturo] a key, the xterm way: \e[27;<modifiers>;<key>~ */
+            const char *semi = strchr(seq + 3, ';');
+            if (semi) {
+                return modified_key(atoi(semi + 1), atoi(seq + 3));
+            }
         }
     }
 
@@ -1836,6 +1929,10 @@ static int linenoiseEdit(struct current *current) {
 #ifdef USE_TERMIOS
         if (c == CHAR_ESCAPE) {   /* escape sequence */
             c = check_special(current);
+            if (c == ctrl('R')) {
+                /* [arturo] ctrl+r, as reported by the terminal the kitty/xterm way */
+                c = reverseIncrementalSearch(current);
+            }
         }
         else if (c == 0x8D) {
             /* [arturo] alt+enter, the way xterm sends it by default
