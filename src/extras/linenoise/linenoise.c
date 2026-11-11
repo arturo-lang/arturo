@@ -1293,6 +1293,7 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
     int cursorcol = 0;
     int cursorrow = 0;
     int hint;
+    int promptcols;
     struct esc_parser parser;
 
 #ifdef DEBUG_REFRESHLINE
@@ -1403,6 +1404,9 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
     /* Now we are at the first line with all lines erased */
     DRL("\nafter prompt: displaycol=%d, displayrow=%d\n", displaycol, displayrow);
 
+    /* [arturo] any next lines start where the first one did, right after the prompt */
+    promptcols = (prompt == current->prompt && displaycol < current->cols) ? displaycol : 0;
+
 
     /* (e) output the buffer, counting cols and rows */
     if (mlmode == 0) {
@@ -1445,7 +1449,9 @@ static void refreshLineAlt(struct current *current, const char *prompt, const ch
                 notecursor = 0;
             }
             refreshNewline(current);
-            displaycol = 0;
+            for (displaycol = 0; displaycol < promptcols; displaycol++) {
+                outputChars(current, " ", 1);
+            }
             displayrow++;
             pt += n;
             currentpos++;
