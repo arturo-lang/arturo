@@ -103,11 +103,12 @@ __printFList: function [sorted, ftype][
     ]
     if empty? rows -> return null
 
-    ; columns as wide as their longest entry
+    ; columns as wide as their longest entry (up to a point;
+    ; any longer ones get a line of their own)
     ; & descriptions wrapped to fit, aligned below each other
     ; (or on their own lines, if there's not enough room left)
-    nameWidth: inc max map rows 'row -> size row\0
-    paramsWidth: inc max map rows 'row -> size row\1
+    nameWidth: min @[19 inc max map rows 'row -> size row\0]
+    paramsWidth: min @[25 inc max map rows 'row -> size row\1]
     descStart: nameWidth + paramsWidth + 3
     descWidth: llength - descStart
 
@@ -116,7 +117,12 @@ __printFList: function [sorted, ftype][
 
         (descWidth >= 30)? [
             lines: split.lines wordwrap.at: descWidth row\2
-            print name ++ (pad.right row\1 paramsWidth) ++ "-> " ++ first lines
+            (or? [nameWidth =< size row\0] [paramsWidth =< size row\1])? [
+                print name ++ " " ++ row\1
+                print (repeat " " descStart - 3) ++ "-> " ++ first lines
+            ][
+                print name ++ (pad.right row\1 paramsWidth) ++ "-> " ++ first lines
+            ]
             loop drop lines 'l ->
                 print (repeat " " descStart) ++ l
         ][
