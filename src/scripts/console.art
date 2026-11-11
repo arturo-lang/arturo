@@ -215,7 +215,7 @@ define :__replSettings [
     clearScreen?: true
     autocomplete?: true
     hints?: true
-    verbose?: true
+    results?: true
     timing?: true
     types?: true
     cleanStack?: false
@@ -316,7 +316,7 @@ while [true] [
         __time: benchmark.get [__err: try.verbose to :block __inp]
 
         __result: ""
-        if Repl\verbose? [
+        if Repl\results? [
             ; (only what this entry left - not any older leftovers)
             if __stackSize < size stack -> __got: unstack 1
             unless null? __got [
