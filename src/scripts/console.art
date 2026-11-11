@@ -74,12 +74,16 @@ Details: Details ++ {# arch     : |sys\cpu\arch|/|sys\os|}
 
 BR: "\n"
 
-__orange: $[x][
-    color #orange x
+__tip: $[x][
+    color #gray x
 ]
 
-__orangeBold: $[x][
-    color #orange.bold x
+__tipKey: $[x][
+    color #gray.bold x
+]
+
+__tipLine: function [][
+    color #gray repeat ((terminal\unicode?)? -> "─" -> "-") dec terminal\width
 ]
 
 __printFList: function [sorted, ftype][
@@ -159,7 +163,7 @@ lookup: function [what :string :literal :regex :type][
         ]
     ] [ ; not? type? what
         results: (select sort keys symbols 'sym ->
-            function? var sym) -- ["__orange" "__orangeBold" "__printFList"]
+            function? var sym) -- ["__tip" "__tipKey" "__tipLine" "__printFList"]
 
         results: select results 'sym [
             finfo: get info.get sym 'description
@@ -271,21 +275,38 @@ print join @[
 
 if Repl\intro? [
     print join @[
-        __orange "# Type "
-        __orangeBold "help"
-        __orange " to get a list of all available functions with a short description" BR
-        __orange "# Type "
-        __orangeBold {lookup "something"}
-        __orange " to lookup a specific function by name/description or type" BR
-        __orange "# Type "
-        __orangeBold "info 'symbol"
-        __orange " for info about a specific symbol or built-in function" BR BR
-        __orange "# For multi-line input, leave a bracket open or end the line with two spaces" BR
-        __orange "# Use TAB for auto-completion, UP for navigating history" BR
-        __orange "# Type "
-        __orangeBold "Repl\\intro?: false"
-        __orange " to skip this intro from now on" BR BR
-        __orange "# Launching interactive console - rock on! 🤘" BR
+        __tipLine BR
+        __tip "# Type "
+        __tipKey "help"
+        __tip " to list all built-in functions" BR
+        __tip "# Type "
+        __tipKey {lookup "something"}
+        __tip " to search functions by name, description or type" BR
+        __tip "# Type "
+        __tipKey "info 'symbol"
+        __tip " for details on any symbol or function" BR BR
+        __tip "# "
+        __tipKey "Shift+Enter"
+        __tip " (or "
+        __tipKey "Alt+Enter"
+        __tip ") starts a new line, so does leaving a bracket open" BR
+        __tip "# "
+        __tipKey "TAB"
+        __tip " to auto-complete, "
+        __tipKey "UP"
+        __tip " for history, "
+        __tipKey "Ctrl+R"
+        __tip " to search it" BR BR
+        __tip "# Type "
+        __tipKey "Repl"
+        __tip " to see all settings & change any of them - permanently (e.g. "
+        __tipKey "Repl\\timings?: false"
+        __tip ")" BR
+        __tip "# Type "
+        __tipKey "Repl\\intro?: false"
+        __tip " to skip this intro from now on" BR BR
+        __tip "# Launching interactive console - rock on! 🤘" BR
+        __tipLine BR
     ]
 ]
 
