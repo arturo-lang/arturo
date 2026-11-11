@@ -242,6 +242,7 @@ define :__replSettings [
     results?: true
     timings?: true
     types?: true
+    inspect?: false
     cleanStack?: false
     promptColor: #orange
 
@@ -361,8 +362,14 @@ while [true] [
             ; (only what this entry left - not any older leftovers)
             if __stackSize < size stack -> __got: unstack 1
             unless null? __got [
-                __result: __resultSymbol ++ render.once "|__got|"
-                if Repl\types? -> __result: __result ++ " :" ++ to :string type __got
+                (Repl\inspect?)? [
+                    ; in detail, with the type of everything in it
+                    prints color #gray __resultSymbol
+                    inspect __got
+                ][
+                    __result: __resultSymbol ++ render.once "|__got|"
+                    if Repl\types? -> __result: __result ++ " :" ++ to :string type __got
+                ]
             ]
         ]
 
