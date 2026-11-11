@@ -1315,9 +1315,11 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             let aParallel = popAttr("parallel")
             doIterate({AcceptsLit, WithCounter}, false, newBlock()):
-                var res: ValueArray = newSeq[Value](sourceLen)
+                # not every iteration gives us a value (e.g. after a `continue`)
+                # & the source may be infinite: so, its size is only a hint
+                var res: ValueArray = newSeqOfCap[Value](if sourceLen == InfiniteRange: 0 else: sourceLen)
             do:
-                res[cntr] = stack.pop()
+                res.add(stack.pop())
             do:
                 pushResult(newBlock(res))
 
