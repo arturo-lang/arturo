@@ -211,7 +211,47 @@ lookup: function [what :string :literal :regex :type][
     discard unstack size stack
 ]
 
-Repl: #[autocomplete?: true, hints?: true, verbose?: true, timing?: true, types?: true, cleanStack?: false, promptColor: #orange]
+; REPL settings
+; (changing any of them, e.g. `Repl\timing?: false`,
+; also saves it in the global config - so that it sticks)
+
+__settings: store.global "config.art"
+__startup: join.path @[path\home ".arturo" "repl.art"]
+__loading: false
+
+__savedSettings: function [][
+    settings: to :dictionary __settings
+    (key? settings "repl")? -> settings\repl -> #[]
+]
+
+__saveSetting: function [what, value][
+    saved: __savedSettings
+    saved\[what]: value
+    set __settings "repl" saved
+]
+
+define :__replSettings [
+    autocomplete?: true
+    hints?: true
+    verbose?: true
+    timing?: true
+    types?: true
+    cleanStack?: false
+    promptColor: #orange
+
+    set: method [what, value][
+        set.field this what value
+        unless __loading ->
+            try [__saveSetting what value]
+    ]
+]
+
+Repl: to :__replSettings []
+
+__loading: true
+loop __savedSettings [k,v] ->
+    Repl\[k]: v
+__loading: false
 
 ; terminal-only methods get auto-completions & hints too
 
@@ -223,15 +263,18 @@ loop ["help" "lookup"] 'k [
 ; anything not defined by now (or by the loop below) is user-defined
 
 __internal: #[]
-loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result" "__userCompletions" "__startup" "__prompt" "__promptColor"] 'k ->
+loop (keys symbols) ++ ["__internal" "__userSymbols" "__got" "__command" "__inp" "__err" "__stackSize" "__time" "__result" "__userCompletions" "__prompt" "__promptColor"] 'k ->
     __internal\[k]: true
 
 ; the user's own startup file, if any
-; (e.g. for `Repl` settings or handy helpers)
+; (e.g. for handy helpers - any `Repl` settings
+; in there are just for this session, not saved)
 
-__startup: join.path @[path\home ".arturo" "repl.art"]
-if exists? __startup ->
+if exists? __startup [
+    __loading: true
     try.verbose [do __startup]
+    __loading: false
+]
 
 ; start the REPL
 
