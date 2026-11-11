@@ -39,6 +39,9 @@ __historyPath: join.path @[path\home ".arturo" "history.lst"]
 ; (in `Repl\promptColor`)
 __promptSymbol: (terminal\unicode?)? -> "❯ " -> "$> "
 
+; ...and a matching one for results
+__resultSymbol: (terminal\unicode?)? -> "→ " -> "=> "
+
 ; set all packager-related operations as verbose
 __VerbosePackager
 
@@ -320,7 +323,7 @@ while [true] [
             ; (only what this entry left - not any older leftovers)
             if __stackSize < size stack -> __got: unstack 1
             unless null? __got [
-                __result: render.once "=> |__got|"
+                __result: __resultSymbol ++ render.once "|__got|"
                 if Repl\types? -> __result: __result ++ " :" ++ to :string type __got
             ]
         ]
