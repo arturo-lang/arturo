@@ -172,6 +172,7 @@ enum {
     SPECIAL_INSERT = -27,
     SPECIAL_PAGE_UP = -28,
     SPECIAL_PAGE_DOWN = -29,
+    SPECIAL_NEWLINE = -30,  /* [arturo] shift+enter (or alt+enter) */
 
     /* Some handy names for other special keycodes */
     CHAR_ESCAPE = 27,
@@ -792,6 +793,11 @@ static int check_special(struct current *current)
     else if (c >= 'a' && c <= 'z') {
         /* esc-a => meta-a */
         return meta(c);
+    }
+    else if (c == '\r' || c == '\n') {
+        /* [arturo] alt+enter (also what many terminals
+         * can be set to send for shift+enter) */
+        return SPECIAL_NEWLINE;
     }
 
     c2 = fd_read_char(current, 50);
@@ -1831,6 +1837,11 @@ static int linenoiseEdit(struct current *current) {
         if (c == CHAR_ESCAPE) {   /* escape sequence */
             c = check_special(current);
         }
+        else if (c == 0x8D) {
+            /* [arturo] alt+enter, the way xterm sends it by default
+             * (as an 8-bit character: enter, plus the 8th bit) */
+            c = SPECIAL_NEWLINE;
+        }
 #endif
         if (c == -1) {
             /* Return on errors */
@@ -1839,6 +1850,19 @@ static int linenoiseEdit(struct current *current) {
 
         switch(c) {
         case SPECIAL_NONE:
+            break;
+        case SPECIAL_NEWLINE:
+            /* [arturo] shift+enter (or alt+enter): continue on a new line,
+             * instead of submitting (indented, if there are brackets open) */
+            if (mlmode) {
+                const char *indent = continuationCallback ? continuationCallback(sb_str(current->buf), continuationUserdata) : NULL;
+                current->colsright = 0;
+                insert_char(current, current->pos, "\n", 1);
+                if (indent) {
+                    insert_chars(current, current->pos, indent);
+                }
+                refreshLine(current);
+            }
             break;
         case '\r':    /* enter/CR */
         case '\n':    /* LF */

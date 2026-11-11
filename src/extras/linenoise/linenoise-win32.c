@@ -399,6 +399,10 @@ static int fd_read(struct current *current)
                 /* Note that control characters are already translated in AsciiChar */
                 else if (k->wVirtualKeyCode == VK_CONTROL)
                     continue;
+                /* [arturo] shift+enter (or alt+enter): a new line, without submitting */
+                else if (k->wVirtualKeyCode == VK_RETURN &&
+                         (k->dwControlKeyState & (SHIFT_PRESSED | LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
+                    return SPECIAL_NEWLINE;
                 else {
                     /* [arturo] characters outside the BMP (e.g. emoji) arrive as
                      * two utf-16 surrogates: combine them into one code point */
