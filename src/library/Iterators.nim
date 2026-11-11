@@ -71,6 +71,14 @@ type IterCap* = enum
 # Low-level loop primitives
 #---------------------------------------
 
+template setIterSym(k: string, v: Value) =
+    ## Set an iteration variable, without `Table.[]=`: its key is a `sink`
+    ## param, so the name would get copied (and freed) on every single write
+    Syms.withValue(k, slot):
+        slot[] = v
+    do:
+        Syms[k] = v
+
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
     var keepGoing {.inject, used.}: bool = true
     when forever:
@@ -131,11 +139,9 @@ template iterateRangeWithLiteral(
 
             jr += step
             
-            Syms[lit] = captured
+            setIterSym(lit, captured)
         else:
-            Syms[lit] = 
-                if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                else: newChar(char(jr))
+            setIterSym(lit, (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
             jr += step
 
         execUnscoped(preevaled)
@@ -162,9 +168,9 @@ template iterateBlockWithLiteral(
         when cap:
             captured = blk[indx]
             
-            Syms[lit] = captured
+            setIterSym(lit, captured)
         else:
-            Syms[lit] = blk[indx]
+            setIterSym(lit, blk[indx])
 
         execUnscoped(preevaled)
         doAction
@@ -215,30 +221,28 @@ template iterateRangeWithParams(
             
         var ip = 0
         if idx:
-            Syms[prm[ip]] = Value(kind: Integer, iKind: NormalInteger, i: run)
+            setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
             inc ip
 
         when rll:
             if not rollingRight:
-                Syms[prm[ip]] = res
+                setIterSym(prm[ip], res)
                 inc ip
 
         if argsLen > 0:
             when cap:
                 for capt in captured:
-                    Syms[prm[ip]] = capt
+                    setIterSym(prm[ip], capt)
                     inc ip
             else:
                 for i in indx..indx+loopStep-1:     
-                    Syms[prm[ip]] =                   
-                        if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                        else: newChar(char(jr))
+                    setIterSym(prm[ip], (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
                     jr += step
                     inc ip
 
         when rll:
             if rollingRight:
-                Syms[prm[ip]] = res
+                setIterSym(prm[ip], res)
 
         execUnscoped(preevaled)
         doAction
@@ -280,29 +284,29 @@ template iterateBlockWithParams(
             
         var ip = 0
         if idx:
-            Syms[prm[ip]] = Value(kind: Integer, iKind: NormalInteger, i: run)
+            setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
             inc ip
 
         when rll:
             if not rollingRight:
-                Syms[prm[ip]] = res
+                setIterSym(prm[ip], res)
                 inc ip
 
         if argsLen > 0:
             when cap:
                 for capt in captured:
-                    Syms[prm[ip]] = capt
+                    setIterSym(prm[ip], capt)
                     inc ip
             else:
                 var j = indx
                 while j < indx+loopStep:
-                    Syms[prm[ip]] = blk[j]
+                    setIterSym(prm[ip], blk[j])
                     inc ip
                     inc j
 
         when rll:
             if rollingRight:
-                Syms[prm[ip]] = res
+                setIterSym(prm[ip], res)
 
         execUnscoped(preevaled)
         doAction
