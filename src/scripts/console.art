@@ -38,10 +38,6 @@ __historyPath: join.path @[path\home ".arturo" "history.lst"]
 ; a fancier prompt, if the terminal can show it
 __prompt: (terminal\unicode?)? -> color.bold #ff5fff "❯ " -> "$> "
 
-; ...which turns red, right after an error
-__errorPrompt: color.bold #ff5f5f ((terminal\unicode?)? -> "❯ " -> "$> ")
-__failed: false
-
 ; set all packager-related operations as verbose
 __VerbosePackager
 
@@ -254,13 +250,13 @@ while [true] [
     __command: [input.repl .history: __historyPath]
     if Repl\autocomplete? -> append '__command [.complete: __completions ++ __userCompletions]
     if Repl\hints? -> append '__command [.hint: __hints]
-    append '__command [(__failed)? -> __errorPrompt -> __prompt]
+    append '__command [__prompt]
 
     __inp: do __command
 
     __err: try.verbose [
         __stackSize: size stack
-        __time: benchmark.get [__failed: error? try.verbose to :block __inp]
+        __time: benchmark.get [__err: try.verbose to :block __inp]
 
         __result: ""
         if Repl\verbose? [
