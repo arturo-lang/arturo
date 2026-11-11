@@ -114,7 +114,10 @@ template prepareRange(rng: VRange) {.dirty.} =
     let collectionLen = rng.len
 
 template prepareBlock(blk: ValueArray) {.dirty.} =
-    template collectionLen(): int = blk.len
+    # The block may be changed in place while we go through it:
+    # items added to it are not visited & if it gets shorter, we stop there
+    let startLen = blk.len
+    template collectionLen(): int = min(startLen, blk.len)
 
 template iterateRangeWithLiteral(
     rng: VRange,
@@ -685,7 +688,7 @@ template doIterate(
             bloOwned = blo.reversed()
             bloPtr = addr bloOwned
         template tailFrom(idx: int): ValueArray {.inject, used.} =
-            blo[idx..^1]
+            (if idx < blo.len: blo[idx..^1] else: @[])
         template firstSrcElem(): Value {.inject, used.} =
             blo[0]
 
