@@ -132,25 +132,28 @@ template iterateRangeWithLiteral(
     when cap:
         var captured: Value
 
-    iteratorLoop(justLiteral=true, inf):
-        var jr = rng.start
-    do:
-        when cap:
-            captured =
-                if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                else: newChar(char(jr))
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=true, inf):
+            var jr = rng.start
+        do:
+            when cap:
+                captured =
+                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                    else: newChar(char(jr))
 
-            jr += step
+                jr += step
             
-            setIterSym(lit, captured)
-        else:
-            setIterSym(lit, (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
-            jr += step
+                setIterSym(lit, captured)
+            else:
+                setIterSym(lit, (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                jr += step
 
-        execUnscoped(preevaled)
-        doAction
-
-    finalizeLeaklessOne()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeaklessOne()
 
 template iterateBlockWithLiteral(
     blk: ValueArray,
@@ -165,20 +168,23 @@ template iterateBlockWithLiteral(
     when cap:
         var captured: Value
 
-    iteratorLoop(justLiteral=true, inf):
-        discard
-    do:
-        when cap:
-            captured = blk[indx]
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=true, inf):
+            discard
+        do:
+            when cap:
+                captured = blk[indx]
             
-            setIterSym(lit, captured)
-        else:
-            setIterSym(lit, blk[indx])
+                setIterSym(lit, captured)
+            else:
+                setIterSym(lit, blk[indx])
 
-        execUnscoped(preevaled)
-        doAction
-
-    finalizeLeaklessOne()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeaklessOne()
 
 template iterateRangeWithParams(
     rng: VRange,
@@ -207,50 +213,53 @@ template iterateRangeWithParams(
     when cap:
         var captured: ValueArray
 
-    iteratorLoop(justLiteral=false, inf):
-        var jr = rng.start
-    do:
-        when cap:
-            captured = newSeq[Value](loopStep)
-            var k = indx
-            var cnt = 0
-            while k < indx+loopStep:
-                captured[cnt] = 
-                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                    else: newChar(char(jr))
-                jr += step
-                k += 1
-                cnt += 1
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=false, inf):
+            var jr = rng.start
+        do:
+            when cap:
+                captured = newSeq[Value](loopStep)
+                var k = indx
+                var cnt = 0
+                while k < indx+loopStep:
+                    captured[cnt] = 
+                        if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                        else: newChar(char(jr))
+                    jr += step
+                    k += 1
+                    cnt += 1
             
-        var ip = 0
-        if idx:
-            setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
-            inc ip
-
-        when rll:
-            if not rollingRight:
-                setIterSym(prm[ip], res)
+            var ip = 0
+            if idx:
+                setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
                 inc ip
 
-        if argsLen > 0:
-            when cap:
-                for capt in captured:
-                    setIterSym(prm[ip], capt)
-                    inc ip
-            else:
-                for i in indx..indx+loopStep-1:     
-                    setIterSym(prm[ip], (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
-                    jr += step
+            when rll:
+                if not rollingRight:
+                    setIterSym(prm[ip], res)
                     inc ip
 
-        when rll:
-            if rollingRight:
-                setIterSym(prm[ip], res)
+            if argsLen > 0:
+                when cap:
+                    for capt in captured:
+                        setIterSym(prm[ip], capt)
+                        inc ip
+                else:
+                    for i in indx..indx+loopStep-1:     
+                        setIterSym(prm[ip], (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                        jr += step
+                        inc ip
 
-        execUnscoped(preevaled)
-        doAction
+            when rll:
+                if rollingRight:
+                    setIterSym(prm[ip], res)
 
-    finalizeLeakless()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeakless()
 
 template iterateBlockWithParams(
     blk: ValueArray,
@@ -279,42 +288,45 @@ template iterateBlockWithParams(
     when cap:
         var captured: ValueArray
 
-    iteratorLoop(justLiteral=false, inf):
-        discard
-    do:
-        when cap:
-            captured = blk[indx..indx+loopStep-1]
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=false, inf):
+            discard
+        do:
+            when cap:
+                captured = blk[indx..indx+loopStep-1]
             
-        var ip = 0
-        if idx:
-            setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
-            inc ip
-
-        when rll:
-            if not rollingRight:
-                setIterSym(prm[ip], res)
+            var ip = 0
+            if idx:
+                setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
                 inc ip
 
-        if argsLen > 0:
-            when cap:
-                for capt in captured:
-                    setIterSym(prm[ip], capt)
+            when rll:
+                if not rollingRight:
+                    setIterSym(prm[ip], res)
                     inc ip
-            else:
-                var j = indx
-                while j < indx+loopStep:
-                    setIterSym(prm[ip], blk[j])
-                    inc ip
-                    inc j
 
-        when rll:
-            if rollingRight:
-                setIterSym(prm[ip], res)
+            if argsLen > 0:
+                when cap:
+                    for capt in captured:
+                        setIterSym(prm[ip], capt)
+                        inc ip
+                else:
+                    var j = indx
+                    while j < indx+loopStep:
+                        setIterSym(prm[ip], blk[j])
+                        inc ip
+                        inc j
 
-        execUnscoped(preevaled)
-        doAction
+            when rll:
+                if rollingRight:
+                    setIterSym(prm[ip], res)
 
-    finalizeLeakless()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeakless()
 
 #---------------------------------------
 # Iteration setup
