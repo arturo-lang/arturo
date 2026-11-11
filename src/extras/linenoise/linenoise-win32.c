@@ -285,6 +285,10 @@ static void setOutputHighlight(struct current *current, const int *props, int np
             case 37:
                colour = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN;
                break;
+            case 90:
+               /* [arturo] gray */
+               colour = FOREGROUND_INTENSITY;
+               break;
         }
     }
 

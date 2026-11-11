@@ -143,7 +143,7 @@ when not defined(WEB):
             let token = splitLastToken($(buf))[1]
             if token.len >= 1:
                 if (let tokenHint = hints.getOrDefault(token, nil); not tokenHint.isNil):
-                    color = 35
+                    color = 90
                     bold = 0
                     CurrentHint = " " & tokenHint.s
                     return CurrentHint.cstring
