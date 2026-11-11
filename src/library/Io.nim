@@ -380,10 +380,12 @@ proc defineModule*(moduleName: string) =
             attrs       = NoAttrs,
             returns     = {Dictionary},
             example     = """
-            print terminal      ; [width:107 height:34 tty?:true colors:16777216]
+            print terminal      ; [width:107 height:34 tty?:true colors:16777216 unicode?:true]
             terminal\width      ; => 107
             terminal\tty?       ; => true (false, if output is piped/redirected)
             terminal\colors     ; => 256 (0, if colors are off)
+            ..........
+            prompt: (terminal\unicode?)? -> "❯ " -> "> "
             """:
                 #=======================================================
                 let size = terminalSize()
@@ -391,7 +393,8 @@ proc defineModule*(moduleName: string) =
                     "width": newInteger(size[0]),
                     "height": newInteger(size[1]),
                     "tty?": newLogical(isTerminal()),
-                    "colors": newInteger(if NoColors: 0 else: ord(TerminalColors))
+                    "colors": newInteger(if NoColors: 0 else: ord(TerminalColors)),
+                    "unicode?": newLogical(isUnicodeFriendlyTerminal())
                 }.toOrderedTable()
 
                 push(newDictionary(ret))

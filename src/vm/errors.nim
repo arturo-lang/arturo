@@ -84,6 +84,7 @@ var
     CurrentLine*    : int       = 0
 
     IsRepl*         : bool = false
+    Interrupted*    : bool = false      ## set on Ctrl+C in the REPL, checked by the VM
 
 #=======================================
 # Web-runtime environment
@@ -805,6 +806,25 @@ func Error_StackUnderflow*() =
     panic:
         toError VMErr, """
             Stack underflow
+        """
+
+proc Error_Interrupted*() =
+    Interrupted = false
+    panic:
+        toError RuntimeErr, """
+            Interrupted
+        """
+
+proc Error_StackOverflow*() =
+    panic:
+        toError RuntimeErr, """
+            Stack overflow (maximum recursion depth exceeded)
+        """
+
+proc Error_StackFull*() =
+    panic:
+        toError RuntimeErr, """
+            Stack overflow (too many values left on the stack)
         """
 
 func Error_ConfigNotFound*(gkey: string, akey: string) =

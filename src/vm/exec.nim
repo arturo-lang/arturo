@@ -37,7 +37,7 @@ import vm/[
 ]
 
 when not defined(WEB):
-    import vm/runtime
+    import vm/[faults, runtime]
 
 import vm/values/custom/[vbinary]
 
@@ -597,6 +597,14 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
 
     let callerLine = CurrentLine
 
+    if unlikely(Interrupted): Error_Interrupted()
+    when not defined(WEB):
+        # in the REPL, a runaway recursion (or a loop
+        # filling up the stack) shouldn't kill the whole session
+        if unlikely(IsRepl):
+            if stackExhausted(): Error_StackOverflow()
+            if stackAlmostFull(): stackFull()
+
     while true:
         {.computedGoTo.}
 
@@ -951,10 +959,14 @@ proc ExecLoop*(cnst: ValueArray, it: VBinary) =
                     i += int(uint16(it[i-1]) shl 8 + byte(it[i]))
 
                 of opGoup               :
+                    if unlikely(Interrupted): Error_Interrupted()
+                    if unlikely(IsRepl and stackAlmostFull()): stackFull()
                     i += 1
                     i -= (int(it[i]) + 2)
 
                 of opGoupX              :
+                    if unlikely(Interrupted): Error_Interrupted()
+                    if unlikely(IsRepl and stackAlmostFull()): stackFull()
                     i += 2
                     i -= (int(uint16(it[i-1]) shl 8 + byte(it[i])) + 3)
 
