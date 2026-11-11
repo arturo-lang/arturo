@@ -114,7 +114,7 @@ template prepareRange(rng: VRange) {.dirty.} =
     let collectionLen = rng.len
 
 template prepareBlock(blk: ValueArray) {.dirty.} =
-    let collectionLen = blk.len
+    template collectionLen(): int = blk.len
 
 template iterateRangeWithLiteral(
     rng: VRange,
@@ -345,25 +345,33 @@ template fetchIterableRange() {.dirty.} =
     var rang = iterable.rng
 
 template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
-    var blo = 
-        case iterable.kind:
-            of Block,Inline:
-                #cleanedBlockValuesCopy(iterable)
-                iterable.a
-            of Dictionary:
-                iterable.d.flattenedDictionary()
-            of Object:
-                iterable.o.flattenedObject()
-            of String:
-                var acc = newSeqOfCap[Value](iterable.s.len)
-                for r in runes(iterable.s): acc.add(newChar(r))
-                acc
-            of Integer:
-                var acc = newSeqOfCap[Value](iterable.i)
-                for i in 1..iterable.i: acc.add(newInteger(i))
-                acc
-            else: # won't ever reach here
-                @[VNULL]
+    # Blocks are iterated in place (no copy of their items): `bloHold`
+    # keeps the value alive, and `blo` is a view over its items.
+    # For anything else, the items are created here, in `bloOwned`
+    let bloHold {.used.}: Value = iterable
+    var bloOwned: ValueArray
+    var bloPtr: ptr ValueArray
+    case iterable.kind:
+        of Block,Inline:
+            bloPtr = addr bloHold.a
+        of Dictionary:
+            bloOwned = iterable.d.flattenedDictionary()
+            bloPtr = addr bloOwned
+        of Object:
+            bloOwned = iterable.o.flattenedObject()
+            bloPtr = addr bloOwned
+        of String:
+            bloOwned = newSeqOfCap[Value](iterable.s.len)
+            for r in runes(iterable.s): bloOwned.add(newChar(r))
+            bloPtr = addr bloOwned
+        of Integer:
+            bloOwned = newSeqOfCap[Value](iterable.i)
+            for i in 1..iterable.i: bloOwned.add(newInteger(i))
+            bloPtr = addr bloOwned
+        else: # won't ever reach here
+            bloOwned = @[VNULL]
+            bloPtr = addr bloOwned
+    template blo(): untyped = bloPtr[]
 
     if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true):
         when not (defaultReturn is typeof(nil)):
@@ -672,7 +680,8 @@ template doIterate(
             itDefVal
         let sourceLen {.inject, used.} = blo.len
         template reverseSrc() {.inject, used.} =
-            blo = blo.reversed()
+            bloOwned = blo.reversed()
+            bloPtr = addr bloOwned
         template tailFrom(idx: int): ValueArray {.inject, used.} =
             blo[idx..^1]
         template firstSrcElem(): Value {.inject, used.} =
