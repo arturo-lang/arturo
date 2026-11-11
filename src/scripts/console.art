@@ -213,7 +213,7 @@ __saveSetting: function [what, value][
 define :__replSettings [
     intro?: true
     clearScreen?: true
-    autocomplete?: true
+    completions?: true
     hints?: true
     results?: true
     timing?: true
@@ -302,7 +302,7 @@ while [true] [
     ]
 
     __command: [input.repl .history: __historyPath]
-    if Repl\autocomplete? -> append '__command [.complete: __completions ++ __userCompletions]
+    if Repl\completions? -> append '__command [.complete: __completions ++ __userCompletions]
     if Repl\hints? -> append '__command [.hint: __hints]
     __promptColor: Repl\promptColor
     unless color? __promptColor -> __promptColor: #orange
