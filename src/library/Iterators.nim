@@ -1548,7 +1548,7 @@ proc defineModule*(moduleName: string) =
                         res.add(captured)
 
                         if onlyFirst or onlyLast:
-                            if elemLimit == res.len:
+                            if res.len >= elemLimit:
                                 keepGoing = false
                                 break
                     else:
