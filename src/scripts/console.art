@@ -122,26 +122,6 @@ __printResult: function [result, time][
     print (empty? took)? -> "" -> color #gray pad took width
 ]
 
-; print header
-
-clear
-print join @[
-    ~LongHeader BR BR
-    color #gray ~Details BR BR
-    __orange "# Type " 
-    __orangeBold "help"
-    __orange " to get a list of all available functions with a short description" BR 
-    __orange "# Type "
-    __orangeBold {lookup "something"} 
-    __orange " to lookup a specific function by name/description or type" BR 
-    __orange "# Type " 
-    __orangeBold "info 'symbol"
-    __orange " for info about a specific symbol or built-in function" BR BR
-    __orange "# For multi-line input, leave a bracket open or end the line with two spaces" BR
-    __orange "# Use TAB for auto-completion, UP for navigating history" BR BR
-    __orange "# Launching interactive console - rock on! 🤘" BR
-]
-
 ; terminal-only methods
 
 help: function [][
@@ -231,6 +211,7 @@ __saveSetting: function [what, value][
 ]
 
 define :__replSettings [
+    intro?: true
     autocomplete?: true
     hints?: true
     verbose?: true
@@ -274,6 +255,34 @@ if exists? __startup [
     __loading: true
     try.verbose [do __startup]
     __loading: false
+]
+
+; print header (and the intro, unless it's turned off)
+
+clear
+print join @[
+    ~LongHeader BR BR
+    color #gray ~Details BR
+]
+
+if Repl\intro? [
+    print join @[
+        __orange "# Type "
+        __orangeBold "help"
+        __orange " to get a list of all available functions with a short description" BR
+        __orange "# Type "
+        __orangeBold {lookup "something"}
+        __orange " to lookup a specific function by name/description or type" BR
+        __orange "# Type "
+        __orangeBold "info 'symbol"
+        __orange " for info about a specific symbol or built-in function" BR BR
+        __orange "# For multi-line input, leave a bracket open or end the line with two spaces" BR
+        __orange "# Use TAB for auto-completion, UP for navigating history" BR
+        __orange "# Type "
+        __orangeBold "Repl\\intro?: false"
+        __orange " to skip this intro from now on" BR BR
+        __orange "# Launching interactive console - rock on! 🤘" BR
+    ]
 ]
 
 ; start the REPL
