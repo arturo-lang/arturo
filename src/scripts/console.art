@@ -107,7 +107,7 @@ __printResult: function [result, time][
     ; the result (if any) & how long it took, at the far right
     ms: scalar time
     took: ""
-    if Repl\timing? ->
+    if Repl\timings? ->
         took: (ms < 1000)? -> ~"|round.to:2 ms| ms" -> ~"|round.to:2 ms / 1000| s"
 
     width: dec terminal\width
@@ -192,7 +192,7 @@ lookup: function [what :string :literal :regex :type][
 ]
 
 ; REPL settings
-; (changing any of them, e.g. `Repl\timing?: false`,
+; (changing any of them, e.g. `Repl\timings?: false`,
 ; also saves it in the global config - so that it sticks)
 
 __settings: store.global "config.art"
@@ -216,7 +216,7 @@ define :__replSettings [
     completions?: true
     hints?: true
     results?: true
-    timing?: true
+    timings?: true
     types?: true
     cleanStack?: false
     promptColor: #orange
