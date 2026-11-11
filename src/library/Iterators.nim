@@ -342,7 +342,9 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
             iterable = InPlaced
 
 template fetchIterableRange() {.dirty.} =
-    var rang = iterable.rng
+    var rang =
+        if iterable.kind == Range: iterable.rng
+        else: VRange(start: 1, stop: iterable.i, step: 1, infinite: false, numeric: true, forward: true)
 
 template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
     # Blocks are iterated in place (no copy of their items): `bloHold`
@@ -660,7 +662,7 @@ template doIterate(
             do:
                 itPost
 
-    if iterable.kind==Range:
+    if iterable.kind==Range or (iterable.kind==Integer and iterable.iKind==NormalInteger and iterable.i >= 1):
         fetchIterableRange()
         let sourceLen {.inject, used.} = rang.len
         template reverseSrc() {.inject, used.} =
