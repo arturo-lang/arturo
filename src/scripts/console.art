@@ -87,26 +87,43 @@ __tipLine: function [][
 ]
 
 __printFList: function [sorted, ftype][
-    llength: 80
+    llength: dec terminal\width
 
     print repeat "-" llength
-    print pad.center ((positive? size sorted)? -> to :string size sorted -> "No") ++ 
-          " built-in function" ++ 
+    print pad.center ((positive? size sorted)? -> to :string size sorted -> "No") ++
+          " built-in function" ++
           ((1 = size sorted)? -> " " -> "s ") ++
           ftype llength
     print repeat "-" llength
 
-    loop sorted 'key [
-        v: symbols\[key]
+    rows: map sorted 'key [
         fparams: "(" ++ (join.with:"," to [:string] keys get info.get key 'args) ++ ")"
         finfo: get info.get key 'description
-        finfo: replace finfo {/\[[^\]]+\] /} ""
+        @[key fparams replace finfo {/\[[^\]]+\] /} ""]
+    ]
+    if empty? rows -> return null
 
-        print (color.bold #magenta pad.right key 17) ++
-              (pad.right fparams 30) ++
-              " -> " ++
-              finfo
+    ; columns as wide as their longest entry
+    ; & descriptions wrapped to fit, aligned below each other
+    ; (or on their own lines, if there's not enough room left)
+    nameWidth: inc max map rows 'row -> size row\0
+    paramsWidth: inc max map rows 'row -> size row\1
+    descStart: nameWidth + paramsWidth + 3
+    descWidth: llength - descStart
 
+    loop rows 'row [
+        name: color.bold #magenta pad.right row\0 nameWidth
+
+        (descWidth >= 30)? [
+            lines: split.lines wordwrap.at: descWidth row\2
+            print name ++ (pad.right row\1 paramsWidth) ++ "-> " ++ first lines
+            loop drop lines 'l ->
+                print (repeat " " descStart) ++ l
+        ][
+            print name ++ row\1
+            loop split.lines wordwrap.at: llength - 4 row\2 'l ->
+                print "    " ++ l
+        ]
     ]
 ]
 
