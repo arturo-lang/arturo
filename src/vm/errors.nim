@@ -84,6 +84,7 @@ var
     CurrentLine*    : int       = 0
 
     IsRepl*         : bool = false
+    Interrupted*    : bool = false      ## set on Ctrl+C in the REPL, checked by the VM
 
 #=======================================
 # Web-runtime environment
@@ -251,7 +252,12 @@ proc toVError*(e: ref Exception): VError =
 
 proc printError(s: string) =
     when not defined(WEB):
-        stderr.writeLine s
+        if NoErrorColors:
+            # (any colors already in there, e.g. from the
+            # message itself, have to go too)
+            stderr.writeLine s.replacef(re"\e[^m]+m", "")
+        else:
+            stderr.writeLine s
     else:
         echo s
 
@@ -361,6 +367,12 @@ proc showError*(e: VError) =
     when defined(WEB):
         showErrorWeb(e)
     else:
+        # errors go to stderr, which may be a terminal or not,
+        # regardless of stdout (e.g. `> out.txt` or `2> errors.txt`)
+        let noColors = NoColors
+        NoColors = NoErrorColors
+        defer: NoColors = noColors
+
         with e:
             printErrorHeader()
             printErrorKindDescription()
@@ -794,6 +806,25 @@ func Error_StackUnderflow*() =
     panic:
         toError VMErr, """
             Stack underflow
+        """
+
+proc Error_Interrupted*() =
+    Interrupted = false
+    panic:
+        toError RuntimeErr, """
+            Interrupted
+        """
+
+proc Error_StackOverflow*() =
+    panic:
+        toError RuntimeErr, """
+            Stack overflow (maximum recursion depth exceeded)
+        """
+
+proc Error_StackFull*() =
+    panic:
+        toError RuntimeErr, """
+            Stack overflow (too many values left on the stack)
         """
 
 func Error_ConfigNotFound*(gkey: string, akey: string) =
