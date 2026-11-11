@@ -228,6 +228,11 @@ template rgb*(color: tuple[r, g, b: int]):string =
     if NoColors: ""
     else: rgbColor(color[0], color[1], color[2], TerminalColors)
 
+template nameColor*():string =
+    ## the color for function/symbol names
+    ## (as in the REPL's `help` & `lookup`)
+    rgbColor(177, 185, 249, TerminalColors)
+
 #=======================================
 # Methods
 #=======================================
