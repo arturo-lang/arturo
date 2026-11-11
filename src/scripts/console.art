@@ -112,7 +112,7 @@ __printFList: function [sorted, ftype][
     descWidth: llength - descStart
 
     loop rows 'row [
-        name: color.bold #magenta pad.right row\0 nameWidth
+        name: color.bold #B1B9F9 pad.right row\0 nameWidth
 
         (descWidth >= 30)? [
             lines: split.lines wordwrap.at: descWidth row\2
