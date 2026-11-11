@@ -1139,6 +1139,11 @@ proc defineModule*(moduleName: string) =
             let rollingRight = hadAttr("right")
             let hasSeed = checkAttr("seed")
 
+            # we need (at least) one param for the accumulator & one for the item
+            let foldParams = (if yKind == Block: y.a.len else: 0)
+            if unlikely(foldParams < 2):
+                Error_IncompatibleBlockSize("fold", foldParams, "at least 2 params")
+
             doIterate({IsRolling}, false, newBlock()):
                 var res: Value
                 if rollingRight: reverseSrc()
