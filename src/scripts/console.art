@@ -212,6 +212,7 @@ __saveSetting: function [what, value][
 
 define :__replSettings [
     intro?: true
+    clearScreen?: true
     autocomplete?: true
     hints?: true
     verbose?: true
@@ -259,7 +260,7 @@ if exists? __startup [
 
 ; print header (and the intro, unless it's turned off)
 
-clear
+if Repl\clearScreen? -> clear
 print join @[
     ~LongHeader BR BR
     color #gray ~Details BR
