@@ -415,6 +415,10 @@ proc defineModule*(moduleName: string) =
                 GET "/"             -> "Welcome to my site!"
                 GET "/about"        -> "About us"
 
+                ; path params (`:name` for a segment, `*` for anything)
+                GET "/posts/:id"    $[id][ ~"Post #|id|" ]
+                GET "/files/*"      $[path][ ~"File: |path|" ]
+
                 ; regex route with a named capture group
                 GET {//user/(?<name>[a-z]+)/}  $[name][ 
                     emit.html ~"Hello, |name|!" 
@@ -436,6 +440,12 @@ proc defineModule*(moduleName: string) =
 
             ; $> curl localhost:9000/about
             ; About us%
+
+            ; $> curl localhost:9000/posts/42
+            ; Post #42%
+
+            ; $> curl localhost:9000/files/css/main.css
+            ; File: css/main.css%
 
             ; $> curl localhost:9000/user/john
             ; Hello, john!%
