@@ -388,3 +388,44 @@ ensure [zero? size keys gather [] 'x -> x]
 ensure [equal? arrange [] 'x -> x  []]
 ensure [equal? maximum [] 'x -> x  null]
 ensure [equal? minimum [] 'x -> x  null]
+
+; `continue` inside `map`
+ensure [equal? map 1..5 'x [if x=3 -> continue x]  [1 2 4 5]]
+ensure [equal? map [1 2 3 4 5] 'x [if x>3 -> continue x]  [1 2 3]]
+ensure [equal? map [1 2 3 4 5] [x] [if x=3 -> continue x]  [1 2 4 5]]
+
+; iteration variables are always restored
+iv: 10
+loop 1..3 'iv [break]
+ensure [equal? iv  10]
+loop [1 2 3] [iv] [break]
+ensure [equal? iv  10]
+ensure [some? [1 2] 'iv -> iv = 1]
+ensure [equal? iv  10]
+ensure [not? every? [1 2] 'iv -> iv = 5]
+ensure [equal? iv  10]
+ensure [equal? select.n:1 [1 2] 'iv -> iv = 1  1]
+ensure [equal? iv  10]
+ivFunc: function [][ loop 1..3 'iv [ if iv = 2 -> return iv ] ]
+ensure [equal? ivFunc  2]
+ensure [equal? iv  10]
+try [loop 1..3 'iv [throw "failed"]]
+ensure [equal? iv  10]
+loop 1..3 'ivUnset [break]
+ensure [not? set? "ivUnset"]
+
+; `.first` & `.last` with more than one param
+ensure [equal? filter.first:2 [1 2 3 4 5 6] [x y] -> true  [3 4 5 6]]
+ensure [equal? filter.first:1 [1 2 3 4 5 6] [x y] -> true  [3 4 5 6]]
+ensure [equal? filter.last:2 [1 2 3 4 5 6] [x y] -> true  [1 2 3 4]]
+ensure [equal? select.first:1 [1 2 3 4 5 6] [x y] -> true  [1 2]]
+ensure [equal? select.first:2 [1 2 3 4 5 6] [x y] -> true  [1 2]]
+
+; changing a block while iterating over it
+grown: [1 2 3]
+ensure [equal? map grown 'x [ 'grown ++ x + 10, x ]  [1 2 3]]
+ensure [equal? grown  [1 2 3 11 12 13]]
+seen: []
+emptied: [1 2 3 4]
+loop emptied 'x [ 'seen ++ x, if x = 2 -> empty 'emptied ]
+ensure [equal? seen  [1 2]]
