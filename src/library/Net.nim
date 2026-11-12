@@ -427,7 +427,8 @@ proc defineModule*(moduleName: string) =
                     ] ø
                 ]
 
-                GET {//.*/}         -> "catch-all fallback"
+                ; fallback, if nothing else matched
+                GET any             -> "catch-all fallback"
             ]
 
             ; $> curl localhost:9000/
