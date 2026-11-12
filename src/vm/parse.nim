@@ -413,21 +413,17 @@ template parseCurlyString(p: var Parser) =
                     inc(pos)
             of '/':
                 if regexString:
-                    if p.buf[pos+1]==RCurly:
-                        inc(pos,2)
+                    # a `/` only closes the regex if followed by
+                    # (optional) flags and then `}`; otherwise,
+                    # it's just part of the pattern (e.g. `{//items/}`)
+                    var flagsEnd = pos + 1
+                    while p.buf[flagsEnd] in {'i','m','s'}:
+                        inc(flagsEnd)
+                    if p.buf[flagsEnd]==RCurly:
+                        for i in pos+1 ..< flagsEnd:
+                            add(regexFlags, p.buf[i])
+                        pos = flagsEnd + 1
                         break
-                    elif p.buf[pos+1] in {'i','m','s'}:
-                        add(regexFlags, p.buf[pos+1])
-                        inc(pos,2)
-                        while p.buf[pos] in {'i','m','s'}:
-                            add(regexFlags, p.buf[pos])
-                            inc(pos)
-                        if p.buf[pos] != RCurly:
-                            p.lineNumber = initialLine
-                            Error_UnterminatedString("regex")
-                        else:
-                            inc(pos)
-                            break
                     else:
                         add(p.value, p.buf[pos])
                         inc(pos)

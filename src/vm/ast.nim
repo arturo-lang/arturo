@@ -416,7 +416,11 @@ proc processBlock*(
         if child.kind in CallNode and child.op == opFunc:
             let params {.cursor.} = child.children[0]
 
-            if params.value.kind == Literal:
+            if params.value.isNil:
+                # params built by an expression (e.g. `@[...]`):
+                # arity not known at this point
+                discard
+            elif params.value.kind == Literal:
                 TmpArities[target.value.s] = 1
             elif params.value.kind == Block:
                 TmpArities[target.value.s] = int8(params.value.a.countIt(it.kind != Type))
