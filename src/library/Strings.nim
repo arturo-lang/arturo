@@ -508,9 +508,11 @@ proc defineModule*(moduleName: string) =
                         let mBounds = m.matchBounds
                         matchesBounds.add(newRange(mBounds.a, mBounds.b, 1, false, true, true))
 
-                        let capts = (m.captures.toSeq).map((w) => w.get)
-                        captures.add(newStringBlock(capts))
-                        let cBounds = (m.captureBounds.toSeq).map((w) => newRange(w.get.a, w.get.b, 1, false, true, true))
+                        # optional groups that didn't participate
+                        # in the match have no value: use `null`
+                        let capts = (m.captures.toSeq).map((w) => (if w.isSome: newString(w.get) else: VNULL))
+                        captures.add(newBlock(capts))
+                        let cBounds = (m.captureBounds.toSeq).map((w) => (if w.isSome: newRange(w.get.a, w.get.b, 1, false, true, true) else: VNULL))
                         capturesBounds.add(newBlock(cBounds))
 
                         if doOnce: break
@@ -531,11 +533,13 @@ proc defineModule*(moduleName: string) =
                             if doNamed:
                                 res.add(newStringDictionary(m.captures.toTable))
                             else:
-                                let captures = (m.captures.toSeq).map((w) => w.get)
-                                if captures.len > 1:
-                                    res.add(newStringBlock(captures))
+                                # optional groups that didn't participate
+                                # in the match have no value: use `null`
+                                let captures = (m.captures.toSeq).map((w) => (if w.isSome: newString(w.get) else: VNULL))
+                                if captures.len == 1:
+                                    res.add(captures[0])
                                 else:
-                                    res.add(newString(captures[0]))
+                                    res.add(newBlock(captures))
                         elif doBounds:
                             let bounds = m.matchBounds
                             res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
