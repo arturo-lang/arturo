@@ -4,6 +4,8 @@
 
 import http.client, os, signal, socket, subprocess, sys, tempfile, time
 
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 ARTURO = sys.argv[1]
 WORK = tempfile.mkdtemp(prefix="serve-battle-")
 IS_WIN = os.name == "nt"
