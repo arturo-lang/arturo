@@ -125,6 +125,19 @@ when not defined(WEB):
                             keep.add(sub)
                     subscribers[name] = keep
 
+    proc drainDispatcher() {.gcsafe.} =
+        ## Run pending handlers for a bounded number of ticks. Bounded,
+        ## since long-lived registrations (e.g. a `serve` listener and
+        ## its periodic timer) keep the dispatcher non-empty forever.
+        {.cast(gcsafe).}:
+            var ticks = 0
+            try:
+                while hasPendingOperations() and ticks < 100:
+                    poll(0)
+                    inc ticks
+            except CatchableError:
+                discard
+
 # TODO(Events): per-handler unsubscribe via `on`-returned handles.
 
 #=======================================
@@ -365,37 +378,23 @@ proc defineModule*(moduleName: string) =
             signal(SIGTERM, proc(s: cint) {.noconv.} =
                 {.cast(gcsafe).}:
                     dispatchEvent("SigTerm", VNULL)
-                    try:
-                        while hasPendingOperations():
-                            poll(0)
-                    except CatchableError:
-                        discard
+                    drainDispatcher()
                     quit(128 + int(SIGTERM))
             )
 
             signal(SIGHUP, proc(s: cint) {.noconv.} =
                 {.cast(gcsafe).}:
                     dispatchEvent("SigHup", VNULL)
-                    try:
-                        while hasPendingOperations():
-                            poll(0)
-                    except CatchableError:
-                        discard
+                    drainDispatcher()
                     quit(128 + int(SIGHUP))
             )
 
-        # Process exit → emit `BeforeExit`, drain dispatcher (bounded ~2s).
+        # Process exit → emit `BeforeExit`, drain dispatcher (bounded).
         addExitProc(proc() {.noconv.} =
             {.cast(gcsafe).}:
                 shuttingDown = true
                 dispatchEvent("BeforeExit", VNULL)
-                var drainTicks = 0
-                try:
-                    while hasPendingOperations() and drainTicks < 100:
-                        poll(0)
-                        inc drainTicks
-                except CatchableError:
-                    discard
+                drainDispatcher()
         )
 
         # SIGINT → emit `CtrlC`, drain (Nim invokes hook at safe point).
@@ -406,11 +405,7 @@ proc defineModule*(moduleName: string) =
                     Interrupted = true
                     return
                 dispatchEvent("CtrlC", VNULL)
-                try:
-                    while hasPendingOperations():
-                        poll(0)
-                except CatchableError:
-                    discard
+                drainDispatcher()
                 quit(128 + 2)   # SIGINT
         )
 
