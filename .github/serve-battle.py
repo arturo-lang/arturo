@@ -50,7 +50,7 @@ class Server:
         self.start()
 
     def start(self):
-        log = open(self.script + f".{len(self.logs)}.log", "w+")
+        log = open(self.script + f".{len(self.logs)}.log", "w+", encoding="utf-8", errors="replace")
         self.logs.append(log)
         kw = {}
         if not IS_WIN:
