@@ -2913,7 +2913,7 @@ proc defineModule*(moduleName: string) =
         rule        = PrefixPrecedence,
         description = "check if collection contains given key",
         args        = {
-            "collection": {Dictionary, Object},
+            "collection": {Dictionary, Object, Store},
             "key"       : {Any}
         },
         attrs       = NoAttrs,
@@ -2937,6 +2937,11 @@ proc defineModule*(moduleName: string) =
 
             if xKind == Dictionary:
                 push(newLogical(x.d.hasKey(needle)))
+            elif xKind == Store:
+                when not defined(WEB):
+                    push(newLogical(not getStoreKey(x.sto, needle, unsafe=true).isNil))
+                else:
+                    push(VFALSE)
             else:
                 if x.magic.fetch(KeyQM):
                     mgk(@[x, y]) # already pushes value
