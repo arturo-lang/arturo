@@ -25,6 +25,41 @@ PUT:    function [pattern, action]-> addRoute "PUT" pattern var'action
 PATCH:  function [pattern, action]-> addRoute "PATCH" pattern var'action
 DELETE: function [pattern, action]-> addRoute "DELETE" pattern var'action
 
+; the name of each capturing group in given regex,
+; in order (or `null`, for unnamed ones) - so that
+; we can tell positional captures from named ones
+captureGroups: function [rx][
+    src: to :string rx
+    groups: new []
+    inClass: false
+    i: 0
+    while -> i < size src [
+        c: to :string get src i
+        when [
+            c = "\\" [ i: i + 1 ]           ; skip escaped char
+            inClass  [ if c = "]" -> inClass: false ]
+            c = "["  [ inClass: true ]
+            c = "(" [
+                rest: drop.times: i + 1 src
+                switch not? prefix? rest "?" ->
+                    'groups ++ @[null]
+                [
+                    ; (?<name>...), (?P<name>...) or (?'name'...);
+                    ; anything else - (?:...), lookarounds, inline
+                    ; flags - is not a capturing group
+                    named: match.capture rest {/^\?(?:P?<([A-Za-z_][A-Za-z0-9_]*)>|'([A-Za-z_][A-Za-z0-9_]*)')/}
+                    unless empty? named [
+                        name: first select first named => [not? null? &]
+                        'groups ++ name
+                    ]
+                ]
+            ]
+        ]
+        i: i + 1
+    ]
+    return groups
+]
+
 ; initial route initialization
 initServerInternal: function [serverRoutes][
     do serverRoutes
@@ -69,11 +104,27 @@ serveInternal: function [Request][
         actionParams: keys get info.get 'actionFunc 'args
         passedParams: new []
         if positive? size actionParams [
+            groupNames: new []
             matchedGroups: #[]
+            unnamedValues: new []
             if regex? ptrn [
-                matches: match.named.capture Request\path ptrn
+                anchored: to :regex "^" ++ (to :string ptrn) ++ "$"
+                groupNames: captureGroups ptrn
+
+                matches: match.named.capture Request\path anchored
                 unless empty? matches ->
                     matchedGroups: first matches
+
+                ; values of unnamed groups, in order
+                if contains? groupNames null [
+                    positional: first match.capture Request\path anchored
+                    unless block? positional ->
+                        positional: @[positional]
+                    loop.with:'idx groupNames 'groupName [
+                        if null? groupName ->
+                            'unnamedValues ++ @[positional\[idx]]
+                    ]
+                ]
             ]
             loop actionParams 'actionParam [
                 ; exactly one value per parameter (`null`, if missing);
@@ -86,8 +137,18 @@ serveInternal: function [Request][
                 if key? Request\query actionParam ->
                     paramValue: Request\query\[actionParam]
 
-                if key? matchedGroups actionParam ->
-                    paramValue: matchedGroups\[actionParam]
+                switch contains? groupNames actionParam [
+                    ; named groups go by name...
+                    if key? matchedGroups actionParam ->
+                        paramValue: matchedGroups\[actionParam]
+                ][
+                    ; ...unnamed ones fill the remaining
+                    ; parameters, left to right
+                    unless empty? unnamedValues [
+                        paramValue: first unnamedValues
+                        unnamedValues: drop unnamedValues
+                    ]
+                ]
 
                 'passedParams ++ @[paramValue]
             ]
