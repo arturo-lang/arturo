@@ -399,14 +399,19 @@ proc defineModule*(moduleName: string) =
         )
 
         # SIGINT → emit `CtrlC`, drain (Nim invokes hook at safe point).
+        # In the REPL, just stop whatever is running & get back to the prompt.
         setControlCHook(proc() {.noconv.} =
             {.cast(gcsafe).}:
+                if IsRepl:
+                    Interrupted = true
+                    return
                 dispatchEvent("CtrlC", VNULL)
                 try:
                     while hasPendingOperations():
                         poll(0)
                 except CatchableError:
                     discard
+                quit(128 + 2)   # SIGINT
         )
 
         # Pre-bound built-in events (`BeforeExit`, `SigTerm`, `SigHup`)

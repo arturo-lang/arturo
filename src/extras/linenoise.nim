@@ -21,15 +21,13 @@ import os
 
 {.passC: "-I" & parentDir(currentSourcePath()) .}
 
-# TODO(extras/linenoise) UTF-8 support not working properly
-#  should add -DUSE_UTF8 for UTF-8 support
-#  to all following lines
-#  the problem is that - although it "works" - different characters are not shown at all:
-#  e.g. accented characters, or ø - our symbol for null
-#  labels: bug, 3rd-party, repl
-{.compile("linenoise/linenoise.c", "-I" & parentDir(currentSourcePath())).}
-{.compile("linenoise/stringbuf.c", "-I" & parentDir(currentSourcePath())).}
-{.compile("linenoise/utf8.c", "-I" & parentDir(currentSourcePath())).}
+# we compile each file separately (not as an amalgamation),
+# so the utf8 helpers must not be static
+const LinenoiseFlags = "-I" & parentDir(currentSourcePath()) & " -DUTF8_STATIC= -DUSE_UTF8"
+
+{.compile("linenoise/linenoise.c", LinenoiseFlags).}
+{.compile("linenoise/stringbuf.c", LinenoiseFlags).}
+{.compile("linenoise/utf8.c", LinenoiseFlags).}
 
 #=======================================
 # Types
@@ -44,6 +42,7 @@ type
     LinenoiseCompletionCallback*    = proc (buf: constChar; lc: ptr LinenoiseCompletions, userdata: pointer) {.cdecl.}
     LinenoiseHintsCallback*         = proc (buf: constChar; color: var cint; bold: var cint, userdata: pointer): cstring {.cdecl.}
     LinenoiseFreeHintsCallback*     = proc (buf: constChar; color: var cint; bold: var cint, userdata: pointer) {.cdecl.}
+    LinenoiseContinuationCallback*  = proc (buf: constChar; userdata: pointer): cstring {.cdecl.}
 
 #=======================================
 # Function prototypes
@@ -53,6 +52,7 @@ type
 
 proc linenoiseSetCompletionCallback*(cback: LinenoiseCompletionCallback, userdata: pointer): LinenoiseCompletionCallback {.importc: "linenoiseSetCompletionCallback".}
 proc linenoiseSetHintsCallback*(callback: LinenoiseHintsCallback, userdata: pointer) {.importc: "linenoiseSetHintsCallback".}
+proc linenoiseSetContinuationCallback*(callback: LinenoiseContinuationCallback, userdata: pointer) {.importc: "linenoiseSetContinuationCallback".}
 proc linenoiseAddCompletion*(a2: ptr LinenoiseCompletions; a3: cstring) {.importc: "linenoiseAddCompletion".}
 proc linenoiseReadLine*(prompt: cstring): cstring {.importc: "linenoise".}
 proc linenoiseHistoryAdd*(line: cstring): cint {.importc: "linenoiseHistoryAdd", discardable.}

@@ -32,6 +32,10 @@ when not defined(windows):
     var
         signalStack: array[65536, byte]     ## needed for reporting stack overflows
 
+var
+    StackBottom: uint   ## the lowest address of the main stack
+    StackLimit: uint    ## going below this means we're about to run out of stack
+
 #=======================================
 # Helpers
 #=======================================
@@ -48,6 +52,7 @@ when defined(windows):
 
     proc SetUnhandledExceptionFilter(filter: pointer): pointer {.stdcall, dynlib: "kernel32", importc.}
     proc SetThreadStackGuarantee(size: ptr culong): WINBOOL {.stdcall, dynlib: "kernel32", importc.}
+    proc GetCurrentThreadStackLimits(low, high: ptr uint) {.stdcall, dynlib: "kernel32", importc.}
 
 # Only async-signal-safe stuff here: no allocations whatsoever
 
@@ -115,3 +120,31 @@ proc setupFaultHandler*() =
         discard sigemptyset(action.sa_mask)
         discard sigaction(SIGSEGV, action, nil)
         discard sigaction(SIGBUS, action, nil)
+
+    # keep track of how much stack there's left
+    # (so that we can stop a runaway recursion
+    # before it's too late)
+    if StackBottom != 0: return
+
+    var top, size: uint
+    when defined(windows):
+        var low, high: uint
+        GetCurrentThreadStackLimits(addr low, addr high)
+        top = high
+        size = high - low
+    else:
+        var here: int
+        var limit: RLimit
+        top = cast[uint](addr here)
+        size = 8 * 1024 * 1024
+        # (if it's "unlimited", just stick to the default)
+        if getrlimit(RLIMIT_STACK, limit) == 0 and limit.rlim_cur > 0 and limit.rlim_cur < (1 shl 32):
+            size = min(uint(limit.rlim_cur), top)
+    StackBottom = top - size
+    StackLimit = StackBottom + max(size div 16, 128 * 1024)
+
+template stackExhausted*(): bool =
+    ## Are we (on the main stack and) about to run out of it?
+    var marker {.noinit.}: int
+    let sp = cast[uint](addr marker)
+    sp < StackLimit and sp > StackBottom

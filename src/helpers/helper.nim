@@ -385,7 +385,7 @@ proc printHeader(obj: ValueObj) {. inline .} =
     printOneData(
         obj.name,
         data,
-        bold(magentaColor),
+        bold(nameColor()),
         resetColor
     )
 
