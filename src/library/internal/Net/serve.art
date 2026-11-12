@@ -183,10 +183,32 @@ serveInternal: function [Request][
         call var'actionFunc passedParams
     ]
 
+    ; plain-block actions get the route's named
+    ; params (`:id`, `(?<id>...)`) as variables
+    runBlockAction: function [action, ptrn][
+        names: new []
+        if regex? ptrn ->
+            names: select captureGroups ptrn => [not? null? &]
+
+        if empty? names ->
+            return do action
+
+        groups: #[]
+        matches: match.named.capture Request\path to :regex "^" ++ (to :string ptrn) ++ "$"
+        unless empty? matches ->
+            groups: first matches
+
+        blockArgs: map names 'name -> to :word name
+        blockFunc: function blockArgs action
+        call 'blockFunc map names 'name [
+            (key? groups name)? -> groups\[name] -> null
+        ]
+    ]
+
     runAction: function [action, ptrn][
         routeError: try.verbose [
             (block? var'action)? [
-                serverResponse\body: do action
+                serverResponse\body: runBlockAction action ptrn
             ][
                 serverResponse\body: callActionFunction var'action ptrn
             ]
