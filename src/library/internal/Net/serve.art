@@ -7,12 +7,23 @@ ROUTES: #[
     DELETE: #[]
 ]
 
+; per-method fallbacks (`GET any -> ...`)
+FALLBACKS: #[]
+
 ; route helpers
-GET:    function [pattern, action]-> ROUTES\GET\[express pattern]: var'action
-POST:   function [pattern, action]-> ROUTES\POST\[express pattern]: var'action
-PUT:    function [pattern, action]-> ROUTES\PUT\[express pattern]: var'action
-PATCH:  function [pattern, action]-> ROUTES\PATCH\[express pattern]: var'action
-DELETE: function [pattern, action]-> ROUTES\DELETE\[express pattern]: var'action
+addRoute: function [method, pattern, action][
+    if :any = type pattern [
+        FALLBACKS\[method]: var'action
+        return null
+    ]
+    ROUTES\[method]\[express pattern]: var'action
+]
+
+GET:    function [pattern, action]-> addRoute "GET" pattern var'action
+POST:   function [pattern, action]-> addRoute "POST" pattern var'action
+PUT:    function [pattern, action]-> addRoute "PUT" pattern var'action
+PATCH:  function [pattern, action]-> addRoute "PATCH" pattern var'action
+DELETE: function [pattern, action]-> addRoute "DELETE" pattern var'action
 
 ; initial route initialization
 initServerInternal: function [serverRoutes][
@@ -85,6 +96,22 @@ serveInternal: function [Request][
         call var'actionFunc passedParams
     ]
 
+    runAction: function [action, ptrn][
+        routeError: try.verbose [
+            (block? var'action)? [
+                serverResponse\body: do action
+            ][
+                serverResponse\body: callActionFunction var'action ptrn
+            ]
+            if null? serverResponse\status ->
+                serverResponse\status: 200 ; OK
+        ]
+        unless null? routeError [
+            serverResponse\body: "Internal Server Error"
+            serverResponse\status: 500
+        ]
+    ]
+
     getServerResponse: [
         ; methods we have no routes table for (HEAD, OPTIONS, ...)
         ; simply fall through to the 404 below
@@ -97,25 +124,14 @@ serveInternal: function [Request][
                 -> (to :string originalPattern) = Request\path
 
             if matched? [
-                action: methodRoutes\[pattern]
-
-                routeError: try.verbose [
-                    (block? var'action)? [
-                        serverResponse\body: do action
-                    ][
-                        serverResponse\body: callActionFunction var'action originalPattern
-                    ]
-                    if null? serverResponse\status ->
-                        serverResponse\status: 200 ; OK
-                ]
-                unless null? routeError [
-                    serverResponse\body: "Internal Server Error"
-                    serverResponse\status: 500
-                ]
-
+                runAction methodRoutes\[pattern] originalPattern
                 break
             ]
         ]
+
+        ; nothing matched? try the method's fallback, if any
+        if and? [null? serverResponse\status][key? FALLBACKS Request\method] ->
+            runAction FALLBACKS\[Request\method] null
     ]
 
     serverResponse\benchmark: benchmark.get getServerResponse
