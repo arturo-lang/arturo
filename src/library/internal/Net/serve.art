@@ -99,7 +99,7 @@ serveInternal: function [Request][
             if matched? [
                 action: methodRoutes\[pattern]
 
-                if throws? [
+                routeError: try.verbose [
                     (block? var'action)? [
                         serverResponse\body: do action
                     ][
@@ -107,7 +107,8 @@ serveInternal: function [Request][
                     ]
                     if null? serverResponse\status ->
                         serverResponse\status: 200 ; OK
-                ] [
+                ]
+                unless null? routeError [
                     serverResponse\body: "Internal Server Error"
                     serverResponse\status: 500
                 ]
