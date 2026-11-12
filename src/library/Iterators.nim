@@ -71,6 +71,14 @@ type IterCap* = enum
 # Low-level loop primitives
 #---------------------------------------
 
+template setIterSym(k: string, v: Value) =
+    ## Set an iteration variable, without `Table.[]=`: its key is a `sink`
+    ## param, so the name would get copied (and freed) on every single write
+    Syms.withValue(k, slot):
+        slot[] = v
+    do:
+        Syms[k] = v
+
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
     var keepGoing {.inject, used.}: bool = true
     when forever:
@@ -106,7 +114,10 @@ template prepareRange(rng: VRange) {.dirty.} =
     let collectionLen = rng.len
 
 template prepareBlock(blk: ValueArray) {.dirty.} =
-    let collectionLen = blk.len
+    # The block may be changed in place while we go through it:
+    # items added to it are not visited & if it gets shorter, we stop there
+    let startLen = blk.len
+    template collectionLen(): int = min(startLen, blk.len)
 
 template iterateRangeWithLiteral(
     rng: VRange,
@@ -121,27 +132,28 @@ template iterateRangeWithLiteral(
     when cap:
         var captured: Value
 
-    iteratorLoop(justLiteral=true, inf):
-        var jr = rng.start
-    do:
-        when cap:
-            captured =
-                if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                else: newChar(char(jr))
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=true, inf):
+            var jr = rng.start
+        do:
+            when cap:
+                captured =
+                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                    else: newChar(char(jr))
 
-            jr += step
+                jr += step
             
-            Syms[lit] = captured
-        else:
-            Syms[lit] = 
-                if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                else: newChar(char(jr))
-            jr += step
+                setIterSym(lit, captured)
+            else:
+                setIterSym(lit, (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                jr += step
 
-        execUnscoped(preevaled)
-        doAction
-
-    finalizeLeaklessOne()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeaklessOne()
 
 template iterateBlockWithLiteral(
     blk: ValueArray,
@@ -156,20 +168,23 @@ template iterateBlockWithLiteral(
     when cap:
         var captured: Value
 
-    iteratorLoop(justLiteral=true, inf):
-        discard
-    do:
-        when cap:
-            captured = blk[indx]
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=true, inf):
+            discard
+        do:
+            when cap:
+                captured = blk[indx]
             
-            Syms[lit] = captured
-        else:
-            Syms[lit] = blk[indx]
+                setIterSym(lit, captured)
+            else:
+                setIterSym(lit, blk[indx])
 
-        execUnscoped(preevaled)
-        doAction
-
-    finalizeLeaklessOne()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeaklessOne()
 
 template iterateRangeWithParams(
     rng: VRange,
@@ -198,52 +213,53 @@ template iterateRangeWithParams(
     when cap:
         var captured: ValueArray
 
-    iteratorLoop(justLiteral=false, inf):
-        var jr = rng.start
-    do:
-        when cap:
-            captured = newSeq[Value](loopStep)
-            var k = indx
-            var cnt = 0
-            while k < indx+loopStep:
-                captured[cnt] = 
-                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
-                    else: newChar(char(jr))
-                jr += step
-                k += 1
-                cnt += 1
-            
-        var ip = 0
-        if idx:
-            Syms[prm[ip]] = Value(kind: Integer, iKind: NormalInteger, i: run)
-            inc ip
-
-        when rll:
-            if not rollingRight:
-                Syms[prm[ip]] = res
-                inc ip
-
-        if argsLen > 0:
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=false, inf):
+            var jr = rng.start
+        do:
             when cap:
-                for capt in captured:
-                    Syms[prm[ip]] = capt
-                    inc ip
-            else:
-                for i in indx..indx+loopStep-1:     
-                    Syms[prm[ip]] =                   
+                captured = newSeq[Value](loopStep)
+                var k = indx
+                var cnt = 0
+                while k < indx+loopStep:
+                    captured[cnt] = 
                         if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
                         else: newChar(char(jr))
                     jr += step
+                    k += 1
+                    cnt += 1
+            
+            var ip = 0
+            if idx:
+                setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
+                inc ip
+
+            when rll:
+                if not rollingRight:
+                    setIterSym(prm[ip], res)
                     inc ip
 
-        when rll:
-            if rollingRight:
-                Syms[prm[ip]] = res
+            if argsLen > 0:
+                when cap:
+                    for capt in captured:
+                        setIterSym(prm[ip], capt)
+                        inc ip
+                else:
+                    for i in indx..indx+loopStep-1:     
+                        setIterSym(prm[ip], (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                        jr += step
+                        inc ip
 
-        execUnscoped(preevaled)
-        doAction
+            when rll:
+                if rollingRight:
+                    setIterSym(prm[ip], res)
 
-    finalizeLeakless()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeakless()
 
 template iterateBlockWithParams(
     blk: ValueArray,
@@ -272,42 +288,45 @@ template iterateBlockWithParams(
     when cap:
         var captured: ValueArray
 
-    iteratorLoop(justLiteral=false, inf):
-        discard
-    do:
-        when cap:
-            captured = blk[indx..indx+loopStep-1]
+    # whatever happens in there (`break`, `return`, an error, or us
+    # returning early), the variables we have used get restored
+    try:
+        iteratorLoop(justLiteral=false, inf):
+            discard
+        do:
+            when cap:
+                captured = blk[indx..indx+loopStep-1]
             
-        var ip = 0
-        if idx:
-            Syms[prm[ip]] = Value(kind: Integer, iKind: NormalInteger, i: run)
-            inc ip
-
-        when rll:
-            if not rollingRight:
-                Syms[prm[ip]] = res
+            var ip = 0
+            if idx:
+                setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
                 inc ip
 
-        if argsLen > 0:
-            when cap:
-                for capt in captured:
-                    Syms[prm[ip]] = capt
+            when rll:
+                if not rollingRight:
+                    setIterSym(prm[ip], res)
                     inc ip
-            else:
-                var j = indx
-                while j < indx+loopStep:
-                    Syms[prm[ip]] = blk[j]
-                    inc ip
-                    inc j
 
-        when rll:
-            if rollingRight:
-                Syms[prm[ip]] = res
+            if argsLen > 0:
+                when cap:
+                    for capt in captured:
+                        setIterSym(prm[ip], capt)
+                        inc ip
+                else:
+                    var j = indx
+                    while j < indx+loopStep:
+                        setIterSym(prm[ip], blk[j])
+                        inc ip
+                        inc j
 
-        execUnscoped(preevaled)
-        doAction
+            when rll:
+                if rollingRight:
+                    setIterSym(prm[ip], res)
 
-    finalizeLeakless()
+            execUnscoped(preevaled)
+            doAction
+    finally:
+        finalizeLeakless()
 
 #---------------------------------------
 # Iteration setup
@@ -338,28 +357,38 @@ template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
             iterable = InPlaced
 
 template fetchIterableRange() {.dirty.} =
-    var rang = iterable.rng
+    var rang =
+        if iterable.kind == Range: iterable.rng
+        else: VRange(start: 1, stop: iterable.i, step: 1, infinite: false, numeric: true, forward: true)
 
 template fetchIterableItems(doesAcceptLiterals=true, defaultReturn: untyped) {.dirty.} =
-    var blo = 
-        case iterable.kind:
-            of Block,Inline:
-                #cleanedBlockValuesCopy(iterable)
-                iterable.a
-            of Dictionary:
-                iterable.d.flattenedDictionary()
-            of Object:
-                iterable.o.flattenedObject()
-            of String:
-                var acc = newSeqOfCap[Value](iterable.s.len)
-                for r in runes(iterable.s): acc.add(newChar(r))
-                acc
-            of Integer:
-                var acc = newSeqOfCap[Value](iterable.i)
-                for i in 1..iterable.i: acc.add(newInteger(i))
-                acc
-            else: # won't ever reach here
-                @[VNULL]
+    # Blocks are iterated in place (no copy of their items): `bloHold`
+    # keeps the value alive, and `blo` is a view over its items.
+    # For anything else, the items are created here, in `bloOwned`
+    let bloHold {.used.}: Value = iterable
+    var bloOwned: ValueArray
+    var bloPtr: ptr ValueArray
+    case iterable.kind:
+        of Block,Inline:
+            bloPtr = addr bloHold.a
+        of Dictionary:
+            bloOwned = iterable.d.flattenedDictionary()
+            bloPtr = addr bloOwned
+        of Object:
+            bloOwned = iterable.o.flattenedObject()
+            bloPtr = addr bloOwned
+        of String:
+            bloOwned = newSeqOfCap[Value](iterable.s.len)
+            for r in runes(iterable.s): bloOwned.add(newChar(r))
+            bloPtr = addr bloOwned
+        of Integer:
+            bloOwned = newSeqOfCap[Value](iterable.i)
+            for i in 1..iterable.i: bloOwned.add(newInteger(i))
+            bloPtr = addr bloOwned
+        else: # won't ever reach here
+            bloOwned = @[VNULL]
+            bloPtr = addr bloOwned
+    template blo(): untyped = bloPtr[]
 
     if blo.len == 0 and (when declared(hasSeed): not hasSeed else: true):
         when not (defaultReturn is typeof(nil)):
@@ -648,7 +677,7 @@ template doIterate(
             do:
                 itPost
 
-    if iterable.kind==Range:
+    if iterable.kind==Range or (iterable.kind==Integer and iterable.iKind==NormalInteger and iterable.i >= 1):
         fetchIterableRange()
         let sourceLen {.inject, used.} = rang.len
         template reverseSrc() {.inject, used.} =
@@ -668,9 +697,10 @@ template doIterate(
             itDefVal
         let sourceLen {.inject, used.} = blo.len
         template reverseSrc() {.inject, used.} =
-            blo = blo.reversed()
+            bloOwned = blo.reversed()
+            bloPtr = addr bloOwned
         template tailFrom(idx: int): ValueArray {.inject, used.} =
-            blo[idx..^1]
+            (if idx < blo.len: blo[idx..^1] else: @[])
         template firstSrcElem(): Value {.inject, used.} =
             blo[0]
 
@@ -1033,8 +1063,11 @@ proc defineModule*(moduleName: string) =
                         else:
                             filteredItems += captured.len
 
-                        if elemLimit == filteredItems:
-                            stoppedAt = indx+1
+                        if filteredItems >= elemLimit:
+                            when captured is Value:
+                                stoppedAt = indx+1
+                            else:
+                                stoppedAt = indx+captured.len
                             keepGoing = false
                             break
             do:
@@ -1108,6 +1141,11 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             let rollingRight = hadAttr("right")
             let hasSeed = checkAttr("seed")
+
+            # we need (at least) one param for the accumulator & one for the item
+            let foldParams = (if yKind == Block: y.a.len else: 0)
+            if unlikely(foldParams < 2):
+                Error_IncompatibleBlockSize("fold", foldParams, "at least 2 params")
 
             doIterate({IsRolling}, false, newBlock()):
                 var res: Value
@@ -1297,9 +1335,11 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             let aParallel = popAttr("parallel")
             doIterate({AcceptsLit, WithCounter}, false, newBlock()):
-                var res: ValueArray = newSeq[Value](sourceLen)
+                # not every iteration gives us a value (e.g. after a `continue`)
+                # & the source may be infinite: so, its size is only a hint
+                var res: ValueArray = newSeqOfCap[Value](if sourceLen == InfiniteRange: 0 else: sourceLen)
             do:
-                res[cntr] = stack.pop()
+                res.add(stack.pop())
             do:
                 pushResult(newBlock(res))
 
@@ -1508,7 +1548,7 @@ proc defineModule*(moduleName: string) =
                         res.add(captured)
 
                         if onlyFirst or onlyLast:
-                            if elemLimit == res.len:
+                            if res.len >= elemLimit:
                                 keepGoing = false
                                 break
                     else:
