@@ -60,6 +60,13 @@ jobs:
                 arturo --version || true
 
             - name: Run battle-test
+              if: matrix.os != 'windows'
               timeout-minutes: 15
-              shell: ${{ (matrix.os == 'windows') && 'pwsh' || 'bash' }}
-              run: ${{ (matrix.os == 'windows') && 'python' || 'python3' }} arturo/.github/serve-battle.py "${{ steps.bin.outputs.path }}"
+              shell: bash
+              run: python3 arturo/.github/serve-battle.py "${{ steps.bin.outputs.path }}"
+
+            - name: Run battle-test (windows)
+              if: matrix.os == 'windows'
+              timeout-minutes: 15
+              shell: pwsh
+              run: python arturo/.github/serve-battle.py "${{ steps.bin.outputs.path }}"
