@@ -58,16 +58,27 @@ serveInternal: function [Request][
         actionParams: keys get info.get 'actionFunc 'args
         passedParams: new []
         if positive? size actionParams [
-            matchedGroups: first match.named.capture Request\path ptrn
+            matchedGroups: #[]
+            if regex? ptrn [
+                matches: match.named.capture Request\path ptrn
+                unless empty? matches ->
+                    matchedGroups: first matches
+            ]
             loop actionParams 'actionParam [
+                ; exactly one value per parameter (`null`, if missing);
+                ; precedence: route captures > query > body
+                paramValue: null
+
                 if and? [dictionary? Request\body][key? Request\body actionParam] ->
-                    'passedParams ++ Request\body\[actionParam]
+                    paramValue: Request\body\[actionParam]
 
                 if key? Request\query actionParam ->
-                    'passedParams ++ Request\query\[actionParam]
+                    paramValue: Request\query\[actionParam]
 
                 if key? matchedGroups actionParam ->
-                    'passedParams ++ matchedGroups\[actionParam]
+                    paramValue: matchedGroups\[actionParam]
+
+                'passedParams ++ @[paramValue]
             ]
         ]
 
