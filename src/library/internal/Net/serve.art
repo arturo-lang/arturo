@@ -86,7 +86,10 @@ serveInternal: function [Request][
     ]
 
     getServerResponse: [
-        loop keys ROUTES\[Request\method] 'pattern [
+        ; methods we have no routes table for (HEAD, OPTIONS, ...)
+        ; simply fall through to the 404 below
+        methodRoutes: (key? ROUTES Request\method)? -> ROUTES\[Request\method] -> #[]
+        loop keys methodRoutes 'pattern [
             originalPattern: parse pattern
 
             matched?: (regex? originalPattern)? 
@@ -94,7 +97,7 @@ serveInternal: function [Request][
                 -> (to :string originalPattern) = Request\path
 
             if matched? [
-                action: ROUTES\[Request\method]\[pattern]
+                action: methodRoutes\[pattern]
 
                 if throws? [
                     (block? var'action)? [
