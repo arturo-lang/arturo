@@ -10,12 +10,38 @@ ROUTES: #[
 ; per-method fallbacks (`GET any -> ...`)
 FALLBACKS: #[]
 
+; Sinatra-style string routes, e.g. `/users/:id` or `/files/*`:
+; `:name` at the start of a segment matches that segment (named),
+; `*` matches anything, slashes included (unnamed, i.e. positional);
+; everything else is matched literally
+dynamicRoute?: function [route][
+    and? [string? route][
+        or? [contains? route "*"][contains? route {/(^|\/):[A-Za-z_]/}]
+    ]
+]
+
+routeToRegex: function [route][
+    segments: map split.by:"/" route 'segment [
+        prefix: ""
+        named: match.capture segment {/^:([A-Za-z_][A-Za-z0-9_]*)/}
+        unless empty? named [
+            prefix: ~"(?<|first named|>[^/]+?)"
+            segment: drop.times: 1 + size first named segment
+        ]
+        prefix ++ join.with:"(.*?)" map split.by:"*" segment 'part -> escape.regex part
+    ]
+    to :regex join.with:"/" segments
+]
+
 ; route helpers
 addRoute: function [method, pattern, action][
     if :any = type pattern [
         FALLBACKS\[method]: var'action
         return null
     ]
+    if dynamicRoute? pattern ->
+        pattern: routeToRegex pattern
+
     ROUTES\[method]\[express pattern]: var'action
 ]
 
