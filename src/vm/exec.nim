@@ -370,7 +370,7 @@ proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
 
     for i,d in result.pairs:
         if i.startsWith("__module"):
-            Syms[i] = d
+            putSym(i, d)
             result.del(i)
 
 when not defined(WEB):
