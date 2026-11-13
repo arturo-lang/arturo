@@ -670,3 +670,54 @@ do [
     passed
 
 ]
+
+
+topic "fibers — interleaved writes to the same symbols"
+do [
+
+    x: 1
+    y: 2
+    work: function [tag n][
+        x: tag
+        y: 0
+        loop 1..n 'i [
+            y: y + i
+            pause 5
+            inner: function [q][
+                x: x ++ "!"
+                pause 3
+                y + q
+            ]
+            y: inner 0
+            pause 2
+            x: x ++ "."
+        ]
+        @[x y]
+    ]
+
+    ts: map ["a" "b" "c"] 't [do.async [work t 4]]
+    ensure -> ["a...." 10] = wait ts\0
+    ensure -> ["b...." 10] = wait ts\1
+    ensure -> ["c...." 10] = wait ts\2
+    passed
+
+    ; nothing leaked back, from any of them
+    ensure -> [1 2] = @[x y]
+    ensure -> not? set? 'inner
+    ensure -> not? set? 'i
+    passed
+
+    ; recursion, yielding at every level
+    down: function [n][
+        if n = 0 -> return 0
+        loc: n
+        pause 1
+        rest: down n - 1
+        loc + rest
+    ]
+    ts: map 1..4 'k [do.async [down k * 3]]
+    ensure -> [6 21 45 78] = map ts 't -> wait t
+    ensure -> not? set? 'loc
+    passed
+
+]
