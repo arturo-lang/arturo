@@ -270,6 +270,15 @@ proc recordScopeWrite*(s: string) {.inline.} =
         if not frame[].hasKey(s):
             frame[][s] = Syms.getOrDefault(s, nil)
 
+proc putSym*(s: string, v: sink Value) {.inline.} =
+    ## Write to the symbol table, without `Table.[]=` when the symbol
+    ## is already there: its key is a `sink` param, so the name
+    ## would get copied (and freed) on every single write
+    Syms.withValue(s, slot):
+        slot[] = v
+    do:
+        Syms[s] = v
+
 template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
     recordScopeWrite(s)
@@ -278,14 +287,14 @@ template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: 
         # - if it is - we have to copy it first
         # - otherwise, go ahead and just assign it (pointer copy!)
         when forceReadOnly:
-            Syms[s] = copyValue(v)
+            putSym(s, copyValue(v))
         else:
             if v.readonly:
-                Syms[s] = copyValue(v)
+                putSym(s, copyValue(v))
             else:
-                Syms[s] = v
+                putSym(s, v)
     else:
-        Syms[s] = v
+        putSym(s, v)
 
 template UnsetSym*(s: string): untyped =
     recordScopeWrite(s)
