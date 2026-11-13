@@ -122,7 +122,7 @@ when not defined(WEB):
     proc onMainFiber*(): bool {.inline.} =
         scheduler.currentFiber.isNil
 
-    proc spawnFiber*(entry: proc (), parentSyms: SymTable): Fiber =
+    proc spawnFiber*(entry: proc (), parentSyms: SymSlots): Fiber =
         ## Create fiber with fresh VMContext (shallow-copied syms), queue ready.
         if scheduler.mainCtx.isNil:
             initScheduler()

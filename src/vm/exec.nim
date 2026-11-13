@@ -93,7 +93,7 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
 
         var stackTop {.cursor.} = stack.peek(0)
 
-        SetSym(cnst[idx].s, stackTop, safe=true)
+        SetSymById(symIdOf(cnst[idx]), stackTop, safe=true)
         when doPop:
             stack.popN(1)
 
@@ -110,7 +110,7 @@ proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inli
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
-        stack.push(FetchSym(cnst[idx].s))
+        stack.push(FetchSymById(cnst[idx]))
 
 proc callFunction*(f: Value, fnName: string, args: ValueArray) =
     ## Take a Function value, whether a user or a built-in one, 
@@ -183,7 +183,8 @@ template callByName(symIndx: string):untyped =
 
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
-        callByName(cnst[idx].s)
+        let fun = FetchSymById(cnst[idx])
+        callFunction(fun, cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, stack.pop())
@@ -352,7 +353,7 @@ proc execDictionary*(blk: Value): ValueDict =
     result = DictSyms.pop()
 
 proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
-    let olderSyms: SymTable = Syms
+    let olderSyms: SymSlots = Syms
 
     let exportAll = exporting.len == 0
     let preevaled = doEval(blk)
@@ -454,24 +455,7 @@ proc execFunction*(fun: Value, fid: Hash) =
             setMemoized(fid, memoizedParams, stack.peek(0))
 
         var frame = popScopeFrame()
-        if fun.exports.isNil:
-            for k, prev in frame.pairs:
-                if prev.isNil:
-                    Syms.del(k)
-                else:
-                    putSym(k, prev)
-        else:
-            for k, prev in frame.pairs:
-                var isExport = false
-                for ek in fun.exports.a:
-                    if ek.s == k:
-                        isExport = true
-                        break
-                if isExport: continue
-                if prev.isNil:
-                    Syms.del(k)
-                else:
-                    putSym(k, prev)
+        restoreScopeFrame(frame, fun.exports)
         releaseScopeFrame(frame)
 
 proc execFunctionInline*(fun: Value, fid: Hash) =
@@ -570,11 +554,7 @@ proc execMethod*(meth: Value) =
 
     finally:
         var frame = popScopeFrame()
-        for k, prev in frame.pairs:
-            if prev.isNil:
-                Syms.del(k)
-            else:
-                putSym(k, prev)
+        restoreScopeFrame(frame)
         releaseScopeFrame(frame)
 
         when not defined(WEB):
