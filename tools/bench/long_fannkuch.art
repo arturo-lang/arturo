@@ -1,0 +1,50 @@
+; fannkuch-redux, n = 8: array mutation, while loops
+fannkuch: function [n][
+    perm1: @0..dec n
+    count: array.of: n 0
+    maxFlips: 0
+    checksum: 0
+    permCount: 0
+    r: n
+    while [true][
+        while [r <> 1][
+            count\[r-1]: r
+            r: r - 1
+        ]
+        perm: new perm1
+        flips: 0
+        k: perm\0
+        while [k <> 0][
+            i: 0
+            j: k
+            while [i < j][
+                tmp: perm\[i]
+                perm\[i]: perm\[j]
+                perm\[j]: tmp
+                i: i + 1
+                j: j - 1
+            ]
+            flips: flips + 1
+            k: perm\0
+        ]
+        if flips > maxFlips -> maxFlips: flips
+        checksum: (even? permCount)? -> checksum + flips -> checksum - flips
+        permCount: permCount + 1
+
+        while [true][
+            if r = n -> return @[checksum maxFlips]
+            p0: perm1\0
+            i: 0
+            while [i < r][
+                perm1\[i]: perm1\[i+1]
+                i: i + 1
+            ]
+            perm1\[r]: p0
+            count\[r]: count\[r] - 1
+            if count\[r] > 0 -> break
+            r: r + 1
+        ]
+    ]
+]
+res: fannkuch 8
+print ["checksum:" res\0 "max flips:" res\1]

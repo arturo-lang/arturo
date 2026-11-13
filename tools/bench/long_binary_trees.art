@@ -1,0 +1,22 @@
+; binary trees: allocation-heavy recursion
+make: function [d][
+    if d = 0 -> return @[null null]
+    @[make d-1  make d-1]
+]
+
+check: function [t][
+    if null? t\0 -> return 1
+    1 + (check t\0) + check t\1
+]
+
+maxDepth: 13
+print ["stretch tree check:" check make maxDepth + 1]
+long: make maxDepth
+
+loop range.step: 2 4 maxDepth 'd [
+    iters: 2 ^ (maxDepth - d) + 4
+    total: 0
+    do.times: iters -> total: total + check make d
+    print [iters "trees of depth" d "check:" total]
+]
+print ["long lived tree check:" check long]

@@ -1,0 +1,27 @@
+; naive 120x120 matrix multiplication: nested loops & indexing
+N: 120
+mk: function [seed][
+    m: []
+    loop 0..dec N 'i [
+        row: []
+        loop 0..dec N 'j -> 'row ++ ((i * seed) + j) % 17
+        'm ++ @[row]
+    ]
+    m
+]
+a: mk 3
+b: mk 7
+c: []
+loop 0..dec N 'i [
+    row: array.of: N 0
+    ai: a\[i]
+    loop 0..dec N 'j [
+        s: 0
+        loop 0..dec N 'k -> s: s + ai\[k] * b\[k]\[j]
+        row\[j]: s
+    ]
+    'c ++ @[row]
+]
+total: 0
+loop c 'row -> loop row 'x -> total: total + x
+print ["sum:" total "corner:" c\[N-1]\[N-1]]
