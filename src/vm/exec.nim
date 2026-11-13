@@ -259,11 +259,11 @@ template finalizeLeakless*(): untyped =
 
     if toRestoreKeys.len == 1:
         if toRestoreOne.isNil: Syms.del(leaklessKey(toRestoreKeys, 0))
-        else: Syms[leaklessKey(toRestoreKeys, 0)] = move toRestoreOne
+        else: putSym(leaklessKey(toRestoreKeys, 0), move toRestoreOne)
     else:
         for li in 0 ..< toRestore.len:
             if toRestore[li].isNil: Syms.del(leaklessKey(toRestoreKeys, li))
-            else: Syms[leaklessKey(toRestoreKeys, li)] = move toRestore[li]
+            else: putSym(leaklessKey(toRestoreKeys, li), move toRestore[li])
 
 template prepareLeaklessOne*(protected: string | Value): untyped =
     ## Prepare for leak-less block execution
@@ -284,7 +284,7 @@ template finalizeLeaklessOne*(): untyped =
     if toRestoreVal.isNil:
         Syms.del(toRestoreKey)
     else:
-        Syms[toRestoreKey] = move toRestoreVal
+        putSym(toRestoreKey, move toRestoreVal)
 
 # TODO(VM/exec) Should also catch any *CatchableError* in `handleBranching`?
 #  labels: vm, execution, error handling
@@ -370,7 +370,7 @@ proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
 
     for i,d in result.pairs:
         if i.startsWith("__module"):
-            Syms[i] = d
+            putSym(i, d)
             result.del(i)
 
 when not defined(WEB):
@@ -459,7 +459,7 @@ proc execFunction*(fun: Value, fid: Hash) =
                 if prev.isNil:
                     Syms.del(k)
                 else:
-                    Syms[k] = prev
+                    putSym(k, prev)
         else:
             for k, prev in frame.pairs:
                 var isExport = false
@@ -471,7 +471,7 @@ proc execFunction*(fun: Value, fid: Hash) =
                 if prev.isNil:
                     Syms.del(k)
                 else:
-                    Syms[k] = prev
+                    putSym(k, prev)
         releaseScopeFrame(frame)
 
 proc execFunctionInline*(fun: Value, fid: Hash) =
@@ -574,7 +574,7 @@ proc execMethod*(meth: Value) =
             if prev.isNil:
                 Syms.del(k)
             else:
-                Syms[k] = prev
+                putSym(k, prev)
         releaseScopeFrame(frame)
 
         when not defined(WEB):
