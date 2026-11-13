@@ -76,7 +76,7 @@ when not defined(WEB):
         let callerLine = CurrentLine
         try:
             if handler.param.len > 0:
-                Syms[handler.param] = payload
+                putSym(handler.param, payload)
             execUnscoped(handler.body)
         except CatchableError as e:
             showError(toVError(e))
