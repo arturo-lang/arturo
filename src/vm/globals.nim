@@ -16,7 +16,8 @@ import sequtils, tables, unicode
 
 import helpers/strings
 
-import vm/[errors, values/value]
+import vm/[errors, symslots, values/value]
+export symslots
 
 #=======================================
 # Globals
@@ -28,7 +29,7 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}        : SymTable                      ## The symbol table: all the variables 
+    Syms* {.global.}        : SymSlots                      ## The symbol table: all the variables 
                                                             ## with their associated values
 
     # symbol aliases
@@ -66,7 +67,7 @@ var
 # Helpers
 #=======================================
 
-func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
+proc suggestAlternative(s: string, reference: SymSlots | SymTable | ValueDict = Syms): seq[string] {.inline.} =
     return s.getSimilar(toSeq(reference.keys()))
 
 #=======================================
@@ -271,13 +272,8 @@ proc recordScopeWrite*(s: string) {.inline.} =
             frame[][s] = Syms.getOrDefault(s, nil)
 
 proc putSym*(s: string, v: sink Value) {.inline.} =
-    ## Write to the symbol table, without `Table.[]=` when the symbol
-    ## is already there: its key is a `sink` param, so the name
-    ## would get copied (and freed) on every single write
-    Syms.withValue(s, slot):
-        slot[] = v
-    do:
-        Syms[s] = v
+    ## Write to the symbol table, by name
+    Syms[s] = v
 
 template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table

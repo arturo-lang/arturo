@@ -32,7 +32,7 @@ type
         stack*: ValueArray
         sp*: int
         attrs*: SymTable
-        syms*: SymTable
+        syms*: SymSlots
         dictSyms*: seq[ValueDict]
         scopeStack*: seq[SymTable]
         frames*: seq[Frame]         ## inherited at spawn
@@ -44,7 +44,7 @@ type
 # Methods
 #=======================================
 
-proc newVMContext*(parentSyms: SymTable): VMContext =
+proc newVMContext*(parentSyms: SymSlots): VMContext =
     ## Fresh context for a new fiber. `parentSyms` shallow-copied.
     result = VMContext(
         sp: 0,

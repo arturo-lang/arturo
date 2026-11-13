@@ -352,7 +352,7 @@ proc execDictionary*(blk: Value): ValueDict =
     result = DictSyms.pop()
 
 proc execScopedModule*(blk: Value, exporting: seq[string] = @[]): ValueDict =
-    let olderSyms: SymTable = Syms
+    let olderSyms: SymSlots = Syms
 
     let exportAll = exporting.len == 0
     let preevaled = doEval(blk)
