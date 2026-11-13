@@ -379,13 +379,11 @@ proc showInPlaceError*(varname: string) =
 template ensureInPlace*(): untyped = 
     ## To be used whenever, and always before, 
     ## we want to access an InPlace symbol
-    var InPlaceAddr {.inject.}: ptr Value
-    try:
-        InPlaceAddr = addr Syms[x.s]
-        if unlikely(InPlaced.readonly):
-            Error_CannotModifyConstant(x.s)
-    except CatchableError:
+    var InPlaceAddr {.inject.}: ptr Value = Syms.addrById(symIdOf(x))
+    if unlikely(InPlaceAddr.isNil):
         showInPlaceError(x.s)
+    if unlikely(InPlaced.readonly):
+        Error_CannotModifyConstant(x.s)
 
 template ensureInPlaceAny*(): untyped =
     ## To be used whenever, and always before, 
@@ -396,12 +394,11 @@ template ensureInPlaceAny*(): untyped =
     var InPlaceAddr {.inject.}: ptr Value
     var fetchedPathSym {.inject.}: Value
     if likely(xKind==Literal):
-        try:
-            InPlaceAddr = addr Syms[x.s]
-            if unlikely(InPlaced.readonly):
-                Error_CannotModifyConstant(x.s)
-        except CatchableError:
+        InPlaceAddr = Syms.addrById(symIdOf(x))
+        if unlikely(InPlaceAddr.isNil):
             showInPlaceError(x.s)
+        if unlikely(InPlaced.readonly):
+            Error_CannotModifyConstant(x.s)
     else:
         fetchedPathSym = FetchPathSym(x.p, inplace=true)
         InPlaceAddr = addr fetchedPathSym
