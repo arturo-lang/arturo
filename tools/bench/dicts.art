@@ -1,7 +1,0 @@
-d: #[]
-loop 1..500000 'i [
-    d\[to :string i % 500]: i
-]
-t: 0
-loop d [k v] -> t: t + v
-print t

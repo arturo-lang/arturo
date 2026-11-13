@@ -1,5 +1,0 @@
-cnt: 0
-loop 2..300000 'n [
-    if prime? n -> inc 'cnt
-]
-print cnt
