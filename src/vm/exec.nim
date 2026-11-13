@@ -454,24 +454,7 @@ proc execFunction*(fun: Value, fid: Hash) =
             setMemoized(fid, memoizedParams, stack.peek(0))
 
         var frame = popScopeFrame()
-        if fun.exports.isNil:
-            for k, prev in frame.pairs:
-                if prev.isNil:
-                    Syms.del(k)
-                else:
-                    putSym(k, prev)
-        else:
-            for k, prev in frame.pairs:
-                var isExport = false
-                for ek in fun.exports.a:
-                    if ek.s == k:
-                        isExport = true
-                        break
-                if isExport: continue
-                if prev.isNil:
-                    Syms.del(k)
-                else:
-                    putSym(k, prev)
+        restoreScopeFrame(frame, fun.exports)
         releaseScopeFrame(frame)
 
 proc execFunctionInline*(fun: Value, fid: Hash) =
@@ -570,11 +553,7 @@ proc execMethod*(meth: Value) =
 
     finally:
         var frame = popScopeFrame()
-        for k, prev in frame.pairs:
-            if prev.isNil:
-                Syms.del(k)
-            else:
-                putSym(k, prev)
+        restoreScopeFrame(frame)
         releaseScopeFrame(frame)
 
         when not defined(WEB):

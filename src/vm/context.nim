@@ -34,7 +34,7 @@ type
         attrs*: SymTable
         syms*: SymSlots
         dictSyms*: seq[ValueDict]
-        scopeStack*: seq[SymTable]
+        scopeStack*: seq[ScopeFrame]
         frames*: seq[Frame]         ## inherited at spawn
         imports*: seq[string]
         line*: int

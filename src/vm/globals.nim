@@ -46,14 +46,18 @@ var
                                                             ## when using `execDictionary`
 
     # function scope stack
-    ScopeStack* {.global.}      : seq[SymTable]                 ## Per-call undo log of touched
+    ScopeStack* {.global.}      : seq[ScopeFrame]               ## Per-call undo log of touched
                                                                 ## symbols (nil = didn't exist)
 
     # scope frame pool
-    ScopeFramePool* {.global.}  : seq[SymTable]                 ## Recycled frames, to avoid
+    ScopeFramePool* {.global.}  : seq[ScopeFrame]               ## Recycled frames, to avoid
                                                                 ## reallocating on every call
     
     # active stores
+    ScopeStamps* {.global.}     : seq[uint64]                   ## Per symbol: the frame that last
+                                                                ## recorded it
+    ScopeSerial* {.global.}     : uint64
+
     Stores* {.global.}          : seq[VStore]               ## The list of active stores to be stored
                                                             ## before app termination
 
@@ -246,30 +250,58 @@ template GetSym*(s: string): untyped =
 
 proc pushScopeFrame*() {.inline.} =
     ## Push a fresh - or recycled - scope frame
+    inc ScopeSerial
     if ScopeFramePool.len > 0:
         ScopeStack.add(ScopeFramePool.pop())
     else:
-        ScopeStack.add(initTable[string, Value](initialSize = 3))
+        ScopeStack.add(ScopeFrame())
+    ScopeStack[^1].serial = ScopeSerial
 
-proc popScopeFrame*(): SymTable {.inline.} =
+proc popScopeFrame*(): ScopeFrame {.inline.} =
     ## Pop the topmost scope frame
     result = ScopeStack.pop()
 
 const ScopeFramePoolMax = 64
 
-proc releaseScopeFrame*(frame: var SymTable) {.inline.} =
+proc releaseScopeFrame*(frame: var ScopeFrame) {.inline.} =
     ## Hand a used frame back to the pool - dropped if pool is full
     if ScopeFramePool.len < ScopeFramePoolMax:
-        frame.clear()
-        ScopeFramePool.add(frame)
+        frame.entries.setLen(0)
+        ScopeFramePool.add(move frame)
 
-proc recordScopeWrite*(s: string) {.inline.} =
-    ## Record `s`'s previous value in the current scope frame,
+proc growScopeStamps(id: int32) {.noinline.} =
+    ScopeStamps.setLen(max(int(id) + 1, max(1024, ScopeStamps.len * 2)))
+
+proc recordScopeWriteById*(id: int32) {.inline.} =
+    ## Record symbol's previous value in the current scope frame,
     ## the first time it's touched - nil if it didn't exist
     if ScopeStack.len > 0:
+        if unlikely(id >= ScopeStamps.len): growScopeStamps(id)
         let frame = addr ScopeStack[^1]
-        if not frame[].hasKey(s):
-            frame[][s] = Syms.getOrDefault(s, nil)
+        if ScopeStamps[id] != frame.serial:
+            frame.entries.add((id, Syms.getById(id), ScopeStamps[id]))
+            ScopeStamps[id] = frame.serial
+
+proc recordScopeWrite*(s: string) {.inline.} =
+    recordScopeWriteById(symId(s))
+
+proc restoreScopeFrame*(frame: var ScopeFrame, exports: Value = nil) =
+    ## Undo everything recorded in given frame - last one first,
+    ## as a symbol may have been recorded more than once
+    for i in countdown(frame.entries.high, 0):
+        let e = addr frame.entries[i]
+        ScopeStamps[e.id] = e.stamp
+        if not exports.isNil:
+            var isExport = false
+            for ek in exports.a:
+                if symIdOf(ek) == e.id:
+                    isExport = true
+                    break
+            if isExport: continue
+        if e.prev.isNil:
+            Syms.delById(e.id)
+        else:
+            Syms.setById(e.id, move e.prev)
 
 proc putSym*(s: string, v: sink Value) {.inline.} =
     ## Write to the symbol table, by name
