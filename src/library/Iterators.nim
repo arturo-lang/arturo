@@ -72,12 +72,8 @@ type IterCap* = enum
 #---------------------------------------
 
 template setIterSym(k: string, v: Value) =
-    ## Set an iteration variable, without `Table.[]=`: its key is a `sink`
-    ## param, so the name would get copied (and freed) on every single write
-    Syms.withValue(k, slot):
-        slot[] = v
-    do:
-        Syms[k] = v
+    ## Set an iteration variable
+    putSym(k, v)
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
     var keepGoing {.inject, used.}: bool = true
