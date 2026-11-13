@@ -1,7 +1,0 @@
-total: 0
-loop 1..1200 'x [
-    loop 1..1200 'y [
-        total: total + x * y
-    ]
-]
-print total
