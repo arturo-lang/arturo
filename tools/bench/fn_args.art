@@ -1,0 +1,6 @@
+add3: function [first second third][ first + second + third ]
+s: 0
+loop 1..300000 'i [
+    s: add3 s i 1
+]
+print s
