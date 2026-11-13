@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - 'master'
+            - 'investigate-symbol-slots'
         tags-ignore:
             - '**'
     pull_request:
