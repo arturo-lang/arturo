@@ -45,6 +45,14 @@ type
 
     SymTable*   = Table[string, Value]
 
+    SymSlots*   = object
+        vals*: seq[Value]
+
+    ScopeEntry* = tuple[id: int32, prev: Value, stamp: uint64]
+    ScopeFrame* = object
+        serial*: uint64
+        entries*: seq[ScopeEntry]
+
     Translation* = ref object
         constants*: ValueArray
         instructions*: VBinary
@@ -319,7 +327,9 @@ type
                Literal,
                Label,
                Attribute,
-               AttributeLabel:       s*  : string
+               AttributeLabel:
+                   s*  : string
+                   sid*: int32
             of Path,
                PathLabel,
                PathLiteral      :   p*  : ValueArray
