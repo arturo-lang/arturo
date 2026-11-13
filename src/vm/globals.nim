@@ -145,6 +145,11 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     else:
         Syms[s]
 
+proc FetchSymById*(v: Value): Value {.inline.} =
+    ## Same as `FetchSym`, for a Word/Literal/... value
+    if (result = Syms.getById(symIdOf(v)); unlikely(result.isNil)):
+        Error_SymbolNotFound(v.s, suggestAlternative(v.s))
+
 proc CheckCallablePath*(pl: ValueArray): Value =
     result = Syms.getOrDefault(pl[0].s)
     if result.isNil: return
@@ -307,22 +312,28 @@ proc putSym*(s: string, v: sink Value) {.inline.} =
     ## Write to the symbol table, by name
     Syms[s] = v
 
-template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
+template SetSymById*(id: int32, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
-    recordScopeWrite(s)
+    recordScopeWriteById(id)
     when safe:
         # When doing it safely, also check if the value to be assigned is a read-only value
         # - if it is - we have to copy it first
         # - otherwise, go ahead and just assign it (pointer copy!)
         when forceReadOnly:
-            putSym(s, copyValue(v))
+            Syms.setById(id, copyValue(v))
         else:
             if v.readonly:
-                putSym(s, copyValue(v))
+                Syms.setById(id, copyValue(v))
             else:
-                putSym(s, v)
+                Syms.setById(id, v)
     else:
-        putSym(s, v)
+        Syms.setById(id, v)
+
+template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
+    ## Sets symbol to given value in the symbol table
+    block:
+        let symbolId = symId(s)
+        SetSymById(symbolId, v, safe, forceReadOnly)
 
 template UnsetSym*(s: string): untyped =
     recordScopeWrite(s)

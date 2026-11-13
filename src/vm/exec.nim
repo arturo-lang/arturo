@@ -93,7 +93,7 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
 
         var stackTop {.cursor.} = stack.peek(0)
 
-        SetSym(cnst[idx].s, stackTop, safe=true)
+        SetSymById(symIdOf(cnst[idx]), stackTop, safe=true)
         when doPop:
             stack.popN(1)
 
@@ -110,7 +110,7 @@ proc dStoreByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inli
 
 template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
-        stack.push(FetchSym(cnst[idx].s))
+        stack.push(FetchSymById(cnst[idx]))
 
 proc callFunction*(f: Value, fnName: string, args: ValueArray) =
     ## Take a Function value, whether a user or a built-in one, 
@@ -183,7 +183,8 @@ template callByName(symIndx: string):untyped =
 
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
-        callByName(cnst[idx].s)
+        let fun = FetchSymById(cnst[idx])
+        callFunction(fun, cnst[idx].s)
 
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, stack.pop())
