@@ -168,3 +168,60 @@ switch set? 'm [
 ][
 	print "m: not set -> CORRECT"
 ]
+
+; SYMBOLS REFERENCED BY A LITERAL IN A VARIABLE
+; the same variable may point to different symbols over time
+
+foo: 1
+bar: 10
+loop ['foo 'bar 'foo] 'name [
+    inc name
+]
+print ["foo:" foo "bar:" bar]
+
+target: 'foo
+inc target
+target: 'bar
+inc target
+print ["foo:" foo "bar:" bar]
+
+; SHADOWING A BUILT-IN
+; the built-in is back, once we're out of the function
+
+g: function [size][
+    size + 1
+]
+print ["g:" g 3]
+print ["size:" size [1 2 3]]
+
+; SAME NAME, AT EVERY LEVEL
+; each level gets its value back
+
+v: "global"
+h: function [v][
+    k: function [v][
+        loop 1..2 'v []
+        v
+    ]
+    r: k v ++ "+"
+    @[v r]
+]
+print ["h:" h "arg"]
+print ["v after:" v]
+print ["r set?" set? 'r]
+
+; INLINE FUNCTION
+; its parameters don't leak, nor overwrite the outer ones
+
+n: 5
+dbl: function [n].inline [ n * 2 ]
+print ["dbl:" dbl 10]
+print ["n after:" n]
+
+; DYNAMICALLY-NAMED SYMBOLS
+
+loop 1..3 'i [ let ~"dyn|i|" i * i ]
+print ["dyn:" dyn1 dyn2 dyn3]
+print ["var:" var "dyn2"]
+unset 'dyn2
+print ["dyn2 set?" set? 'dyn2]
