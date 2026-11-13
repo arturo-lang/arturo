@@ -83,6 +83,15 @@ proc argValue(v: Value): Value {.inline.} =
     else:
         result = v
 
+template setParams(names: seq[string], ids: untyped): untyped =
+    ## Pop the arguments and set them, one by one, by symbol id:
+    ## the ids get resolved once, the first time we're called
+    if unlikely(ids.len != names.len):
+        ids = symIds(names)
+    let paramIds {.cursor.} = ids
+    for paramId in paramIds:
+        SetSymById(paramId, argValue(stack.pop()))
+
 template pushByIndex(idx: int):untyped =
     stack.push(cnst[idx])
 
@@ -430,9 +439,7 @@ proc execFunction*(fun: Value, fid: Hash) =
         for k,v in pairs(fun.imports.d):
             SetSym(k, v)
 
-    for arg in fun.params:
-        # pop argument and set it
-        SetSym(arg, argValue(stack.pop()))
+    setParams(fun.params, fun.paramIds)
 
     try:
         if not fun.bcode.isNil:
@@ -494,9 +501,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     prepareLeakless(fun.params)
 
-    for arg in fun.params:
-        # pop argument and set it
-        SetSym(arg, argValue(stack.pop()))
+    setParams(fun.params, fun.paramIds)
 
     try:
         if not fun.bcode.isNil:
@@ -536,9 +541,7 @@ proc execMethod*(meth: Value) =
 
     pushScopeFrame()
 
-    for arg in meth.mparams:
-        # pop argument and set it
-        SetSym(arg, argValue(stack.pop()))
+    setParams(meth.mparams, meth.mparamIds)
 
     try:
         if not meth.mbcode.isNil:

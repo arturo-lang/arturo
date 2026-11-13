@@ -308,6 +308,12 @@ proc restoreScopeFrame*(frame: var ScopeFrame, exports: Value = nil) =
         else:
             Syms.setById(e.id, move e.prev)
 
+proc symIds*(names: seq[string]): seq[int32] {.noinline.} =
+    ## Get the ids for given symbol names
+    result = newSeq[int32](names.len)
+    for i, name in names:
+        result[i] = symId(name)
+
 proc putSym*(s: string, v: sink Value) {.inline.} =
     ## Write to the symbol table, by name
     Syms[s] = v
