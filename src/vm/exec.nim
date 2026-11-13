@@ -289,12 +289,13 @@ template finalizeLeakless*(): untyped =
             if toRestore[li].isNil: Syms.delById(restoreId)
             else: Syms.setById(restoreId, move toRestore[li])
 
-template prepareLeaklessOne*(protected: string | Value): untyped =
+template prepareLeaklessOne*(protected: int32 | string | Value): untyped =
     ## Prepare for leak-less block execution
     ## with a single protected argument
 
     let toRestoreId {.inject.}: int32 =
-        when protected is Value: symIdOf(protected)
+        when protected is int32: protected
+        elif protected is Value: symIdOf(protected)
         else: symId(protected)
 
     var toRestoreVal {.inject.} = Syms.getById(toRestoreId)
