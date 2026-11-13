@@ -246,55 +246,67 @@ template callInternal*(fname: string, getValue: bool, args: varargs[Value]): unt
 #  and https://github.com/arturo-lang/arturo/blob/master/examples/rosetta/variadic%20function.art
 #  labels: bug, critical, library, vm, execution
 
-template leaklessKey*(keys: seq[string] | ValueArray, i: int): string =
-    when keys is ValueArray: keys[i].s
-    else: keys[i]
+template leaklessId*(keys: seq[int32] | seq[string] | ValueArray, i: int): int32 =
+    when keys is seq[int32]: keys[i]
+    elif keys is ValueArray: symIdOf(keys[i])
+    else: symId(keys[i])
 
-template prepareLeakless*(protected: seq[string] | ValueArray): untyped =
+template prepareLeakless*(protected: seq[int32] | seq[string] | ValueArray): untyped =
     ## Prepare for leak-less block execution
 
     let toRestoreKeys {.inject, cursor.} = protected
     var toRestoreOne {.inject.}: Value = nil
+    var toRestoreId {.inject.}: int32
     var toRestore {.inject.}: seq[Value]
+    var toRestoreIds {.inject.}: seq[int32]
 
+    # the symbol ids are resolved just once, right here
     if toRestoreKeys.len == 1:
-        toRestoreOne = Syms.getOrDefault(leaklessKey(toRestoreKeys, 0), nil)
+        toRestoreId = leaklessId(toRestoreKeys, 0)
+        toRestoreOne = Syms.getById(toRestoreId)
     else:
         toRestore = newSeq[Value](toRestoreKeys.len)
-        for li in 0 ..< toRestoreKeys.len:
-            toRestore[li] = Syms.getOrDefault(leaklessKey(toRestoreKeys, li), nil)
+        when protected is seq[int32]:
+            for li in 0 ..< toRestoreKeys.len:
+                toRestore[li] = Syms.getById(toRestoreKeys[li])
+        else:
+            toRestoreIds = newSeq[int32](toRestoreKeys.len)
+            for li in 0 ..< toRestoreKeys.len:
+                toRestoreIds[li] = leaklessId(toRestoreKeys, li)
+                toRestore[li] = Syms.getById(toRestoreIds[li])
 
 template finalizeLeakless*(): untyped =
     ## Finalize leak-less block execution
 
     if toRestoreKeys.len == 1:
-        if toRestoreOne.isNil: Syms.del(leaklessKey(toRestoreKeys, 0))
-        else: putSym(leaklessKey(toRestoreKeys, 0), move toRestoreOne)
+        if toRestoreOne.isNil: Syms.delById(toRestoreId)
+        else: Syms.setById(toRestoreId, move toRestoreOne)
     else:
         for li in 0 ..< toRestore.len:
-            if toRestore[li].isNil: Syms.del(leaklessKey(toRestoreKeys, li))
-            else: putSym(leaklessKey(toRestoreKeys, li), move toRestore[li])
+            let restoreId =
+                when toRestoreKeys is seq[int32]: toRestoreKeys[li]
+                else: toRestoreIds[li]
+            if toRestore[li].isNil: Syms.delById(restoreId)
+            else: Syms.setById(restoreId, move toRestore[li])
 
 template prepareLeaklessOne*(protected: string | Value): untyped =
     ## Prepare for leak-less block execution
     ## with a single protected argument
-    
-    let toRestoreKey {.inject.} = 
-        when protected is Value: protected.s
-        else: protected
 
-    var toRestoreVal {.inject.} = 
-        when protected is Value: Syms.getOrDefault(protected.s, nil)
-        else: Syms.getOrDefault(protected, nil)
+    let toRestoreId {.inject.}: int32 =
+        when protected is Value: symIdOf(protected)
+        else: symId(protected)
+
+    var toRestoreVal {.inject.} = Syms.getById(toRestoreId)
 
 template finalizeLeaklessOne*(): untyped =
     ## Finalize leak-less block execution
     ## with a single protected argument
-    
+
     if toRestoreVal.isNil:
-        Syms.del(toRestoreKey)
+        Syms.delById(toRestoreId)
     else:
-        putSym(toRestoreKey, move toRestoreVal)
+        Syms.setById(toRestoreId, move toRestoreVal)
 
 # TODO(VM/exec) Should also catch any *CatchableError* in `handleBranching`?
 #  labels: vm, execution, error handling
@@ -499,7 +511,10 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
 
     let callerLine = CurrentLine
 
-    prepareLeakless(fun.params)
+    if unlikely(fun.paramIds.len != argsL):
+        fun.paramIds = symIds(fun.params)
+
+    prepareLeakless(fun.paramIds)
 
     setParams(fun.params, fun.paramIds)
 
