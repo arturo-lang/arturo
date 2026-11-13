@@ -1,0 +1,11 @@
+calc: function [n][
+    alpha: n * 2
+    beta: alpha + 3
+    gamma: beta % 7
+    alpha + beta + gamma
+]
+s: 0
+loop 1..200000 'i [
+    s: s + calc i
+]
+print s
