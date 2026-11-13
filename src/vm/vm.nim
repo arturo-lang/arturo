@@ -197,9 +197,7 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
         else: 
             pushFrame("")
 
-    # pre-sized on purpose: with the ~500 builtins already in, the default
-    # growth leaves the table half-full, and user symbols - added last -
-    # end up at the tail of long probe chains
+    # pre-sized, to keep probe chains short
     Syms = initTable[string,Value](2048)
 
     # library
