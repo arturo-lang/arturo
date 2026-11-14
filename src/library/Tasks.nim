@@ -29,10 +29,9 @@ when not defined(WEB):
 
     import vm/values/custom/[vtask, verror]
 
-import vm/lib
-
 when not defined(WEB):
     import vm/errors
+    import vm/lib
 
 #=======================================
 # Definitions

@@ -31,11 +31,10 @@ when not defined(WEB):
 
     import vm/values/custom/[vevent, vtask, verror]
 
-import vm/lib
-
 when not defined(WEB):
     import helpers/parallelism
     import vm/errors
+    import vm/lib
     import vm/exec
 
 #=======================================
