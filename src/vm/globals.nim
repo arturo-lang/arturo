@@ -150,6 +150,10 @@ proc FetchSymById*(v: Value): Value {.inline.} =
     if (result = Syms.getById(symIdOf(v)); unlikely(result.isNil)):
         Error_SymbolNotFound(v.s, suggestAlternative(v.s))
 
+# TODO(VM/globals) Paths should look up their root symbol by id
+#  Right now, whenever we have a path (e.g. `a\b`, `this\x`, `arr\0`), its first element is still looked up by name, every single time, in `CheckCallablePath`, `FetchPathSym` and `SetPathSym`. Since this first element is a Word constant, we could just use its (cached) symbol id, exactly like we do for normal variables.
+#  labels: vm, enhancement, performance, benchmark
+
 proc CheckCallablePath*(pl: ValueArray): Value =
     result = Syms.getOrDefault(pl[0].s)
     if result.isNil: return
