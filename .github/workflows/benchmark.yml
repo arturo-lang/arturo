@@ -1,39 +1,38 @@
 name: "Benchmark"
 
-# v0.10.0 (the released binaries) vs master right before the symbol
-# slots (#2292) vs master right after them
+# the very same master, with three different versions of mimalloc:
+# what we have right now, the latest v2, and the latest v3
 
 on:
     push:
         branches:
-            - 'benchmark-vs-v0.10.0'
+            - 'benchmark-mimalloc'
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
 env:
-    RELEASE: "0.10.0"
-    BEFORE: "7f49650a1"     # master, right before #2292
-    AFTER: "251c420f1"      # master, with #2292 merged
+    MASTER: "68b2b27b2"
+    CURRENT: "2.2.7"
+    VERSIONS: "2.5.2 3.6.1"
 
 jobs:
     Benchmark:
-        name: Benchmark (${{ matrix.os }}, ${{ matrix.arch }}, ${{ matrix.mode }}${{ matrix.run && format(' {0}', matrix.run) || '' }})
+        name: Benchmark (${{ matrix.os }}, ${{ matrix.arch }}, ${{ matrix.run }})
         runs-on: ${{ matrix.os == 'macos' && 'macos-latest' || 'ubuntu-latest' }}
-        timeout-minutes: 240
+        timeout-minutes: 150
 
         strategy:
             fail-fast: false
             matrix:
                 include:
-                    # each timing job runs on its own machine: if
-                    # they agree, the result isn't down to one runner
-                    - {os: linux,   arch: amd64,    mode: time,         run: 1}
-                    - {os: linux,   arch: amd64,    mode: time,         run: 2}
-                    - {os: macos,   arch: arm64,    mode: time,         run: 1}
-                    - {os: macos,   arch: arm64,    mode: time,         run: 2}
-                    - {os: linux,   arch: amd64,    mode: instructions}
+                    # each job runs on its own machine: if they
+                    # agree, the result isn't down to one runner
+                    - {os: linux,   arch: amd64,    run: 1}
+                    - {os: linux,   arch: amd64,    run: 2}
+                    - {os: macos,   arch: arm64,    run: 1}
+                    - {os: macos,   arch: arm64,    run: 2}
 
         steps:
             # the benchmarks & the script comparing them
@@ -42,29 +41,28 @@ jobs:
               with:
                 path: bench
 
-            - name: Checkout master, before
+            - name: Checkout master
               uses: actions/checkout@v6
               with:
                 submodules: recursive
-                path: arturo-before
+                path: arturo-master
                 ref: master
                 fetch-depth: 0
 
-            - name: Checkout master, after
-              uses: actions/checkout@v6
-              with:
-                submodules: recursive
-                path: arturo-after
-                ref: master
-                fetch-depth: 0
-
-            - name: Pin revisions
-              id: revs
+            # one copy of master per version, identical
+            # except for the allocator's own sources
+            - name: Prepare the three versions
               run: |
-                git -C arturo-before checkout --detach "$BEFORE"
-                git -C arturo-after checkout --detach "$AFTER"
-                echo "before=$(git -C arturo-before rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-                echo "after=$(git -C arturo-after rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+                git -C arturo-master checkout --detach "$MASTER"
+                grep -q "MI_MALLOC_VERSION ${CURRENT//./}" arturo-master/src/extras/mimalloc/include/mimalloc.h
+                cp -R arturo-master "arturo-$CURRENT"
+                for v in $VERSIONS; do
+                    cp -R arturo-master "arturo-$v"
+                    curl -sL "https://github.com/microsoft/mimalloc/archive/refs/tags/v$v.tar.gz" | tar xz
+                    rm -rf "arturo-$v/src/extras/mimalloc/src" "arturo-$v/src/extras/mimalloc/include"
+                    cp -R "mimalloc-$v/src" "mimalloc-$v/include" "arturo-$v/src/extras/mimalloc/"
+                    grep "define MI_MALLOC_VERSION" "arturo-$v/src/extras/mimalloc/include/mimalloc.h"
+                done
 
             # only to get Nim & all dependencies in place:
             # the binary it builds isn't used
@@ -77,67 +75,59 @@ jobs:
                 arch: ${{ matrix.arch }}
                 src: ${{ github.ref }}
 
-            - name: Install valgrind
-              if: matrix.mode == 'instructions'
-              run: |
-                sudo apt-get update
-                sudo apt-get install -y valgrind
-
-            # both built in exactly the same way: same toolchain,
+            # all built in exactly the same way: same toolchain,
             # same command, from a fresh cache
-            - name: Build before & after (release)
+            - name: Build (release)
               run: |
-                for side in before after; do
-                    echo "::group::Building $side"
-                    cd "$GITHUB_WORKSPACE/arturo-$side"
+                for v in $CURRENT $VERSIONS; do
+                    echo "::group::Building with mimalloc $v"
+                    cd "$GITHUB_WORKSPACE/arturo-$v"
                     rm -rf .cache
-                    if ! ./build.nims --mode full --arch ${{ matrix.arch }} --log --release --as arturo-bench > "$RUNNER_TEMP/build-$side.log" 2>&1; then
-                        tail -100 "$RUNNER_TEMP/build-$side.log"
+                    if ! ./build.nims --mode full --arch ${{ matrix.arch }} --log --release --as arturo-bench > "$RUNNER_TEMP/build-$v.log" 2>&1; then
+                        tail -100 "$RUNNER_TEMP/build-$v.log"
                         exit 1
                     fi
-                    cp bin/arturo-bench "$RUNNER_TEMP/arturo-$side"
-                    grep -m1 "flags:" "$RUNNER_TEMP/build-$side.log" | sed 's/\x1b\[[0-9;]*m//g; s/.*flags: //' > "$RUNNER_TEMP/flags-$side.txt"
-                    cat "$RUNNER_TEMP/flags-$side.txt"
+                    cp bin/arturo-bench "$RUNNER_TEMP/arturo-$v"
+                    grep -m1 "flags:" "$RUNNER_TEMP/build-$v.log" | sed 's/\x1b\[[0-9;]*m//g; s/.*flags: //' > "$RUNNER_TEMP/flags-$v.txt"
+                    cat "$RUNNER_TEMP/flags-$v.txt"
                     echo "::endgroup::"
                 done
 
                 cd "$RUNNER_TEMP"
-                if ! diff flags-before.txt flags-after.txt; then
-                    echo "before & after weren't built with the same flags!"
-                    exit 1
-                fi
-                if ! grep -q -- "-flto" flags-after.txt; then
+                for v in $VERSIONS; do
+                    if ! diff "flags-$CURRENT.txt" "flags-$v.txt"; then
+                        echo "not built with the same flags!"
+                        exit 1
+                    fi
+                done
+                if ! grep -q -- "-flto" "flags-$CURRENT.txt"; then
                     echo "not a release build (no LTO)!"
                     exit 1
                 fi
 
-            # the very binary people got when it was released
-            - name: Get the released binary
-              env:
-                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            # do they still work?
+            - name: Check
               run: |
-                cd "$RUNNER_TEMP"
-                asset="arturo-$RELEASE-${{ matrix.os }}-${{ matrix.arch }}.zip"
-                gh release download "v$RELEASE" --repo arturo-lang/arturo --pattern "$asset"
-                unzip -o "$asset" -d released
-                cp released/arturo arturo-release
-                chmod +x arturo-release
-
-            - name: Get examples
-              if: matrix.mode == 'time'
-              run: |
-                git clone --depth 1 https://github.com/arturo-lang/examples.git examples
+                cd arturo-master/tests/unittests
+                for v in $CURRENT $VERSIONS; do
+                    for t in parallelism lib.strings lib.iterators loops scopes; do
+                        if "$RUNNER_TEMP/arturo-$v" "$t.art" 2>&1 | sed 's/[[:space:]]*$//' | diff -q - <(sed 's/[[:space:]]*$//' "$t.res") > /dev/null; then
+                            echo "mimalloc $v: $t ok"
+                        else
+                            echo "mimalloc $v: $t FAILED"
+                            echo "| mimalloc $v | \`$t\` failed |" >> "$RUNNER_TEMP/failed.txt"
+                        fi
+                    done
+                done
 
             - name: Describe environment
               run: |
                 {
-                    echo "## Environment (${{ matrix.os }}-${{ matrix.arch }}, ${{ matrix.mode }}${{ matrix.run && format(' {0}', matrix.run) || '' }})"
+                    echo "## Environment (${{ matrix.os }}-${{ matrix.arch }}, ${{ matrix.run }})"
                     echo ""
                     echo "| | |"
                     echo "|---|---|"
-                    echo "| v$RELEASE | the released binary (\`arturo-$RELEASE-${{ matrix.os }}-${{ matrix.arch }}.zip\`) |"
-                    echo "| before | \`${{ steps.revs.outputs.before }}\` (master, right before #2292) |"
-                    echo "| after | \`${{ steps.revs.outputs.after }}\` (master, with #2292 merged) |"
+                    echo "| master | \`$(git -C arturo-master rev-parse HEAD)\` |"
                     if [ "${{ matrix.os }}" = "macos" ]; then
                         echo "| cpu | $(sysctl -n machdep.cpu.brand_string) ($(sysctl -n hw.ncpu) cores) |"
                     else
@@ -145,40 +135,33 @@ jobs:
                     fi
                     echo "| nim | $(nim --version | head -1) |"
                     echo "| cc | $(cc --version | head -1) |"
-                    echo "| flags (before & after, identical) | \`$(cat "$RUNNER_TEMP/flags-after.txt")\` |"
-                    for side in release before after; do
-                        f="$RUNNER_TEMP/arturo-$side"
-                        sum=$(shasum -a 256 "$f" | cut -c1-12)
-                        echo "| $side binary | $(wc -c < "$f" | tr -d ' ') bytes, sha256 $sum… |"
+                    echo "| flags (identical for all) | \`$(cat "$RUNNER_TEMP/flags-$CURRENT.txt")\` |"
+                    for v in $CURRENT $VERSIONS; do
+                        f="$RUNNER_TEMP/arturo-$v"
+                        echo "| mimalloc $v | $(wc -c < "$f" | tr -d ' ') bytes |"
                     done
+                    if [ -f "$RUNNER_TEMP/failed.txt" ]; then cat "$RUNNER_TEMP/failed.txt"; fi
                     echo ""
                 } >> "$GITHUB_STEP_SUMMARY"
 
             - name: Run benchmarks
               run: |
-                "$RUNNER_TEMP/arturo-release" -v
-                "$RUNNER_TEMP/arturo-before" -v
-                "$RUNNER_TEMP/arturo-after" -v
-
-                label="${{ matrix.os }}-${{ matrix.arch }}, ${{ matrix.mode }}${{ matrix.run && format(' {0}', matrix.run) || '' }}"
-                binaries="v$RELEASE=$RUNNER_TEMP/arturo-release before=$RUNNER_TEMP/arturo-before after=$RUNNER_TEMP/arturo-after"
-                if [ "${{ matrix.mode }}" = "instructions" ]; then
-                    python3 bench/tools/bench/compare.py $binaries \
-                        --mode instructions --groups ops,programs,real-world,var-names,param-names \
-                        --jobs "$(nproc)" --label "$label" --json "$RUNNER_TEMP/results.json"
-                elif [ "${{ matrix.os }}" = "linux" ]; then
+                label="${{ matrix.os }}-${{ matrix.arch }}, ${{ matrix.run }}"
+                binaries="v$CURRENT=$RUNNER_TEMP/arturo-$CURRENT"
+                for v in $VERSIONS; do binaries="$binaries v$v=$RUNNER_TEMP/arturo-$v"; done
+                if [ "${{ matrix.os }}" = "linux" ]; then
                     # pinned to a single core: no migrations in between
                     taskset -c 1 python3 bench/tools/bench/compare.py $binaries \
-                        --examples examples/src/rosetta --label "$label" --json "$RUNNER_TEMP/results.json"
+                        --groups ops,programs,real-world --label "$label" --json "$RUNNER_TEMP/results.json"
                 else
                     python3 bench/tools/bench/compare.py $binaries \
-                        --examples examples/src/rosetta --label "$label" --json "$RUNNER_TEMP/results.json"
+                        --groups ops,programs,real-world --label "$label" --json "$RUNNER_TEMP/results.json"
                 fi
 
             - name: Upload results
               if: always()
               uses: actions/upload-artifact@v4
               with:
-                name: benchmark-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.mode }}${{ matrix.run && format('-{0}', matrix.run) || '' }}
+                name: benchmark-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.run }}
                 path: ${{ runner.temp }}/results.json
                 if-no-files-found: ignore
