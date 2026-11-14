@@ -806,19 +806,20 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Function:
             if v.fnKind==UserFunction:
                 result &= "function "
-                result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                result &= codify(newWordBlock(v.params), safeStrings=safeStrings)
                 if v.inline:
                     result &= ".inline"
                 if v.memoize:
                     result &= ".memoize"
                 if not v.imports.isNil:
                     result &= ".import:"
-                    result &= codify(newWordBlock(toSeq(keys(v.imports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                    result &= codify(newWordBlock(toSeq(keys(v.imports.d))), safeStrings=safeStrings)
                 if not v.exports.isNil:
                     result &= ".export:"
-                    result &= codify(newWordBlock(v.exports.a.map((w)=>w.s)),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
-                result &= " "
-                result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+                    result &= codify(newWordBlock(v.exports.a.map((w)=>w.s)), safeStrings=safeStrings)
+                if not pretty:
+                    result &= " "
+                result &= codify(v.main,pretty,false,level, true, isKeyVal=true, safeStrings=safeStrings)
             else:
                 for sym,val in pairs(Syms):
                     if val==v:
@@ -828,10 +829,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Method:
             result &= "method "
             # `this` is injected automatically, when the method gets created
-            result &= codify(newWordBlock(v.mparams.filter((prm) => prm != "this")),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+            result &= codify(newWordBlock(v.mparams.filter((prm) => prm != "this")), safeStrings=safeStrings)
 
-            result &= " "
-            result &= codify(v.mmain,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            if not pretty:
+                result &= " "
+            result &= codify(v.mmain,pretty,false,level, true, isKeyVal=true, safeStrings=safeStrings)
 
         else:
             result &= ""
