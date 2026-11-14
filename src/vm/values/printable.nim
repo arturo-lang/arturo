@@ -668,7 +668,16 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= ":" & ($v.t).toLowerAscii()
             else:
                 result &= ":" & v.tid
-        of Char         : result &= "'" & $(v.c) & "'"
+        of Char         : 
+            result &= "'"
+            case $(v.c):
+                of "'"  : result &= "\\'"
+                of "\\" : result &= "\\\\"
+                of "\n" : result &= "\\n"
+                of "\r" : result &= "\\r"
+                of "\t" : result &= "\\t"
+                else    : result &= $(v.c)
+            result &= "'"
         of String       : 
             if safeStrings:
                 result &= "««" & v.s & "»»"
