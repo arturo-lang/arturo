@@ -29,7 +29,8 @@ when defined(WEB):
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
-import vm/errors
+when not defined(WEB):
+    import vm/errors
 
 import vm/opcodes
 

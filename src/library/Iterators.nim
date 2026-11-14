@@ -32,7 +32,7 @@ when not defined(WEB):
     import asyncdispatch
     import times
     import helpers/parallelism as ParallelismHelper
-    import vm/values/custom/[vtask, verror]
+    import vm/values/custom/[vtask]
 
 import helpers/dictionaries
 import helpers/objects

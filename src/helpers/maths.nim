@@ -277,7 +277,6 @@ when defined(WEB):
 
     func primeFactorization*(n: JsBigInt): seq[JsBigInt] =
         let bigZero = big(0)
-        let bigOne = big(1)
         let bigTwo = big(2)
         let bigThree = big(3)
 

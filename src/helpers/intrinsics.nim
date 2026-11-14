@@ -10,7 +10,8 @@
 # Libraries
 #=======================================
 
-import std/math
+when not defined(WEB):
+    import std/math
 
 #=======================================
 # Helpers

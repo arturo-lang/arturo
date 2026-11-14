@@ -373,6 +373,9 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         else: 
             return false
 
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.push warning[InvalidCmpOp]: off.}
+
 proc `>`*(x: Value, y: Value): bool {.inline.}=
     if bothNormalIntegers(x, y):
         return x.i > y.i
@@ -467,6 +470,9 @@ proc `>=`*(x: Value, y: Value): bool {.inline.}=
 
 proc `!=`*(x: Value, y: Value): bool {.inline.}=
     not (x == y)
+
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.pop.}
 
 proc cmp*(x: Value, y: Value): int {.inline.}=
     if x < y:

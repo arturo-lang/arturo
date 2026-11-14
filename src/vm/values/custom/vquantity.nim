@@ -508,6 +508,9 @@ when defined(GMP):
     func `<`*(a: Int, b: Quantity): bool =
         return a < b.original
 
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.push warning[InvalidCmpOp]: off.}
+
 proc `>`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
@@ -516,18 +519,8 @@ proc `>`*(a, b: Quantity): bool =
 
     return a.original > convB.original
 
-func `>`*(a: Quantity, b: int | float | QuantityValue): bool =
-    return a.original > b
-
-func `>`*(a: int | float | QuantityValue, b: Quantity): bool =
-    return a > b.original
-
-when defined(GMP):
-    func `>`*(a: Quantity, b: Int): bool =
-        return a.original > b
-
-    func `>`*(a: Int, b: Quantity): bool =
-        return a > b.original
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.pop.}
 
 #=======================================
 # Operators

@@ -22,14 +22,14 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes, options
+import algorithm, hashes
 import sequtils, sugar
 
 when not defined(WEB):
     import helpers/parallelism as ParallelismHelper
 
 when not defined(WEB):
-    import oids, os
+    import oids, options, os
 
     import helpers/ffi
     import vm/packager

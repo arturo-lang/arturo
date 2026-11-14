@@ -186,10 +186,6 @@ template callMethod*(f: Value, methName: string = "<closure>"):untyped =
 
         execMethod(f)
 
-template callByName(symIndx: string):untyped =
-    let fun = FetchSym(symIndx)
-    callFunction(fun, symIndx)
-
 template callByIndex(idx: int):untyped =
     hookProcProfiler("exec/callByIndex"):
         let fun = FetchSymById(cnst[idx])
@@ -258,7 +254,8 @@ template prepareLeakless*(protected: seq[int32] | seq[string] | ValueArray): unt
     var toRestoreOne {.inject.}: Value = nil
     var toRestoreId {.inject.}: int32
     var toRestore {.inject.}: seq[Value]
-    var toRestoreIds {.inject.}: seq[int32]
+    when protected isnot seq[int32]:
+        var toRestoreIds {.inject.}: seq[int32]
 
     # the symbol ids are resolved just once, right here
     if toRestoreKeys.len == 1:

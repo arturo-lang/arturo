@@ -979,25 +979,6 @@ when defined(GMP):
     func `<`*(x: Int, y: VRational): bool =
         return toCDouble(x) < toFloat(y)
 
-func `>`*(x: VRational, y: int): bool =
-    return toFloat(x) > float(y)
-
-func `>`*(x: int, y: VRational): bool =
-    return float(x) > toFloat(y)
-
-func `>`*(x: VRational, y: float): bool = 
-    return toFloat(x) > y
-
-func `>`*(x: float, y: VRational): bool =
-    return x > toFloat(y)
-
-when defined(GMP):
-    func `>`*(x: VRational, y: Int): bool =
-        return toFloat(x) > toCDouble(y)
-
-    func `>`*(x: Int, y: VRational): bool =
-        return toCDouble(x) > toFloat(y)
-
 #=======================================
 # Methods
 #=======================================

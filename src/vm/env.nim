@@ -13,7 +13,7 @@
 #=======================================
 when not defined(WEB):
     import cpuinfo, nativesockets
-    import parseopt, sequtils, sugar
+    import parseopt, sequtils, strutils, sugar
 
 when defined(GMP):
     import extras/gmp
@@ -22,7 +22,7 @@ when defined(GMP):
 when defined(SQLITE):
     import extras/db_connector/sqlite3
 
-import os, strutils, tables, times, system
+import os, tables, times, system
 
 import helpers/system
 import helpers/terminal
