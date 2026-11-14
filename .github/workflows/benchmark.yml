@@ -1,19 +1,27 @@
 name: "Benchmark"
 
+# v0.10.0 (the released binaries) vs master right before the symbol
+# slots (#2292) vs master right after them
+
 on:
     push:
         branches:
-            - 'symbol-slots'
+            - 'benchmark-vs-v0.10.0'
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
+env:
+    RELEASE: "0.10.0"
+    BEFORE: "7f49650a1"     # master, right before #2292
+    AFTER: "251c420f1"      # master, with #2292 merged
+
 jobs:
     Benchmark:
         name: Benchmark (${{ matrix.os }}, ${{ matrix.arch }}, ${{ matrix.mode }}${{ matrix.run && format(' {0}', matrix.run) || '' }})
         runs-on: ${{ matrix.os == 'macos' && 'macos-latest' || 'ubuntu-latest' }}
-        timeout-minutes: 180
+        timeout-minutes: 240
 
         strategy:
             fail-fast: false
@@ -28,28 +36,35 @@ jobs:
                     - {os: linux,   arch: amd64,    mode: instructions}
 
         steps:
-            # head = this branch, base = where it forked off master:
-            # so, the only difference between the two is the branch itself
-            - name: Checkout head
+            # the benchmarks & the script comparing them
+            - name: Checkout benchmarks
+              uses: actions/checkout@v6
+              with:
+                path: bench
+
+            - name: Checkout master, before
               uses: actions/checkout@v6
               with:
                 submodules: recursive
-                path: arturo-head
+                path: arturo-before
+                ref: master
                 fetch-depth: 0
 
-            - name: Find base
-              id: base
-              run: |
-                cd arturo-head
-                echo "sha=$(git merge-base origin/master HEAD)" >> "$GITHUB_OUTPUT"
-                echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-
-            - name: Checkout base
+            - name: Checkout master, after
               uses: actions/checkout@v6
               with:
                 submodules: recursive
-                path: arturo-base
-                ref: ${{ steps.base.outputs.sha }}
+                path: arturo-after
+                ref: master
+                fetch-depth: 0
+
+            - name: Pin revisions
+              id: revs
+              run: |
+                git -C arturo-before checkout --detach "$BEFORE"
+                git -C arturo-after checkout --detach "$AFTER"
+                echo "before=$(git -C arturo-before rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+                echo "after=$(git -C arturo-after rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
             # only to get Nim & all dependencies in place:
             # the binary it builds isn't used
@@ -70,9 +85,9 @@ jobs:
 
             # both built in exactly the same way: same toolchain,
             # same command, from a fresh cache
-            - name: Build base & head (release)
+            - name: Build before & after (release)
               run: |
-                for side in base head; do
+                for side in before after; do
                     echo "::group::Building $side"
                     cd "$GITHUB_WORKSPACE/arturo-$side"
                     rm -rf .cache
@@ -87,14 +102,26 @@ jobs:
                 done
 
                 cd "$RUNNER_TEMP"
-                if ! diff flags-base.txt flags-head.txt; then
-                    echo "base & head weren't built with the same flags!"
+                if ! diff flags-before.txt flags-after.txt; then
+                    echo "before & after weren't built with the same flags!"
                     exit 1
                 fi
-                if ! grep -q -- "-flto" flags-head.txt; then
+                if ! grep -q -- "-flto" flags-after.txt; then
                     echo "not a release build (no LTO)!"
                     exit 1
                 fi
+
+            # the very binary people got when it was released
+            - name: Get the released binary
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                cd "$RUNNER_TEMP"
+                asset="arturo-$RELEASE-${{ matrix.os }}-${{ matrix.arch }}.zip"
+                gh release download "v$RELEASE" --repo arturo-lang/arturo --pattern "$asset"
+                unzip -o "$asset" -d released
+                cp released/arturo arturo-release
+                chmod +x arturo-release
 
             - name: Get examples
               if: matrix.mode == 'time'
@@ -108,8 +135,9 @@ jobs:
                     echo ""
                     echo "| | |"
                     echo "|---|---|"
-                    echo "| base | \`${{ steps.base.outputs.sha }}\` |"
-                    echo "| head | \`${{ steps.base.outputs.head }}\` |"
+                    echo "| v$RELEASE | the released binary (\`arturo-$RELEASE-${{ matrix.os }}-${{ matrix.arch }}.zip\`) |"
+                    echo "| before | \`${{ steps.revs.outputs.before }}\` (master, right before #2292) |"
+                    echo "| after | \`${{ steps.revs.outputs.after }}\` (master, with #2292 merged) |"
                     if [ "${{ matrix.os }}" = "macos" ]; then
                         echo "| cpu | $(sysctl -n machdep.cpu.brand_string) ($(sysctl -n hw.ncpu) cores) |"
                     else
@@ -117,8 +145,8 @@ jobs:
                     fi
                     echo "| nim | $(nim --version | head -1) |"
                     echo "| cc | $(cc --version | head -1) |"
-                    echo "| flags (identical for both) | \`$(cat "$RUNNER_TEMP/flags-head.txt")\` |"
-                    for side in base head; do
+                    echo "| flags (before & after, identical) | \`$(cat "$RUNNER_TEMP/flags-after.txt")\` |"
+                    for side in release before after; do
                         f="$RUNNER_TEMP/arturo-$side"
                         sum=$(shasum -a 256 "$f" | cut -c1-12)
                         echo "| $side binary | $(wc -c < "$f" | tr -d ' ') bytes, sha256 $sum… |"
@@ -128,20 +156,22 @@ jobs:
 
             - name: Run benchmarks
               run: |
-                "$RUNNER_TEMP/arturo-base" -v
-                "$RUNNER_TEMP/arturo-head" -v
+                "$RUNNER_TEMP/arturo-release" -v
+                "$RUNNER_TEMP/arturo-before" -v
+                "$RUNNER_TEMP/arturo-after" -v
 
                 label="${{ matrix.os }}-${{ matrix.arch }}, ${{ matrix.mode }}${{ matrix.run && format(' {0}', matrix.run) || '' }}"
+                binaries="v$RELEASE=$RUNNER_TEMP/arturo-release before=$RUNNER_TEMP/arturo-before after=$RUNNER_TEMP/arturo-after"
                 if [ "${{ matrix.mode }}" = "instructions" ]; then
-                    python3 arturo-head/tools/bench/compare.py "$RUNNER_TEMP/arturo-base" "$RUNNER_TEMP/arturo-head" \
+                    python3 bench/tools/bench/compare.py $binaries \
                         --mode instructions --groups ops,programs,real-world,var-names,param-names \
                         --jobs "$(nproc)" --label "$label" --json "$RUNNER_TEMP/results.json"
                 elif [ "${{ matrix.os }}" = "linux" ]; then
                     # pinned to a single core: no migrations in between
-                    taskset -c 1 python3 arturo-head/tools/bench/compare.py "$RUNNER_TEMP/arturo-base" "$RUNNER_TEMP/arturo-head" \
+                    taskset -c 1 python3 bench/tools/bench/compare.py $binaries \
                         --examples examples/src/rosetta --label "$label" --json "$RUNNER_TEMP/results.json"
                 else
-                    python3 arturo-head/tools/bench/compare.py "$RUNNER_TEMP/arturo-base" "$RUNNER_TEMP/arturo-head" \
+                    python3 bench/tools/bench/compare.py $binaries \
                         --examples examples/src/rosetta --label "$label" --json "$RUNNER_TEMP/results.json"
                 fi
 
