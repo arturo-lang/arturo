@@ -812,7 +812,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
         of Method:
             result &= "method "
-            result &= codify(newWordBlock(v.mparams),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+            # `this` is injected automatically, when the method gets created
+            result &= codify(newWordBlock(v.mparams.filter((prm) => prm != "this")),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
 
             result &= " "
             result &= codify(v.mmain,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
