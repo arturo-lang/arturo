@@ -1,0 +1,19 @@
+; build & parse a CSV-like report: strings, splitting, conversions, dictionaries
+seed: 11
+lines: []
+groups: ["north" "south" "east" "west" "center"]
+loop 1..20000 'i [
+    seed: (((seed * 1103515245) + 12345) % 2147483648)
+    'lines ++ ~"|i|,|groups\[seed % 5]|,|seed % 1000|"
+]
+csv: join.with:"\n" lines
+sums: #[]
+counts: #[]
+loop split.lines csv 'line [
+    parts: split.by:"," line
+    g: parts\1
+    v: to :integer parts\2
+    sums\[g]: (key? sums g)? -> sums\[g] + v -> v
+    counts\[g]: (key? counts g)? -> counts\[g] + 1 -> 1
+]
+loop sort keys sums 'g -> print [g counts\[g] sums\[g]]

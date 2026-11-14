@@ -1,0 +1,14 @@
+; recursive quicksort (functional, with select) on 30,000 pseudo-random ints
+seed: 7
+nums: []
+do.times: 30000 [
+    seed: (((seed * 1103515245) + 12345) % 2147483648)
+    'nums ++ seed % 100000
+]
+qsort: function [xs][
+    if 1 >= size xs -> return xs
+    p: xs\[(size xs) / 2]
+    (qsort select xs 'x -> x < p) ++ (select xs 'x -> x = p) ++ qsort select xs 'x -> x > p
+]
+sorted: qsort nums
+print ["first:" first sorted "last:" last sorted "same as sort?" sorted = sort nums]

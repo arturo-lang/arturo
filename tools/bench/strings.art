@@ -1,0 +1,6 @@
+words: []
+loop 1..100000 'i [
+    'words ++ ~"item|i|"
+]
+out: join.with:"," map words 'w -> upper w
+print size out

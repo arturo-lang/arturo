@@ -1,0 +1,15 @@
+define :point [
+    init: method [x y][
+        this\x: x
+        this\y: y
+    ]
+    norm: method [][
+        (this\x * this\x) + this\y * this\y
+    ]
+]
+s: 0
+loop 1..40000 'i [
+    p: to :point @[i 2]!
+    s: s + p\norm
+]
+print s

@@ -1,0 +1,25 @@
+; n-queens, n = 10: recursion & backtracking over arrays
+N: 10
+cols: array.of: N false
+d1: array.of: 2 * N false
+d2: array.of: 2 * N false
+
+solve: function [row][
+    if row = N -> return 1
+    found: 0
+    loop 0..dec N 'c [
+        a: row + c
+        b: (row - c) + N
+        if not? any? @[cols\[c] d1\[a] d2\[b]] [
+            cols\[c]: true
+            d1\[a]: true
+            d2\[b]: true
+            found: found + solve row + 1
+            cols\[c]: false
+            d1\[a]: false
+            d2\[b]: false
+        ]
+    ]
+    found
+]
+print ["solutions:" solve 0]

@@ -1,0 +1,20 @@
+; mandelbrot set membership on a 160x160 grid, 50 iterations max
+size: 160
+inside: 0
+loop 0..dec size 'py [
+    ci: ((2.0 * to :floating py) / to :floating size) - 1.0
+    loop 0..dec size 'px [
+        cr: ((2.0 * to :floating px) / to :floating size) - 1.5
+        zr: 0.0
+        zi: 0.0
+        it: 0
+        while [and? it < 50  ((zr * zr) + (zi * zi)) < 4.0][
+            t: ((zr * zr) - (zi * zi)) + cr
+            zi: ((2.0 * zr) * zi) + ci
+            zr: t
+            it: it + 1
+        ]
+        if it = 50 -> inside: inside + 1
+    ]
+]
+print ["points inside:" inside]
