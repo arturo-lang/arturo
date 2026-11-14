@@ -458,7 +458,7 @@ proc setColumns(columns: var DbColumns; x: PStmt) =
     toTypeKind(columns[i].typ, column_type(x, i))
     columns[i].tableName = $column_table_name(x, i)
 
-iterator instantRows*(db: DbConn; columns: var DbColumns; query: SqlQuery,
+iterator instantRows*(db: DbConn; columns: var DbColumns; query: SqlQuery|SqlPrepared;
                       args: varargs[string, `$`]): InstantRow
                       {.tags: [ReadDbEffect].} =
   ## Similar to `instantRows iterator <#instantRows.i,DbConn,SqlQuery,varargs[string,]>`_,
@@ -866,6 +866,20 @@ proc bindParam*(ps: SqlPrepared, paramIdx: int,val: openArray[byte], copy = true
   let len = val.len
   if bind_blob(ps.PStmt, paramIdx.int32, val[0].unsafeAddr, len.int32, if copy: SQLITE_TRANSIENT else: SQLITE_STATIC) != SQLITE_OK:
     dbBindParamError(paramIdx, val)
+
+proc enableLoadExtension*(db: DbConn, onof = true) =
+  ## enables extension loading.
+  if enable_load_extension(db, int32(onof)) != SQLITE_OK:
+    dbError(db)
+
+proc loadExtension*(db: DbConn, filename: string, procname = "") =
+  ## loads an extension.
+  var errmsg: cstring
+  let procname =
+    if procname != "": procname.cstring
+    else: nil
+  if load_extension(db, filename.cstring, procname, addr errmsg) != SQLITE_OK:
+    raise (ref DbError)(msg: $errmsg)
 
 when not defined(testing) and isMainModule:
   var db = open(":memory:", "", "", "")
