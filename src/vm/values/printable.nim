@@ -642,6 +642,11 @@ func isIdentifier(s: string): bool =
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=true, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
+    # when unwrapping, the top-level block loses its brackets
+    # and its contents take its place, at the very same level
+    let unwrap = pretty and unwrapped and level==0
+    let childLevel = if unwrap: level else: level+1
+
     if pretty:
         if isKeyVal:
             result &= " "
@@ -729,11 +734,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Range        : result &= codify(v.rng)
 
         of Inline, Block:
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 if v.kind==Inline: result &= "("
                 else: result &= "["
 
-            if pretty:
+            if pretty and not unwrap:
                 result &= "\n"
             
             var parts: seq[string]
@@ -741,31 +746,32 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             for i,child in v.a:
                 # labels stay in the same line with their value
                 let isLabel = child.kind in {Label, PathLabel, AttributeLabel} and i != v.a.len-1
-                parts.add(codify(child,pretty,unwrapped,level+1, isLabel or i==(v.a.len-1), isKeyVal=afterLabel, safeStrings=safeStrings))
+                parts.add(codify(child,pretty,false,childLevel, isLabel or i==(v.a.len-1), isKeyVal=afterLabel, safeStrings=safeStrings))
                 afterLabel = isLabel
 
             # when prettifying, every item already comes with its own indentation
             result &= parts.join(if pretty: "" else: " ")
 
-            if pretty:
+            if pretty and not unwrap:
                 result &= "\n"
                 for i in 0..level-1: result &= INDENT
 
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 if v.kind==Inline: result &= ")"
                 else: result &= "]"
 
         of Dictionary:
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 result &= "#["
 
-            if pretty:
+            if pretty and not unwrap:
                 result &= "\n"
 
             let keys = toSeq(v.d.keys)
 
             if keys.len > 0:
 
+                var idx = 0
                 for k,v in pairs(v.d):
                     # under `safeStrings`, quote keys so dicts with non-identifier
                     # keys (e.g. `content-length`) can round-trip through the parser
@@ -774,23 +780,21 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                         elif isIdentifier(k):   k
                         else:                   escape(k)
                     if pretty:
-                        if not (unwrapped):
-                            for i in 0..level: result &= INDENT
-                        else:
-                            for i in 0..level-1: result &= INDENT
+                        for i in 0..childLevel-1: result &= INDENT
                         result &= keyStr & ":"
                     else:
                         result &= keyStr & ": "
 
-                    result &= codify(v,pretty,unwrapped,level+1, false, isKeyVal=true, safeStrings=safeStrings) 
+                    idx += 1
+                    result &= codify(v,pretty,false,childLevel, unwrap and idx==keys.len, isKeyVal=true, safeStrings=safeStrings) 
 
                     if not pretty:
                         result &= " "
 
-            if pretty:
+            if pretty and not unwrap:
                 for i in 0..level-1: result &= INDENT
             
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 result &= "]"
 
         of Object:
