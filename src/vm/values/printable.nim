@@ -706,6 +706,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result = "'" & result
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
+        of Unit         : result &= "`" & codify(v.u)
         of Quantity     : result &= negated(codify(v.q))
         of Binary       : result &= "to :binary [" & v.n.map((b) => $(b)).join(" ") & "]"
         of Regex        : result &= "{/" & $(v.rx) & "/}"
