@@ -304,23 +304,22 @@ const
 # ------------------- ZIP archive reading/writing
 
 type #FC defininf missing types
-  time_t = cint
+  time_t = int
   size_t = cint
 
 when not(defined(MINIZ_NO_ARCHIVE_APIS)):
   const
     MZ_ZIP_MAX_IO_BUF_SIZE* = 64 * 1024
-    MZ_ZIP_MAX_ARCHIVE_FILENAME_SIZE* = 260
-    MZ_ZIP_MAX_ARCHIVE_FILE_COMMENT_SIZE* = 256
+    MZ_ZIP_MAX_ARCHIVE_FILENAME_SIZE* = 512
+    MZ_ZIP_MAX_ARCHIVE_FILE_COMMENT_SIZE* = 512
   type
     mz_zip_archive_file_stat* {.bycopy.} = object
       m_file_index*: mz_uint32
-      m_central_dir_ofs*: mz_uint32
+      m_central_dir_ofs*: mz_uint64
       m_version_made_by*: mz_uint16
       m_version_needed*: mz_uint16
       m_bit_flag*: mz_uint16
-      m_method*: mz_uint16    
-      m_time*: time_t         
+      m_method*: mz_uint16
       m_crc32*: mz_uint32
       m_comp_size*: mz_uint64
       m_uncomp_size*: mz_uint64
@@ -328,33 +327,41 @@ when not(defined(MINIZ_NO_ARCHIVE_APIS)):
       m_external_attr*: mz_uint32
       m_local_header_ofs*: mz_uint64
       m_comment_size*: mz_uint32
+      m_is_directory*: mz_bool
+      m_is_encrypted*: mz_bool
+      m_is_supported*: mz_bool
       m_filename*: array[MZ_ZIP_MAX_ARCHIVE_FILENAME_SIZE, char]
       m_comment*: array[MZ_ZIP_MAX_ARCHIVE_FILE_COMMENT_SIZE, char]
+      m_time*: time_t
 
     mz_file_read_func* = proc (pOpaque: pointer; file_ofs: mz_uint64;
                                pBuf: pointer; n: csize_t): csize_t {.noconv.}
     mz_file_write_func* = proc (pOpaque: pointer; file_ofs: mz_uint64;
                                 pBuf: pointer; n: csize_t): csize_t {.noconv.}
+    mz_file_needs_keepalive* = proc (pOpaque: pointer): mz_bool {.noconv.}
   type
     mz_zip_internal_state_tag* = object
 
   type
     mz_zip_internal_state* = mz_zip_internal_state_tag
-    mz_zip_mode* = enum
+    mz_zip_mode* {.size: sizeof(cint).} = enum
       MZ_ZIP_MODE_INVALID = 0, MZ_ZIP_MODE_READING = 1, MZ_ZIP_MODE_WRITING = 2,
       MZ_ZIP_MODE_WRITING_HAS_BEEN_FINALIZED = 3
     mz_zip_archive* = object
       m_archive_size*: mz_uint64
       m_central_directory_file_ofs*: mz_uint64
-      m_total_files*: mz_uint
+      m_total_files*: mz_uint32
       m_zip_mode*: mz_zip_mode
-      m_file_offset_alignment*: mz_uint
+      m_zip_type*: cint
+      m_last_error*: cint
+      m_file_offset_alignment*: mz_uint64
       m_pAlloc*: mz_alloc_func
       m_pFree*: mz_free_func
       m_pRealloc*: mz_realloc_func
       m_pAlloc_opaque*: pointer
       m_pRead*: mz_file_read_func
       m_pWrite*: mz_file_write_func
+      m_pNeeds_keepalive*: mz_file_needs_keepalive
       m_pIO_opaque*: pointer
       m_pState*: ptr mz_zip_internal_state
 
