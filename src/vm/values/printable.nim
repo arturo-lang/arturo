@@ -625,7 +625,10 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             else: 
                 when defined(WEB) or defined(GMP):
                     result &= negated($(v.bi))
-        of Floating     : result &= negated($(v.f))
+        of Floating     :
+            if v.f==Inf: result &= "infinite"
+            elif v.f==NegInf: result &= "neg infinite"
+            else: result &= negated($(v.f))
         of Complex      : 
             if v.z.re < 0 and v.z.im < 0:
                 result &= fmt("to :complex @[neg {v.z.re * -1} neg {v.z.im * -1}]")
