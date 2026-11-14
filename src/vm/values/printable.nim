@@ -23,7 +23,7 @@ when defined(GMP):
 
 import helpers/terminal as TerminalHelper
 
-import vm/[globals, opcodes, stack]
+import vm/[errors, globals, opcodes, stack]
 import vm/values/value
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vtask, vversion]
@@ -602,8 +602,76 @@ proc dumped*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prep
 #  there, either throw an error, or do sth (but what?!)
 #  labels: values,enhancement,oop
 
-proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
+func negated(s: string): string {.inline.} =
+    # there is no literal for negative numbers:
+    # `-5` would be parsed as the symbol `-`, followed by `5`
+    if s.startsWith("-"): "neg " & s[1..^1]
+    else: s
+
+func fitsInCurlies(s: string): bool =
+    # whether a string can be written as a `{..}` block and still
+    # be read back intact: curly blocks get stripped & unindented,
+    # and their curly brackets have to be balanced
+    if s != strutils.strip(s): return false
+
+    var depth = 0
+    for c in s:
+        case c:
+            of '{': depth += 1
+            of '}':
+                depth -= 1
+                if depth < 0: return false
+            of '\t', '\r': return false
+            else: discard
+    if depth != 0: return false
+
+    for line in splitLines(s):
+        if line.len > 0 and line.isEmptyOrWhitespace: return false
+
+    return true
+
+func isIdentifier(s: string): bool =
+    # whether a string can be used as a label, as it is
+    if s.len == 0 or s[0] notin {'a'..'z', 'A'..'Z', '_'}: return false
+
+    for c in s:
+        if c notin {'a'..'z', 'A'..'Z', '_', '0'..'9'}: return false
+
+    return true
+
+var
+    # the blocks, dictionaries & objects we are currently generating code for,
+    # so that we can spot a value that contains itself
+    Codifying {.threadvar.}: seq[uint]
+
+proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=true, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
+
+    # when unwrapping, the top-level block loses its brackets
+    # and its contents take its place, at the very same level
+    let unwrap = pretty and unwrapped and level==0
+    let childLevel = if unwrap: level else: level+1
+
+    # empty blocks & dictionaries stay in one line
+    let isEmpty = (v.kind in {Inline, Block} and v.a.len==0) or (v.kind==Dictionary and v.d.len==0)
+    let multiline = pretty and not unwrap and not isEmpty
+
+    let container =
+        case v.kind:
+            of Inline, Block    : cast[uint](v)
+            of Dictionary       : cast[uint](v.d)
+            of Object           : cast[uint](v.o)
+            else                : 0'u
+
+    if container != 0:
+        if container in Codifying:
+            Codifying.setLen(0)
+            Error_CircularReference()
+        Codifying.add(container)
+
+    defer:
+        if container != 0 and Codifying.len > 0:
+            discard Codifying.pop()
 
     if pretty:
         if isKeyVal:
@@ -615,11 +683,14 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Null         : result &= "null"
         of Logical      : result &= $(v.b)
         of Integer      :
-            if likely(v.iKind==NormalInteger): result &= $(v.i)
+            if likely(v.iKind==NormalInteger): result &= negated($(v.i))
             else: 
                 when defined(WEB) or defined(GMP):
-                    result &= $(v.bi)
-        of Floating     : result &= $(v.f)
+                    result &= negated($(v.bi))
+        of Floating     :
+            if v.f==Inf: result &= "infinite"
+            elif v.f==NegInf: result &= "neg infinite"
+            else: result &= negated($(v.f))
         of Complex      : 
             if v.z.re < 0 and v.z.im < 0:
                 result &= fmt("to :complex @[neg {v.z.re * -1} neg {v.z.im * -1}]")
@@ -637,12 +708,24 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= ":" & ($v.t).toLowerAscii()
             else:
                 result &= ":" & v.tid
-        of Char         : result &= "'" & $(v.c) & "'"
+        of Char         : 
+            result &= "'"
+            case $(v.c):
+                of "'"  : result &= "\\'"
+                of "\\" : result &= "\\\\"
+                of "\n" : result &= "\\n"
+                of "\r" : result &= "\\r"
+                of "\t" : result &= "\\t"
+                else    : result &= $(v.c)
+            result &= "'"
         of String       : 
-            if safeStrings:
+            if safeStrings and not (v.s.contains("»»") or v.s.endsWith("»")):
                 result &= "««" & v.s & "»»"
+            elif safeStrings:
+                # it would close the safe string too early
+                result &= escape(v.s)
             else:
-                if countLines(v.s)>1 or v.s.contains("\""):
+                if (countLines(v.s)>1 or v.s.contains("\"")) and fitsInCurlies(v.s):
                     var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat(INDENT,level+1))
                     result &= "{\n" & repeat(INDENT,level+1) & splitl & "\n" & repeat(INDENT,level) & "}"
                 else:
@@ -657,13 +740,28 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Attribute         : result &= "." & v.s
         of AttributeLabel    : result &= "." & v.s & ":"
         of Path,
-           PathLabel    :
-            result = v.p.map((x) => $(x)).join("\\")
+           PathLabel,
+           PathLiteral  :
+            if v.kind==PathLiteral:
+                result &= "'"
+            result &= v.p.map(proc (x: Value): string =
+                case x.kind:
+                    of Word, Literal            : x.s
+                    of Integer, Floating, Block : codify(x, safeStrings=safeStrings)
+                    # anything else can only be read back as a computed field
+                    else                        : "[" & codify(x, safeStrings=safeStrings) & "]"
+            ).join("\\")
             if v.kind==PathLabel:
                 result &= ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
-        of Quantity     : result &= codify(v.q)
+        of Unit         : result &= "`" & codify(v.u)
+        of Quantity     : result &= negated(codify(v.q))
+        of Binary       : result &= "to :binary [" & v.n.map((b) => $(b)).join(" ") & "]"
+        of ErrorKind    :
+            # e.g. "Runtime Error" => `runtimeError`
+            let words = strutils.splitWhitespace($(v.errKind))
+            result &= words[0].toLowerAscii() & words[1..^1].join("")
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
         of Date         : result &= fmt("to :date \"{v.eobj}\"")
@@ -671,80 +769,94 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Range        : result &= codify(v.rng)
 
         of Inline, Block:
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 if v.kind==Inline: result &= "("
                 else: result &= "["
 
-            if pretty:
+            if multiline:
                 result &= "\n"
             
             var parts: seq[string]
+            var afterLabel = false
             for i,child in v.a:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
+                # labels stay in the same line with their value
+                let isLabel = child.kind in {Label, PathLabel, AttributeLabel} and i != v.a.len-1
+                parts.add(codify(child,pretty,false,childLevel, isLabel or i==(v.a.len-1), isKeyVal=afterLabel, safeStrings=safeStrings))
+                afterLabel = isLabel
 
-            result &= parts.join(" ")
+            # when prettifying, every item already comes with its own indentation
+            result &= parts.join(if pretty: "" else: " ")
 
-            if pretty:
+            if multiline:
                 result &= "\n"
                 for i in 0..level-1: result &= INDENT
 
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 if v.kind==Inline: result &= ")"
                 else: result &= "]"
 
         of Dictionary:
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 result &= "#["
 
-            if pretty:
+            if multiline:
                 result &= "\n"
 
             let keys = toSeq(v.d.keys)
 
             if keys.len > 0:
 
+                var idx = 0
                 for k,v in pairs(v.d):
                     # under `safeStrings`, quote keys so dicts with non-identifier
                     # keys (e.g. `content-length`) can round-trip through the parser
                     let keyStr =
-                        if safeStrings: "\"" & k & "\""
-                        else:           k
+                        if safeStrings:         "\"" & k & "\""
+                        elif isIdentifier(k):   k
+                        else:                   escape(k)
                     if pretty:
-                        if not (unwrapped):
-                            for i in 0..level: result &= INDENT
-                        else:
-                            for i in 0..level-1: result &= INDENT
-                        result &= k & ":"
+                        for i in 0..childLevel-1: result &= INDENT
+                        result &= keyStr & ":"
                     else:
+                        if idx > 0: result &= " "
                         result &= keyStr & ": "
 
-                    result &= codify(v,pretty,unwrapped,level+1, false, isKeyVal=true, safeStrings=safeStrings) 
+                    idx += 1
+                    result &= codify(v,pretty,false,childLevel, unwrap and idx==keys.len, isKeyVal=true, safeStrings=safeStrings) 
 
-                    if not pretty:
-                        result &= " "
-
-            if pretty:
+            if multiline:
                 for i in 0..level-1: result &= INDENT
             
-            if not (pretty and unwrapped and level==0):
+            if not unwrap:
                 result &= "]"
+
+        of Object:
+            let fields = newOrderedTable[string,Value]()
+            for key,value in v.o.objectPairs:
+                fields[key] = value
+
+            result &= "to :" & v.proto.name
+            if not pretty:
+                result &= " "
+            result &= codify(newDictionary(fields),pretty,false,level, true, isKeyVal=true, safeStrings=safeStrings)
 
         of Function:
             if v.fnKind==UserFunction:
                 result &= "function "
-                result &= codify(newWordBlock(v.params),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                result &= codify(newWordBlock(v.params), safeStrings=safeStrings)
                 if v.inline:
                     result &= ".inline"
                 if v.memoize:
                     result &= ".memoize"
                 if not v.imports.isNil:
                     result &= ".import:"
-                    result &= codify(newWordBlock(toSeq(keys(v.imports.d))),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+                    result &= codify(newWordBlock(toSeq(keys(v.imports.d))), safeStrings=safeStrings)
                 if not v.exports.isNil:
                     result &= ".export:"
-                    result &= codify(newWordBlock(v.exports.a.map((w)=>w.s)),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
-                result &= " "
-                result &= codify(v.main,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+                    result &= codify(newWordBlock(v.exports.a.map((w)=>w.s)), safeStrings=safeStrings)
+                if not pretty:
+                    result &= " "
+                result &= codify(v.main,pretty,false,level, true, isKeyVal=true, safeStrings=safeStrings)
             else:
                 for sym,val in pairs(Syms):
                     if val==v:
@@ -753,10 +865,12 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
 
         of Method:
             result &= "method "
-            result &= codify(newWordBlock(v.mparams),pretty,unwrapped,level+1, false, safeStrings=safeStrings)
+            # `this` is injected automatically, when the method gets created
+            result &= codify(newWordBlock(v.mparams.filter((prm) => prm != "this")), safeStrings=safeStrings)
 
-            result &= " "
-            result &= codify(v.mmain,pretty,unwrapped,level+1, true, safeStrings=safeStrings)
+            if not pretty:
+                result &= " "
+            result &= codify(v.mmain,pretty,false,level, true, isKeyVal=true, safeStrings=safeStrings)
 
         else:
             result &= ""
