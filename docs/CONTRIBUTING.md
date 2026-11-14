@@ -145,7 +145,7 @@ But the recommended way is to use *choosenim*:
 
 ```sh
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-choosenim 2.2.6
+choosenim 2.4.2
 ```
 
 **Install dependencies**
@@ -185,7 +185,7 @@ But you can also install nim from *choosenim*, which is the recommended way:
 
 ```sh
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-choosenim 2.2.6
+choosenim 2.4.2
 ```
 
 Normally both work fine and are up-to-date
