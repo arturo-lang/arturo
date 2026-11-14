@@ -413,6 +413,10 @@ template ensureInPlaceAny*(): untyped =
         fetchedPathSym = FetchPathSym(x.p, inplace=true)
         InPlaceAddr = addr fetchedPathSym
 
+# TODO(VM/globals) In-place writes should set their symbol by id
+#  `ensureInPlace` & `ensureInPlaceAny` already get to the symbol by id, but when the value has to be replaced altogether, `SetInPlace` & `SetInPlaceAny` still go by name (`SetSym(x.s, ...)`). They could use `SetSymById(symIdOf(x), ...)` instead.
+#  labels: vm, enhancement, performance, benchmark
+
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
