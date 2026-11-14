@@ -778,6 +778,16 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if not (pretty and unwrapped and level==0):
                 result &= "]"
 
+        of Object:
+            let fields = newOrderedTable[string,Value]()
+            for key,value in v.o.objectPairs:
+                fields[key] = value
+
+            result &= "to :" & v.proto.name
+            if not pretty:
+                result &= " "
+            result &= codify(newDictionary(fields),pretty,false,level, true, isKeyVal=true, safeStrings=safeStrings)
+
         of Function:
             if v.fnKind==UserFunction:
                 result &= "function "
