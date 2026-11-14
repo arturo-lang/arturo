@@ -783,13 +783,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                         for i in 0..childLevel-1: result &= INDENT
                         result &= keyStr & ":"
                     else:
+                        if idx > 0: result &= " "
                         result &= keyStr & ": "
 
                     idx += 1
                     result &= codify(v,pretty,false,childLevel, unwrap and idx==keys.len, isKeyVal=true, safeStrings=safeStrings) 
-
-                    if not pretty:
-                        result &= " "
 
             if pretty and not unwrap:
                 for i in 0..level-1: result &= INDENT

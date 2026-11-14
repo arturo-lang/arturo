@@ -777,7 +777,7 @@ proc defineModule*(moduleName: string) =
             d\surname: "Doe"
             
             express d
-            ; => #[name: "John" surname: "Doe" ]
+            ; => #[name: "John" surname: "Doe"]
             ..........
             express.pretty #[name: "John" surname: "Doe"]
             ; => #[
