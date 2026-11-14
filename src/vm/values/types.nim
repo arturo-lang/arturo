@@ -45,6 +45,14 @@ type
 
     SymTable*   = Table[string, Value]
 
+    SymSlots*   = object
+        vals*: seq[Value]
+
+    ScopeEntry* = tuple[id: int32, prev: Value, stamp: uint64]
+    ScopeFrame* = object
+        serial*: uint64
+        entries*: seq[ScopeEntry]
+
     Translation* = ref object
         constants*: ValueArray
         instructions*: VBinary
@@ -225,6 +233,7 @@ type
         case fnKind*: FunctionKind:
             of UserFunction:
                 params*     : seq[string]
+                paramIds*   : seq[int32]    # their symbol ids, resolved on first call
                 main*       : Value
                 imports*    : Value
                 exports*    : Value
@@ -238,6 +247,7 @@ type
     VMethod* = ref object
         marity*     : int8
         mparams*    : seq[string]
+        mparamIds*  : seq[int32]    # their symbol ids, resolved on first call
         mmain*      : Value
         mbcode*     : Value
         mdistinct*  : bool
@@ -319,7 +329,9 @@ type
                Literal,
                Label,
                Attribute,
-               AttributeLabel:       s*  : string
+               AttributeLabel:
+                   s*  : string
+                   sid*: int32
             of Path,
                PathLabel,
                PathLiteral      :   p*  : ValueArray
@@ -455,6 +467,7 @@ makeAccessor(version, extra)
 makeAccessor(funcType, arity)
 makeAccessor(funcType, fnKind)
 makeAccessor(funcType, params)
+makeAccessor(funcType, paramIds)
 makeAccessor(funcType, main)
 makeAccessor(funcType, imports)
 makeAccessor(funcType, exports)
@@ -468,6 +481,7 @@ makeAccessor(funcType, op)
 
 makeAccessor(methType, marity)
 makeAccessor(methType, mparams)
+makeAccessor(methType, mparamIds)
 makeAccessor(methType, mmain)
 makeAccessor(methType, mbcode)
 makeAccessor(methType, mdistinct)

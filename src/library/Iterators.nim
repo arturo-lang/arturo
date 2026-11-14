@@ -71,9 +71,9 @@ type IterCap* = enum
 # Low-level loop primitives
 #---------------------------------------
 
-template setIterSym(k: string, v: Value) =
-    ## Set an iteration variable
-    putSym(k, v)
+template setIterSym(id: int32, v: Value) =
+    ## Set an iteration variable, by symbol id
+    Syms.setById(id, v)
 
 template iteratorLoop(justLiteral: bool, forever: bool, before: untyped, body: untyped) {.dirty.} =
     var keepGoing {.inject, used.}: bool = true
@@ -123,7 +123,9 @@ template iterateRangeWithLiteral(
     doAction: untyped
 ) {.dirty.} =
     prepareRange(rng)
-    prepareLeaklessOne(lit)
+    # resolved once, for the whole loop
+    let iterLitId = symId(lit)
+    prepareLeaklessOne(iterLitId)
 
     when cap:
         var captured: Value
@@ -141,9 +143,9 @@ template iterateRangeWithLiteral(
 
                 jr += step
             
-                setIterSym(lit, captured)
+                setIterSym(iterLitId, captured)
             else:
-                setIterSym(lit, (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                setIterSym(iterLitId, (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
                 jr += step
 
             execUnscoped(preevaled)
@@ -159,7 +161,9 @@ template iterateBlockWithLiteral(
     doAction: untyped
 ) {.dirty.} =
     prepareBlock(blk)
-    prepareLeaklessOne(lit)
+    # resolved once, for the whole loop
+    let iterLitId = symId(lit)
+    prepareLeaklessOne(iterLitId)
 
     when cap:
         var captured: Value
@@ -173,9 +177,9 @@ template iterateBlockWithLiteral(
             when cap:
                 captured = blk[indx]
             
-                setIterSym(lit, captured)
+                setIterSym(iterLitId, captured)
             else:
-                setIterSym(lit, blk[indx])
+                setIterSym(iterLitId, blk[indx])
 
             execUnscoped(preevaled)
             doAction
@@ -192,7 +196,9 @@ template iterateRangeWithParams(
     doAction: untyped
 ) {.dirty.} =
     prepareRange(rng)
-    prepareLeakless(prm)
+    # resolved once, for the whole loop
+    let iterPrmIds = symIds(prm)
+    prepareLeakless(iterPrmIds)
 
     let argsLen = 
         if idx: prm.len-1
@@ -229,28 +235,28 @@ template iterateRangeWithParams(
             
             var ip = 0
             if idx:
-                setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
+                setIterSym(iterPrmIds[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
                 inc ip
 
             when rll:
                 if not rollingRight:
-                    setIterSym(prm[ip], res)
+                    setIterSym(iterPrmIds[ip], res)
                     inc ip
 
             if argsLen > 0:
                 when cap:
                     for capt in captured:
-                        setIterSym(prm[ip], capt)
+                        setIterSym(iterPrmIds[ip], capt)
                         inc ip
                 else:
                     for i in indx..indx+loopStep-1:     
-                        setIterSym(prm[ip], (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                        setIterSym(iterPrmIds[ip], (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
                         jr += step
                         inc ip
 
             when rll:
                 if rollingRight:
-                    setIterSym(prm[ip], res)
+                    setIterSym(iterPrmIds[ip], res)
 
             execUnscoped(preevaled)
             doAction
@@ -267,7 +273,9 @@ template iterateBlockWithParams(
     doAction: untyped
 ) {.dirty.} =
     prepareBlock(blk)
-    prepareLeakless(prm)
+    # resolved once, for the whole loop
+    let iterPrmIds = symIds(prm)
+    prepareLeakless(iterPrmIds)
 
     let argsLen = 
         if idx: prm.len-1
@@ -295,29 +303,29 @@ template iterateBlockWithParams(
             
             var ip = 0
             if idx:
-                setIterSym(prm[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
+                setIterSym(iterPrmIds[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
                 inc ip
 
             when rll:
                 if not rollingRight:
-                    setIterSym(prm[ip], res)
+                    setIterSym(iterPrmIds[ip], res)
                     inc ip
 
             if argsLen > 0:
                 when cap:
                     for capt in captured:
-                        setIterSym(prm[ip], capt)
+                        setIterSym(iterPrmIds[ip], capt)
                         inc ip
                 else:
                     var j = indx
                     while j < indx+loopStep:
-                        setIterSym(prm[ip], blk[j])
+                        setIterSym(iterPrmIds[ip], blk[j])
                         inc ip
                         inc j
 
             when rll:
                 if rollingRight:
-                    setIterSym(prm[ip], res)
+                    setIterSym(iterPrmIds[ip], res)
 
             execUnscoped(preevaled)
             doAction

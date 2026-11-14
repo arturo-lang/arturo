@@ -1638,6 +1638,10 @@ proc defineModule*(moduleName: string) =
             ; 38
         """:
             #=======================================================
+            # TODO(Core\using) `this` should be set by symbol id
+            #  Every time `using` is called, `this` is looked up by name, twice: once to protect it and once to set it. Its symbol id never changes, so we could get it once (e.g. at startup) and then use `SetSymById`.
+            #  labels: library, enhancement, performance
+
             prepareLeaklessOne("this")
 
             SetSym("this", x, safe=true)

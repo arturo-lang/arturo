@@ -198,7 +198,7 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
             pushFrame("")
 
     # pre-sized, to keep probe chains short
-    Syms = initTable[string,Value](2048)
+    Syms = initSymSlots()
 
     # library
     setupLibrary()
