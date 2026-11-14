@@ -639,7 +639,7 @@ func isIdentifier(s: string): bool =
 
     return true
 
-proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
+proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=true, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
     if pretty:
