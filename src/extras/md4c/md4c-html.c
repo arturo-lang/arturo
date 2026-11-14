@@ -1,8 +1,8 @@
 /*
  * MD4C: Markdown parser for C
- * (http://github.com/mity/md4c)
+ * (https://github.com/mity/md4c)
  *
- * Copyright (c) 2016-2024 Martin Mitáš
+ * Copyright (c) 2016-2026 Martin Mitáš
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -30,19 +30,17 @@
 #include "entity.h"
 
 
-#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 199409L
-    /* C89/90 or old compilers in general may not understand "inline". */
-    #if defined __GNUC__
-        #define inline __inline__
-    #elif defined _MSC_VER
-        #define inline __inline
-    #else
-        #define inline
-    #endif
-#endif
-
 #ifdef _WIN32
     #define snprintf _snprintf
+#endif
+
+/* For falling through case labels in switch statements. */
+#if defined __clang__ && __clang_major__ >= 12
+    #define MD_FALLTHROUGH()        ;__attribute__((fallthrough))
+#elif defined __GNUC__ && __GNUC__ >= 7
+    #define MD_FALLTHROUGH()        ;__attribute__((fallthrough))
+#else
+    #define MD_FALLTHROUGH()        ((void)0)
 #endif
 
 
@@ -104,10 +102,11 @@ render_html_escaped(MD_HTML* r, const MD_CHAR* data, MD_SIZE size)
 
         if(off < size) {
             switch(data[off]) {
+                case '"':   RENDER_VERBATIM(r, "&quot;"); break;
                 case '&':   RENDER_VERBATIM(r, "&amp;"); break;
+                case '\'':  RENDER_VERBATIM(r, "&#x27;"); break;
                 case '<':   RENDER_VERBATIM(r, "&lt;"); break;
                 case '>':   RENDER_VERBATIM(r, "&gt;"); break;
-                case '"':   RENDER_VERBATIM(r, "&quot;"); break;
             }
             off++;
         } else {
@@ -194,7 +193,8 @@ render_utf8_codepoint(MD_HTML* r, unsigned codepoint,
         utf8[3] = 0x80 + ((codepoint >>  0) & 0x3f);
     }
 
-    if(0 < codepoint  &&  codepoint <= 0x10ffff)
+    if(0 < codepoint  &&  codepoint <= 0x10ffff
+            &&  (codepoint < 0xd800 || codepoint > 0xdfff))
         fn_append(r, (char*)utf8, (MD_SIZE)n);
     else
         fn_append(r, utf8_replacement_char, 3);
@@ -286,9 +286,12 @@ render_open_li_block(MD_HTML* r, const MD_BLOCK_LI_DETAIL* det)
     if(det->is_task) {
         RENDER_VERBATIM(r, "<li class=\"task-list-item\">"
                           "<input type=\"checkbox\" class=\"task-list-item-checkbox\" disabled");
-        if(det->task_mark == 'x' || det->task_mark == 'X')
+        if(r->flags & MD_HTML_FLAG_XHTML) RENDER_VERBATIM(r, "=\"true\"");
+        if(det->task_mark == 'x' || det->task_mark == 'X') {
             RENDER_VERBATIM(r, " checked");
-        RENDER_VERBATIM(r, ">");
+            if(r->flags & MD_HTML_FLAG_XHTML) RENDER_VERBATIM(r, "=\"true\"");
+        }
+        RENDER_VERBATIM(r, (r->flags & MD_HTML_FLAG_XHTML) ? " />" : ">");
     } else {
         RENDER_VERBATIM(r, "<li>");
     }
@@ -301,7 +304,10 @@ render_open_code_block(MD_HTML* r, const MD_BLOCK_CODE_DETAIL* det)
 
     /* If known, output the HTML 5 attribute class="language-LANGNAME". */
     if(det->lang.text != NULL) {
-        RENDER_VERBATIM(r, " class=\"language-");
+        RENDER_VERBATIM(r, " class=\"");
+        if(det->lang.size < 9  ||  strncmp(det->lang.text, "language-", 9) != 0) {
+            RENDER_VERBATIM(r, "language-");
+        }
         render_attribute(r, &det->lang, render_html_escaped);
         RENDER_VERBATIM(r, "\"");
     }
@@ -321,6 +327,17 @@ render_open_td_block(MD_HTML* r, const MD_CHAR* cell_type, const MD_BLOCK_TD_DET
         case MD_ALIGN_RIGHT:    RENDER_VERBATIM(r, " align=\"right\">"); break;
         default:                RENDER_VERBATIM(r, ">"); break;
     }
+}
+
+static void
+render_open_admonition_block(MD_HTML* r, const MD_BLOCK_ADMONITION_DETAIL* det)
+{
+    RENDER_VERBATIM(r, "<div class=\"admonition-");
+    render_attribute(r, &det->type, render_html_escaped);
+    RENDER_VERBATIM(r, "\">");
+    RENDER_VERBATIM(r, "<p class=\"admonition-title\">");
+    render_attribute(r, &det->type, render_html_escaped);
+    RENDER_VERBATIM(r, "</p>");
 }
 
 static void
@@ -371,6 +388,52 @@ render_open_wikilink_span(MD_HTML* r, const MD_SPAN_WIKILINK_DETAIL* det)
  ***  HTML renderer implementation  ***
  **************************************/
 
+static void
+render_open_footnote_ref_span(MD_HTML* r, const MD_SPAN_FOOTNOTE_REF_DETAIL* det)
+{
+    char buf[128];
+
+    snprintf(buf, sizeof(buf), "<sup><a href=\"#fn-%u\" id=\"fnref-%u-%u\">%u</a></sup>",
+             det->id, det->id, det->ref_id, det->id);
+    render_verbatim(r, buf, (MD_SIZE) strlen(buf));
+}
+
+static void
+render_open_footnote_def_block(MD_HTML* r, const MD_BLOCK_FOOTNOTE_DEF_DETAIL* det)
+{
+    char buf[64];
+
+    snprintf(buf, sizeof(buf), "<li id=\"fn-%u\">\n", det->id);
+    render_verbatim(r, buf, (MD_SIZE) strlen(buf));
+}
+
+static void
+render_close_footnote_def_block(MD_HTML* r, const MD_BLOCK_FOOTNOTE_DEF_DETAIL* det)
+{
+    char buf[128];
+    unsigned int ref_index;
+
+    for(ref_index = 1; ref_index <= det->ref_count; ref_index++) {
+        if(ref_index > 1)
+            RENDER_VERBATIM(r, " ");
+        snprintf(buf, sizeof(buf), "<a href=\"#fnref-%u-%u\" class=\"footnote-backref\">&#8617;</a>",
+                 det->id, ref_index);
+        render_verbatim(r, buf, (MD_SIZE) strlen(buf));
+    }
+
+    RENDER_VERBATIM(r, "\n</li>\n");
+}
+
+static void
+render_blank_block(MD_HTML* r, const MD_BLOCK_BLANK_DETAIL* det)
+{
+    unsigned i;
+    /* The first blank line is the ordinary block separation CommonMark already
+     * implies; render only the surplus (line_count - 1) as <br>. */
+    for(i = 1; i < det->line_count; i++)
+        RENDER_VERBATIM(r, (r->flags & MD_HTML_FLAG_XHTML) ? "<br/>\n" : "<br>\n");
+}
+
 static int
 enter_block_callback(MD_BLOCKTYPE type, void* detail, void* userdata)
 {
@@ -394,6 +457,10 @@ enter_block_callback(MD_BLOCKTYPE type, void* detail, void* userdata)
         case MD_BLOCK_TR:       RENDER_VERBATIM(r, "<tr>\n"); break;
         case MD_BLOCK_TH:       render_open_td_block(r, "th", (MD_BLOCK_TD_DETAIL*)detail); break;
         case MD_BLOCK_TD:       render_open_td_block(r, "td", (MD_BLOCK_TD_DETAIL*)detail); break;
+        case MD_BLOCK_FOOTNOTE_DEF_SECTION: RENDER_VERBATIM(r, "<section class=\"footnotes\">\n<ol>\n"); break;
+        case MD_BLOCK_FOOTNOTE_DEF: render_open_footnote_def_block(r, (MD_BLOCK_FOOTNOTE_DEF_DETAIL*)detail); break;
+        case MD_BLOCK_ADMONITION:   render_open_admonition_block(r, (const MD_BLOCK_ADMONITION_DETAIL*) detail); break;
+        case MD_BLOCK_BLANK:    render_blank_block(r, (const MD_BLOCK_BLANK_DETAIL*) detail); break;
     }
 
     return 0;
@@ -406,7 +473,7 @@ leave_block_callback(MD_BLOCKTYPE type, void* detail, void* userdata)
     MD_HTML* r = (MD_HTML*) userdata;
 
     switch(type) {
-        case MD_BLOCK_DOC:      /*noop*/ break;
+        case MD_BLOCK_DOC:      /* noop */ break;
         case MD_BLOCK_QUOTE:    RENDER_VERBATIM(r, "</blockquote>\n"); break;
         case MD_BLOCK_UL:       RENDER_VERBATIM(r, "</ul>\n"); break;
         case MD_BLOCK_OL:       RENDER_VERBATIM(r, "</ol>\n"); break;
@@ -422,6 +489,10 @@ leave_block_callback(MD_BLOCKTYPE type, void* detail, void* userdata)
         case MD_BLOCK_TR:       RENDER_VERBATIM(r, "</tr>\n"); break;
         case MD_BLOCK_TH:       RENDER_VERBATIM(r, "</th>\n"); break;
         case MD_BLOCK_TD:       RENDER_VERBATIM(r, "</td>\n"); break;
+        case MD_BLOCK_FOOTNOTE_DEF_SECTION: RENDER_VERBATIM(r, "</ol>\n</section>\n"); break;
+        case MD_BLOCK_FOOTNOTE_DEF: render_close_footnote_def_block(r, (MD_BLOCK_FOOTNOTE_DEF_DETAIL*)detail); break;
+        case MD_BLOCK_ADMONITION:   RENDER_VERBATIM(r, "</div>\n"); break;
+        case MD_BLOCK_BLANK:    /* noop (fully emitted on enter) */ break;
     }
 
     return 0;
@@ -459,10 +530,16 @@ enter_span_callback(MD_SPANTYPE type, void* detail, void* userdata)
         case MD_SPAN_A:                 render_open_a_span(r, (MD_SPAN_A_DETAIL*) detail); break;
         case MD_SPAN_IMG:               render_open_img_span(r, (MD_SPAN_IMG_DETAIL*) detail); break;
         case MD_SPAN_CODE:              RENDER_VERBATIM(r, "<code>"); break;
+        case MD_SPAN_INS:               RENDER_VERBATIM(r, "<ins>"); break;
         case MD_SPAN_DEL:               RENDER_VERBATIM(r, "<del>"); break;
+        case MD_SPAN_SPOILER:           RENDER_VERBATIM(r, "<x-spoiler>"); break;
+        case MD_SPAN_SUPERSCRIPT:       RENDER_VERBATIM(r, "<sup>"); break;
+        case MD_SPAN_SUBSCRIPT:         RENDER_VERBATIM(r, "<sub>"); break;
+        case MD_SPAN_MARK:              RENDER_VERBATIM(r, "<mark>"); break;
         case MD_SPAN_LATEXMATH:         RENDER_VERBATIM(r, "<x-equation>"); break;
         case MD_SPAN_LATEXMATH_DISPLAY: RENDER_VERBATIM(r, "<x-equation type=\"display\">"); break;
         case MD_SPAN_WIKILINK:          render_open_wikilink_span(r, (MD_SPAN_WIKILINK_DETAIL*) detail); break;
+        case MD_SPAN_FOOTNOTE_REF:      render_open_footnote_ref_span(r, (MD_SPAN_FOOTNOTE_REF_DETAIL*) detail); break;
     }
 
     return 0;
@@ -485,10 +562,16 @@ leave_span_callback(MD_SPANTYPE type, void* detail, void* userdata)
         case MD_SPAN_A:                 RENDER_VERBATIM(r, "</a>"); break;
         case MD_SPAN_IMG:               render_close_img_span(r, (MD_SPAN_IMG_DETAIL*) detail); break;
         case MD_SPAN_CODE:              RENDER_VERBATIM(r, "</code>"); break;
+        case MD_SPAN_INS:               RENDER_VERBATIM(r, "</ins>"); break;
         case MD_SPAN_DEL:               RENDER_VERBATIM(r, "</del>"); break;
-        case MD_SPAN_LATEXMATH:         /*fall through*/
+        case MD_SPAN_SPOILER:           RENDER_VERBATIM(r, "</x-spoiler>"); break;
+        case MD_SPAN_SUPERSCRIPT:       RENDER_VERBATIM(r, "</sup>"); break;
+        case MD_SPAN_SUBSCRIPT:         RENDER_VERBATIM(r, "</sub>"); break;
+        case MD_SPAN_MARK:              RENDER_VERBATIM(r, "</mark>"); break;
+        case MD_SPAN_LATEXMATH:         MD_FALLTHROUGH();
         case MD_SPAN_LATEXMATH_DISPLAY: RENDER_VERBATIM(r, "</x-equation>"); break;
         case MD_SPAN_WIKILINK:          RENDER_VERBATIM(r, "</x-wikilink>"); break;
+        case MD_SPAN_FOOTNOTE_REF:      /* noop: enter_span already emitted full HTML */ break;
     }
 
     return 0;
@@ -506,7 +589,16 @@ text_callback(MD_TEXTTYPE type, const MD_CHAR* text, MD_SIZE size, void* userdat
                                         : " "));
                                 break;
         case MD_TEXT_SOFTBR:    RENDER_VERBATIM(r, (r->image_nesting_level == 0 ? "\n" : " ")); break;
-        case MD_TEXT_HTML:      render_verbatim(r, text, size); break;
+        case MD_TEXT_HTML:      /* When inside a Markdown image label, the text falls into
+                                 * the alt="..." attribute opened by render_open_img_span().
+                                 * Raw HTML must be escaped there, exactly like normal text,
+                                 * otherwise it breaks out of the attribute. Compare the
+                                 * image_nesting_level handling in enter_span_callback(). */
+                                if(r->image_nesting_level == 0)
+                                    render_verbatim(r, text, size);
+                                else
+                                    render_html_escaped(r, text, size);
+                                break;
         case MD_TEXT_ENTITY:    render_entity(r, text, size, render_html_escaped); break;
         default:                render_html_escaped(r, text, size); break;
     }
@@ -546,10 +638,10 @@ md_html(const MD_CHAR* input, MD_SIZE input_size,
     for(i = 0; i < 256; i++) {
         unsigned char ch = (unsigned char) i;
 
-        if(strchr("\"&<>", ch) != NULL)
+        if(strchr("\"&'<>", ch) != NULL)
             render.escape_map[i] |= NEED_HTML_ESC_FLAG;
 
-        if(!ISALNUM(ch)  &&  strchr("~-_.+!*(),%#@?=;:/,+$", ch) == NULL)
+        if(!ISALNUM(ch)  &&  strchr("~-_.+!*(),%#@?=;:/$", ch) == NULL)
             render.escape_map[i] |= NEED_URL_ESC_FLAG;
     }
 
