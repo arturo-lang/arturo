@@ -23,7 +23,7 @@ when defined(GMP):
 
 import helpers/terminal as TerminalHelper
 
-import vm/[globals, opcodes, stack]
+import vm/[errors, globals, opcodes, stack]
 import vm/values/value
 
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vlogical, vquantity, vrange, vrational, vregex, vtask, vversion]
@@ -639,6 +639,11 @@ func isIdentifier(s: string): bool =
 
     return true
 
+var
+    # the blocks, dictionaries & objects we are currently generating code for,
+    # so that we can spot a value that contains itself
+    Codifying {.threadvar.}: seq[uint]
+
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=true, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
@@ -650,6 +655,23 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
     # empty blocks & dictionaries stay in one line
     let isEmpty = (v.kind in {Inline, Block} and v.a.len==0) or (v.kind==Dictionary and v.d.len==0)
     let multiline = pretty and not unwrap and not isEmpty
+
+    let container =
+        case v.kind:
+            of Inline, Block    : cast[uint](v)
+            of Dictionary       : cast[uint](v.d)
+            of Object           : cast[uint](v.o)
+            else                : 0'u
+
+    if container != 0:
+        if container in Codifying:
+            Codifying.setLen(0)
+            Error_CircularReference()
+        Codifying.add(container)
+
+    defer:
+        if container != 0 and Codifying.len > 0:
+            discard Codifying.pop()
 
     if pretty:
         if isKeyVal:

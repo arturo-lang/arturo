@@ -922,6 +922,13 @@ func Error_CannotModifyConstant*(sym: string) =
             
         """ ~~ @[sym]
 
+proc Error_CircularReference*() =
+    panic:
+        toError ValueErr, """
+            Cannot generate code for a value
+            that contains itself
+        """
+
 func Error_PathLiteralMofifyingString*() =
     panic:
         toError ValueErr, """ 
