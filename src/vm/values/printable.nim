@@ -602,6 +602,12 @@ proc dumped*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prep
 #  there, either throw an error, or do sth (but what?!)
 #  labels: values,enhancement,oop
 
+func negated(s: string): string {.inline.} =
+    # there is no literal for negative numbers:
+    # `-5` would be parsed as the symbol `-`, followed by `5`
+    if s.startsWith("-"): "neg " & s[1..^1]
+    else: s
+
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
@@ -615,11 +621,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Null         : result &= "null"
         of Logical      : result &= $(v.b)
         of Integer      :
-            if likely(v.iKind==NormalInteger): result &= $(v.i)
+            if likely(v.iKind==NormalInteger): result &= negated($(v.i))
             else: 
                 when defined(WEB) or defined(GMP):
-                    result &= $(v.bi)
-        of Floating     : result &= $(v.f)
+                    result &= negated($(v.bi))
+        of Floating     : result &= negated($(v.f))
         of Complex      : 
             if v.z.re < 0 and v.z.im < 0:
                 result &= fmt("to :complex @[neg {v.z.re * -1} neg {v.z.im * -1}]")
@@ -663,7 +669,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= ":"
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
-        of Quantity     : result &= codify(v.q)
+        of Quantity     : result &= negated(codify(v.q))
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
         of Date         : result &= fmt("to :date \"{v.eobj}\"")
