@@ -630,6 +630,15 @@ func fitsInCurlies(s: string): bool =
 
     return true
 
+func isIdentifier(s: string): bool =
+    # whether a string can be used as a label, as it is
+    if s.len == 0 or s[0] notin {'a'..'z', 'A'..'Z', '_'}: return false
+
+    for c in s:
+        if c notin {'a'..'z', 'A'..'Z', '_', '0'..'9'}: return false
+
+    return true
+
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
@@ -756,14 +765,15 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     # under `safeStrings`, quote keys so dicts with non-identifier
                     # keys (e.g. `content-length`) can round-trip through the parser
                     let keyStr =
-                        if safeStrings: "\"" & k & "\""
-                        else:           k
+                        if safeStrings:         "\"" & k & "\""
+                        elif isIdentifier(k):   k
+                        else:                   escape(k)
                     if pretty:
                         if not (unwrapped):
                             for i in 0..level: result &= INDENT
                         else:
                             for i in 0..level-1: result &= INDENT
-                        result &= k & ":"
+                        result &= keyStr & ":"
                     else:
                         result &= keyStr & ": "
 
