@@ -29,8 +29,8 @@
 ##  * var-names     the same loop, for many different variable names
 ##  * param-names   the same function call, for many parameter names
 
-import argparse, json, math, os, random, re, resource, shutil
-import statistics, subprocess, sys, tempfile, time
+import argparse, json, math, os, random, re, shutil
+import statistics, subprocess, sys, tempfile, threading, time
 import urllib.parse
 from concurrent.futures import ThreadPoolExecutor
 
@@ -74,21 +74,21 @@ def normalize(output):
     return [l.rstrip() for l in output.decode("utf-8", "replace").strip().splitlines()]
 
 def runTimed(binary, bench, timeout):
-    ## run sequentially, measuring the child's CPU time;
-    ## returns (cpu seconds, max RSS, stdout, ok)
-    before = resource.getrusage(resource.RUSAGE_CHILDREN)
-    try:
-        proc = subprocess.run([binary, os.path.basename(bench.path)],
-                              cwd=os.path.dirname(bench.path),
-                              stdin=subprocess.DEVNULL,
-                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                              timeout=timeout)
-        out, ok = proc.stdout, proc.returncode == 0
-    except subprocess.TimeoutExpired:
-        out, ok = b"", False
-    after = resource.getrusage(resource.RUSAGE_CHILDREN)
-    cpu = (after.ru_utime - before.ru_utime) + (after.ru_stime - before.ru_stime)
-    return cpu, after.ru_maxrss, out, ok
+    ## run sequentially, measuring this very child's CPU time
+    ## & peak memory; returns (cpu seconds, max RSS, stdout, ok)
+    proc = subprocess.Popen([binary, os.path.basename(bench.path)],
+                            cwd=os.path.dirname(bench.path),
+                            stdin=subprocess.DEVNULL,
+                            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    killer = threading.Timer(timeout, proc.kill)
+    killer.start()
+    out = proc.stdout.read()
+    _, status, usage = os.wait4(proc.pid, 0)
+    killer.cancel()
+    proc.stdout.close()
+    proc.returncode = status    # already reaped: nothing left for Popen to wait for
+    ok = os.WIFEXITED(status) and os.WEXITSTATUS(status) == 0
+    return usage.ru_utime + usage.ru_stime, usage.ru_maxrss, out, ok
 
 IREFS = re.compile(r"I\s+refs:\s+([\d,]+)")
 
@@ -344,6 +344,12 @@ def report(results, broken, dropped, names, args, elapsed):
             "%s vs %s %s" % (a, b, pct(geomean(ratios(results, a, b, "median")))) for a, b in pairs) +
             ", control %s." % pct(geomean(ratios(results, "control", ref, "median"))))
 
+        withMem = [x for x in results if all(x.rss.get(n) for n in names)]
+        if withMem:
+            lines.append("")
+            lines.append("Peak memory (geometric mean): " + ", ".join(
+                "%s vs %s %s" % (a, b, pct(geomean([x.rss[a] / x.rss[b] for x in withMem]))) for a, b in pairs) + ".")
+
     def table(title, rs):
         lines.append("")
         lines.append("<details><summary>%s</summary>" % title)
@@ -442,7 +448,7 @@ def main():
         with open(args.json, "w") as f:
             json.dump({"binaries": names,
                        "broken": broken,
-                       "results": [{"id": b.id, "rounds": b.rounds, "best": b.best, "median": b.median}
+                       "results": [{"id": b.id, "rounds": b.rounds, "best": b.best, "median": b.median, "rss": b.rss}
                                    for b in results]}, f, indent=1)
 
     return 0
