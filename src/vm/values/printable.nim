@@ -697,10 +697,13 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Attribute         : result &= "." & v.s
         of AttributeLabel    : result &= "." & v.s & ":"
         of Path,
-           PathLabel    :
+           PathLabel,
+           PathLiteral  :
             result = v.p.map((x) => $(x)).join("\\")
             if v.kind==PathLabel:
                 result &= ":"
+            elif v.kind==PathLiteral:
+                result = "'" & result
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
         of Quantity     : result &= negated(codify(v.q))
