@@ -43,7 +43,8 @@
 
 when not defined(WEB):
     import os, re, terminal
-import sequtils, strformat, strutils, sugar, std/with
+    import std/with
+import sequtils, strformat, strutils, sugar
 
 import helpers/strings
 import helpers/terminal
