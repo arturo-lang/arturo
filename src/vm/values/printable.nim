@@ -709,6 +709,10 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Unit         : result &= "`" & codify(v.u)
         of Quantity     : result &= negated(codify(v.q))
         of Binary       : result &= "to :binary [" & v.n.map((b) => $(b)).join(" ") & "]"
+        of ErrorKind    :
+            # e.g. "Runtime Error" => `runtimeError`
+            let words = strutils.splitWhitespace($(v.errKind))
+            result &= words[0].toLowerAscii() & words[1..^1].join("")
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
         of Date         : result &= fmt("to :date \"{v.eobj}\"")
