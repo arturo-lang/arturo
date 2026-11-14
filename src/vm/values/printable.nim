@@ -708,11 +708,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Path,
            PathLabel,
            PathLiteral  :
-            result = v.p.map((x) => $(x)).join("\\")
+            if v.kind==PathLiteral:
+                result &= "'"
+            result &= v.p.map((x) => $(x)).join("\\")
             if v.kind==PathLabel:
                 result &= ":"
-            elif v.kind==PathLiteral:
-                result = "'" & result
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
         of Unit         : result &= "`" & codify(v.u)
