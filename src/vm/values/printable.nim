@@ -647,6 +647,10 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
     let unwrap = pretty and unwrapped and level==0
     let childLevel = if unwrap: level else: level+1
 
+    # empty blocks & dictionaries stay in one line
+    let isEmpty = (v.kind in {Inline, Block} and v.a.len==0) or (v.kind==Dictionary and v.d.len==0)
+    let multiline = pretty and not unwrap and not isEmpty
+
     if pretty:
         if isKeyVal:
             result &= " "
@@ -744,7 +748,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 if v.kind==Inline: result &= "("
                 else: result &= "["
 
-            if pretty and not unwrap:
+            if multiline:
                 result &= "\n"
             
             var parts: seq[string]
@@ -758,7 +762,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             # when prettifying, every item already comes with its own indentation
             result &= parts.join(if pretty: "" else: " ")
 
-            if pretty and not unwrap:
+            if multiline:
                 result &= "\n"
                 for i in 0..level-1: result &= INDENT
 
@@ -770,7 +774,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if not unwrap:
                 result &= "#["
 
-            if pretty and not unwrap:
+            if multiline:
                 result &= "\n"
 
             let keys = toSeq(v.d.keys)
@@ -795,7 +799,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                     idx += 1
                     result &= codify(v,pretty,false,childLevel, unwrap and idx==keys.len, isKeyVal=true, safeStrings=safeStrings) 
 
-            if pretty and not unwrap:
+            if multiline:
                 for i in 0..level-1: result &= INDENT
             
             if not unwrap:
