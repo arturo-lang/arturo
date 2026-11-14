@@ -707,6 +707,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Symbol       :  result &= $(v.m)
         of SymbolLiteral: result &= "'" & $(v.m)
         of Quantity     : result &= negated(codify(v.q))
+        of Binary       : result &= "to :binary [" & v.n.map((b) => $(b)).join(" ") & "]"
         of Regex        : result &= "{/" & $(v.rx) & "/}"
         of Color        : result &= $(v.l)
         of Date         : result &= fmt("to :date \"{v.eobj}\"")
