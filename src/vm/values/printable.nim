@@ -737,10 +737,15 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 result &= "\n"
             
             var parts: seq[string]
+            var afterLabel = false
             for i,child in v.a:
-                parts.add(codify(child,pretty,unwrapped,level+1, i==(v.a.len-1), safeStrings=safeStrings))
+                # labels stay in the same line with their value
+                let isLabel = child.kind in {Label, PathLabel, AttributeLabel} and i != v.a.len-1
+                parts.add(codify(child,pretty,unwrapped,level+1, isLabel or i==(v.a.len-1), isKeyVal=afterLabel, safeStrings=safeStrings))
+                afterLabel = isLabel
 
-            result &= parts.join(" ")
+            # when prettifying, every item already comes with its own indentation
+            result &= parts.join(if pretty: "" else: " ")
 
             if pretty:
                 result &= "\n"
