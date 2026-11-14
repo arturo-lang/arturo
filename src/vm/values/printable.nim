@@ -608,6 +608,28 @@ func negated(s: string): string {.inline.} =
     if s.startsWith("-"): "neg " & s[1..^1]
     else: s
 
+func fitsInCurlies(s: string): bool =
+    # whether a string can be written as a `{..}` block and still
+    # be read back intact: curly blocks get stripped & unindented,
+    # and their curly brackets have to be balanced
+    if s != strutils.strip(s): return false
+
+    var depth = 0
+    for c in s:
+        case c:
+            of '{': depth += 1
+            of '}':
+                depth -= 1
+                if depth < 0: return false
+            of '\t', '\r': return false
+            else: discard
+    if depth != 0: return false
+
+    for line in splitLines(s):
+        if line.len > 0 and line.isEmptyOrWhitespace: return false
+
+    return true
+
 proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: bool=false, isKeyVal: bool=false, safeStrings: bool = false): string {.inline.} =
     result = ""
 
@@ -651,7 +673,7 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             if safeStrings:
                 result &= "««" & v.s & "»»"
             else:
-                if countLines(v.s)>1 or v.s.contains("\""):
+                if (countLines(v.s)>1 or v.s.contains("\"")) and fitsInCurlies(v.s):
                     var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat(INDENT,level+1))
                     result &= "{\n" & repeat(INDENT,level+1) & splitl & "\n" & repeat(INDENT,level) & "}"
                 else:
