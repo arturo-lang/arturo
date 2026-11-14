@@ -719,8 +719,11 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
                 else    : result &= $(v.c)
             result &= "'"
         of String       : 
-            if safeStrings:
+            if safeStrings and not (v.s.contains("»»") or v.s.endsWith("»")):
                 result &= "««" & v.s & "»»"
+            elif safeStrings:
+                # it would close the safe string too early
+                result &= escape(v.s)
             else:
                 if (countLines(v.s)>1 or v.s.contains("\"")) and fitsInCurlies(v.s):
                     var splitl = join(toSeq(splitLines(v.s)),"\n" & repeat(INDENT,level+1))
