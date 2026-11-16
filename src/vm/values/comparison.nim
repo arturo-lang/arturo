@@ -280,15 +280,6 @@ proc `==`*(x: Value, y: Value): bool =
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: bug,values,open discussion
 
-# TODO(VM/values/comparison) add `<`/`>` support for Inline values?
-#  currently, `=` is supported but not `<` and `>`!
-#  since Inline values are pretty much identical to Block values - internally -
-#  comparison operators should work for them in an identical fashion.
-#  The question is: when is Inline A smaller than Inline B? How do other
-#  languages handle this?
-#  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: bug,values,open discussion
-
 # TODO(VM/values/comparison) Re-visit/test handling of Block comparisons
 #  How do other languages (e.g. Python, Ruby, etc) handle comparisons between blocks/arrays?
 #  Do they even support it? If so, how?
