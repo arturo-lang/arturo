@@ -66,6 +66,27 @@ proc getInt*(x: Int): int =
 proc fitsInt*(x: Int): bool =
     return mpz_fits_ulong_p(x[]) != 0
 
+proc fitsSignedInt*(x: Int): bool =
+    when isLLP64():
+        # clong is 32-bit, so check the upper half
+        var hi: mpz_t
+        mpz_init(hi)
+        mpz_fdiv_q_2exp(hi, x[], 32)
+        result = mpz_cmp_si(hi, low(int32).clong) >= 0 and mpz_cmp_si(hi, high(int32).clong) <= 0
+    else:
+        return mpz_fits_slong_p(x[]) != 0
+
+proc getSignedInt*(x: Int): int =
+    when isLLP64():
+        var hi, lo: mpz_t
+        mpz_init(hi)
+        mpz_init(lo)
+        mpz_fdiv_q_2exp(hi, x[], 32)
+        mpz_fdiv_r_2exp(lo, x[], 32)
+        result = (int(mpz_get_si(hi)) shl 32) or int(mpz_get_ui(lo))
+    else:
+        return int(mpz_get_si(x[]))
+
 proc fitsDouble*(x: Float): bool =
     if mpfr_fits_uint_p(x[], MPFR_RNDN)==0:
         return false
