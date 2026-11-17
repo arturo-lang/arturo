@@ -66,6 +66,12 @@ proc getInt*(x: Int): int =
 proc fitsInt*(x: Int): bool =
     return mpz_fits_ulong_p(x[]) != 0
 
+proc fitsSignedInt*(x: Int): bool =
+    return mpz_fits_slong_p(x[]) != 0
+
+proc getSignedInt*(x: Int): int =
+    return int(mpz_get_si(x[]))
+
 proc fitsDouble*(x: Float): bool =
     if mpfr_fits_uint_p(x[], MPFR_RNDN)==0:
         return false
