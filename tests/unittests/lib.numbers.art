@@ -1,6 +1,19 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « atan2
+do [
+
+    ensure.that: "takes y first, then x" -> (pi/2) = atan2 1 0
+    ensure.that: "takes y first, then x" -> 0.0 = atan2 0 1
+    ensure.that: "works with both negative" -> 0.0000001 > abs (neg 3*pi/4) - atan2 neg 1 neg 1
+    passed
+
+    ensure.that: "matches atan" -> 0.0000001 > abs (atan 1//1.5) - atan2 1 1.5
+    passed
+
+]
+
 topic « ceil
 do [
 
@@ -609,6 +622,30 @@ do [
         floor to :rational @[7 2]
         floor to :rational @[neg 7 2]
     ] => integer?
+    passed
+
+]
+
+
+topic « odd? / even?
+do [
+
+    ensure.that: "works with positive :integer" -> and? odd? 3 not? even? 3
+    ensure.that: "works with positive :integer" -> and? even? 4 not? odd? 4
+    passed
+
+    ensure.that: "works with negative :integer" -> and? odd? neg 3 not? even? neg 3
+    ensure.that: "works with negative :integer" -> and? odd? neg 1 not? even? neg 1
+    ensure.that: "works with negative :integer" -> and? even? neg 4 not? odd? neg 4
+    passed
+
+    if sys\release = 'full [
+        ensure.that: "works with big :integer" -> and? odd? (2^70)+1 not? even? (2^70)+1
+        ensure.that: "works with negative big :integer" -> and? odd? neg (2^70)+1 not? even? neg (2^70)+1
+    ]
+    passed
+
+    ensure.that: "works with 0" -> and? even? 0 not? odd? 0
     passed
 
 ]

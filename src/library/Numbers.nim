@@ -355,10 +355,10 @@ proc defineModule*(moduleName: string) =
         returns     = {Floating,Complex},
         example     = """
             atan2 1 1           ; 0.7853981633974483
-            atan2 1 1.5         ; 0.9827937232473291
+            atan2 1 1.5         ; 0.5880026035475675
         """:
             #=======================================================
-            push(newFloating(arctan2(asFloat(y), asFloat(x))))
+            push(newFloating(arctan2(asFloat(x), asFloat(y))))
 
     builtin "atanh",
         alias       = unaliased, 
@@ -1450,7 +1450,7 @@ proc defineModule*(moduleName: string) =
             print select 1..10 => odd?       ; 1 3 5 7 9
         """:
             #=======================================================
-            push(newLogical(x % I2 == I1))
+            push(newLogical(x % I2 != I0))
 
     builtin "positive?",
         alias       = unaliased, 

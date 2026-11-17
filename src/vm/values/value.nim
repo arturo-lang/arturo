@@ -196,7 +196,12 @@ when defined(WEB):
 
 when defined(GMP):
     proc newInteger*(bi: Int): Value {.inline.} =
-        result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+        # results that fit in a normal Integer
+        # shouldn't remain "big"
+        if bi.fitsSignedInt():
+            result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
+        else:
+            result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 func newInteger*(i: int): Value {.inline.} =
     ## create Integer value from int

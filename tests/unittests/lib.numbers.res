@@ -1,4 +1,8 @@
 
+>> atan2
+[+] passed!
+[+] passed!
+
 >> ceil
 [+] passed!
 [+] passed!
@@ -81,6 +85,12 @@
 [+] passed!
 
 >> floor
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> odd? / even?
 [+] passed!
 [+] passed!
 [+] passed!

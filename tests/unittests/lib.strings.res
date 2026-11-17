@@ -95,3 +95,10 @@
 
 >> wordwrap.at
 [+] passed!
+
+>> match.bounds - non-ASCII
+[+] passed!
+[+] passed!
+
+>> truncate - non-ASCII
+[+] passed!
