@@ -339,12 +339,14 @@ template normalIntegerNegI*(x: var Value): untyped =
 template normalIntegerDiv*(x, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    newInteger(x div notZero(y))
+    if unlikely(y == -1): normalIntegerNeg(x)
+    else: newInteger(x div notZero(y))
 
 template normalIntegerDivI*(x: var Value, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    x = newInteger(x.i div notZero(y))
+    if unlikely(y == -1): normalIntegerNegI(x)
+    else: x = newInteger(x.i div notZero(y))
 
 template normalIntegerFDiv*(x, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
@@ -359,24 +361,30 @@ template normalIntegerFDivI*(x: var Value, y: int): untyped =
 template normalIntegerMod*(x, y: int): untyped =
     ## modulo two normal Integer values, checking for DivisionByZero
     ## and return result
-    newInteger(x mod notZero(y))
+    if unlikely(y == -1): newInteger(0)
+    else: newInteger(x mod notZero(y))
 
 template normalIntegerModI*(x: var Value, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    x = newInteger(x.i mod notZero(y))
+    if unlikely(y == -1): x = newInteger(0)
+    else: x = newInteger(x.i mod notZero(y))
 
 template normalIntegerDivMod*(x, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    let (quotient, remainder) = math.divmod(x, notZero(y))
-    newBlock(@[newInteger(quotient), newInteger(remainder)])
+    if unlikely(y == -1): newBlock(@[normalIntegerNeg(x), newInteger(0)])
+    else:
+        let (quotient, remainder) = math.divmod(x, notZero(y))
+        newBlock(@[newInteger(quotient), newInteger(remainder)])
 
 template normalIntegerDivModI*(x: var Value, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    let (quotient, remainder) = math.divmod(x.i, notZero(y))
-    x = newBlock(@[newInteger(quotient), newInteger(remainder)])
+    if unlikely(y == -1): x = newBlock(@[normalIntegerNeg(x.i), newInteger(0)])
+    else:
+        let (quotient, remainder) = math.divmod(x.i, notZero(y))
+        x = newBlock(@[newInteger(quotient), newInteger(remainder)])
 
 template normalIntegerPow*(x, y: int): untyped =
     ## get the power of two normal Integer values, checking for overflow
