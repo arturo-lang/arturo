@@ -608,11 +608,22 @@ proc processBlock*(
 
         let basePath {.cursor.} = val.p[0]
 
+        # `(...)\path`: the root is an expression
+        var baseNodes: seq[Node]
+        if basePath.kind == Inline:
+            var subNode = newRootNode()
+            discard subNode.processBlock(basePath, asDictionary=false)
+            baseNodes = subNode.children
+
         when isLabel:
-            var baseNode = newVariable(basePath)
+            var baseNode = 
+                if basePath.kind == Inline: nil
+                else: newVariable(basePath)
         else:
             var baseNode = 
-                if getArity(basePath.s) == 0:
+                if basePath.kind == Inline:
+                    nil
+                elif getArity(basePath.s) == 0:
                     newCallNode(OtherCall, 0, basePath)
                 else:
                     newVariable(basePath)
@@ -628,7 +639,10 @@ proc processBlock*(
             else:
                 let newNode = newCallNode(BuiltinCall, 2, nil, opGet)
             
-            newNode.addChild(baseNode)
+            if baseNode.isNil:
+                newNode.addChildren(baseNodes)
+            else:
+                newNode.addChild(baseNode)
             
             if val.p[i].kind==Block:
                 var subNode = newRootNode()
