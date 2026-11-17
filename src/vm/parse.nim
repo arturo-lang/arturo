@@ -1101,7 +1101,20 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
             of LParen:
                 inc(p.bufpos)
                 var subblock = parseBlock(p, level+1, isSubInline=true)
-                AddToken subblock
+                if p.buf[p.bufpos] == Backslash and
+                   ((p.buf[p.bufpos+1] in PermittedIdentifiers_Start) or
+                    (p.buf[p.bufpos+1] in PermittedNumbers_Start) or
+                    p.buf[p.bufpos+1] == LBracket):
+                    # `(...)\path`
+                    parsePath(p, subblock, level)
+                    if p.buf[p.bufpos]==Colon:
+                        inc(p.bufpos)
+                        AddToken newPathLabel(p.values[^1])
+                    else:
+                        AddToken newPath(p.values[^1])
+                    discard p.values.pop()
+                else:
+                    AddToken subblock
             of RParen:
                 if isSubInline:
                     inc(p.bufpos)
