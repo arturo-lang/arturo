@@ -332,7 +332,7 @@ template normalIntegerNegI*(x: var Value): untyped =
     ## and set result in-place
     if unlikely(mulIntWithOverflowI(x.i, -1, x.i)):
         when BignumSupport:
-            x = newInteger(toNewBig(x.i) + toBig(-1))
+            x = newInteger(toNewBig(x.i) * toBig(-1))
         else:
             Error_IntegerSingleOperationOverflow("neg", Dumper(x))
 
