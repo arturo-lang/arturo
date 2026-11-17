@@ -1816,10 +1816,10 @@ proc defineModule*(moduleName: string) =
                 while not (popped.kind==Null or isFalse(popped)):
                     handleBranching:
                         execUnscoped(preevaledY)
-                        execUnscoped(preevaledX)
-                        popped = stack.pop()
                     do:
                         discard
+                    execUnscoped(preevaledX)
+                    popped = stack.pop()
     
     builtin "with",
         alias       = unaliased,
