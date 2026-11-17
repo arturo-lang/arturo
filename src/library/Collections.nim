@@ -286,8 +286,8 @@ proc defineModule*(moduleName: string) =
                 ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
-                    if numberInRange(InPlaced.s):
-                        InPlaced.s = InPlaced.s.drop()
+                    if numberInRange(InPlaced.s.toRunes()):
+                        InPlaced.s = $(InPlaced.s.toRunes().drop())
                     else: 
                         InPlaced.s = ""
                 of Block:
@@ -299,7 +299,7 @@ proc defineModule*(moduleName: string) =
             else:
                 case x.kind
                 of String:
-                    if numberInRange(x.s): push(newString(x.s.drop()))
+                    if numberInRange(x.s.toRunes()): push(newString($(x.s.toRunes().drop())))
                     else: push(newString(""))
                 of Block:
                     if numberInRange(x.a): push(newBlock(x.a.drop()))
@@ -547,8 +547,8 @@ proc defineModule*(moduleName: string) =
                 ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
-                    if numberInRange(InPlaced.s):
-                        InPlaced.s = InPlaced.s.drop()
+                    if numberInRange(InPlaced.s.toRunes()):
+                        InPlaced.s = $(InPlaced.s.toRunes().drop())
                     else: 
                         InPlaced.s = ""
                 of Block:
@@ -560,7 +560,7 @@ proc defineModule*(moduleName: string) =
             else:
                 case x.kind
                 of String:
-                    if numberInRange(x.s): push(newString(x.s.drop()))
+                    if numberInRange(x.s.toRunes()): push(newString($(x.s.toRunes().drop())))
                     else: push(newString(""))
                 of Block:
                     if numberInRange(x.a): push(newBlock(x.a.drop()))
@@ -647,7 +647,9 @@ proc defineModule*(moduleName: string) =
             if checkAttr("n"):
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[0..min(aN.i-1, x.s.high)]))
+                    else: 
+                        let runes = x.s.toRunes()
+                        push(newString($(runes[0..max(min(aN.i-1, runes.high), -1)])))
                 elif xKind == Range:
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
@@ -1015,10 +1017,13 @@ proc defineModule*(moduleName: string) =
                 ensureInPlaceAny()
                 case InPlaced.kind:
                     of String: 
+                        if zKind notin {String, Char}:
+                            Error_IncompatibleValueType("insert", valueKind(z), ":string or :char")
+                        let at = InPlaced.s.runeToByteIndex(y.i)
                         if zKind==String: 
-                            InPlaced.s.insert(z.s, y.i)
+                            InPlaced.s.insert(z.s, at)
                         else:
-                            InPlaced.s.insert($(z.c), y.i)
+                            InPlaced.s.insert($(z.c), at)
                     of Block: InPlaced.a.insert(z, y.i)
                     of Dictionary:
                         InPlaced.d[y.s] = z
@@ -1026,11 +1031,14 @@ proc defineModule*(moduleName: string) =
             else:
                 case xKind:
                     of String:
+                        if zKind notin {String, Char}:
+                            Error_IncompatibleValueType("insert", valueKind(z), ":string or :char")
                         var copied = x.s
+                        let at = copied.runeToByteIndex(y.i)
                         if zKind==String:
-                            copied.insert(z.s, y.i)
+                            copied.insert(z.s, at)
                         else:
-                            copied.insert($(z.c), y.i)
+                            copied.insert($(z.c), at)
                         push(newString(copied))
                     of Block:
                         var copied = x.a
@@ -1092,7 +1100,9 @@ proc defineModule*(moduleName: string) =
             if checkAttr("n"):
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
-                    else: push(newString(x.s[x.s.len-aN.i..^1]))
+                    else: 
+                        let runes = x.s.toRunes()
+                        push(newString($(runes[min(max(0, runes.len-aN.i), runes.len)..^1])))
                 elif xKind == Range:
                     if x.rng.infinite:
                         push(newFloating(Inf))
@@ -1692,13 +1702,10 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             proc reverse(s: var string) =
-                for i in 0 .. s.high div 2:
-                    swap(s[i], s[s.high - i])
+                s = unicode.reversed(s)
 
             proc reversed(s: string): string =
-                result = newString(s.len)
-                for i, c in s:
-                    result[s.high - i] = c
+                unicode.reversed(s)
 
             let exact = hadAttr("exact")
 
@@ -2399,11 +2406,12 @@ proc defineModule*(moduleName: string) =
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny()
                 if InPlaced.kind == String:
+                    let runes = InPlaced.s.toRunes()
                     var i = 0
                     var ret: string
-                    while i < InPlaced.s.len:
-                        ret &= $(InPlaced.s[i])
-                        while (i+1 < InPlaced.s.len and InPlaced.s[i+1] == InPlaced.s[i]):
+                    while i < runes.len:
+                        ret &= $(runes[i])
+                        while (i+1 < runes.len and runes[i+1] == runes[i]):
                             i += 1
                         i += 1
                     SetInPlaceAny(newString(ret))
@@ -2419,11 +2427,12 @@ proc defineModule*(moduleName: string) =
                     SetInPlaceAny(newBlock(ret))
             else:
                 if xKind == String:
+                    let runes = x.s.toRunes()
                     var i = 0
                     var ret: string
-                    while i < x.s.len:
-                        ret &= $(x.s[i])
-                        while (i+1 < x.s.len and x.s[i+1] == x.s[i]):
+                    while i < runes.len:
+                        ret &= $(runes[i])
+                        while (i+1 < runes.len and runes[i+1] == runes[i]):
                             i += 1
                         i += 1
                     push(newString(ret))
@@ -2480,7 +2489,7 @@ proc defineModule*(moduleName: string) =
                 case InPlaced.kind
                 of String:
                     if x.s.len > 0:
-                        InPlaced.s = InPlaced.s.take()
+                        InPlaced.s = $(InPlaced.s.toRunes().take())
                 of Block:
                     if InPlaced.a.len > 0:
                         InPlaced.a = InPlaced.a.take()
@@ -2504,7 +2513,7 @@ proc defineModule*(moduleName: string) =
                 of String:
                     if x.s.len == 0: push(newString(""))
                     else:
-                        push(newString(x.s.take()))
+                        push(newString($(x.s.toRunes().take())))
                 of Block:
                     if x.a.len == 0: push(newBlock())
                     else:
@@ -2699,11 +2708,11 @@ proc defineModule*(moduleName: string) =
                 case xKind:
                     of String:
                         if yKind == Regex:
-                            push(newLogical(x.s.contains(y.rx, at)))
+                            push(newLogical(x.s.contains(y.rx, x.s.runeToByteIndex(at))))
                         elif yKind == Char:
                             push(newLogical(toRunes(x.s)[at] == y.c))
                         else:
-                            push(newLogical(x.s.continuesWith(y.s, at)))
+                            push(newLogical(x.s.continuesWith(y.s, x.s.runeToByteIndex(at))))
                     of Block:
                         push(newLogical(x.a[at] == y))
                     of Range:
@@ -2847,11 +2856,11 @@ proc defineModule*(moduleName: string) =
                 case yKind:
                     of String:
                         if xKind == Regex:
-                            push(newLogical(y.s.contains(x.rx, at)))
+                            push(newLogical(y.s.contains(x.rx, y.s.runeToByteIndex(at))))
                         elif xKind == Char:
                             push(newLogical(toRunes(y.s)[at] == x.c))
                         else:
-                            push(newLogical(y.s.continuesWith(x.s, at)))
+                            push(newLogical(y.s.continuesWith(x.s, y.s.runeToByteIndex(at))))
                     of Block:
                         push(newLogical(y.a[at] == x))
                     of Range:
