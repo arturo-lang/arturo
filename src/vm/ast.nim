@@ -732,17 +732,35 @@ proc processBlock*(
         if subnode.kind==Block:
             # replace ampersand symbols, 
             # sequentially, with arguments
-            var idx = 0
+            # (also inside nested blocks/inlines - but not
+            # inside the block of another `=>`)
             var fnd: int8 = 0
-            while idx<subnode.a.len:
-                if (subnode.a[idx]).isSymbol(ampersand):
-                    let arg = newWord("_" & $(fnd))
-                    argblock.add(arg)
-                    subblock.add(arg)
-                    fnd += 1
-                else:
-                    subblock.add(subnode.a[idx])
-                idx += 1
+            proc replaceAmpersands(items: ValueArray): ValueArray =
+                var idx = 0
+                while idx<items.len:
+                    let item {.cursor.} = items[idx]
+                    if item.isSymbol(ampersand):
+                        let arg = newWord("_" & $(fnd))
+                        argblock.add(arg)
+                        result.add(arg)
+                        fnd += 1
+                    elif item.kind in {Block, Inline} and 
+                         not (idx > 0 and items[idx-1].isSymbol(thickarrowright)):
+                        let before = fnd
+                        let replaced = replaceAmpersands(item.a)
+                        if fnd == before:
+                            result.add(item)
+                        else:
+                            let newItem = 
+                                if item.kind == Block: newBlock(replaced)
+                                else: newInline(replaced)
+                            newItem.ln = item.ln
+                            result.add(newItem)
+                    else:
+                        result.add(item)
+                    idx += 1
+
+            subblock = replaceAmpersands(subnode.a)
         else:
             subblock = @[subnode]
             if subnode.kind==Word:
