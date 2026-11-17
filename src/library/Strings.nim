@@ -484,6 +484,11 @@ proc defineModule*(moduleName: string) =
                 let doBounds = hadAttr("bounds")
                 let doFull = hadAttr("full")
 
+                # match bounds are in bytes: return
+                # them as character indices instead
+                proc runeBounds(a, b: int): Value =
+                    newRange(x.s.byteToRuneIndex(a), x.s.byteToRuneIndex(b+1)-1, 1, false, true, true)
+
                 if checkAttr("in"):
                     iFrom = aIn.rng.start
                     if iFrom < 0: 
@@ -506,13 +511,13 @@ proc defineModule*(moduleName: string) =
                     for m in x.s.findIter(rgx, iFrom, iTo):
                         matches.add(newString(m.match))
                         let mBounds = m.matchBounds
-                        matchesBounds.add(newRange(mBounds.a, mBounds.b, 1, false, true, true))
+                        matchesBounds.add(runeBounds(mBounds.a, mBounds.b))
 
                         # optional groups that didn't participate
                         # in the match have no value: use `null`
                         let capts = (m.captures.toSeq).map((w) => (if w.isSome: newString(w.get) else: VNULL))
                         captures.add(newBlock(capts))
-                        let cBounds = (m.captureBounds.toSeq).map((w) => (if w.isSome: newRange(w.get.a, w.get.b, 1, false, true, true) else: VNULL))
+                        let cBounds = (m.captureBounds.toSeq).map((w) => (if w.isSome: runeBounds(w.get.a, w.get.b) else: VNULL))
                         capturesBounds.add(newBlock(cBounds))
 
                         if doOnce: break
@@ -542,7 +547,7 @@ proc defineModule*(moduleName: string) =
                                     res.add(newBlock(captures))
                         elif doBounds:
                             let bounds = m.matchBounds
-                            res.add(newRange(bounds.a, bounds.b, 1, false, true, true))
+                            res.add(runeBounds(bounds.a, bounds.b))
                         else:
                             res.add(newString(m.match))
                         
