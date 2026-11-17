@@ -239,5 +239,6 @@ proc initStore*(
     if doLoad:
         result.loadStore(justCreated=not storeExists)
 
-    if not autosave:
-        Stores.add(result)
+    # autosaved stores too: in-place changes
+    # can only be saved at the end
+    Stores.add(result)
