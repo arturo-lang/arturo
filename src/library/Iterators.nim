@@ -387,14 +387,10 @@ proc evalIteratorBody(body: Value, params: Value, withIndex: Value): Translation
         if (let stored = ShadowedTranslations.getOrDefault(vhash, nil); not stored.isNil):
             return stored
 
-    ShadowedNames = shadowed
-    try:
-        let (trans, canStore) = doEvalAndCheckSafety(body, useStored=false)
-        if canStore and not body.dynamic:
-            ShadowedTranslations[vhash] = trans
-        result = trans
-    finally:
-        ShadowedNames.setLen(0)
+    let (trans, canStore) = doEvalAndCheckSafety(body, useStored=false, shadowed=shadowed)
+    if canStore and not body.dynamic:
+        ShadowedTranslations[vhash] = trans
+    result = trans
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
     let withIndex: Value = 

@@ -117,7 +117,6 @@ proc getArity(s: string): int8 {.inline.} =
     if TmpArities.len > 0:
         let overlaid = TmpArities.getOrDefault(s, -2)
         if overlaid != -2: return overlaid
-    if ShadowedNames.len > 0 and s in ShadowedNames: return -1
     let v = Syms.getOrDefault(s, nil)
     result = if not v.isNil and v.kind == Function: v.arity else: -1
 
@@ -960,7 +959,7 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): (Node, bool) =
+proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false, shadowed: seq[string] = @[]): (Node, bool) =
     var res = newRootNode()
 
     PipeParent = nil
@@ -968,6 +967,10 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
 
     when not reuseArities:
         TmpArities.clear()
+
+    # names that shouldn't be taken for functions
+    for s in shadowed:
+        TmpArities[s] = -1
 
     NodeLine = 0
 

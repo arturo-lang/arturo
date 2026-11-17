@@ -488,7 +488,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
 # Main
 #=======================================
 
-proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true): (Translation, bool) {.inline.} = 
+proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true, shadowed: seq[string] = @[]): (Translation, bool) {.inline.} = 
     ## Take a parsed Block of values and return its Translation - 
     ## that is: the constants found + the list of bytecode instructions
     
@@ -517,7 +517,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     var consts: ValueArray
     var it: VBinary
 
-    var (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    var (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock, shadowed=shadowed)
     InlinedCanStore = true
     evaluateBlock(astNode, consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
     canStore = canStore and InlinedCanStore

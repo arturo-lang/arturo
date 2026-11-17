@@ -32,10 +32,6 @@ var
     Syms* {.global.}        : SymSlots                      ## The symbol table: all the variables 
                                                             ## with their associated values
 
-    # shadowed symbols
-    ShadowedNames* {.global.}   : seq[string]               ## Names that shouldn't be taken for functions,
-                                                            ## while compiling a block (e.g. iterator variables)
-
     # symbol aliases
     Aliases* {.global.}     : SymbolDict                    ## The symbol aliases: all the symbols
                                                             ## with all their associated variables
