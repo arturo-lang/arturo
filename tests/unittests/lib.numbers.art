@@ -1,6 +1,19 @@
 topic: $[topic :string] -> print ~"\n>> |topic|"
 passed: $[] -> print "[+] passed!"
 
+topic « atan2
+do [
+
+    ensure.that: "takes y first, then x" -> (pi/2) = atan2 1 0
+    ensure.that: "takes y first, then x" -> 0.0 = atan2 0 1
+    ensure.that: "works with both negative" -> 0.0000001 > abs (neg 3*pi/4) - atan2 neg 1 neg 1
+    passed
+
+    ensure.that: "matches atan" -> 0.0000001 > abs (atan 1//1.5) - atan2 1 1.5
+    passed
+
+]
+
 topic « ceil
 do [
 
