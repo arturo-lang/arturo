@@ -42,3 +42,28 @@ print xor 2 3
 i: new 2
 xor 'i 3
 print i ; 1
+
+; Binary values
+
+ba: to :binary [255 15]
+bb: to :binary [15 255]
+
+print and ba bb ; 0F 0F
+print or ba bb ; FF FF
+print xor ba bb ; F0 F0
+print nand ba bb ; F0 F0
+print nor ba bb ; 00 00
+print xnor ba bb ; 0F 0F
+print not ba ; 00 F0
+
+print and to :binary [1 2 3] to :binary [3 3 3] ; 01 02 03
+print or to :binary [1] to :binary [2] ; 03
+print and ba 15 ; 0F
+
+bc: to :binary [255 15]
+and 'bc bb
+print bc ; 0F 0F
+
+bd: to :binary [255 15]
+xnor 'bd bb
+print bd ; 0F 0F
