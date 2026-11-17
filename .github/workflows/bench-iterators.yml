@@ -1,0 +1,102 @@
+name: "Benchmark (iterators)"
+
+on:
+    push:
+        branches:
+            - 'fix-iterator-shadowing'
+    workflow_dispatch:
+
+jobs:
+    Benchmark:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout PR
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo-new
+
+            - name: Checkout master
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo-master
+                ref: master
+
+            - name: Install Arturo (toolchain)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: amd64
+                src: master
+                create_artifact: 'false'
+
+            - name: Build both
+              run: |
+                for d in arturo-master arturo-new; do
+                    (cd $d && ./build.nims --as arturo-bench)
+                done
+                sudo apt-get install -y hyperfine
+
+            - name: Prepare scripts
+              run: |
+                mkdir bench && cd bench
+
+                # many short iterator calls
+                cat > short.art <<'EOF'
+                f: function [xs][map xs 'x -> x + 1]
+                loop 1..1500000 'i [z: f [1 2 3]]
+                EOF
+
+                # short calls, with index + multiple params
+                cat > params.art <<'EOF'
+                loop 1..600000 'i [
+                    z: map.with:'j [1 2 3 4] [a b] -> a + b + j
+                    w: select [1 2 3 4] 'x -> even? x
+                ]
+                EOF
+
+                # body-dominated
+                cat > long.art <<'EOF'
+                loop 1..30 'k [
+                    s: 0
+                    loop 1..300000 'x [s: s + x]
+                ]
+                EOF
+
+                # iterator variable named after a function (no caching in PR)
+                cat > shadow.art <<'EOF'
+                loop 1..1500000 'i [z: map [1 2 3] 'size -> 1]
+                EOF
+
+                # nested
+                cat > nested.art <<'EOF'
+                loop 1..5000 'i [
+                    z: fold.seed:0 map 1..50 'x -> select 1..x 'y -> odd? y [a,b] -> a + size b
+                ]
+                EOF
+
+                head -50 *.art
+
+            - name: Run
+              run: |
+                cd bench
+                M=$GITHUB_WORKSPACE/arturo-master/bin/arturo-bench
+                N=$GITHUB_WORKSPACE/arturo-new/bin/arturo-bench
+
+                for f in *.art; do
+                    a=$($M $f 2>&1); b=$($N $f 2>&1)
+                    [ "$a" = "$b" ] || { echo "output differs: $f"; echo "$a"; echo "$b"; }
+                done
+
+                echo "## Iterators: master vs PR" >> $GITHUB_STEP_SUMMARY
+                for f in *.art; do
+                    hyperfine -N --warmup 2 --runs 10 \
+                        -n master "$M $f" -n PR "$N $f" \
+                        --export-markdown res.md
+                    echo "### $f" >> $GITHUB_STEP_SUMMARY
+                    cat res.md >> $GITHUB_STEP_SUMMARY
+                done
