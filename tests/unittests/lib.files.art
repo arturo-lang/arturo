@@ -279,7 +279,8 @@ do [
 
     ; setting something to true sets it
     permissions.set: #[user: #[write: true]] f
-    ensure -> (permissions f)\user\write
+    after: permissions f
+    ensure -> after\user\write
 
     if sys\os <> 'windows [
         permissions.set: #[others: #[write: true]] f
