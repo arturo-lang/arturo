@@ -3345,6 +3345,8 @@ do [
     ensure -> contains?.at:2 "héllo" "l"
     ensure -> contains?.at:2 "héllo" {/l/}
     ensure -> in?.at:2 "l" "héllo"
+    ensure -> 4 = index "héllo" "o"
+    ensure -> 1 = index "abc" 'b'
     passed
 
     ensure -> "héxllo" = insert "héllo" 2 "x"
