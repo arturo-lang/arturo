@@ -86,6 +86,12 @@
 [+] passed!
 [+] passed!
 
+>> odd? / even?
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
 >> round
 [+] passed!
 [+] passed!
