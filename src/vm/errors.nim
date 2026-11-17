@@ -142,10 +142,42 @@ proc getMaxWidth(): int =
 
 # General formatting
 
+func applyEmphasis(s: string, before, after: string): string =
+    ## Replace `_text_` markers with `before`/`after`, but only 
+    ## around whole words - so that underscores inside identifiers,
+    ## paths, keys, user messages, etc are left alone
+    func isWordChar(c: char): bool {.inline.} =
+        c.isAlphaNumeric or c == '_' or ord(c) >= 128
+
+    result = newStringOfCap(s.len)
+    var i = 0
+    while i < s.len:
+        if s[i] == '_' and (i == 0 or not s[i-1].isWordChar) and
+           i+1 < s.len and s[i+1] notin {' ', '\t', '\n', '\r', '_'}:
+            # look for the closing marker, on the same line
+            var closing = -1
+            var j = i + 2
+            while j < s.len and s[j] != '\n':
+                if s[j] == '_' and s[j-1] notin {' ', '\t', '_'} and
+                   (j+1 == s.len or not s[j+1].isWordChar):
+                    closing = j
+                    break
+                inc j
+
+            if closing != -1:
+                result.add before
+                result.add s[i+1 ..< closing]
+                result.add after
+                i = closing + 1
+                continue
+
+        result.add s[i]
+        inc i
+
 proc processPseudomarkdown(s: string): string =
     result = 
         when not defined(WEB):
-            s.replacef(re"_([^_]+)_",fmt("{bold()}$1{resetColor}"))
+            s.applyEmphasis(bold(), resetColor())
         else:
             s
 
@@ -331,7 +363,7 @@ proc printHint(e: VError) =
         if e.hint.contains("\n"):
             printError (hinter & "$$") ~~ @[e.hint.processPseudomarkdown()]
         else:
-            printError hinter & wrapped(strip(dedent(e.hint)).splitLines().join(" "), wrappingWidth, delim="\n        ")
+            printError hinter & wrapped(strip(dedent(e.hint.processPseudomarkdown())).splitLines().join(" "), wrappingWidth, delim="\n        ")
 
 #=======================================
 # Methods
@@ -340,13 +372,12 @@ proc printHint(e: VError) =
 when defined(WEB):
     proc stripFormatting(s: string): string =
         # drop both pseudo-markdown `_..._` markers and any ANSI escape sequences
+        let s = s.applyEmphasis("", "")
         result = newStringOfCap(s.len)
         var i = 0
         while i < s.len:
             let c = s[i]
-            if c == '_':
-                inc i
-            elif c == '\x1b' and i+1 < s.len and s[i+1] == '[':
+            if c == '\x1b' and i+1 < s.len and s[i+1] == '[':
                 i += 2
                 while i < s.len and s[i] != 'm':
                     inc i
