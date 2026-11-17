@@ -117,6 +117,7 @@ proc getArity(s: string): int8 {.inline.} =
     if TmpArities.len > 0:
         let overlaid = TmpArities.getOrDefault(s, -2)
         if overlaid != -2: return overlaid
+    if ShadowedNames.len > 0 and s in ShadowedNames: return -1
     let v = Syms.getOrDefault(s, nil)
     result = if not v.isNil and v.kind == Function: v.arity else: -1
 
