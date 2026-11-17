@@ -614,6 +614,28 @@ do [
 ]
 
 
+topic « odd? / even?
+do [
+
+    ensure.that: "works with positive :integer" -> and? odd? 3 not? even? 3
+    ensure.that: "works with positive :integer" -> and? even? 4 not? odd? 4
+    passed
+
+    ensure.that: "works with negative :integer" -> and? odd? neg 3 not? even? neg 3
+    ensure.that: "works with negative :integer" -> and? odd? neg 1 not? even? neg 1
+    ensure.that: "works with negative :integer" -> and? even? neg 4 not? odd? neg 4
+    passed
+
+    ensure.that: "works with big :integer" -> and? odd? (2^70)+1 not? even? (2^70)+1
+    ensure.that: "works with negative big :integer" -> and? odd? neg (2^70)+1 not? even? neg (2^70)+1
+    passed
+
+    ensure.that: "works with 0" -> and? even? 0 not? odd? 0
+    passed
+
+]
+
+
 topic « round
 do [
 
