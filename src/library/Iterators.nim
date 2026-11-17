@@ -344,14 +344,47 @@ template fetchParamsBlock() {.dirty.} =
             item.requireValue({Literal, Word})
             params.add(item.s)
 
+proc evalIteratorBody(body: Value, params: Value, withIndex: Value): Translation =
+    ## Iterator variables named after an existing function
+    ## should shadow it within the body - as function params do:
+    ## so, while compiling, we hide any such function
+    if body.kind == Bytecode:
+        return body.trans
+
+    if not body.cachedTrans.isNil:
+        return body.cachedTrans
+
+    var hidden: seq[(string, Value)]
+
+    template hide(v: Value) =
+        if v.kind in {Literal, Word}:
+            if (let sym = Syms.getOrDefault(v.s, nil); not sym.isNil and sym.kind == Function):
+                hidden.add((v.s, sym))
+                Syms.del(v.s)
+
+    if not withIndex.isNil: hide(withIndex)
+    if params.kind == Block:
+        for v in params.a: hide(v)
+    else:
+        hide(params)
+
+    if hidden.len == 0:
+        return doEval(body)
+
+    try:
+        result = doEval(body)
+    finally:
+        for (name, sym) in hidden:
+            Syms[name] = sym
+
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
-    let preevaled {.used.} = evalOrGet(z)
     let withIndex: Value = 
         if checkAttr("with"):
             aWith
         else: 
             nil
     let hasIndex = not withIndex.isNil
+    let preevaled {.used.} = evalIteratorBody(z, y, withIndex)
     var iterable{.cursor.} = x
 
     when doesAcceptLiterals:
