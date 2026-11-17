@@ -82,3 +82,10 @@ nested break: after test
 nested break: y: 1 
 nested break: after loop 2
 nested break: after loop 1
+while continue: before loop
+while continue: after loop: 3
+while continue: k: 2
+while continue: k: 4
+while continue: after loop: 5
+until continue: before loop
+until continue: after loop: 3

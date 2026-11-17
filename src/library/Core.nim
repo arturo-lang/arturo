@@ -1606,14 +1606,13 @@ proc defineModule*(moduleName: string) =
             while true:
                 handleBranching:
                     execUnscoped(preevaledX)
-                    execUnscoped(preevaledY)
-
-                    let popped = stack.pop()
-                    let condition = not (popped.kind==Null or isFalse(popped))
-                    if condition:
-                        break
                 do:
                     discard
+                execUnscoped(preevaledY)
+
+                let popped = stack.pop()
+                if not (popped.kind==Null or isFalse(popped)):
+                    break
 
     builtin "using",
         alias       = unaliased,
@@ -1816,10 +1815,10 @@ proc defineModule*(moduleName: string) =
                 while not (popped.kind==Null or isFalse(popped)):
                     handleBranching:
                         execUnscoped(preevaledY)
-                        execUnscoped(preevaledX)
-                        popped = stack.pop()
                     do:
                         discard
+                    execUnscoped(preevaledX)
+                    popped = stack.pop()
     
     builtin "with",
         alias       = unaliased,
