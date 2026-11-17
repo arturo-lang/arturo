@@ -957,8 +957,9 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             case xKind:
                 of String:
-                    let indx = x.s.find(y.s)
-                    if indx != -1: push(newInteger(indx))
+                    let what = if yKind == Char: $(y.c) else: y.s
+                    let indx = x.s.find(what)
+                    if indx != -1: push(newInteger(x.s.byteToRuneIndex(indx)))
                     else: push(VNULL)
                 of Block:
                     let indx = x.a.find(y)
