@@ -1,0 +1,12 @@
+; handlers still pending when the script ends
+; should run - and then the program should exit
+
+E: event 'e
+on E [ print "got" ]
+emit E
+
+F: event 'f
+on.with:'p F [ print ["payload:" p] ]
+emit.with: 42 F
+
+print "end"
