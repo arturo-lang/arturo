@@ -1450,7 +1450,7 @@ proc defineModule*(moduleName: string) =
             print select 1..10 => odd?       ; 1 3 5 7 9
         """:
             #=======================================================
-            push(newLogical(x % I2 == I1))
+            push(newLogical(x % I2 != I0))
 
     builtin "positive?",
         alias       = unaliased, 
