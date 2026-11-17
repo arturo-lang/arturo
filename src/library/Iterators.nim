@@ -26,7 +26,7 @@
 # Libraries
 #=======================================
 
-import algorithm, sequtils, sugar, unicode
+import algorithm, hashes, sequtils, sugar, tables, unicode
 
 when not defined(WEB):
     import asyncdispatch
@@ -344,21 +344,55 @@ template fetchParamsBlock() {.dirty.} =
             item.requireValue({Literal, Word})
             params.add(item.s)
 
+var ShadowedTranslations: Table[Hash, Translation]
+
 proc evalIteratorBody(body: Value, params: Value, withIndex: Value): Translation =
     ## Iterator variables named after an existing function
     ## should shadow it within the body - as function params do
-    var shadowed: seq[string]
-    for v in (if params.kind == Block: params.a else: @[params]) & (if withIndex.isNil: @[] else: @[withIndex]):
-        if v.kind in {Literal, Word}:
-            if (let sym = Syms.getOrDefault(v.s, nil); not sym.isNil and sym.kind == Function):
-                shadowed.add(v.s)
+    if body.kind == Bytecode:
+        return body.trans
 
-    if shadowed.len == 0 or body.kind == Bytecode:
+    if not body.cachedTrans.isNil:
+        return body.cachedTrans
+
+    template shadows(v: Value): bool =
+        v.kind in {Literal, Word} and (let sym = Syms.getOrDefault(v.s, nil); not sym.isNil and sym.kind == Function)
+
+    var hasShadowed = (not withIndex.isNil and shadows(withIndex))
+    if not hasShadowed:
+        if params.kind == Block:
+            for v in params.a:
+                if shadows(v):
+                    hasShadowed = true
+                    break
+        else:
+            hasShadowed = shadows(params)
+
+    if not hasShadowed:
         return evalOrGet(body)
+
+    var shadowed: seq[string]
+    var vhash: Hash = 0
+    for v in (if params.kind == Block: params.a else: @[params]) & (if withIndex.isNil: @[] else: @[withIndex]):
+        if shadows(v):
+            shadowed.add(v.s)
+            vhash = vhash !& hash(v.s)
+
+    if not body.dynamic:
+        vhash = vhash !& hash(body)
+        if body.kind in {Block, Inline}:
+            for tok in body.a:
+                vhash = vhash !& int(tok.ln)
+        vhash = !$vhash
+        if (let stored = ShadowedTranslations.getOrDefault(vhash, nil); not stored.isNil):
+            return stored
 
     ShadowedNames = shadowed
     try:
-        result = doEval(body, useStored=false)
+        let (trans, canStore) = doEvalAndCheckSafety(body, useStored=false)
+        if canStore and not body.dynamic:
+            ShadowedTranslations[vhash] = trans
+        result = trans
     finally:
         ShadowedNames.setLen(0)
 

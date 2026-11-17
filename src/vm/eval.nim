@@ -530,9 +530,8 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
         if canStore and (vhash != -1):
             StoredTranslations[vhash] = res
             if cacheable: root.cachedTrans = res
-        return (res, canStore)
-    else:
-        return (res, false)
+
+    return (res, canStore)
 
 proc doEval*(root: Value, isDictionary=false, isFunctionBlock=false, omitNewlines=false, useStored: static bool = true): Translation {.inline.} =
     return doEvalAndCheckSafety(root, isDictionary, isFunctionBlock, omitNewlines, useStored)[0]
