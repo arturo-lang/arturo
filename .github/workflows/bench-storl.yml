@@ -1,0 +1,144 @@
+name: "Benchmark (storl)"
+
+on:
+    push:
+        branches:
+            - 'fix-storl-copy'
+    workflow_dispatch:
+
+jobs:
+    Benchmark:
+        runs-on: ${{ matrix.runner }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - {os: linux, arch: amd64, runner: ubuntu-latest}
+                    - {os: linux, arch: arm64, runner: ubuntu-24.04-arm}
+                    - {os: macos, arch: arm64, runner: macos-latest}
+                    - {os: macos, arch: amd64, runner: macOS-15-intel}
+
+        steps:
+            - name: Checkout PR
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo-new
+
+            - name: Checkout master
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo-master
+                ref: master
+
+            - name: Install Arturo (toolchain)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                src: master
+                create_artifact: 'false'
+
+            - name: Build both
+              run: |
+                for d in arturo-master arturo-new; do
+                    (cd $d && ./build.nims --as arturo-bench)
+                done
+                if [ "${{ matrix.os }}" = "macos" ]; then
+                    brew install hyperfine
+                else
+                    sudo apt-get install -y hyperfine
+                fi
+
+            - name: Prepare scripts
+              run: |
+                mkdir bench && cd bench
+
+                # literal block, assigned & used right away
+                cat > block.art <<'EOF'
+                loop 1..3000000 'i [
+                    x: [1 2 3]
+                    y: size x
+                ]
+                print y
+                EOF
+
+                # literal string, assigned & used right away
+                cat > string.art <<'EOF'
+                loop 1..3000000 'i [
+                    x: "hello"
+                    y: size x
+                ]
+                print y
+                EOF
+
+                # non-literal values, assigned & used right away
+                cat > values.art <<'EOF'
+                s: 0
+                loop 1..3000000 'i [
+                    x: i + 1
+                    s: s + x
+                ]
+                print s
+                EOF
+
+                # function locals
+                cat > locals.art <<'EOF'
+                f: function [n][
+                    a: n * 2
+                    b: a + 1
+                    c: [a b]
+                    size c
+                ]
+                s: 0
+                loop 1..1500000 'i [s: s + f i]
+                print s
+                EOF
+
+                # recursion
+                cat > fib.art <<'EOF'
+                fib: function [n][
+                    if n < 2 -> return n
+                    (fib n-1) + fib n-2
+                ]
+                print fib 31
+                EOF
+
+                head -50 *.art
+
+            - name: Run
+              run: |
+                cd bench
+                M=$GITHUB_WORKSPACE/arturo-master/bin/arturo-bench
+                N=$GITHUB_WORKSPACE/arturo-new/bin/arturo-bench
+
+                for f in *.art; do
+                    a=$($M $f 2>&1); b=$($N $f 2>&1)
+                    [ "$a" = "$b" ] || { echo "OUTPUT DIFFERS: $f"; echo "$a"; echo "$b"; }
+                done
+
+                # two rounds, in opposite order, so that drift
+                # doesn't favor either side
+                for f in *.art; do
+                    hyperfine -N --warmup 3 --runs 20 -n master "$M $f" -n PR "$N $f" --export-json "$f.1.json"
+                    hyperfine -N --warmup 3 --runs 20 -n PR "$N $f" -n master "$M $f" --export-json "$f.2.json"
+                done
+
+                {
+                    echo "## ${{ matrix.os }}-${{ matrix.arch }}"
+                    echo ""
+                    echo "| script | master (ms) | PR (ms) | PR/master |"
+                    echo "|---|---|---|---|"
+                    for f in *.art; do
+                        jq -rs --arg f "$f" '
+                            [.[].results[]] as $r
+                            | ([$r[] | select(.command=="master") | .times[]] | add/length*1000) as $m
+                            | ([$r[] | select(.command=="PR") | .times[]] | add/length*1000) as $p
+                            | "| \($f) | \($m|floor) | \($p|floor) | \(($p/$m*1000|round)/1000) |"
+                        ' "$f.1.json" "$f.2.json"
+                    done
+                } | tee -a $GITHUB_STEP_SUMMARY
