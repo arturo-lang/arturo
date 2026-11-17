@@ -26,7 +26,7 @@
 # Libraries
 #=======================================
 
-import algorithm, hashes, sequtils, sugar, tables, unicode
+import algorithm, sequtils, sugar, unicode
 
 when not defined(WEB):
     import asyncdispatch
@@ -344,53 +344,38 @@ template fetchParamsBlock() {.dirty.} =
             item.requireValue({Literal, Word})
             params.add(item.s)
 
-var ShadowedTranslations: Table[Hash, Translation]
-
 proc evalIteratorBody(body: Value, params: Value, withIndex: Value): Translation =
     ## Iterator variables named after an existing function
-    ## should shadow it within the body - as function params do
+    ## should shadow it within the body - as function params do:
+    ## so, while compiling, we hide any such function
     if body.kind == Bytecode:
         return body.trans
 
     if not body.cachedTrans.isNil:
         return body.cachedTrans
 
-    template shadows(v: Value): bool =
-        v.kind in {Literal, Word} and (let sym = Syms.getOrDefault(v.s, nil); not sym.isNil and sym.kind == Function)
+    var hidden: seq[(string, Value)]
 
-    var hasShadowed = (not withIndex.isNil and shadows(withIndex))
-    if not hasShadowed:
-        if params.kind == Block:
-            for v in params.a:
-                if shadows(v):
-                    hasShadowed = true
-                    break
-        else:
-            hasShadowed = shadows(params)
+    template hide(v: Value) =
+        if v.kind in {Literal, Word}:
+            if (let sym = Syms.getOrDefault(v.s, nil); not sym.isNil and sym.kind == Function):
+                hidden.add((v.s, sym))
+                Syms.del(v.s)
 
-    if not hasShadowed:
-        return evalOrGet(body)
+    if not withIndex.isNil: hide(withIndex)
+    if params.kind == Block:
+        for v in params.a: hide(v)
+    else:
+        hide(params)
 
-    var shadowed: seq[string]
-    var vhash: Hash = 0
-    for v in (if params.kind == Block: params.a else: @[params]) & (if withIndex.isNil: @[] else: @[withIndex]):
-        if shadows(v):
-            shadowed.add(v.s)
-            vhash = vhash !& hash(v.s)
+    if hidden.len == 0:
+        return doEval(body)
 
-    if not body.dynamic:
-        vhash = vhash !& hash(body)
-        if body.kind in {Block, Inline}:
-            for tok in body.a:
-                vhash = vhash !& int(tok.ln)
-        vhash = !$vhash
-        if (let stored = ShadowedTranslations.getOrDefault(vhash, nil); not stored.isNil):
-            return stored
-
-    let (trans, canStore) = doEvalAndCheckSafety(body, useStored=false, shadowed=shadowed)
-    if canStore and not body.dynamic:
-        ShadowedTranslations[vhash] = trans
-    result = trans
+    try:
+        result = doEval(body)
+    finally:
+        for (name, sym) in hidden:
+            Syms[name] = sym
 
 template prepareIteration(doesAcceptLiterals=true) {.dirty.} =
     let withIndex: Value = 

@@ -959,7 +959,7 @@ proc dumpNode*(node: Node, level = 0, single: static bool = false): string =
 # Main
 #=======================================
 
-proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false, shadowed: seq[string] = @[]): (Node, bool) =
+proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArities: static bool=false): (Node, bool) =
     var res = newRootNode()
 
     PipeParent = nil
@@ -967,10 +967,6 @@ proc generateAst*(parsed: Value, asDictionary=false, asFunction=false, reuseArit
 
     when not reuseArities:
         TmpArities.clear()
-
-    # names that shouldn't be taken for functions
-    for s in shadowed:
-        TmpArities[s] = -1
 
     NodeLine = 0
 
