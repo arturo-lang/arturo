@@ -40,6 +40,10 @@ filled folders moved to dest/
 >> permissions
 
 
+>> permissions.set
+
+passed!
+
 >> read
 
 Hello, world
