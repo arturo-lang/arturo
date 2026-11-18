@@ -102,6 +102,13 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
 
         var stackTop {.cursor.} = stack.peek(0)
 
+        when not doPop:
+            # what's left on the stack must be the very value
+            # we store - and not the (readonly) original
+            if stackTop.readonly:
+                Stack[SP-1] = copyValue(stackTop)
+                stackTop = Stack[SP-1]
+
         SetSymById(symIdOf(cnst[idx]), stackTop, safe=true)
         when doPop:
             stack.popN(1)
