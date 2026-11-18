@@ -743,8 +743,11 @@ proc defineModule*(moduleName: string) =
 
                     while keepGoing:
                         res = res.replace(Interpolated, proc (match: RegexMatch): string =
+                                    let stop = SP
                                     execUnscoped(doParse(match.captures[0], isFile=false))
-                                    $(stack.pop())
+                                    # (there may be nothing to pop, e.g. with `| |`)
+                                    if SP > stop: $(stack.pop())
+                                    else: ""
                                 )
 
                         # if recursive, check if there's still more embedded tags
