@@ -1013,6 +1013,9 @@ do [
 
     print read.file ~"|dir|/file.json"
 
+    write.json.compact @[1:2 to :complex [1 2] to :binary [1 2] function [x][x]] ~"|dir|/other.json"
+    print read.file ~"|dir|/other.json"
+
 ]
 
 topic "write.binary"
