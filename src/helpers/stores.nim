@@ -78,6 +78,10 @@ func canStoreKey*(storeKind: StoreKind, valueKind: ValueKind): bool {.inline.} =
 
     return valueKind in {Integer, Floating, String, Logical, Block, Dictionary, Null}
 
+proc writeIfChanged(path: string, contents: string) =
+    if not (path.fileExists() and readFile(path) == contents):
+        writeToFile(path, contents)
+
 #=======================================
 # Templates
 #=======================================
@@ -106,12 +110,11 @@ template ensureLoaded*(store: VStore): untyped =
 proc saveStore*(store: VStore, one = false, key: string = "") =
     case store.kind:
         of NativeStore:
-            writeToFile(
-                store.path, 
+            store.path.writeIfChanged(
                 codify(newDictionary(store.data),pretty=true, unwrapped=true).strip()
             )
         of JsonStore:
-            writeToFile(store.path, jsonFromValueDict(store.data, pretty=true))
+            store.path.writeIfChanged(jsonFromValueDict(store.data, pretty=true))
         of SqliteStore:
             when defined(SQLITE):
                 if one:
@@ -121,10 +124,11 @@ proc saveStore*(store: VStore, one = false, key: string = "") =
                     let sql = "INSERT OR REPLACE INTO store (key, kind, value) VALUES (?, ?, ?);"
                     discard store.db.execSqliteDb(sql, @[key, kind, json])
                 else:
-                    # TODO(Helpers/stores) should add support for auto-saving entire SQLite stores
-                    #  labels: bug, values
-                    discard
-                discard
+                    for k, value in store.data:
+                        let kind = $(value.kind)
+                        let json = jsonFromValue(value)
+                        let sql = "INSERT OR REPLACE INTO store (key, kind, value) VALUES (?, ?, ?);"
+                        discard store.db.execSqliteDb(sql, @[k, kind, json])
             else:
                 Error_SqliteDisabled()
         else:
@@ -183,7 +187,13 @@ proc getStoreKey*(store: VStore, key: string, unsafe: static bool=false): Value 
         # return nil instead
         store.data.getOrDefault(key, nil)
     else:
-        GetKey(store.data, key)
+        result = GetKey(store.data, key)
+
+        # a value that can be changed in-place
+        # (e.g. `d\inner\k: 2`) has to be saved again
+        # - just in case
+        if result.kind in {Block, Dictionary, String, Binary, Object}:
+            store.pending = true
 
 proc setStoreKey*(store: VStore, key: string, value: Value) =
     if unlikely(not canStoreKey(store.kind, value.kind)):
@@ -239,5 +249,6 @@ proc initStore*(
     if doLoad:
         result.loadStore(justCreated=not storeExists)
 
-    if not autosave:
-        Stores.add(result)
+    # autosaved stores too: in-place changes
+    # can only be saved at the end
+    Stores.add(result)
