@@ -1,7 +1,6 @@
 runtime.NumberOutOfPermittedRange
 lib.arithmetic.bignum
 lib.binary.bignum
-lib.comparison
 lib.files
 quantities
 Arbitrary-precision integers (included)
@@ -36,16 +35,13 @@ N-smooth numbers
 Pell numbers
 Pell's equation
 Penta-power prime seeds
-Permutations - derangements
 Pierpont primes
-Primorial numbers
 Quad-power prime seeds
 Repunit primes
 RSA code
 Sequence of primorial primes
 Smallest power of 6 whose decimal expansion contains n
 Sort a list of object identifiers
-Special factorials
 Square root by hand
 Stirling numbers of the first kind
 Stirling numbers of the second kind
