@@ -45,3 +45,26 @@ print gcd @[m 6]
 print gcd @[m m]
 print lcm @[m 2]
 print lcm @[3 m]
+
+; comparing with Floating values
+b: 10^100
+print ∞ > b
+print b > ∞
+print b < ∞
+print (neg ∞) < neg b
+print (neg b) > neg ∞
+print 1.0e300 > b
+print b < 1.0e300
+print 1.0e99 < b
+print b > 1.0e99
+print 1.0e20 = 10^20
+print (10^20) = 1.0e20
+print 1.5e20 > 10^20
+print (10^20) < 1.5e20
+print (neg 10^20) > neg 1.5e20
+print b = ∞
+print (∞ - ∞) = b
+print b < (∞ - ∞)
+print b > (∞ - ∞)
+print max @[b ∞ 1.0e300]
+print sort @[∞ b neg ∞ 1.0e300]
