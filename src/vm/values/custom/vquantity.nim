@@ -334,12 +334,16 @@ proc parseValue(s: string): QuantityValue =
         except ValueError:
             when defined(GMP):
                 result = toRational(newInt(ratparts[0]), newInt(ratparts[1]))
+            else:
+                result = toRational(parseFloat(ratparts[0]) / parseFloat(ratparts[1]))
     else:
         try:
             result = toRational(parseInt(s))
         except ValueError:
             when defined(GMP):
                 result = toRational(newInt(s))
+            else:
+                result = toRational(parseFloat(s))
 
 proc toQuantity*(str: string): Quantity =
     let parts = str.split(" ")
