@@ -957,6 +957,9 @@
 >> temperature - math // conversions
 [+] passed!
 
+>> temperature - comparisons
+[+] passed!
+
 >> temperature - conforms?
 [+] passed!
 [+] passed!

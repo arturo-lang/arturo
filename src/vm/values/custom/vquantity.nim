@@ -482,7 +482,7 @@ proc `==`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
 
-    let convB = b.convertTo(a.atoms)
+    let convB = b.convertQuantity(a.atoms)
 
     return a.original == convB.original
 
@@ -503,7 +503,7 @@ proc `<`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
 
-    let convB = b.convertTo(a.atoms)
+    let convB = b.convertQuantity(a.atoms)
 
     return a.original < convB.original
 
@@ -527,7 +527,7 @@ proc `>`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
 
-    let convB = b.convertTo(a.atoms)
+    let convB = b.convertQuantity(a.atoms)
 
     return a.original > convB.original
 
