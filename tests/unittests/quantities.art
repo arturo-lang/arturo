@@ -5347,3 +5347,58 @@ do [
     passed
 
 ]
+
+topic « in-place operations
+do [
+
+    x: 1`m
+    add 'x 1`m
+    ensure -> "200 cm" = to :string x --> `cm
+    ensure -> 200`cm = x
+
+    x: 1`m
+    add 'x 1
+    ensure -> "200 cm" = to :string x --> `cm
+
+    x: 3`m
+    sub 'x 1`m
+    ensure -> "200 cm" = to :string x --> `cm
+
+    x: 3`m
+    sub 'x 1
+    ensure -> "200 cm" = to :string x --> `cm
+
+    x: 1`m
+    mul 'x 3
+    ensure -> "300 cm" = to :string x --> `cm
+
+    x: 6`m
+    div 'x 3
+    ensure -> "200 cm" = to :string x --> `cm
+
+    x: 1`m
+    inc 'x
+    ensure -> "200 cm" = to :string x --> `cm
+
+    x: 3`m
+    dec 'x
+    ensure -> "200 cm" = to :string x --> `cm
+
+    x: 1`m
+    neg 'x
+    ensure -> "-100 cm" = to :string x --> `cm
+
+    ; ...without touching the value we converted from
+
+    x: 3`m
+    y: in`m x
+    inc 'y
+    ensure -> "3 m" = to :string x
+
+    x: 3`m
+    y: x --> `m
+    inc 'y
+    ensure -> "3 m" = to :string x
+
+    passed
+]
