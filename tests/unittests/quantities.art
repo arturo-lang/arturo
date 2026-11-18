@@ -4124,6 +4124,25 @@ do [
     passed
 
 
+    topic « temperature - comparisons
+
+    ensure -> 0`degC = 32`degF
+    ensure -> 0`degC = 273.15`K
+    ensure -> 32`degF = 0`degC
+    ensure -> 273.15`K = 0`degC
+    ensure -> 0`degR = 0`K
+    ensure -> not? 0`degC = 0`K
+    ensure -> not? 0`degC < 1`K
+    ensure -> 1`K < 0`degC
+    ensure -> 0`degC < 33`degF
+    ensure -> not? 1`K > 0`degC
+    ensure -> 0`degC > 1`K
+    ensure -> 33`degF > 0`degC
+    ensure -> 1`m < 2`m
+    ensure -> 100`cm = 1`m
+    passed
+
+
     topic « temperature - conforms?
 
     ensure -> every? temperatureSet => conforms? `K
