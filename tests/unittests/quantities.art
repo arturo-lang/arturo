@@ -239,7 +239,7 @@ do [
     ensure -> 1`pica    = 12`points
     ensure -> 1`point   = 1:72`inch
     ensure -> 1`pixel   = 1:96`inch
-    ensure -> 1`fathom  = 1`yard
+    ensure -> 1`fathom  = 2`yards
     ensure -> 1`furlong = 1:8`miles
     ensure -> 1`angstrom = to :quantity [1:10000000000 `m]
     ensure -> 1`lightYear   = 9460730472580800`m
@@ -932,7 +932,7 @@ do [
     ensure -> 1`ac    = 4840`yd2
     ensure -> 1`are   = 100`m2
     ensure -> 1`ha    = 100`are
-    ensure -> 1`barn  = 100`ftm2
+    ensure -> 1`barn  = 100`fm2
     passed
 
 
@@ -2816,7 +2816,7 @@ do [
     ensure -> 1`Pa  =   1`N/m2
     ensure -> 1`atm =   101325`Pa
     ensure -> 1`bar =   100000`Pa
-    ensure -> 1`pz  =   10`kPa
+    ensure -> 1`pz  =   1`kPa
     ensure -> 1`Ba  =   1`dyn/cm2
     passed
 
@@ -4603,7 +4603,7 @@ do [
 
     radiationExposureSet: [
 
-        1`Gy        1`Sv        1`R
+        1`Gy        1`Sv
 
         ; Other custom radiationExposure units
         ; magnetic energy / mass
@@ -4680,7 +4680,7 @@ do [
 
     ensure -> 1`Gy   =   1`J/kg
     ensure -> 1`Sv   =   1`J/kg
-    ensure -> 1`R    =   0.01`J/kg
+    ensure -> 1`R    =   0.000258`C/kg
     passed
 
 
@@ -4852,7 +4852,7 @@ do [
 
     topic « kinematicViscosity - math // conversions
 
-    ensure -> 1`St   =   1`m2/s
+    ensure -> 1`St   =   1`cm2/s
     passed
 
 
@@ -4866,14 +4866,14 @@ do [
 
     topic « kinematicViscosity - convert
 
-    ensure -> same? 1`St convert 1`m2/s `St
-    ensure -> same? 1`St 1`m2/s --> `St
+    ensure -> same? 1`St convert 1`cm2/s `St
+    ensure -> same? 1`St 1`cm2/s --> `St
     passed
 
 
     topic « kinematicViscosity - in
 
-    ensure -> same? 1`St in `St 1`m2/s
+    ensure -> same? 1`St in `St 1`cm2/s
     passed
 
 
@@ -4936,7 +4936,8 @@ do [
 
     topic « angularVelocity - math // conversions
 
-    ensure -> 1`rpm   =   0.1047`rad/s
+    ensure -> 6.28318`rad/s < 60`rpm
+    ensure -> 60`rpm < 6.28319`rad/s
     passed
 
 
@@ -4950,14 +4951,14 @@ do [
 
     topic « angularVelocity - convert
 
-    ensure -> same? 1`rpm convert 0.1047`rad/s `rpm
-    ensure -> same? 1`rpm 0.1047`rad/s --> `rpm
+    ensure -> same? 1`rpm convert 10`drpm `rpm
+    ensure -> same? 1`rpm 10`drpm --> `rpm
     passed
 
 
     topic « angularVelocity - in
 
-    ensure -> same? 1`rpm in `rpm 0.1047`rad/s
+    ensure -> same? 1`rpm in `rpm 10`drpm
     passed
 
 
@@ -5399,6 +5400,33 @@ do [
     y: x --> `m
     inc 'y
     ensure -> "3 m" = to :string x
+
+    passed
+]
+
+topic « definitions
+do [
+    ensure -> 6`ft = 1`ftm --> `ft
+    ensure -> 1`barn = 100`fm2
+    ensure -> 1000`Pa = 1`pz --> `Pa
+    ensure -> 1`cm2/s = 1`St --> `cm2/s
+    ensure -> 0.000258`C/kg = 1`R --> `C/kg
+    ensure -> radiationExposure? 1`R
+    ensure -> not? radiation? 1`R
+    ensure -> 6.28318`rad/s < 60`rpm
+    ensure -> 60`rpm < 6.28319`rad/s
+
+    passed
+]
+
+topic « printing
+do [
+    ensure -> "1 b" = to :string 1`barn
+    ensure -> "1 bit" = to :string 1`bit
+    ensure -> "1 kbit" = to :string 1`kb
+    ensure -> "1 B" = to :string 1`B
+    ensure -> "2.5" = to :string 10`m / 4`m
+    ensure -> "3 m" = to :string 3`m
 
     passed
 ]

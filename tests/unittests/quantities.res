@@ -1340,3 +1340,9 @@
 
 >> in-place operations
 [+] passed!
+
+>> definitions
+[+] passed!
+
+>> printing
+[+] passed!

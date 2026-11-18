@@ -334,12 +334,16 @@ proc parseValue(s: string): QuantityValue =
         except ValueError:
             when defined(GMP):
                 result = toRational(newInt(ratparts[0]), newInt(ratparts[1]))
+            else:
+                result = toRational(parseFloat(ratparts[0]) / parseFloat(ratparts[1]))
     else:
         try:
             result = toRational(parseInt(s))
         except ValueError:
             when defined(GMP):
                 result = toRational(newInt(s))
+            else:
+                result = toRational(parseFloat(s))
 
 proc toQuantity*(str: string): Quantity =
     let parts = str.split(" ")
@@ -712,7 +716,8 @@ proc `$`*(q: Quantity): string =
     elif unlikely(q.isTemperature()):
         result = stringify(q.original, TemperatureRational) & (if q.atoms[0].unit.u.core == K_CoreUnit: " " else: "") & $q.atoms
     else:
-        result = stringify(q.original) & " " & $q.atoms
+        let units = $q.atoms
+        result = stringify(q.original) & (if units.len > 0: " " & units else: "")
 
 func codify*(expo: AtomExponent): string =
     if expo notin [-1, 1]:
