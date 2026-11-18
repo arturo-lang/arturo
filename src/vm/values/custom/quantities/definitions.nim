@@ -135,7 +135,7 @@ static:
     defUnit "in",       "in",       false,      "127:5000 m",               "inch", "inches"
     defUnit "ft",       "ft",       false,      "12 in",                    "foot", "feet"
     defUnit "yd",       "yd",       false,      "3 ft",                     "yard", "yards"
-    defUnit "ftm",      "ftm",      false,      "1 yd",                     "fathom", "fathoms"
+    defUnit "ftm",      "ftm",      false,      "2 yd",                     "fathom", "fathoms"
     defUnit "rod",      "rod",      false,      "5.5 yd",                   "rods"
     defUnit "mi",       "mi",       false,      "5280 ft",                  "mile", "miles"
     defUnit "fur",      "fur",      false,      "1:8 mi",                   "furlong", "furlongs"
@@ -157,7 +157,7 @@ static:
     defUnit "ac",       "ac",       false,      "4840 yd2",                 "acre", "acres"
     defUnit "are",      "are",      false,      "100 m2",                   "ares"
     defUnit "ha",       "ha",       false,      "100 are",                  "hectare", "hectares"
-    defUnit "barn",     "b",        false,      "100 ftm2",                 "barns"
+    defUnit "barn",     "b",        false,      "1:10000000000000000000000000000 m2", "barns"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Volume units (base: m^3)
@@ -245,7 +245,7 @@ static:
     defUnit "Pa",       "Pa",       true,       "1 N/m2",                   "pascal", "pascals"
     defUnit "atm",      "atm",      false,      "101325 Pa",                "atmosphere", "atmospheres"
     defUnit "bar",      "bar",      true,       "100000 Pa",                "bars"
-    defUnit "pz",       "pz",       false,      "10 kPa",                   "pieze"
+    defUnit "pz",       "pz",       false,      "1 kPa",                    "pieze"
     defUnit "Ba",       "Ba",       false,      "1 dyn/cm2",                "barye", "baryes"
     defUnit "mmHg",     "mmHg",     false,      "133.3223684 Pa",           "millimeterOfMercury", "millimetersOfMercury"
     defUnit "psi",      "psi",      false,      "6894.757293 Pa",           "poundPerSquareInch", "poundsPerSquareInch"
@@ -416,7 +416,7 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     defUnit "Gy",       "Gy",       true,       "1 J/kg",                   "gray", "grays"
     defUnit "Sv",       "Sv",       true,       "1 J/kg",                   "sievert", "sieverts"
-    defUnit "R",        "R",        true,       "1e-2 Gy",                  "roentgen", "roentgens"
+    defUnit "R",        "R",        true,       "2.58e-4 C/kg",             "roentgen", "roentgens"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Viscosity units (base: Pa.s)
@@ -430,14 +430,14 @@ static:
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "St",       "St",       true,       "1 m2/s",                   "stokes"
+    defUnit "St",       "St",       true,       "1 cm2/s",                  "stokes"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Angular velocity units (base: rpm = rad/s)
     #---------------------------------------------------------------------------------------------------------------------------
     #       name        symbol      prefix?     definition                  aliases
     #---------------------------------------------------------------------------------------------------------------------------
-    defUnit "rpm",      "rpm",      true,       "0.1047 rad/s",             "rpms"
+    defUnit "rpm",      "rpm",      true,       "pi:30 rad/s",              "rpms"
 
     #---------------------------------------------------------------------------------------------------------------------------
     # Thermal insulance units (base: m2.K/W)
