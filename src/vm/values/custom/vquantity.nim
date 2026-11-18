@@ -130,8 +130,7 @@ var
     Quantities          : Table[SubUnit, Quantity]
     UserUnits           : Table[string, string]
 
-    LastSignature       : QuantitySignature = int(pow(6.0,11.0))
-    SignatureStep       : QuantitySignature = int(pow(6.0,20.0))
+    LastSignature       : QuantitySignature = int(pow(11.0,11.0))
 
     ExchangeRates       : Table[string, float]
 
@@ -206,10 +205,15 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
     elif unit.p != No_Prefix:
         result.value *= Powers[ord(unit.p) + 18]
 
+func addSignature(a: var QuantitySignature, b: QuantitySignature, power: AtomExponent) {.inline.} =
+    # user-defined units have (pseudo-)random signatures,
+    # so we let the calculation wrap around
+    a = cast[QuantitySignature](cast[uint64](a) + cast[uint64](b) * cast[uint64](int64(power)))
+
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result += prim.signature * atom.power
+        result.addSignature(prim.signature, atom.power)
 
 proc getValue(atoms: Atoms): QuantityValue =
     result = 1//1
@@ -242,7 +246,9 @@ proc unitAlaCarte*(str: string): PrefixedUnit =
     var newQuantity = toQuantity("1", @[])
     newQuantity.signature = LastSignature
     newQuantity.base = true
-    LastSignature += SignatureStep
+    # next one: pseudo-random (as with evenly-spaced signatures,
+    # combinations of different units would collide)
+    LastSignature = cast[QuantitySignature](cast[uint64](LastSignature) * 6364136223846793005'u64 + 1442695040888963407'u64)
     Quantities[subu] = newQuantity
     UserUnits[str] = str
 
@@ -303,7 +309,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result.signature += prim.signature * atom.power
+        result.signature.addSignature(prim.signature, atom.power)
         result.value *= prim.value ^ atom.power
 
         if unlikely(atom.unit.u.kind == User):
