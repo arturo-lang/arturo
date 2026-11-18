@@ -6,12 +6,60 @@
 ; @author: drkameleon
 ;==========================================
 
+; With --web, every test is run using our
+; Web/JS build instead (via tools/web-runner.js):
+;
+; ARTURO_JS_ENGINE: node (default) or deno
+; ARTURO_JS: the build to use (default: bin/arturo.js)
+; ARTURO_JS_TIMEOUT: time limit per test, in seconds (default: 120)
+
+web?: in? "--web" arg
+args: remove arg "--web"
+
 errorMargin: 0
-if 1 = size arg -> errorMargin: to :integer first arg
+if 1 = size args -> errorMargin: to :integer first args
+
+release: sys\release
+runCommand: ~{|sys\binary| --no-color}
+
+if web? [
+    jsEngine: "node"
+    if key? env "ARTURO_JS_ENGINE" -> jsEngine: env\ARTURO_JS_ENGINE
+    unless in? jsEngine ["node" "deno"] ->
+        panic.code:1 ~"Unknown JS engine: |jsEngine|"
+
+    jsTimeout: "120"
+    if key? env "ARTURO_JS_TIMEOUT" -> jsTimeout: env\ARTURO_JS_TIMEOUT
+
+    webRunner: relative "web-runner.js"
+    runCommand: switch jsEngine = "deno"
+        -> ~{ARTURO_JS_TIMEOUT=|jsTimeout| deno run --allow-read --allow-env --allow-run "|webRunner|"}
+        -> ~{ARTURO_JS_TIMEOUT=|jsTimeout| node "|webRunner|"}
+
+    ; the release of the Web build, as given by `sys\release` there
+    ; (for now, `sys` crashes in Web builds, so we default to what
+    ; they'd normally give: 'full, since they are not MINI builds)
+    release: 'full
+    releaseCheck: strip execute ~{|runCommand| -e "print sys\\release"}
+    if in? releaseCheck ["mini" "full"] -> release: to :literal releaseCheck
+]
 
 supersuccess: 0
 superskipped: 0
 supertotal: 0
+
+; the tests to exclude (one per line, in tester.exclude.*.lst):
+; - web: whatever cannot work in Web builds at all (it needs
+;   the file system, other processes, concurrency or a script context)
+; - mini/full: depending on the release
+excluded: function [kind][
+    select read.lines relative ~"tester.exclude.|kind|.lst" 'line -> not? empty? line
+]
+
+exclusions: []
+if web? -> exclusions: exclusions ++ excluded "web"
+if release='mini -> exclusions: exclusions ++ excluded "mini"
+if release='full -> exclusions: exclusions ++ excluded "full"
 
 canExecute?: function [scr][
     ; TODO(unittests/lib.collections) Test failing for FreeBSD builds
@@ -19,87 +67,7 @@ canExecute?: function [scr][
     ;  configured yet inside our VM
     ;  labels: freebsd, unit-test
 
-    if sys\release='mini [
-        if in? scr [
-            "runtime.NumberOutOfPermittedRange"
-            "runtime.SymbolNotFound"
-
-            "branching"
-            "lib.arithmetic.bignum"
-            "lib.binary.bignum"
-            "lib.comparison"
-            "lib.files"
-            "quantities"
-            "sorting"
-
-            "Ackermann function"
-            "Arbitrary-precision integers (included)"
-            "Arithmetic derivative"
-            "Bell numbers"
-            "Benford's law"
-            "Combinations and permutations"
-            "Currency"
-            "Curzon numbers"
-            "Engel expansion"
-            "Exceptions"
-            "Fermat pseudoprimes"
-            "Hamming numbers"
-            "IBAN"
-            "Integer overflow"
-            "Integer roots"
-            "Jacobsthal numbers"
-            "Juggler sequence"
-            "Least m such that n!   m is prime"
-            "Left factorials"
-            "Long multiplication"
-            "Long primes"
-            "Lucas-Lehmer test"
-            "Lychrel numbers"
-            "Magic constant"
-            "Miller-Rabin primality test"
-            "Minimum positive multiple in base 10 using only 0 and 1"
-            "Modular exponentiation"
-            "Multiplicative order"
-            "Multiplicatively perfect numbers"
-            "N-smooth numbers"
-            "Next special primes"
-            "Pell numbers"
-            "Pell's equation"
-            "Penta-power prime seeds"
-            "Permutations - derangements"
-            "Pierpont primes"
-            "Primorial numbers"
-            "Quad-power prime seeds"
-            "Repunit primes"
-            "RSA code"
-            "Sequence of primorial primes"
-            "Smallest power of 6 whose decimal expansion contains n"
-            "Sort a list of object identifiers"
-            "Sorting algorithms/Cycle sort"
-            "Sorting algorithms/Pancake sort"
-            "Special factorials"
-            "Square root by hand"
-            "Stirling numbers of the first kind"
-            "Stirling numbers of the second kind"
-            "Super-d numbers"
-            "Super-Poulet numbers"
-            "Sylvester's sequence"
-            "Trigonometric functions"
-            "Ultra useful primes"
-            "Unicode strings"
-            "Wieferich primes"
-            "XML/Input"
-        ] -> return false
-    ]
-
-    if sys\release='full [
-        if in? scr [
-            "runtime.IntegerOperationOverflow"
-            "runtime.IntegerParsingOverflow"
-        ] -> return false
-    ]
-
-    return true
+    not? in? scr exclusions
 ]
 
 runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
@@ -129,7 +97,7 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
         prints pad.right ((color #magenta "\n- Running: ") ++ truncate.preserve friendlyName 40) 70
         switch canExecute? friendlyName [
             ;tim: benchmark.get [
-                result: execute ~{|sys\binary| --no-color "|script|"}
+                result: execute ~{|runCommand| "|script|"}
                 cleanResult: split.lines strip result
                 result: normalize result
 
@@ -168,9 +136,16 @@ runSet: function [title,location].export:[supersuccess,supertotal,superskipped][
     supertotal: supertotal + size tests
 ]
 
+title: "Unit Tester"
+releaseInfo: ~"@|release|"
+if web? [
+    title: "Web Unit Tester"
+    releaseInfo: ~"@|release| (web, |jsEngine|)"
+]
+
 print color #green.bold "\n  Arturo"
-print color #white.bold "  Unit Tester\n"
-print color #gray ~"  Release: @|sys\release|\n"
+print color #white.bold ~"  |title|\n"
+print color #gray ~"  Release: |releaseInfo|\n"
 
 supertime: in's benchmark.get [
     runSet "Unit Tests" "../tests/unittests"
