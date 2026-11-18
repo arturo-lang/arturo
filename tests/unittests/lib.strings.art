@@ -280,6 +280,13 @@ do [
     render 'sample2\sample
     ensure -> sample1 = sample2\sample
     passed
+
+    ; code that leaves nothing behind
+    ensure -> "" = render "| |"
+    ensure -> "ab" = ~"a| |b"
+    ensure -> "x2y" = ~"x|  ||1+1|y"
+    ensure -> "[1]" = ~"|a: 1|[|a|]"
+    passed
 ]
 
 topic « replace

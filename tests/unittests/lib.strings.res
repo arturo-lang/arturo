@@ -58,6 +58,7 @@
 
 >> render
 [+] passed!
+[+] passed!
 
 >> replace
 [+] passed!
