@@ -542,19 +542,14 @@ when defined(GMP):
         result = toQuantity(a.original + b, a.atoms)
 
 proc `+=`*(a: var Quantity, b: Quantity) =
-    if not (a =~ b):
-        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
-
-    let convB = b.convertTo(a.atoms)
-
-    a.original += convB.original
+    a = a + b
 
 proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original += b
+    a = a + b
 
 when defined(GMP):
     proc `+=`*(a: var Quantity, b: Int) =
-        a.original += b
+        a = a + b
 
 proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
@@ -572,19 +567,14 @@ when defined(GMP):
         result = toQuantity(a.original - b, a.atoms)
 
 proc `-=`*(a: var Quantity, b: Quantity) =
-    if not (a =~ b):
-        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
-
-    let convB = b.convertTo(a.atoms)
-
-    a.original -= convB.original
+    a = a - b
 
 proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original -= b
+    a = a - b
 
 when defined(GMP):
     proc `-=`*(a: var Quantity, b: Int) =
-        a.original -= b
+        a = a - b
 
 proc `*`*(a, b: Quantity): Quantity =
     if a =~ b:
@@ -610,11 +600,11 @@ proc `*=`*(a: var Quantity, b: Quantity) =
     a = a * b
 
 proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original *= b
+    a = a * b
 
 when defined(GMP):
     proc `*=`*(a: var Quantity, b: Int) =
-        a.original *= b
+        a = a * b
 
 proc `/`*(a, b: Quantity): Quantity =
     if a =~ b:
@@ -634,11 +624,11 @@ proc `/=`*(a: var Quantity, b: Quantity) =
     a = a / b
 
 proc `/=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original /= b
+    a = a / b
 
 when defined(GMP):
     proc `/=`*(a: var Quantity, b: Int) =
-        a.original /= b
+        a = a / b
 
 proc `//`*(a: Quantity, b: int | float | Quantity | QuantityValue): Quantity =
     a / b

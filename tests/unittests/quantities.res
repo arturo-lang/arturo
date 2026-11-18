@@ -1337,3 +1337,6 @@
 
 >> luminousFlux - alternative names
 [+] passed!
+
+>> in-place operations
+[+] passed!
