@@ -113,12 +113,12 @@ proc `==`*(x: Value, y: Value): bool =
             
             of BigInteger || Integer   : (when GMP: return x.bi == toBig(y.i))
             of BigInteger || Rational  : return false
-            of BigInteger || Floating  : (when GMP: return x.bi == toBig(int(y.f)))
+            of BigInteger || Floating  : (when GMP: return x.bi == y.f)
             of BigInteger || Quantity  : (when GMP: return x.bi == y.q)
 
             of Integer    || BigInteger: (when GMP: return toBig(x.i) == y.bi)
             of Rational   || BigInteger: (when GMP: return x.rat == toRational(y.bi))
-            of Floating   || BigInteger: (when GMP: return toBig(int(x.f)) == y.bi)
+            of Floating   || BigInteger: (when GMP: return x.f == y.bi)
             of Quantity   || BigInteger: (when GMP: return x.q == y.bi)
 
             of Error      || ErrorKind : return x.err.kind == y.errkind
@@ -319,12 +319,12 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             
             of BigInteger || Integer   :   (when GMP: return x.bi < toBig(y.i))
             of BigInteger || Rational  :   return false
-            of BigInteger || Floating  :   (when GMP: return x.bi < toBig(int(y.f)))
+            of BigInteger || Floating  :   (when GMP: return x.bi < y.f)
             of BigInteger || Quantity  :   (when GMP: return x.bi < y.q)
 
             of Integer    || BigInteger:   (when GMP: return toBig(x.i)      < y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           < toRational(y.bi))
-            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) < y.bi)
+            of Floating   || BigInteger:   (when GMP: return x.f             < y.bi)
             of Quantity   || BigInteger:   (when GMP: return x.q             < y.bi)
             else:
                 discard
@@ -401,12 +401,12 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             
             of BigInteger || Integer   :   (when GMP: return x.bi > toBig(y.i))
             of BigInteger || Rational  :   return false
-            of BigInteger || Floating  :   (when GMP: return x.bi > toBig(int(y.f)))
+            of BigInteger || Floating  :   (when GMP: return x.bi > y.f)
             of BigInteger || Quantity  :   (when GMP: return x.bi > y.q)
 
             of Integer    || BigInteger:   (when GMP: return toBig(x.i)      > y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           > toRational(y.bi))
-            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) > y.bi)
+            of Floating   || BigInteger:   (when GMP: return x.f             > y.bi)
             of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
             else:
                 discard
