@@ -18,3 +18,30 @@ print integer?.big div 2^70 2^68
 print integer?.big (neg 2^63)
 print integer?.big 2^63
 print integer?.big (9223372036854775807 + 1) - 1
+
+; the smallest Integer
+m: (neg 9223372036854775807) - 1
+print m / neg 1
+print m % neg 1
+print divmod m neg 1
+print 7 / neg 1
+print 7 % neg 1
+print divmod 7 neg 1
+a: m
+'a / neg 1
+print a
+b: m
+'b % neg 1
+print b
+c: m
+divmod 'c neg 1
+print c
+d: m
+neg 'd
+print d
+print abs m
+print digits m
+print gcd @[m 6]
+print gcd @[m m]
+print lcm @[m 2]
+print lcm @[3 m]

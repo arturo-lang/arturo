@@ -83,7 +83,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             if xKind==Integer:
                 if x.iKind==NormalInteger: 
-                    push(newInteger(abs(x.i)))
+                    if unlikely(x.i == low(int)): push(normalIntegerNeg(x.i))
+                    else: push(newInteger(abs(x.i)))
                 else:
                     when defined(WEB) or defined(GMP):
                         push(newInteger(abs(x.bi)))
@@ -822,7 +823,14 @@ proc defineModule*(moduleName: string) =
                         when defined(GMP):
                             current = newInteger(gcd(current.i, elem.bi))
                     else:
-                        current = newInteger(safeGcd(current.i, elem.i))
+                        when defined(GMP):
+                            # the smallest Integer has no positive counterpart
+                            if unlikely(current.i == low(int) or elem.i == low(int)):
+                                current = newInteger(gcd(current.i, newInt(elem.i)))
+                            else:
+                                current = newInteger(safeGcd(current.i, elem.i))
+                        else:
+                            current = newInteger(safeGcd(current.i, elem.i))
                 else:
                     when defined(GMP):
                         if elem.iKind==BigInteger:
@@ -881,7 +889,14 @@ proc defineModule*(moduleName: string) =
                         when defined(GMP):
                             current = newInteger(lcm(current.i, elem.bi))
                     else:
-                        current = newInteger(safeLcm(current.i, elem.i))
+                        when defined(GMP):
+                            # the smallest Integer has no positive counterpart
+                            if unlikely(current.i == low(int) or elem.i == low(int)):
+                                current = newInteger(lcm(current.i, newInt(elem.i)))
+                            else:
+                                current = newInteger(safeLcm(current.i, elem.i))
+                        else:
+                            current = newInteger(safeLcm(current.i, elem.i))
                 else:
                     when defined(GMP):
                         if elem.iKind==BigInteger:

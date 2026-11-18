@@ -202,11 +202,11 @@ func primeFactors*(n: int): seq[int] =
 func getDigits*(n: int, base: int = 10): seq[int] =
     if n == 0: return @[0]
 
+    # (going through negative numbers as they are,
+    # since the smallest one has no positive counterpart)
     var num = n
-    if num < 0: num = num * (-1)
-
-    while num > 0:
-        result.add(num mod base)
+    while num != 0:
+        result.add(abs(num mod base))
         num = num div base
 
     result.reverse()
