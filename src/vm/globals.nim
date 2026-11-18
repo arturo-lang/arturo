@@ -204,6 +204,13 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
                 result = GetDictionaryKey(result, p.s)
             of Object:
                 result = GetKey(result.o, p.s)
+            of Store:
+                result.sto.forceLoad(result.sto)
+                let sto = result.sto
+                result = GetKey(sto.data, p.s)
+                when inplace:
+                    # it's going to be changed in-place
+                    sto.pending = true
             of String:
                 when inplace:
                     Error_PathLiteralMofifyingString()
@@ -240,6 +247,13 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                     current = GetKey(current.o, p.s)
                 else:
                     current.o[p.s] = val
+            of Store:
+                current.sto.forceLoad(current.sto)
+                current.sto.pending = true
+                if pidx != pl.len - 1:
+                    current = GetKey(current.sto.data, p.s)
+                else:
+                    current.sto.data[p.s] = val
             of String:
                 if pidx != pl.len - 1:
                     current = newChar(current.s.runeAtPos(p.i))
