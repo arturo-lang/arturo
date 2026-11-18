@@ -712,7 +712,8 @@ proc `$`*(q: Quantity): string =
     elif unlikely(q.isTemperature()):
         result = stringify(q.original, TemperatureRational) & (if q.atoms[0].unit.u.core == K_CoreUnit: " " else: "") & $q.atoms
     else:
-        result = stringify(q.original) & " " & $q.atoms
+        let units = $q.atoms
+        result = stringify(q.original) & (if units.len > 0: " " & units else: "")
 
 func codify*(expo: AtomExponent): string =
     if expo notin [-1, 1]:
