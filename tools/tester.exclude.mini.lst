@@ -1,13 +1,9 @@
 runtime.NumberOutOfPermittedRange
-runtime.SymbolNotFound
-branching
 lib.arithmetic.bignum
 lib.binary.bignum
 lib.comparison
 lib.files
 quantities
-sorting
-Ackermann function
 Arbitrary-precision integers (included)
 Arithmetic derivative
 Bell numbers
@@ -37,7 +33,6 @@ Modular exponentiation
 Multiplicative order
 Multiplicatively perfect numbers
 N-smooth numbers
-Next special primes
 Pell numbers
 Pell's equation
 Penta-power prime seeds
@@ -50,8 +45,6 @@ RSA code
 Sequence of primorial primes
 Smallest power of 6 whose decimal expansion contains n
 Sort a list of object identifiers
-Sorting algorithms/Cycle sort
-Sorting algorithms/Pancake sort
 Special factorials
 Square root by hand
 Stirling numbers of the first kind
@@ -59,8 +52,6 @@ Stirling numbers of the second kind
 Super-d numbers
 Super-Poulet numbers
 Sylvester's sequence
-Trigonometric functions
 Ultra useful primes
-Unicode strings
 Wieferich primes
 XML/Input
