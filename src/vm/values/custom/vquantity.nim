@@ -146,6 +146,7 @@ generateConstantDefinitions()
 #=======================================
 
 proc toQuantity*(vstr: string, atoms: Atoms): Quantity
+proc `$`*(punit: PrefixedUnit): string
 proc `$`*(q: Quantity): string 
 proc inspect*(q: Quantity)
 
@@ -225,6 +226,8 @@ proc flatten*(atoms: Atoms): Atoms =
 
     for (unit, power) in pairs(cnts):
         if power != 0:
+            if unlikely(power notin AtomExponent.low..AtomExponent.high):
+                Error_UnitExponentOutOfRange($(unit), power)
             result.add (unit: unit, power: AtomExponent(power))
 
 proc reverse*(atoms: Atoms): Atoms =
@@ -264,7 +267,10 @@ proc parseAtoms*(str: string): Atoms =
         result.unit = parseSubUnit(unitStr)
         result.power = 1
         if i < at.len:
-            result.power = parseInt(at[i..^1])
+            let power = parseInt(at[i..^1])
+            if unlikely(power > AtomExponent.high):
+                Error_UnitExponentOutOfRange(unitStr, (when denominator: -power else: power))
+            result.power = power
 
         when denominator:
             result.power = -result.power

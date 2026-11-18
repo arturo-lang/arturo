@@ -1036,6 +1036,18 @@ func Error_IncompatibleQuantityOperation*(operation: string, argA, argB, kindA, 
                 $#
         """ ~~ @[operation, truncate(argA & " (" & kindA & ") " & argB & " (" & kindB & ")", 60)]
 
+func Error_UnitExponentOutOfRange*(unit: string, exponent: int) =
+    panic:
+        toError ValueErr, """
+            Unit exponent out of range
+
+            Got:
+                $# (with exponent: $#)
+
+            Supported:
+                from -5 to 5
+        """ ~~ @[unit, $(exponent)]
+
 #------------------------
 # Type Errors
 #------------------------
