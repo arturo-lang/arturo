@@ -1167,7 +1167,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline.} =
     case xKind:
         of Integer:
             if x.iKind != y.iKind: return false
-            when defined(GMP):
+            when defined(GMP) or defined(WEB):
                 if likely(x.iKind == NormalInteger):
                     return x.i == y.i
                 else:
