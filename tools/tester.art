@@ -38,8 +38,8 @@ if web? [
 
     ; the release of the Web build, as given by `sys\release` there
     ; (for now, `sys` crashes in Web builds, so we default to what
-    ; they'd normally give: 'full, since they are not MINI builds)
-    release: 'full
+    ; they'd normally give: 'mini, since they are built with -d:MINI)
+    release: 'mini
     releaseCheck: strip execute ~{|runCommand| -e "print sys\\release"}
     if in? releaseCheck ["mini" "full"] -> release: to :literal releaseCheck
 ]
