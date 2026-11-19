@@ -187,7 +187,16 @@ template normalIntegerOperation*(inPlace=false): bool =
     ## Relies on ``ord(NormalInteger) == 0`` and on the fact that reading
     ## ``iKind`` of a non-Integer Value is harmless
     ## (similar to pattern used by ``getValuePair``)
-    when inPlace:
+    when defined(WEB):
+        # JS backend trips the case-object guard if we read `iKind`
+        # on a non-Integer value, so short-circuit on `kind` first.
+        let xv {.cursor.} = (when inPlace: InPlaced else: x)
+        when declared(y):
+            likely(xKind == Integer and yKind == Integer and
+                   xv.iKind == NormalInteger and y.iKind == NormalInteger)
+        else:
+            likely(xKind == Integer and xv.iKind == NormalInteger)
+    elif inPlace:
         when declared(y):
             likely(((ord(xKind) xor ord(Integer)) or
                     (ord(yKind) xor ord(Integer)) or
