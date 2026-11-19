@@ -442,7 +442,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##          [amd64, arm, arm64, i386, x86]
     ##     --as: arturo                 changes the name of the binary
     ##     --mode -m: full              chooses the target Build Version
-    ##          [full, mini, web]
+    ##          [full, mini, noui, web]
     ##     --os: $hostOS                chooses the target OS
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
     ##     --profiler -p: none          defines which profiler use
@@ -462,7 +462,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
-        availableBuilds = @["full", "mini", "web"]
+        availableBuilds = @["full", "mini", "noui", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
 
     var config = buildConfig()
@@ -490,6 +490,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
             miniBuildConfig()
             config.version = "@mini"
             miniBuild()
+        >> ["noui"]:
+            fullBuildConfig(withUI=false)
+            config.version = "@noui"
         >> ["web"]:
             config.binary     = config.binary.replace(".exe", "") & ".js"
             config.version    = "@web"
