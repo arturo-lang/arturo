@@ -393,6 +393,19 @@ template InPlaced*(): untyped =
     ## **Hint:** always after having called `ensureInPlace` first!
     InPlaceAddr[]
 
+template inPlaceDo*(op: untyped, args: varargs[untyped]): untyped =
+    ## Call an in-place operation (one taking a `var Value`) on InPlaced
+    ##
+    ## **Hint:** with the JS backend, a dereferenced pointer passed 
+    ## as `var` is passed by value - so, in Web builds, we go through
+    ## a copy & store it back
+    when defined(WEB):
+        var inPlacedValue = InPlaced
+        op(inPlacedValue, args)
+        InPlaced = inPlacedValue
+    else:
+        op(InPlaced, args)
+
 proc showInPlaceError*(varname: string) =
     ## Show error in case `ensureInPlace` fails
     if SymExists(varname):
