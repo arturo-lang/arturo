@@ -1,4 +1,8 @@
 cmdline
+error.crashes
+error.lines
+error.messages
+error.positions
 events.pending
 lib.files
 lib.stores
