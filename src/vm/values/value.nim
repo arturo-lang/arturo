@@ -1259,7 +1259,7 @@ func hash*(v: Value): Hash {.inline.} =
     
     case v.kind:
         of Null         : discard
-        of Logical      : result = result !& cast[Hash](v.b)
+        of Logical      : result = result !& (if v.b == True: 1 elif v.b == False: 0 else: 2)
         of Integer      : 
             if likely(v.iKind==NormalInteger): result = result !& cast[Hash](v.i)
             else: 
