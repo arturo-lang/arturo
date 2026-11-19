@@ -58,6 +58,7 @@
 #include <regex>    // std::regex
 #include <thread>   // std::mutex, std::this_thread
 #include <chrono>   // std::chrono
+#include <functional> // std::function
 
 // Versions of mingw64 g++ up to 9.3.0 do not have a complete IFileDialog
 #ifndef PFD_HAS_IFILEDIALOG
