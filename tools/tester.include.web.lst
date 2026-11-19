@@ -1,3 +1,4 @@
+lib.binary.bignum
 Arbitrary-precision integers (included)
 Arithmetic derivative
 Bell numbers
@@ -28,6 +29,7 @@ RSA code
 Sequence of primorial primes
 Smallest power of 6 whose decimal expansion contains n
 Sort a list of object identifiers
+Square root by hand
 Stirling numbers of the first kind
 Stirling numbers of the second kind
 Super-d numbers
