@@ -72,8 +72,10 @@ proc getById*(t: SymSlots, id: int32): Value {.inline.} =
     else: nil
 
 proc addrById*(t: var SymSlots, id: int32): ptr Value {.inline.} =
-    if likely(id < t.vals.len) and not t.vals[id].isNil: addr t.vals[id]
-    else: nil
+    # (as a statement: with the JS backend, `addr` inside 
+    # an if-expression returns a pointer to a copy)
+    if likely(id < t.vals.len) and not t.vals[id].isNil:
+        result = addr t.vals[id]
 
 proc setById*(t: var SymSlots, id: int32, v: sink Value) {.inline.} =
     if unlikely(id >= t.vals.len): grow(t, id)

@@ -70,7 +70,7 @@ macro generateOperationA*(name: static[string], op: untyped, inplaceOp: untyped)
             if normalIntegerOperation(inPlace=true):
                 `normalIntegerI`(InPlaced)
             else:
-                `inplaceOp`(InPlaced)
+                inPlaceDo(`inplaceOp`)
         elif normalIntegerOperation():
             push(`normalInteger`(x.i))
         else:
@@ -88,7 +88,7 @@ macro generateOperationB*(name: static[string], op: untyped, inplaceOp: untyped)
             if normalIntegerOperation(inPlace=true):
                 `normalIntegerI`(InPlaced, y.i)
             else:
-                `inplaceOp`(InPlaced, y)
+                inPlaceDo(`inplaceOp`, y)
         elif normalIntegerOperation():
             push(`normalInteger`(x.i, y.i))
         else:
