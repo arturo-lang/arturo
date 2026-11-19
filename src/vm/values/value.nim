@@ -1279,7 +1279,8 @@ func hash*(v: Value): Hash {.inline.} =
         of Type         : 
             result = result !& hash(v.tpKind)
             result = result !& cast[Hash](ord(v.t))
-            result = result !& hash(v.tid)   
+            if v.tpKind == UserType:
+                result = result !& hash(v.tid)
         of Char         : result = result !& cast[Hash](ord(v.c))
         of String       : result = result !& hash(v.s)
         

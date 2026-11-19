@@ -155,6 +155,7 @@ jobs:
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 from: latest
+                mode: mini
 
             - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
               name: Run tester (Web build)
