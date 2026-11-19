@@ -52,6 +52,8 @@ supertotal: 0
 ; - web: whatever cannot work in Web builds at all (it needs
 ;   the file system, other processes, concurrency or a script context)
 ; - mini/full: depending on the release
+; (and the ones in tester.include.web.lst are mini exclusions
+;  that do work in Web builds - e.g. thanks to their big Integers)
 excluded: function [kind][
     select read.lines relative ~"tester.exclude.|kind|.lst" 'line -> not? empty? line
 ]
@@ -60,6 +62,11 @@ exclusions: []
 if web? -> exclusions: exclusions ++ excluded "web"
 if release='mini -> exclusions: exclusions ++ excluded "mini"
 if release='full -> exclusions: exclusions ++ excluded "full"
+
+if web? [
+    included: select read.lines relative "tester.include.web.lst" 'line -> not? empty? line
+    exclusions: select exclusions 'x -> not? in? x included
+]
 
 canExecute?: function [scr][
     ; TODO(unittests/lib.collections) Test failing for FreeBSD builds

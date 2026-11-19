@@ -16,7 +16,7 @@ import sequtils, strformat, strutils
 import sugar, tables, times, unicode
 
 when defined(WEB):
-    import std/jsbigints
+    import helpers/jsbignums
 
 when defined(GMP):
     import helpers/bignums as BignumsHelper
@@ -108,7 +108,7 @@ proc `$`*(v: Value): string {.inline.} =
                 when defined(GMP): 
                     return $(v.bi)
                 elif defined(WEB):
-                    return ($(v.bi)).replace("n","")
+                    return toString(v.bi)
         of Floating     : 
             #if v.fKind==NormalFloating: 
             if v.f==Inf: return "∞"
@@ -310,8 +310,10 @@ proc dump*(v: Value, level: int=0, isLast: bool=false, muted: bool=false, prepen
         of Integer      : 
             if likely(v.iKind==NormalInteger): dumpPrimitive($(v.i), v)
             else: 
-                when defined(WEB) or defined(GMP):
+                when defined(GMP):
                     dumpPrimitive($(v.bi), v)
+                elif defined(WEB):
+                    dumpPrimitive(toString(v.bi), v)
         of Floating     :
             #if v.fKind==NormalFloating:
             if v.f==Inf: dumpPrimitive("∞", v)
@@ -696,8 +698,10 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
         of Integer      :
             if likely(v.iKind==NormalInteger): result &= negated($(v.i))
             else: 
-                when defined(WEB) or defined(GMP):
+                when defined(GMP):
                     result &= negated($(v.bi))
+                elif defined(WEB):
+                    result &= negated(toString(v.bi))
         of Floating     :
             if v.f==Inf: result &= "infinite"
             elif v.f==NegInf: result &= "neg infinite"

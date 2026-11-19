@@ -24,7 +24,7 @@ when defined(SQLITE):
     #import db_mysql as mysql
 
 when defined(WEB):
-    import std/jsbigints
+    import helpers/jsbignums
 
 when defined(GMP):
     import helpers/bignums as BignumsHelper
@@ -192,7 +192,12 @@ proc newLogical*(i: int): Value {.inline.} =
 
 when defined(WEB):
     proc newInteger*(bi: JsBigInt): Value {.inline.} =
-        result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+        # results that fit in a normal Integer
+        # shouldn't remain "big"
+        if bi.fitsSignedInt():
+            result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
+        else:
+            result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 when defined(GMP):
     proc newInteger*(bi: Int): Value {.inline.} =
@@ -1103,6 +1108,8 @@ func asFloat*(v: Value): float  =
     of Floating:
         result = v.f
     of Integer:
+        when defined(WEB):
+            if v.iKind == BigInteger: return toFloat(v.bi)
         result = float(v.i)
     of Rational:
         result = toFloat(v.rat)
