@@ -25,7 +25,10 @@ elif defined(macosx):
     else:
         {.passL: "src/deps/pcre/macos/amd64/libpcre.a".}
 elif defined(windows): 
-    {.passL: "-Bstatic -Lsrc/deps/pcre/windows/amd64 -lpcre -Bdynamic".}
+    when defined(arm64):
+        {.passL: "-Bstatic -Lsrc/deps/pcre/windows/arm64 -lpcre -Bdynamic".}
+    else:
+        {.passL: "-Bstatic -Lsrc/deps/pcre/windows/amd64 -lpcre -Bdynamic".}
 
 #=======================================
 # Libraries
