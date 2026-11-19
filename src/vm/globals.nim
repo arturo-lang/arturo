@@ -393,7 +393,7 @@ template InPlaced*(): untyped =
     ## **Hint:** always after having called `ensureInPlace` first!
     InPlaceAddr[]
 
-template inPlaceDo*(op: untyped, args: varargs[untyped]): untyped =
+template inPlaceDo*(op: untyped): untyped =
     ## Call an in-place operation (one taking a `var Value`) on InPlaced
     ##
     ## **Hint:** with the JS backend, a dereferenced pointer passed 
@@ -401,10 +401,22 @@ template inPlaceDo*(op: untyped, args: varargs[untyped]): untyped =
     ## a copy & store it back
     when defined(WEB):
         var inPlacedValue = InPlaced
-        op(inPlacedValue, args)
+        op(inPlacedValue)
         InPlaced = inPlacedValue
     else:
-        op(InPlaced, args)
+        op(InPlaced)
+
+template inPlaceDo*(op: untyped, y: untyped): untyped =
+    ## Call an in-place operation (one taking a `var Value`) 
+    ## on InPlaced, with `y` as its second argument
+    ##
+    ## **Hint:** see above
+    when defined(WEB):
+        var inPlacedValue = InPlaced
+        op(inPlacedValue, y)
+        InPlaced = inPlacedValue
+    else:
+        op(InPlaced, y)
 
 proc showInPlaceError*(varname: string) =
     ## Show error in case `ensureInPlace` fails
