@@ -12,6 +12,9 @@
 
 import algorithm, parseutils, sequtils, strformat, strutils, sugar, tables, times, unicode
 
+when defined(WEB):
+    import helpers/jsbignums
+
 when defined(GMP):
     import helpers/bignums
 
@@ -84,7 +87,7 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
             of Integer:
                 case tp:
                     of Logical: return newLogical(y.i!=0)
-                    of Floating: return newFloating(float(y.i))
+                    of Floating: return newFloating(asFloat(y))
                     of Rational: 
                         if y.iKind == NormalInteger:
                             return newRational(y.i)
@@ -106,6 +109,8 @@ proc convertedValueToType*(x, y: Value, tp: ValueKind, aFormat:Value = nil): Val
                         else:
                             when defined(GMP):
                                 return newString($(y.bi))
+                            elif defined(WEB):
+                                return newString(toString(y.bi))
                     of Quantity:
                         return newQuantity(y, @[])
                     of Date:
