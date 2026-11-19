@@ -34,19 +34,6 @@ import vm/lib
 import vm/[errors, eval, exec]
 import vm/values/printable
 
-when defined(WEB):
-    var stdout: string = ""
-
-    proc write*(buffer: var string, str: string) =
-        buffer &= str
-    
-    proc flushFile*(buffer: var string) =
-        # `echo` already appends a newline; drop a trailing one from the buffer
-        # so block prints don't end up with a double blank line on web
-        if buffer.len > 0 and buffer[^1] == '\n':
-            buffer.setLen(buffer.len - 1)
-        echo buffer
-
 #=======================================
 # Helpers
 #=======================================
@@ -308,9 +295,6 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind==Block:
-                when defined(WEB):
-                    stdout = ""
-
                 let inLines = (hadAttr("lines"))
 
                 let xblock = doEval(x)
@@ -329,7 +313,11 @@ proc defineModule*(moduleName: string) =
                 if not inLines: stdout.write("\n")
                 stdout.flushFile()
             else:
-                echo $(x)
+                when defined(WEB):
+                    stdout.write($(x) & "\n")
+                    stdout.flushFile()
+                else:
+                    echo $(x)
 
     builtin "prints",
         alias       = unaliased,
@@ -349,9 +337,6 @@ proc defineModule*(moduleName: string) =
             ; Hello world!
         """:
             #=======================================================
-            when defined(WEB):
-                stdout = ""
-
             if xKind==Block:
                 let xblock = doEval(x)
                 let stop = SP

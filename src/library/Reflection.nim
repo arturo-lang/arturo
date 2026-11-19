@@ -241,12 +241,12 @@ proc defineModule*(moduleName: string) =
             inspect a                 ; some text :string
         """:
             #=======================================================
-            when defined(WEB):
-                resetStdout()
             let mutedOutput = (hadAttr("muted")) or NoColors
             let compactOutput = hadAttr("compact")
             let indexedOutput = hadAttr("index")
             x.dump(0, false, muted=mutedOutput, compact=compactOutput, indexed=indexedOutput)
+            when defined(WEB):
+                stdout.flushFile()
 
     builtin "methods",
         alias       = unaliased,
