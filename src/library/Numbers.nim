@@ -22,7 +22,7 @@
 import math, random, sequtils, sugar
 
 when defined(WEB):
-    import std/jsbigints
+    import helpers/jsbignums
 
 when defined(GMP):
     import helpers/bignums as BignumsHelper
@@ -820,7 +820,7 @@ proc defineModule*(moduleName: string) =
 
                 if current.iKind==NormalInteger:
                     if elem.iKind==BigInteger:
-                        when defined(GMP):
+                        when defined(GMP) or defined(WEB):
                             current = newInteger(gcd(current.i, elem.bi))
                     else:
                         when defined(GMP):
@@ -832,7 +832,7 @@ proc defineModule*(moduleName: string) =
                         else:
                             current = newInteger(safeGcd(current.i, elem.i))
                 else:
-                    when defined(GMP):
+                    when defined(GMP) or defined(WEB):
                         if elem.iKind==BigInteger:
                             current = newInteger(gcd(current.bi, elem.bi))
                         else:
@@ -886,7 +886,7 @@ proc defineModule*(moduleName: string) =
 
                 if current.iKind==NormalInteger:
                     if elem.iKind==BigInteger:
-                        when defined(GMP):
+                        when defined(GMP) or defined(WEB):
                             current = newInteger(lcm(current.i, elem.bi))
                     else:
                         when defined(GMP):
@@ -898,7 +898,7 @@ proc defineModule*(moduleName: string) =
                         else:
                             current = newInteger(safeLcm(current.i, elem.i))
                 else:
-                    when defined(GMP):
+                    when defined(GMP) or defined(WEB):
                         if elem.iKind==BigInteger:
                             current = newInteger(lcm(current.bi, elem.bi))
                         else:
@@ -982,9 +982,7 @@ proc defineModule*(moduleName: string) =
             else:
                 push(newInteger(getNumerator(rat, big=true)))
 
-    when defined(GMP):
-        # TODO(Numbers\powmod) not working for Web builds
-        # labels: web,enhancement
+    when defined(GMP) or defined(WEB):
         builtin "powmod",
             alias       = unaliased, 
             op          = opNop,
@@ -1523,7 +1521,7 @@ proc defineModule*(moduleName: string) =
             if x.iKind==NormalInteger:
                 push(newLogical(isPrime(x.i.uint64)))
             else:
-                when defined(GMP):
+                when defined(GMP) or defined(WEB):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
     #----------------------------

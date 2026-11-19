@@ -22,7 +22,7 @@
 when not defined(WEB):
     import oids
 else:
-    import std/jsbigints
+    import helpers/jsbignums
 
 when defined(GMP):
     import helpers/bignums as BignumsHelper
