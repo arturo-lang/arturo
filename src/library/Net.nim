@@ -39,7 +39,10 @@ when defined(ssl):
         else:
             {.passL: "src/deps/openssl/macos/amd64/libssl.a src/deps/openssl/macos/amd64/libcrypto.a".}
     elif defined(windows): 
-        {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/deps/openssl/windows/arm64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
+        else:
+            {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
 
 #=======================================
 # Libraries
