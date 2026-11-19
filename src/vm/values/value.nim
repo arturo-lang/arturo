@@ -1265,10 +1265,10 @@ func hash*(v: Value): Hash {.inline.} =
             else: 
                 when defined(WEB) or defined(GMP):
                     result = result !& cast[Hash](v.bi)
-        of Floating     : result = result !& cast[Hash](v.f)
+        of Floating     : result = result !& hash(v.f)
         of Complex      : 
-            result = result !& cast[Hash](v.z.re)
-            result = result !& cast[Hash](v.z.im)
+            result = result !& hash(v.z.re)
+            result = result !& hash(v.z.im)
         of Rational     : result = result !& hash(v.rat)
         of Version      : 
             result = result !& cast[Hash](v.major)
