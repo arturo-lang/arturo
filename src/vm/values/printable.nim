@@ -36,7 +36,7 @@ when not defined(WEB):
 #=======================================
 
 when defined(WEB):
-    var stdout: string
+    var stdout*: string
 
     proc resetStdout*()=
         stdout = ""
@@ -45,7 +45,18 @@ when defined(WEB):
         buffer &= str
     
     proc flushFile*(buffer: var string) =
-        echo buffer
+        # `echo` can only print whole lines: so we print
+        # whatever is complete & keep the rest (e.g. from
+        # `prints`) for later
+        let nl = buffer.rfind('\n')
+        if nl >= 0:
+            echo buffer[0 ..< nl]
+            buffer = buffer[nl+1 .. ^1]
+
+    proc flushPending*() =
+        if stdout.len > 0:
+            echo stdout
+            stdout = ""
 
 # repeated from Helpers/objects
 # to avoid recursive imports
