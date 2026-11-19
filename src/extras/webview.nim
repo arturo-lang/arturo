@@ -37,7 +37,10 @@ elif defined(macosx):
     {.passL: "-lstdc++ -framework WebKit".}
 elif defined(windows):
     {.passC: "-DWEBVIEW_EDGE=1 -mwindows".}
-    {.passL: """-static-libstdc++ -std=c++17 -L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/x64 -lwebview -lWebView2Loader""".}
+    when defined(arm64):
+        {.passL: """-static-libstdc++ -std=c++17 -L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/arm64 -lwebview -lWebView2Loader""".}
+    else:
+        {.passL: """-static-libstdc++ -std=c++17 -L""" & currentSourcePath().splitPath.head & """/webview/deps/dlls/x64 -lwebview -lWebView2Loader""".}
 
 {.push header: "webview/webview.h", cdecl.}
 
