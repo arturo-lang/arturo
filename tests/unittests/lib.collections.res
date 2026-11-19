@@ -772,3 +772,12 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> non-ASCII :string
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!

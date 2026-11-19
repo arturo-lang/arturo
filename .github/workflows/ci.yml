@@ -22,7 +22,7 @@ jobs:
         runs-on: ${{ 
             (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
             (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
-            (matrix.os == 'windows') && 'windows-latest' || 
+            (matrix.os == 'windows') && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-latest') || 
                                         'ubuntu-latest'  }}
                                                                    
         strategy:
@@ -42,6 +42,8 @@ jobs:
                     - {os: macos,   arch: arm64,    mode: mini}
                     - {os: windows, arch: amd64}
                     - {os: windows, arch: amd64,    mode: mini}
+                    - {os: windows, arch: arm64}
+                    - {os: windows, arch: arm64,    mode: mini}
                     - {os: web,     arch: js,       mode: mini}
 
         defaults:
@@ -53,7 +55,7 @@ jobs:
 
         steps:
             - name: Checkout Arturo sources
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                 submodules: recursive
                 path: arturo
@@ -148,3 +150,24 @@ jobs:
                         fi
                     fi
                 fi
+
+            - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
+              name: Install Arturo nightly (for running the tester)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                from: latest
+                mode: mini
+
+            - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
+              name: Run tester (Web build)
+              timeout-minutes: 90
+              # not blocking (yet): there are still
+              # too many Web-specific issues
+              continue-on-error: true
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                git clone https://github.com/arturo-lang/examples.git ../examples
+
+                arturo -v
+                ARTURO_JS=bin/arturo.js arturo tools/tester.art --web

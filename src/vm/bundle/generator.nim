@@ -23,7 +23,7 @@ when defined(DEV):
 import helpers/io
 import helpers/jsonobject
 
-import vm/[globals, vm, exec, parse, packager]
+import vm/[globals, vm, exec, parse, packager, version]
 import vm/values/[value, types]
 import vm/values/custom/[vlogical, vsymbol]
 
@@ -261,7 +261,15 @@ template pushpopPath(newPath: string, action: untyped): untyped =
     action
     pathStack.delete((pathStack.len-1)..(pathStack.len-1))
 
+var analyzedFiles: seq[string]
+
 proc analyzeFile(conf: BundleConfig, filename: string) =
+    # once is enough, and imports may well be circular
+    let analyzed = absolutePath(filename)
+    if analyzed in analyzedFiles:
+        return
+    analyzedFiles.add(analyzed)
+
     let (dir, _, _) = splitFile(filename)
     pushpopPath dir:
         conf.analyzeBlock(filename, doParse(filename, isFile=true).a)
@@ -343,7 +351,10 @@ proc cloneArturo() =
     when defined(DEV):
         copyDirRecursively(getCurrentDir(), TmpFolder)
     else:
-        let (_, res) = execCmdEx("git clone https://github.com/arturo-lang/arturo.git " & TmpFolder)
+        let branch =
+            if ArturoVersion.contains("-dev"): ""
+            else: "--branch v" & ArturoVersion & " --depth 1 "
+        let (_, res) = execCmdEx("git clone " & branch & "https://github.com/arturo-lang/arturo.git " & TmpFolder)
         if res != 0:
             echo "\tsomething went wrong when cloning Arturo sources..."
             quit(1)

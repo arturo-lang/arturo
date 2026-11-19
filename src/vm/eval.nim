@@ -19,7 +19,7 @@
 # Libraries
 #=======================================
 
-import hashes, sugar, tables
+import hashes, tables
 
 import vm/[ast, bytecode, values/value]
 import vm/values/custom/[vbinary, vlogical]
@@ -32,6 +32,7 @@ import vm/profiler
 
 var
     StoredTranslations : Table[Hash, Translation]
+    InlinedCanStore    : bool
 
 #=======================================
 # Helpers
@@ -40,7 +41,7 @@ var
 func indexOfValue(a: ValueArray, item: Value): int {.inline.}=
     result = 0
     for i in items(a):
-        if consideredEqual(item, i): return
+        if (item.kind notin {Block, Inline} or item.ln == i.ln) and consideredEqual(item, i): return
         inc(result)
     result = -1
 
@@ -83,17 +84,15 @@ template addReplaceOpWithIndex(instructions: var VBinary, oper: OpCode, num: unt
         instructions[^1] = byte(oper)
         instructions.addByte(byte(num))
 
-proc cleanChildren(node: Node): seq[Node] =
-    result = collect:
-        for subnode in node.children:
-            if subnode.kind != NewlineNode:
-                subnode
-
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
         let newv = v
-        newv.readonly = true
+        # objects are never literals: when one ends up here
+        # (e.g. `this` for a method call), it's the object itself
+        # - so, marking it would make it be copied on assignment
+        if newv.kind != Object:
+            newv.readonly = true
         consts.add(newv)
         indx = consts.len-1
 
@@ -103,7 +102,9 @@ proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: V
     result = consts.indexOfValue(v)
     if result == -1:
         let newv = v
-        newv.readonly = true
+        # (objects: see above)
+        if newv.kind != Object:
+            newv.readonly = true
         consts.add(newv)
         result = consts.len-1
 
@@ -243,9 +244,8 @@ template optimizeConditional(
 ): untyped =
     # let's keep some references
     # to the children
-    let cleanedChildren = cleanChildren(special)
-    let left {.cursor.} = cleanedChildren[0]
-    let right {.cursor.} = cleanedChildren[1]
+    let left {.cursor.} = special.children[0]
+    let right {.cursor.} = special.children[1]
 
     # can we optimize?
     var canWeOptimize = false
@@ -258,11 +258,11 @@ template optimizeConditional(
             canWeOptimize = right.kind == ConstantValue and right.value.kind == Block
 
     if canWeOptimize:
-        let (rightNode,_) = generateAst(right.value, reuseArities=true)
+        let (rightNode, rightCanStore) = generateAst(right.value, reuseArities=true)
 
         when withLoop:
             var leftIt: VBinary
-            let (leftNode,_) = generateAst(left.value, reuseArities=true)
+            let (leftNode, leftCanStore) = generateAst(left.value, reuseArities=true)
 
         let stillProceed =
             when withLoop:
@@ -271,18 +271,21 @@ template optimizeConditional(
                 true
 
         if stillProceed:
+            InlinedCanStore = InlinedCanStore and rightCanStore
+            when withLoop:
+                InlinedCanStore = InlinedCanStore and leftCanStore
 
             when withLoop:
                 # separately ast+evaluate right child block     
-                evaluateBlock(leftNode, consts, leftIt)
+                evaluateBlock(leftNode, consts, leftIt, omitNewlines=omitNewlines)
                 it.add(leftIt)
             else:
                 # inline-evaluate left child
-                evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it)
+                evaluateBlock(Node(kind:RootNode, children: @[left]), consts, it, omitNewlines=omitNewlines)
 
             # separately ast+evaluate right child block     
             var rightIt: VBinary
-            evaluateBlock(rightNode, consts, rightIt)
+            evaluateBlock(rightNode, consts, rightIt, omitNewlines=omitNewlines)
 
             # get operand & added to the instructions
             let (newOp, replaceOp) = 
@@ -352,20 +355,17 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
         lastOpStore = -1
         it.addByte(op)
 
-    # TODO(Errors) Line number messed up at start of block
-    #  let's say we do 
-    #  ```
-    #  do [
-    #      print 3/0
-    #
-    #  ]
-    #  ```
-    #  The line of the error will be messed up. This wouldn't happen if it was
-    #  the second command within that block. (And I have no idea / don't remember)
-    #  why this could be happening... (Nor is it necessarily related to the evaluator)
-    #  labels: error handling, bug, evaluation, ast
-    template addEol(n: untyped): untyped =
-        it.addOpWithNumber(opEol, n, hasShortcut=false)
+    var lastMarker: uint32 = 0
+
+    # Right before an instruction that may fail. Arguments are generated
+    # right-to-left, so this has to follow the generated code, not the source
+    template addEol(nd: Node): untyped =
+        if likely(not omitNewlines) and nd.line != 0 and nd.line != lastMarker:
+            lastMarker = nd.line
+            if lastMarker > 65535:
+                it.addByte([byte(opEolY), byte(lastMarker shr 24), byte(lastMarker shr 16), byte(lastMarker shr 8), byte(lastMarker)])
+            else:
+                it.addOpWithNumber(opEol, lastMarker, hasShortcut=false)
 
     #------------------------
     # MainLoop
@@ -390,13 +390,6 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         if alreadyProcessed:
                             hookOptimProfiler("opUnless")
                 of opSwitch:    
-                    # TODO(VM/eval) `switch` not working properly in `print` block?
-                    #  For example this: https://github.com/arturo-lang/arturo/blob/even-more-RC-problem-solving/examples/rosetta/practical%20numbers.art#L24-L25
-                    #  if written like: ```
-                    #  print ["666" (practical? 666) ? -> "is" -> "is not" "a practical number"]
-                    #  ```
-                    #  the whole thing freezes
-                    #  labels: vm, bug, evaluator
                     optimizeConditional(consts, it, item, isSwitch=true, withInversion=true)
                     when defined(PROFILER):
                         if alreadyProcessed:
@@ -409,16 +402,15 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                 else:
                     discard # won't reach here
 
-        if not alreadyProcessed:
+        if alreadyProcessed:
+            lastMarker = 0
+        else:
 
             for instruction in traverse(item):
 
                 case instruction.kind:
                     of RootNode:
                         discard
-                    of NewlineNode:
-                        if likely(not omitNewlines):
-                            addEol(instruction.line)
                     of ConstantValue:
                         var alreadyPut = false
                         let iv {.cursor.} = instruction.value
@@ -471,6 +463,7 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                         if not alreadyPut:
                             addConst(instruction.value, opPush)
                     of VariableLoad:
+                        addEol(instruction)
                         addVariableLoad(instruction)
                     of AttributeNode:
                         addConst(instruction.value, opAttr)
@@ -481,10 +474,13 @@ proc evaluateBlock*(blok: Node, consts: var ValueArray, it: var VBinary, isDicti
                             lastOpStore = addConstAndGetIndex(instruction.value, opStore)
                             lastOpStorePos = it.len
                     of OtherCall:
+                        addEol(instruction)
                         addConst(instruction.value, opCall)
                     of BuiltinCall:
+                        addEol(instruction)
                         addSingleCommand(instruction.op)
                     of SpecialCall:
+                        addEol(instruction)
                         # TODO(VM/eval) nested `switch` calls are not being optimized
                         #  labels: vm, evaluator, performance, enhancement
                         addSingleCommand(instruction.op)
@@ -505,16 +501,32 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     var vhash {.used.}: Hash = -1
     
     when useStored:
+        # Read-only blocks (i.e. compiled constants) are copied on assignment
+        # and when passed to functions, while direct writes (`set`, paths)
+        # reset the cache: so, their translation can live on the value itself,
+        # and we can skip deep-hashing them on every execution
+        let cacheable = root.readonly and not root.dynamic and root.kind in {Block, Inline} and
+                        not isDictionary and not isFunctionBlock and not omitNewlines
+        if cacheable and not root.cachedTrans.isNil:
+            return (root.cachedTrans, true)
+
         if not root.dynamic:
             vhash = hash(root)
+            if root.kind in {Block, Inline}:
+                for tok in root.a:
+                    vhash = vhash !& int(tok.ln)
+                vhash = !$vhash
             if (let storedTranslation = StoredTranslations.getOrDefault(vhash, nil); not storedTranslation.isNil):
+                if cacheable: root.cachedTrans = storedTranslation
                 return (storedTranslation, true)
 
     var consts: ValueArray
     var it: VBinary
 
-    let (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    var (astNode, canStore {.used.})  = generateAst(root, asDictionary=isDictionary, asFunction=isFunctionBlock)
+    InlinedCanStore = true
     evaluateBlock(astNode, consts, it, isDictionary=isDictionary, omitNewlines=omitNewlines)
+    canStore = canStore and InlinedCanStore
     it.add(byte(opEnd))
 
     var res = Translation(constants: consts, instructions: it)
@@ -523,6 +535,7 @@ proc doEvalAndCheckSafety*(root: Value, isDictionary=false, isFunctionBlock=fals
     when useStored:
         if canStore and (vhash != -1):
             StoredTranslations[vhash] = res
+            if cacheable: root.cachedTrans = res
         return (res, canStore)
     else:
         return (res, false)

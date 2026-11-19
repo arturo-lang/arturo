@@ -1,9 +1,12 @@
 #ifndef STRINGBUF_H
 #define STRINGBUF_H
 /**
- * resizable string buffer
+ * resizable string buffer supporting utf8 "characters" if USE_UTF8 is defined.
  *
- * (c) 2017-2020 Steve Bennett <steveb@workware.net.au>
+ * Note that here "characters" means utf8 graphemes, which may
+ * correspond to more than one codepoint.
+ *
+ * (c) 2017-2026 Steve Bennett <steveb@workware.net.au>
  *
  * See utf8.c for licence details.
  */
@@ -65,13 +68,7 @@ static inline int sb_len(stringbuf *sb) {
  * 
  * Returns 0 for both a NULL buffer and an empty buffer.
  */
-static inline int sb_chars(stringbuf *sb) {
-#ifdef USE_UTF8
-	return sb->chars;
-#else
-	return sb->last;
-#endif
-}
+int sb_chars(stringbuf *sb);
 
 /**
  * Appends a null terminated string to the stringbuf
@@ -81,9 +78,6 @@ void sb_append(stringbuf *sb, const char *str);
 /**
  * Like sb_append() except does not require a null terminated string.
  * The length of 'str' is given as 'len'
- *
- * Note that in utf8 mode, characters will *not* be counted correctly
- * if a partial utf8 sequence is added with sb_append_len()
  */
 void sb_append_len(stringbuf *sb, const char *str, int len);
 
@@ -105,18 +99,39 @@ static inline char *sb_str(const stringbuf *sb)
  * Inserts the given string *before* (zero-based) byte 'index' in the stringbuf.
  * If index is past the end of the buffer, the string is appended,
  * just like sb_append()
+ * len is the length of 'str' in bytes, or -1 to indicate a null terminated string.
+ *
+ * In utf8 mode, be careful to only insert at the start of a char.
  */
-void sb_insert(stringbuf *sb, int index, const char *str);
+void sb_insert_len(stringbuf *sb, int index, const char *str, int len);
 
 /**
- * Delete 'len' bytes in the string at the given index.
+ * Like sb_insert_len() except 'str' is null terminated.
+ */
+#define sb_insert(SB, I, STR) sb_insert_len(SB, I, STR, -1)
+
+/**
+ * Like sb_insert_len() except position is given as a character index instead of a byte index.
+ */
+void sb_insert_chars(stringbuf *sb, int charindex, const char *str, int len);
+
+/**
+ * Delete 'len' bytes in the string at the given byte index.
  *
  * Any bytes past the end of the buffer are ignored.
  * The buffer remains null terminated.
  *
  * If len is -1, deletes to the end of the buffer.
+ *
+ * In utf8 mode, be careful to only delete whole chars.
  */
 void sb_delete(stringbuf *sb, int index, int len);
+
+/**
+ * Like sb_delete(), except position and length are given
+ * as characters instead of bytes.
+ */
+void sb_delete_chars(stringbuf *sb, int charindex, int nchars);
 
 /**
  * Clear to an empty buffer.

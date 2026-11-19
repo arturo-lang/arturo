@@ -1,0 +1,6 @@
+config: #[
+    max_size: 10
+]
+
+print config\max_size
+print config\min_size

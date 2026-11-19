@@ -3,13 +3,9 @@
 
 proc releaseConfig() =
     --define:OPTIMIZED
-    
-    if hostOS=="windows": 
-        --define:strip 
-    else: 
-        --define:strip
-        --passC:"'-flto'"
-        --passL:"'-flto'"
+    --define:strip
+    --passC:"-flto"
+    --passL:"-flto"
 
 proc userConfig() =
     releaseConfig()

@@ -73,6 +73,24 @@ static void disableRawMode(struct current *current)
     SetConsoleMode(current->inh, orig_consolemode);
 }
 
+static int color_accepted(void) {
+    char *no_color = getenv("NO_COLOR");
+    int accept = 1;
+    if (no_color != NULL && no_color[0] != '\0')
+            accept = 0;
+    return accept;
+}
+
+static WORD sameBackground(HANDLE outh, WORD foreground)
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    if (!GetConsoleScreenBufferInfo(outh, &csbi)) {
+        return foreground;
+    }
+    WORD attrs = csbi.wAttributes;
+    return (attrs & 0xfff0) | (foreground & 0xf);
+}
+
 void linenoiseClearScreen(void)
 {
     /* XXX: This is ugly. Should just have the caller pass a handle */
@@ -86,9 +104,11 @@ void linenoiseClearScreen(void)
 
         FillConsoleOutputCharacter(current.outh, ' ',
             current.cols * current.rows, topleft, &n);
-        FillConsoleOutputAttribute(current.outh,
-            FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN,
-            current.cols * current.rows, topleft, &n);
+        if (color_accepted()) {
+            FillConsoleOutputAttribute(current.outh,
+                sameBackground(current.outh, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN),
+                current.cols * current.rows, topleft, &n);
+        }
         SetConsoleCursorPosition(current.outh, topleft);
     }
 }
@@ -101,8 +121,11 @@ static void cursorToLeft(struct current *current)
     pos.X = 0;
     pos.Y = (SHORT)current->y;
 
-    FillConsoleOutputAttribute(current->outh,
-        FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN, current->cols, pos, &n);
+    if (color_accepted()) {
+        FillConsoleOutputAttribute(current->outh,
+            sameBackground(current->outh, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN),
+            current->cols, pos, &n);
+    }
     current->x = 0;
 }
 
@@ -146,7 +169,8 @@ static void add_ubuf(struct current *current, int ch)
     else {
         current->ubuf[current->ubuflen++] = ch;
     }
-    current->ubufcols += utf8_width(ch);
+    // XXX Do we need anything else in order to properly support grapheme clusters?
+    current->ubufcols += utf8_dispwidth(ch);
     if (current->ubuflen >= UBUF_MAX_CHARS) {
         flush_ubuf(current);
     }
@@ -214,10 +238,15 @@ static void outputNewline(struct current *current)
 
 static void setOutputHighlight(struct current *current, const int *props, int nprops)
 {
-    int colour = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN;
     int bold = 0;
     int reverse = 0;
     int i;
+    int colour = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN;
+
+    if (!color_accepted()) {
+        return;
+    }
+
 
     for (i = 0; i < nprops; i++) {
         switch (props[i]) {
@@ -256,6 +285,10 @@ static void setOutputHighlight(struct current *current, const int *props, int np
             case 37:
                colour = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN;
                break;
+            case 90:
+               /* [arturo] gray */
+               colour = FOREGROUND_INTENSITY;
+               break;
         }
     }
 
@@ -265,6 +298,7 @@ static void setOutputHighlight(struct current *current, const int *props, int np
         SetConsoleTextAttribute(current->outh, BACKGROUND_INTENSITY);
     }
     else {
+        colour = sameBackground(current->outh, colour);
         SetConsoleTextAttribute(current->outh, colour | bold);
     }
 }
@@ -309,6 +343,23 @@ static void cursorDown(struct current *current, int n)
     setCursorXY(current);
 }
 
+/* [arturo] is more input already waiting? (e.g. the rest of a paste) */
+static int input_pending(struct current *current)
+{
+    INPUT_RECORD irec[64];
+    DWORD n, i;
+
+    if (!PeekConsoleInputW(current->inh, irec, 64, &n)) {
+        return 0;
+    }
+    for (i = 0; i < n; i++) {
+        if (irec[i].EventType == KEY_EVENT && irec[i].Event.KeyEvent.bKeyDown) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 static int fd_read(struct current *current)
 {
     while (1) {
@@ -345,13 +396,36 @@ static int fd_read(struct current *current)
                         return SPECIAL_PAGE_UP;
                      case VK_NEXT:
                         return SPECIAL_PAGE_DOWN;
+                     case VK_RETURN:
+                        return k->uChar.UnicodeChar;
                     }
                 }
                 /* Note that control characters are already translated in AsciiChar */
                 else if (k->wVirtualKeyCode == VK_CONTROL)
                     continue;
+                /* [arturo] shift+enter (or alt+enter): a new line, without submitting */
+                else if (k->wVirtualKeyCode == VK_RETURN &&
+                         (k->dwControlKeyState & (SHIFT_PRESSED | LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED)))
+                    return SPECIAL_NEWLINE;
                 else {
-                    return k->uChar.UnicodeChar;
+                    /* [arturo] characters outside the BMP (e.g. emoji) arrive as
+                     * two utf-16 surrogates: combine them into one code point */
+                    static WCHAR high_surrogate = 0;
+                    WCHAR wc = k->uChar.UnicodeChar;
+                    if (wc >= 0xD800 && wc <= 0xDBFF) {
+                        high_surrogate = wc;
+                        continue;
+                    }
+                    if (wc >= 0xDC00 && wc <= 0xDFFF) {
+                        int cp;
+                        if (high_surrogate == 0) {
+                            continue;
+                        }
+                        cp = 0x10000 + ((high_surrogate - 0xD800) << 10) + (wc - 0xDC00);
+                        high_surrogate = 0;
+                        return cp;
+                    }
+                    return wc;
                 }
             }
         }

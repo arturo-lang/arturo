@@ -29,7 +29,7 @@ type
 
 template loopOp(a, b: VBinary, op: untyped) =
     if 0 notin [a.len, b.len]:
-        result = newSeq[byte](min(a.high, b.high))
+        result = newSeq[byte](min(a.len, b.len))
         for i in 0..result.high:
             result[i] = op(a[i], b[i])
 

@@ -167,6 +167,22 @@ proc deduplicated*[T](s: openArray[T], isSorted: bool = false): seq[T] =
           prev = s[i]
           result.add(prev)
     else:
+      when T is Value:
+        # if all values are of kinds where equality simply means
+        # "same kind & same content", we can use a hash table, instead
+        # of comparing every item against all the ones we've already kept
+        const hashableKinds = {Null, Logical, Char, String, Word, Literal,
+                               Label, Attribute, AttributeLabel, Symbol}
+        var hashable = true
+        for itm in items(s):
+          if itm.kind notin hashableKinds and not (itm.kind == Integer and itm.iKind == NormalInteger):
+            hashable = false
+            break
+        if hashable:
+          var seen = initTable[Value, bool](s.len)
+          for itm in items(s):
+            if not seen.hasKeyOrPut(itm, true): result.add(itm)
+          return
       for itm in items(s):
         if not result.contains(itm): result.add(itm)
 

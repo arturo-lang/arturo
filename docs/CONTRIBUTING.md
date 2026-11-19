@@ -145,7 +145,7 @@ But the recommended way is to use *choosenim*:
 
 ```sh
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-choosenim 2.2.6
+choosenim 2.4.2
 ```
 
 **Install dependencies**
@@ -185,7 +185,7 @@ But you can also install nim from *choosenim*, which is the recommended way:
 
 ```sh
 curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-choosenim 2.2.6
+choosenim 2.4.2
 ```
 
 Normally both work fine and are up-to-date
@@ -233,10 +233,10 @@ Before compile, make sure you have all needed runtime dependencies at you `bin` 
 ```sh
 cp src/extras/webview/deps/dlls/x64/webview.dll bin
 cp src/extras/webview/deps/dlls/x64/WebView2Loader.dll bin
-curl -L https://arturo-lang.s3.amazonaws.com/libgmp-10.dll -o bin/libgmp-10.dll
-curl -L https://arturo-lang.s3.amazonaws.com/libmpfr-6.dll -o bin/libmpfr-6.dll
-curl -L https://arturo-lang.s3.amazonaws.com/sqlite3_64.dll -o bin/sqlite3_64.dll
-curl -L https://arturo-lang.s3.amazonaws.com/libgcc_s_seh-1.dll -o bin/libgcc_s_seh-1.dll
+curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/libgmp-10.dll -o bin/libgmp-10.dll
+curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/libmpfr-6.dll -o bin/libmpfr-6.dll
+curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/sqlite3_64.dll -o bin/sqlite3_64.dll
+curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/libgcc_s_seh-1.dll -o bin/libgcc_s_seh-1.dll
 curl -L https://curl.se/ca/cacert.pem -o bin/cacert.pem
 cp /mingw64/bin/libwinpthread-1.dll bin
 ```

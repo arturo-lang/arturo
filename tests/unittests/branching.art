@@ -104,3 +104,35 @@ loop 1..3 'x [
     print "nested break: after loop 2"
 ]
 print "nested break: after loop 1"
+
+; CONTINUE
+; IN WHILE
+
+print "while continue: before loop"
+i: 0
+while [i < 3][
+    i: i + 1
+    if i < 10 -> continue
+    print "while continue: never"
+]
+print ~"while continue: after loop: |i|"
+
+k: 0
+while [k < 5][
+    k: k + 1
+    if odd? k -> continue
+    print ~"while continue: k: |k|"
+]
+print ~"while continue: after loop: |k|"
+
+; CONTINUE
+; IN UNTIL
+
+print "until continue: before loop"
+j: 0
+until [
+    j: j + 1
+    if j < 10 -> continue
+    print "until continue: never"
+][j >= 3]
+print ~"until continue: after loop: |j|"

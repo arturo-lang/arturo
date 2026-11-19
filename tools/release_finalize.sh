@@ -47,7 +47,7 @@ git add version/*
 git commit -m "Bump to $NEXT_VERSION"
 
 echo " - Pushing to remote..."
-
+git push origin master
 
 echo ""
 echo " ------------------------------------------------------"

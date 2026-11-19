@@ -16,7 +16,8 @@ import sequtils, tables, unicode
 
 import helpers/strings
 
-import vm/[errors, values/value]
+import vm/[errors, symslots, values/value]
+export symslots
 
 #=======================================
 # Globals
@@ -28,7 +29,7 @@ import vm/[errors, values/value]
 
 var
     # symbols
-    Syms* {.global.}        : SymTable                      ## The symbol table: all the variables 
+    Syms* {.global.}        : SymSlots                      ## The symbol table: all the variables 
                                                             ## with their associated values
 
     # symbol aliases
@@ -45,14 +46,18 @@ var
                                                             ## when using `execDictionary`
 
     # function scope stack
-    ScopeStack* {.global.}      : seq[SymTable]                 ## Per-call undo log of touched
+    ScopeStack* {.global.}      : seq[ScopeFrame]               ## Per-call undo log of touched
                                                                 ## symbols (nil = didn't exist)
 
     # scope frame pool
-    ScopeFramePool* {.global.}  : seq[SymTable]                 ## Recycled frames, to avoid
+    ScopeFramePool* {.global.}  : seq[ScopeFrame]               ## Recycled frames, to avoid
                                                                 ## reallocating on every call
     
     # active stores
+    ScopeStamps* {.global.}     : seq[uint64]                   ## Per symbol: the frame that last
+                                                                ## recorded it
+    ScopeSerial* {.global.}     : uint64
+
     Stores* {.global.}          : seq[VStore]               ## The list of active stores to be stored
                                                             ## before app termination
 
@@ -66,7 +71,7 @@ var
 # Helpers
 #=======================================
 
-func suggestAlternative(s: string, reference: SymTable | ValueDict = Syms): seq[string] {.inline.} =
+proc suggestAlternative(s: string, reference: SymSlots | SymTable | ValueDict = Syms): seq[string] {.inline.} =
     return s.getSimilar(toSeq(reference.keys()))
 
 #=======================================
@@ -120,6 +125,7 @@ template SetArrayIndex*(arr: Value, indx: int, v: Value): untyped =
     if unlikely(indx < 0 or indx > (arr.a.len)-1):
         Error_OutOfBounds(indx, Dumper(arr), arr.a.len-1)
     arr.a[indx] = v
+    arr.cachedTrans = nil
 
 #---------------------
 # Symbol table
@@ -138,6 +144,15 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
             Error_SymbolNotFound(s, suggestAlternative(s))
     else:
         Syms[s]
+
+proc FetchSymById*(v: Value): Value {.inline.} =
+    ## Same as `FetchSym`, for a Word/Literal/... value
+    if (result = Syms.getById(symIdOf(v)); unlikely(result.isNil)):
+        Error_SymbolNotFound(v.s, suggestAlternative(v.s))
+
+# TODO(VM/globals) Paths should look up their root symbol by id
+#  Right now, whenever we have a path (e.g. `a\b`, `this\x`, `arr\0`), its first element is still looked up by name, every single time, in `CheckCallablePath`, `FetchPathSym` and `SetPathSym`. Since this first element is a Word constant, we could just use its (cached) symbol id, exactly like we do for normal variables.
+#  labels: vm, enhancement, performance, benchmark
 
 proc CheckCallablePath*(pl: ValueArray): Value =
     result = Syms.getOrDefault(pl[0].s)
@@ -189,6 +204,13 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
                 result = GetDictionaryKey(result, p.s)
             of Object:
                 result = GetKey(result.o, p.s)
+            of Store:
+                result.sto.forceLoad(result.sto)
+                let sto = result.sto
+                result = GetKey(sto.data, p.s)
+                when inplace:
+                    # it's going to be changed in-place
+                    sto.pending = true
             of String:
                 when inplace:
                     Error_PathLiteralMofifyingString()
@@ -214,6 +236,7 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                     current = GetArrayIndex(current, p.i)
                 else:
                     current.a[p.i] = val
+                    current.cachedTrans = nil
             of Dictionary:
                 if pidx != pl.len - 1:
                     current = GetDictionaryKey(current, p.s)
@@ -224,6 +247,13 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                     current = GetKey(current.o, p.s)
                 else:
                     current.o[p.s] = val
+            of Store:
+                current.sto.forceLoad(current.sto)
+                current.sto.pending = true
+                if pidx != pl.len - 1:
+                    current = GetKey(current.sto.data, p.s)
+                else:
+                    current.sto.data[p.s] = val
             of String:
                 if pidx != pl.len - 1:
                     current = newChar(current.s.runeAtPos(p.i))
@@ -243,47 +273,91 @@ template GetSym*(s: string): untyped =
 
 proc pushScopeFrame*() {.inline.} =
     ## Push a fresh - or recycled - scope frame
+    inc ScopeSerial
     if ScopeFramePool.len > 0:
         ScopeStack.add(ScopeFramePool.pop())
     else:
-        ScopeStack.add(initTable[string, Value](initialSize = 4))
+        ScopeStack.add(ScopeFrame())
+    ScopeStack[^1].serial = ScopeSerial
 
-proc popScopeFrame*(): SymTable {.inline.} =
+proc popScopeFrame*(): ScopeFrame {.inline.} =
     ## Pop the topmost scope frame
     result = ScopeStack.pop()
 
 const ScopeFramePoolMax = 64
 
-proc releaseScopeFrame*(frame: var SymTable) {.inline.} =
+proc releaseScopeFrame*(frame: var ScopeFrame) {.inline.} =
     ## Hand a used frame back to the pool - dropped if pool is full
     if ScopeFramePool.len < ScopeFramePoolMax:
-        frame.clear()
-        ScopeFramePool.add(frame)
+        frame.entries.setLen(0)
+        ScopeFramePool.add(move frame)
 
-proc recordScopeWrite*(s: string) {.inline.} =
-    ## Record `s`'s previous value in the current scope frame,
+proc growScopeStamps(id: int32) {.noinline.} =
+    ScopeStamps.setLen(max(int(id) + 1, max(1024, ScopeStamps.len * 2)))
+
+proc recordScopeWriteById*(id: int32) {.inline.} =
+    ## Record symbol's previous value in the current scope frame,
     ## the first time it's touched - nil if it didn't exist
     if ScopeStack.len > 0:
+        if unlikely(id >= ScopeStamps.len): growScopeStamps(id)
         let frame = addr ScopeStack[^1]
-        if not frame[].hasKey(s):
-            frame[][s] = Syms.getOrDefault(s, nil)
+        if ScopeStamps[id] != frame.serial:
+            frame.entries.add((id, Syms.getById(id), ScopeStamps[id]))
+            ScopeStamps[id] = frame.serial
 
-template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
+proc recordScopeWrite*(s: string) {.inline.} =
+    recordScopeWriteById(symId(s))
+
+proc restoreScopeFrame*(frame: var ScopeFrame, exports: Value = nil) =
+    ## Undo everything recorded in given frame - last one first,
+    ## as a symbol may have been recorded more than once
+    for i in countdown(frame.entries.high, 0):
+        let e = addr frame.entries[i]
+        ScopeStamps[e.id] = e.stamp
+        if not exports.isNil:
+            var isExport = false
+            for ek in exports.a:
+                if symIdOf(ek) == e.id:
+                    isExport = true
+                    break
+            if isExport: continue
+        if e.prev.isNil:
+            Syms.delById(e.id)
+        else:
+            Syms.setById(e.id, move e.prev)
+
+proc symIds*(names: seq[string]): seq[int32] {.noinline.} =
+    ## Get the ids for given symbol names
+    result = newSeq[int32](names.len)
+    for i, name in names:
+        result[i] = symId(name)
+
+proc putSym*(s: string, v: sink Value) {.inline.} =
+    ## Write to the symbol table, by name
+    Syms[s] = v
+
+template SetSymById*(id: int32, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
     ## Sets symbol to given value in the symbol table
-    recordScopeWrite(s)
+    recordScopeWriteById(id)
     when safe:
         # When doing it safely, also check if the value to be assigned is a read-only value
         # - if it is - we have to copy it first
         # - otherwise, go ahead and just assign it (pointer copy!)
         when forceReadOnly:
-            Syms[s] = copyValue(v)
+            Syms.setById(id, copyValue(v))
         else:
             if v.readonly:
-                Syms[s] = copyValue(v)
+                Syms.setById(id, copyValue(v))
             else:
-                Syms[s] = v
+                Syms.setById(id, v)
     else:
-        Syms[s] = v
+        Syms.setById(id, v)
+
+template SetSym*(s: string, v: Value, safe: static bool = false, forceReadOnly: static bool = false): untyped =
+    ## Sets symbol to given value in the symbol table
+    block:
+        let symbolId = symId(s)
+        SetSymById(symbolId, v, safe, forceReadOnly)
 
 template UnsetSym*(s: string): untyped =
     recordScopeWrite(s)
@@ -319,6 +393,31 @@ template InPlaced*(): untyped =
     ## **Hint:** always after having called `ensureInPlace` first!
     InPlaceAddr[]
 
+template inPlaceDo*(op: untyped): untyped =
+    ## Call an in-place operation (one taking a `var Value`) on InPlaced
+    ##
+    ## **Hint:** with the JS backend, a dereferenced pointer passed 
+    ## as `var` is passed by value - so, in Web builds, we go through
+    ## a copy & store it back
+    when defined(WEB):
+        var inPlacedValue = InPlaced
+        op(inPlacedValue)
+        InPlaced = inPlacedValue
+    else:
+        op(InPlaced)
+
+template inPlaceDo*(op: untyped, y: untyped): untyped =
+    ## Call an in-place operation (one taking a `var Value`) 
+    ## on InPlaced, with `y` as its second argument
+    ##
+    ## **Hint:** see above
+    when defined(WEB):
+        var inPlacedValue = InPlaced
+        op(inPlacedValue, y)
+        InPlaced = inPlacedValue
+    else:
+        op(InPlaced, y)
+
 proc showInPlaceError*(varname: string) =
     ## Show error in case `ensureInPlace` fails
     if SymExists(varname):
@@ -329,13 +428,11 @@ proc showInPlaceError*(varname: string) =
 template ensureInPlace*(): untyped = 
     ## To be used whenever, and always before, 
     ## we want to access an InPlace symbol
-    var InPlaceAddr {.inject.}: ptr Value
-    try:
-        InPlaceAddr = addr Syms[x.s]
-        if unlikely(InPlaced.readonly):
-            Error_CannotModifyConstant(x.s)
-    except CatchableError:
+    var InPlaceAddr {.inject.}: ptr Value = Syms.addrById(symIdOf(x))
+    if unlikely(InPlaceAddr.isNil):
         showInPlaceError(x.s)
+    if unlikely(InPlaced.readonly):
+        Error_CannotModifyConstant(x.s)
 
 template ensureInPlaceAny*(): untyped =
     ## To be used whenever, and always before, 
@@ -346,15 +443,18 @@ template ensureInPlaceAny*(): untyped =
     var InPlaceAddr {.inject.}: ptr Value
     var fetchedPathSym {.inject.}: Value
     if likely(xKind==Literal):
-        try:
-            InPlaceAddr = addr Syms[x.s]
-            if unlikely(InPlaced.readonly):
-                Error_CannotModifyConstant(x.s)
-        except CatchableError:
+        InPlaceAddr = Syms.addrById(symIdOf(x))
+        if unlikely(InPlaceAddr.isNil):
             showInPlaceError(x.s)
+        if unlikely(InPlaced.readonly):
+            Error_CannotModifyConstant(x.s)
     else:
         fetchedPathSym = FetchPathSym(x.p, inplace=true)
         InPlaceAddr = addr fetchedPathSym
+
+# TODO(VM/globals) In-place writes should set their symbol by id
+#  `ensureInPlace` & `ensureInPlaceAny` already get to the symbol by id, but when the value has to be replaced altogether, `SetInPlace` & `SetInPlaceAny` still go by name (`SetSym(x.s, ...)`). They could use `SetSymById(symIdOf(x), ...)` instead.
+#  labels: vm, enhancement, performance, benchmark
 
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table

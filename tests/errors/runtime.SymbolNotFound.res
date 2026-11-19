@@ -1,4 +1,5 @@
-══╡ Name Error ╞══════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+
+══╡ Name Error ╞════════════════════════════════════════════════════ <script> ══
 
   Cannot resolve requested value
 
@@ -13,5 +14,6 @@
   ┃    3 ║  print "hello!"
 
   Hint: Perhaps you meant... type ?
-                       or... hypot ?
-                       or... type? ?
+                             or... hypot ?
+                             or... type? ?
+

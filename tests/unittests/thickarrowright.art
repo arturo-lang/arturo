@@ -49,3 +49,20 @@ print p 3 6
 
 q: function => [& * &]
 print q 3 6
+
+; WITH NESTED INLINES/BLOCKS
+
+print map [1 2 3] => [(& * 2) + 1]
+print map [1 2 3] => [((& + 1)) * 2]
+print map [1 2 3 4] => [(& + 1) * (& + 2)]
+print select [1 2 3 4] => [(& % 2) = 0]
+print map 1..3 => [@[(& * 10)]]
+print map 1..3 => [do [& * 3]]
+
+r: function => [(& * &) + 1]
+print r 3 4
+
+; ...BUT NOT INSIDE ANOTHER =>
+
+print map [[1 2] [3 4]] => [map & => [& * 2]]
+print map [[1 2] [3 4]] => [(size &) + sum map [1] => [& * 2]]

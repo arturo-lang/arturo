@@ -256,22 +256,42 @@ topic "permissions" ; do
 ]
 
 
-;; Returns me a `SIGSEGV: Illegal storage access. (Attempt to read from nil?)`
-; topic "permissions.set"
-; do [
-;
-;     dir: createTestFolder "permissions-set"
-;
-;     write "Hello, world!" ~"|dir|/file.txt"
-;
-;     ; action
-;     permissions.set: #[others:#[write:false]] ~"|dir|/file.txt"
-;
-;     ; assertion
-;     inspect permissions ~"|dir|/file.txt"
-;
-;
-; ]
+topic "permissions.set"
+do [
+
+    dir: createTestFolder "permissions-set"
+    f: ~"|dir|/file.txt"
+
+    write "Hello, world!" f
+    before: permissions f
+
+    ; setting something to false clears it
+    permissions.set: #[user: #[write: false]] f
+    after: permissions f
+    ensure -> not? after\user\write
+
+    ; and everything not mentioned stays as it was
+    ensure -> after\user\read = before\user\read
+    if sys\os <> 'windows [
+        ensure -> after\group = before\group
+        ensure -> after\others = before\others
+    ]
+
+    ; setting something to true sets it
+    permissions.set: #[user: #[write: true]] f
+    after: permissions f
+    ensure -> after\user\write
+
+    if sys\os <> 'windows [
+        permissions.set: #[others: #[write: true]] f
+        after: permissions f
+        ensure -> after\others\write
+        ensure -> after\user = before\user
+        ensure -> after\group = before\group
+    ]
+
+    print "passed!"
+]
 
 ; -- Test: read
 
@@ -992,6 +1012,9 @@ do [
     ] ~"|dir|/file.json"
 
     print read.file ~"|dir|/file.json"
+
+    write.json.compact @[1:2 to :complex [1 2] to :binary [1 2] function [x][x]] ~"|dir|/other.json"
+    print read.file ~"|dir|/other.json"
 
 ]
 

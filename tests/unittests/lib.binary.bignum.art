@@ -1,0 +1,5 @@
+print shl.safe 4611686018427387904 2
+print shl.safe 5 62
+f: new 4611686018427387904
+shl.safe 'f 2
+print f ; 18446744073709551616

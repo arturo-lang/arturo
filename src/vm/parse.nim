@@ -29,10 +29,13 @@
 import lexbase, os, streams
 import strutils, tables, unicode
 
-import vm/[errors, values/value]
-import vm/values/custom/[vquantity, vsymbol]
+import vm/[errors, runtime, values/value]
+import vm/values/custom/[verror, vquantity, vsymbol]
 
 import helpers/strings
+
+when defined(WEB):
+    import helpers/jsbignums
 
 #=======================================
 # Types
@@ -40,6 +43,8 @@ import helpers/strings
 
 type
     Parser = object of BaseLexer
+        noLines: bool
+        fileId: int
         value: string
         values: seq[ValueArray]
         symbol: VSymbol
@@ -93,7 +98,7 @@ const
 # Forward declarations
 #=======================================
 
-proc doParse*(input: string, isFile: bool = true): Value
+proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value
 proc parseDataBlock*(blk: Value): Value 
 
 #=======================================
@@ -103,12 +108,12 @@ proc parseDataBlock*(blk: Value): Value
 template Empty(s: var string): bool =
     s.len == 0
 
-func addAnnotatedTokenToBlock(blok: var Value, token: Value, p: var Parser)  =
-    token.ln = uint32(p.lineNumber)
+func addAnnotatedTokenToBlock(blok: var Value, token: Value, line: int)  =
+    token.ln = uint32(line)
     blok.a.add(token)
 
 template AddToken(token: untyped): untyped =
-    topBlock.addAnnotatedTokenToBlock(token, p)
+    topBlock.addAnnotatedTokenToBlock(token, tokenLine)
 
 template LastToken(): untyped = 
     topBlock.a[^1]
@@ -411,21 +416,17 @@ template parseCurlyString(p: var Parser) =
                     inc(pos)
             of '/':
                 if regexString:
-                    if p.buf[pos+1]==RCurly:
-                        inc(pos,2)
+                    # a `/` only closes the regex if followed by
+                    # (optional) flags and then `}`; otherwise,
+                    # it's just part of the pattern (e.g. `{//items/}`)
+                    var flagsEnd = pos + 1
+                    while p.buf[flagsEnd] in {'i','m','s'}:
+                        inc(flagsEnd)
+                    if p.buf[flagsEnd]==RCurly:
+                        for i in pos+1 ..< flagsEnd:
+                            add(regexFlags, p.buf[i])
+                        pos = flagsEnd + 1
                         break
-                    elif p.buf[pos+1] in {'i','m','s'}:
-                        add(regexFlags, p.buf[pos+1])
-                        inc(pos,2)
-                        while p.buf[pos] in {'i','m','s'}:
-                            add(regexFlags, p.buf[pos])
-                            inc(pos)
-                        if p.buf[pos] != RCurly:
-                            p.lineNumber = initialLine
-                            Error_UnterminatedString("regex")
-                        else:
-                            inc(pos)
-                            break
                     else:
                         add(p.value, p.buf[pos])
                         inc(pos)
@@ -553,7 +554,11 @@ template parseNumber(p: var Parser, inPath: bool = false) =
                     add(p.value, p.buf[pos])
                     inc(pos)
 
-                p.value = $(parseNumFromString(p.value, numBase))
+                when defined(WEB):
+                    # (JS numbers can't hold more than 32 bits here)
+                    p.value = toString(big(cstring(p.value)))
+                else:
+                    p.value = $(parseNumFromString(p.value, numBase))
                 p.bufpos = pos
                 alreadyParsedNumber = true
             else:
@@ -897,9 +902,11 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
     # if isSubBlock: topBlock = newBlock()
     # else: topBlock = newInline()
     let initialLine = p.lineNumber
+    var tokenLine: int
     while true:
         setLen(p.value, 0)
         skip(p, scriptStr)
+        tokenLine = if p.noLines: 0 else: lineMarker(p.lineNumber, p.fileId)
 
         case p.buf[p.bufpos]
             of EOF:
@@ -987,12 +994,13 @@ proc parseBlock(p: var Parser, level: int, isSubBlock: bool = false, isSubInline
                         AddToken newPath(p.values[^1])
                     discard p.values.pop()
                 elif p.buf[p.bufpos+1]==Backslash: 
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                     AddToken newSymbol(doublebackslash)
                 elif p.buf[p.bufpos+1] == '/':
-                    inc(p.bufpos)
+                    inc(p.bufpos, 2)
                     AddToken newSymbol(logicalor)
                 else: 
+                    inc(p.bufpos)
                     AddToken newSymbol(backslash)
                     
             of PermittedIdentifiers_Start:
@@ -1282,11 +1290,24 @@ proc parseDataBlock*(blk: Value): Value =
     else:
         result = parseAsBlock(blk, i)
 
-proc doParse*(input: string, isFile: bool = true): Value =
+proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
     ## Parse a string or file path
     ## and return the result as a Block of values
+    ## 
+    ## Use ``inFile`` when ``input`` is the contents of the file
+    ## in the current frame, so that syntax errors are reported 
+    ## at the corresponding line
 
     var p: Parser
+    p.noLines = not (isFile or inFile)
+
+    let sourcePath =
+        if isFile: input
+        elif inFile: currentFrame().path
+        else: ""
+
+    if not p.noLines:
+        p.fileId = sourceFileId(sourcePath)
 
     # open stream
     if isFile:
@@ -1295,7 +1316,9 @@ proc doParse*(input: string, isFile: bool = true): Value =
             if unlikely(not fileExists(filePath)):
                 Error_ScriptNotExists(input)
 
-        var stream = newFileStream(filePath)
+            var stream = newFileStream(filePath)
+        else:
+            var stream = newStringStream(filePath)
         lexbase.open(p, stream)
     else:
         var stream = newStringStream(input)
@@ -1304,8 +1327,13 @@ proc doParse*(input: string, isFile: bool = true): Value =
     try:
         # do parse    
         result = parseBlock(p, 0)
+    except VError as e:
+        if not p.noLines:
+            e.context = ErrorContext(line: p.lineNumber, file: sourcePath)
+        raise e
     except CatchableError as e:
-        CurrentLine = p.lineNumber
+        if not p.noLines:
+            CurrentLine = lineMarker(p.lineNumber, p.fileId)
         raise e
 
     # close lexer

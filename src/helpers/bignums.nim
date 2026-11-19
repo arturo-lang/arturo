@@ -66,6 +66,27 @@ proc getInt*(x: Int): int =
 proc fitsInt*(x: Int): bool =
     return mpz_fits_ulong_p(x[]) != 0
 
+proc fitsSignedInt*(x: Int): bool =
+    when isLLP64():
+        # clong is 32-bit, so check the upper half
+        var hi: mpz_t
+        mpz_init(hi)
+        mpz_fdiv_q_2exp(hi, x[], 32)
+        result = mpz_cmp_si(hi, low(int32).clong) >= 0 and mpz_cmp_si(hi, high(int32).clong) <= 0
+    else:
+        return mpz_fits_slong_p(x[]) != 0
+
+proc getSignedInt*(x: Int): int =
+    when isLLP64():
+        var hi, lo: mpz_t
+        mpz_init(hi)
+        mpz_init(lo)
+        mpz_fdiv_q_2exp(hi, x[], 32)
+        mpz_fdiv_r_2exp(lo, x[], 32)
+        result = (int(mpz_get_si(hi)) shl 32) or int(mpz_get_ui(lo))
+    else:
+        return int(mpz_get_si(x[]))
+
 proc fitsDouble*(x: Float): bool =
     if mpfr_fits_uint_p(x[], MPFR_RNDN)==0:
         return false
@@ -97,7 +118,7 @@ func newInt*(x: int = 0): Int =
         elif x.fitsLLP64ULong:
             mpz_init_set_ui(result[], x.culong)
         else:
-            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_init_set_si(result[], (x shr 32).int32.clong)
             mpz_mul_2exp(result[], result[], 32)
             mpz_add_ui(result[], result[], (x.uint32))
     else:
@@ -162,7 +183,7 @@ func newRat*(x: int = 0): Rat =
         elif x.fitsLLP64ULong:
             mpq_set_ui(result[], x.culong, 1)
         else:
-            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_set_si(result[], (x shr 32).int32.clong, 1)
             mpq_mul_2exp(result[], result[], 32)
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:
@@ -181,7 +202,7 @@ func newRat*(x, y: int): Rat =
         elif x.fitsLLP64ULong:
             mpz_set_ui(nref, x.culong)
         else:
-            mpz_set_ui(nref, (x shr 32).uint32)
+            mpz_set_si(nref, (x shr 32).int32.clong)
             mpz_mul_2exp(nref, nref, 32)
             mpz_add_ui(nref, nref, (x.uint32))
 
@@ -190,7 +211,7 @@ func newRat*(x, y: int): Rat =
         elif y.fitsLLP64ULong:
             mpz_set_ui(dref, y.culong)
         else:
-            mpz_set_ui(dref, (y shr 32).uint32)
+            mpz_set_si(dref, (y shr 32).int32.clong)
             mpz_mul_2exp(dref, dref, 32)
             mpz_add_ui(dref, dref, (y.uint32))
     else:
@@ -264,7 +285,7 @@ func set*(z: Int, x: int): Int =
         elif x.fitsLLP64ULong:
             mpz_init_set_ui(result[], x.culong)
         else:
-            mpz_init_set_ui(result[], (x shr 32).uint32)
+            mpz_init_set_si(result[], (x shr 32).int32.clong)
             mpz_mul_2exp(result[], result[], 32)
             mpz_add_ui(result[], result[], (x.uint32))
     else:
@@ -292,7 +313,7 @@ func set*(z: Rat, x: int): Rat =
         elif x.fitsLLP64ULong:
             mpq_set_ui(result[], x.culong, 1)
         else:
-            mpq_set_ui(result[], (x shr 32).uint32, 1)
+            mpq_set_si(result[], (x shr 32).int32.clong, 1)
             mpq_mul_2exp(result[], result[], 32)
             mpq_add(result[], result[], newRat(x.uint32)[])
     else:
@@ -390,6 +411,14 @@ func cmp*(x: Int, y: int): cint =
     elif result > 0:
         result = 1
 
+func cmp*(x: Int, y: float): cint =
+    # works with infinities too - but not with NaN!
+    result = mpz_cmp_d(x[], y.cdouble)
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
 func cmp*(x, y: Float): cint =
     result = mpfr_cmp(x[], y[])
     if result < 0:
@@ -465,6 +494,12 @@ func `==`*(x: Int, y: int | culong | Int): bool =
 func `==`*(x: int | culong, y: Int): bool =
     cmp(y, x) == 0
 
+func `==`*(x: Int, y: float): bool =
+    not y.isNaN and cmp(x, y) == 0
+
+func `==`*(x: float, y: Int): bool =
+    not x.isNaN and cmp(y, x) == 0
+
 func `==`*(x: Float, y: int | float | culong | Float): bool =
     cmp(x, y) == 0
 
@@ -479,6 +514,12 @@ func `<`*(x: Int, y: int | culong | Int): bool =
 
 func `<`*(x: int | culong, y: Int): bool =
     cmp(y, x) == 1
+
+func `<`*(x: Int, y: float): bool =
+    not y.isNaN and cmp(x, y) == -1
+
+func `<`*(x: float, y: Int): bool =
+    not x.isNaN and cmp(y, x) == 1
 
 func `<`*(x, y: Rat): bool =
     cmp(x, y) == -1

@@ -1,0 +1,3 @@
+a: 1
+import relative "module.art"
+print 1/0

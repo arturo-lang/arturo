@@ -1,4 +1,5 @@
-══╡ Syntax Error ╞════════════════════════════════════════════════════════════════════════════════════════ <script> ══
+
+══╡ Syntax Error ╞══════════════════════════════════════════════════ <script> ══
 
   Unable to parse input code
 
@@ -17,5 +18,6 @@
   ┃    5 ║  
   ┃    6 ║  "
 
-  Hint: For multiline strings, you could use either: curly blocks `{..}` or triple `-`
-        templates
+  Hint: For multiline strings, you could use either: curly
+        blocks `{..}` or triple `-` templates
+

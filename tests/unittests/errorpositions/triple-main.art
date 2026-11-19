@@ -1,0 +1,2 @@
+import relative "triple-a.art"
+print "not here"

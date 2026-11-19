@@ -11,3 +11,19 @@ loop [] 'x [
     print x
 ]
 print "after empty loop"
+
+; iterator variables named after existing functions
+loop [1 2] 'size [ print size ]
+loop [3 4] 'chunk [ print chunk ]
+loop [5 6] 'arg [ print arg ]
+
+h: function [a b][ a + b ]
+loop [7 8] 'h [ print h ]
+print h 1 2
+
+loop.with:'size ["a" "b"] 'x [ print size ]
+loop [[1 2] [3 4]] [first last] [ print first print last ]
+print map [1 2] 'first [first + 1]
+print select [1 2 3 4] 'max [even? max]
+
+print size [1 2 3]

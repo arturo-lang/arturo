@@ -24,13 +24,13 @@ when defined(SQLITE):
     #import db_mysql as mysql
 
 when defined(WEB):
-    import std/jsbigints
+    import helpers/jsbignums
 
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
-when (not defined(GMP)) and (not defined(WEB)):
-   import vm/errors
+when not defined(WEB):
+    import vm/errors
 
 import vm/opcodes
 
@@ -192,11 +192,21 @@ proc newLogical*(i: int): Value {.inline.} =
 
 when defined(WEB):
     proc newInteger*(bi: JsBigInt): Value {.inline.} =
-        result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+        # results that fit in a normal Integer
+        # shouldn't remain "big"
+        if bi.fitsSignedInt():
+            result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
+        else:
+            result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 when defined(GMP):
     proc newInteger*(bi: Int): Value {.inline.} =
-        result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+        # results that fit in a normal Integer
+        # shouldn't remain "big"
+        if bi.fitsSignedInt():
+            result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
+        else:
+            result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
 func newInteger*(i: int): Value {.inline.} =
     ## create Integer value from int
@@ -466,9 +476,16 @@ func newRegex*(rx: sink VRegex): Value {.inline.} =
     ## create Regex value from VRegex
     Value(kind: Regex, rx: rx)
 
-func newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
+proc newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
     ## create Regex value from string
-    newRegex(newRegexObj(rx, rflags))
+    when not defined(WEB):
+        try:
+            newRegex(newRegexObj(rx, rflags))
+        except CatchableError as e:
+            Error_InvalidRegex(rx, e.msg.splitLines()[0])
+            VNULL
+    else:
+        newRegex(newRegexObj(rx, rflags))
 
 func newColor*(l: VColor): Value {.inline.} =
     ## create Color value from VColor
@@ -1091,6 +1108,8 @@ func asFloat*(v: Value): float  =
     of Floating:
         result = v.f
     of Integer:
+        when defined(WEB):
+            if v.iKind == BigInteger: return toFloat(v.bi)
         result = float(v.i)
     of Rational:
         result = toFloat(v.rat)
@@ -1155,7 +1174,7 @@ func consideredEqual*(x: Value, y: Value): bool {.inline.} =
     case xKind:
         of Integer:
             if x.iKind != y.iKind: return false
-            when defined(GMP):
+            when defined(GMP) or defined(WEB):
                 if likely(x.iKind == NormalInteger):
                     return x.i == y.i
                 else:
@@ -1247,16 +1266,16 @@ func hash*(v: Value): Hash {.inline.} =
     
     case v.kind:
         of Null         : discard
-        of Logical      : result = result !& cast[Hash](v.b)
+        of Logical      : result = result !& (if v.b == True: 1 elif v.b == False: 0 else: 2)
         of Integer      : 
             if likely(v.iKind==NormalInteger): result = result !& cast[Hash](v.i)
             else: 
                 when defined(WEB) or defined(GMP):
                     result = result !& cast[Hash](v.bi)
-        of Floating     : result = result !& cast[Hash](v.f)
+        of Floating     : result = result !& hash(v.f)
         of Complex      : 
-            result = result !& cast[Hash](v.z.re)
-            result = result !& cast[Hash](v.z.im)
+            result = result !& hash(v.z.re)
+            result = result !& hash(v.z.im)
         of Rational     : result = result !& hash(v.rat)
         of Version      : 
             result = result !& cast[Hash](v.major)
@@ -1267,7 +1286,8 @@ func hash*(v: Value): Hash {.inline.} =
         of Type         : 
             result = result !& hash(v.tpKind)
             result = result !& cast[Hash](ord(v.t))
-            result = result !& hash(v.tid)   
+            if v.tpKind == UserType:
+                result = result !& hash(v.tid)
         of Char         : result = result !& cast[Hash](ord(v.c))
         of String       : result = result !& hash(v.s)
         

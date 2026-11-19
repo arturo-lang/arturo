@@ -49,3 +49,15 @@ o: not set -> CORRECT
 8
 2 4 6 8 
 m: not set -> CORRECT
+foo: 3 bar: 11 
+foo: 4 bar: 12 
+g: 4 
+size: 3 
+h: [arg arg+] 
+v after: global 
+r set? false 
+dbl: 20 
+n after: 5 
+dyn: 1 4 9 
+var: 4 
+dyn2 set? false 

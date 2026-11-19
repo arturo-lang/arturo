@@ -1,0 +1,78 @@
+; helper functions
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+fixture: $[name] -> relative ~"errorpositions/|name|.art"
+
+reportsAt?: function [name, file, line][
+    output: execute ~{|sys\binary| --no-color "|fixture name|"}
+    and? [contains? output fixture file]
+         [contains? output ~"Line: |line|"]
+]
+
+; tests
+
+topic "file reported for errors after a finished import"
+do [
+    ensure -> reportsAt? "after-import" "after-import" 3
+    passed
+]
+
+topic "file reported for errors after a finished nested import"
+do [
+    ensure -> reportsAt? "nested-main" "nested" 3
+    passed
+]
+
+topic "syntax errors in the main script"
+do [
+    ensure -> reportsAt? "syntax-broken" "syntax-broken" 2
+    passed
+]
+
+topic "syntax errors in an imported file"
+do [
+    ensure -> reportsAt? "syntax-in-module" "syntax-broken" 2
+    passed
+]
+
+topic "file reported after a caught failure in `do`"
+do [
+    ensure -> reportsAt? "after-caught-do" "after-caught-do" 4
+    passed
+]
+
+topic "frames after a caught failure in `do`"
+do [
+    before: relative "x"
+
+    try [ do fixture "failing" ]
+
+    ensure -> standalone?
+    ensure -> before = relative "x"
+    passed
+]
+
+topic "frames after a caught failure in `import`"
+do [
+    before: relative "x"
+
+    try [ import fixture "failing" ]
+
+    ensure -> standalone?
+    ensure -> before = relative "x"
+    passed
+]
+
+topic "frames after memoized calls of imported functions"
+import fixture "memoized"
+do [
+    before: relative "x"
+
+    ensure -> 2 = inc 1
+    ensure -> 2 = inc 1
+
+    ensure -> standalone?
+    ensure -> before = relative "x"
+    passed
+]

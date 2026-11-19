@@ -16,7 +16,7 @@
 import algorithm, bitops, std/math, sequtils, sugar
 
 when defined(WEB):
-    import std/jsbigints
+    import helpers/jsbignums
 elif defined(GMP):
     import helpers/bignums as BignumsHelper
 
@@ -202,22 +202,16 @@ func primeFactors*(n: int): seq[int] =
 func getDigits*(n: int, base: int = 10): seq[int] =
     if n == 0: return @[0]
 
+    # (going through negative numbers as they are,
+    # since the smallest one has no positive counterpart)
     var num = n
-    if num < 0: num = num * (-1)
-
-    while num > 0:
-        result.add(num mod base)
+    while num != 0:
+        result.add(abs(num mod base))
         num = num div base
 
     result.reverse()
 
 when defined(WEB):
-    func abs*(n: JsBigInt): JsBigInt =
-        if n < big(0):
-            big(-1) * n
-        else:
-            n
-
     func getDigits*(n: JsBigInt, base: int = 10): seq[int] =
         let bigZero = big(0)
         let bigBase = big(base)
@@ -277,7 +271,6 @@ when defined(WEB):
 
     func primeFactorization*(n: JsBigInt): seq[JsBigInt] =
         let bigZero = big(0)
-        let bigOne = big(1)
         let bigTwo = big(2)
         let bigThree = big(3)
 
@@ -297,6 +290,13 @@ when defined(WEB):
 
         if x > bigTwo:
             result.add(x)
+
+    func powmod*(x: Value, y: Value, z: Value): Value =
+        let X = (if x.iKind==NormalInteger: toBig(x.i) else: x.bi)
+        let Y = (if y.iKind==NormalInteger: toBig(y.i) else: y.bi)
+        let Z = (if z.iKind==NormalInteger: toBig(z.i) else: z.bi)
+
+        newInteger(exp(X, Y, Z))
 
 elif defined(GMP):
     func getDigits*(n: Int, base: int = 10): seq[int] =
@@ -446,6 +446,7 @@ proc factorial*(x: int): Value =
             var res = newInteger(1)
             for item in items:
                 res = res * item
+            return res
         elif not defined(GMP):
             Error_NumberOutOfSupportedRange("factorial", Dumper(newInteger(x)))
         else:

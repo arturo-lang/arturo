@@ -32,7 +32,7 @@ when not defined(WEB):
     import helpers/terminal
 
 when not defined(WEB) and not defined(BUNDLE):
-    import parseopt, re
+    import parseopt, re, strutils
     import vm/[bytecode, env, errors, version]
 
 import vm/vm
@@ -194,6 +194,7 @@ when isMainModule and not defined(WEB):
         var runConsole  = static readFile("src/scripts/console.art")
         var runUpdate   = static readFile("src/scripts/update.art")
         var muted: bool = not isColorFriendlyTerminal()
+        var mutedErrors: bool = not isColorFriendlyTerminal(toStderr=true)
         var bundleName: string = ""
 
         var unrecognizedOption = ""
@@ -230,6 +231,7 @@ when isMainModule and not defined(WEB):
                         # options
                         of "no-color":
                             muted = true
+                            mutedErrors = true
 
                         # experimental
                         of "c","compile":
@@ -248,6 +250,7 @@ when isMainModule and not defined(WEB):
         arguments = token.remainingArgs()
 
         setColors(muted = muted)
+        NoErrorColors = mutedErrors
 
         if action == noAction:
             if code == "":
@@ -278,7 +281,7 @@ when isMainModule and not defined(WEB):
                 discard writeBytecode(dataS, codeS, target, compressed=true)
 
             of readBcode:
-                let filename = code
+                let filename = if code.endsWith(".bcode"): code[0..^7] else: code
                 let bcode = readBytecode(code)
                 let parsed = doParse(bcode[0], isFile=false).a[0]
                 runBytecode(Translation(constants: parsed.a, instructions: bcode[1]), filename, arguments)
@@ -295,10 +298,18 @@ when isMainModule and not defined(WEB):
                 echo ArturoVersionText
             of noAction:
                 discard
+
+        # exit explicitly (as `exit` does), so that whatever
+        # still runs at exit (e.g. pending event handlers)
+        # finds the VM intact
+        quit(QuitSuccess)
     else:
         arguments = commandLineParams()
+        NoColors = not isColorFriendlyTerminal()
+        NoErrorColors = not isColorFriendlyTerminal(toStderr=true)
         var bundleMain = static BundleMain
         discard run(bundleMain, arguments, isFile=false)#, withData=portable)
+        quit(QuitSuccess)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)

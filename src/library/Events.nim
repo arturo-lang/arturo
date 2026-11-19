@@ -31,10 +31,10 @@ when not defined(WEB):
 
     import vm/values/custom/[vevent, vtask, verror]
 
-import vm/lib
-
 when not defined(WEB):
     import helpers/parallelism
+    import vm/errors
+    import vm/lib
     import vm/exec
 
 #=======================================
@@ -69,18 +69,26 @@ when not defined(WEB):
 when not defined(WEB):
     proc dispatchEvent(name: string, payload: Value) {.gcsafe.}
 
+    proc runHandler(handler: EventHandler, payload: Value) =
+        ## Run handler, reporting any errors:
+        ## whatever got interrupted just carries on
+        let callerLine = CurrentLine
+        try:
+            if handler.param.len > 0:
+                putSym(handler.param, payload)
+            execUnscoped(handler.body)
+        except CatchableError as e:
+            showError(toVError(e))
+        finally:
+            CurrentLine = callerLine
+
     proc enqueueEmit(handler: EventHandler, payload: Value) =
         ## Schedule handler on next dispatcher tick (avoids reentrancy).
         let cap = handler
         let pay = payload
         sleepAsync(0).addCallback(proc() {.gcsafe.} =
             {.cast(gcsafe).}:
-                try:
-                    if cap.param.len > 0:
-                        Syms[cap.param] = pay
-                    execUnscoped(cap.body)
-                except CatchableError as e:
-                    echo "Events: handler raised: " & e.msg
+                runHandler(cap, pay)
         )
 
     proc initEmitChannel() =
@@ -115,6 +123,19 @@ when not defined(WEB):
                         if sub.id notin oneShotIds:
                             keep.add(sub)
                     subscribers[name] = keep
+
+    proc drainDispatcher() {.gcsafe.} =
+        ## Run pending handlers for a bounded number of ticks. Bounded,
+        ## since long-lived registrations (e.g. a `serve` listener and
+        ## its periodic timer) keep the dispatcher non-empty forever.
+        {.cast(gcsafe).}:
+            var ticks = 0
+            try:
+                while hasPendingOperations() and ticks < 100:
+                    poll(0)
+                    inc ticks
+            except CatchableError:
+                discard
 
 # TODO(Events): per-handler unsubscribe via `on`-returned handles.
 
@@ -234,12 +255,7 @@ proc defineModule*(moduleName: string) =
                             if mode == "finished" or mode == state:
                                 # Fire synchronously (we're already inside
                                 # the future's dispatcher callback).
-                                try:
-                                    if cap.param.len > 0:
-                                        Syms[cap.param] = payload
-                                    execUnscoped(cap.body)
-                                except CatchableError as e:
-                                    echo "Events: handler raised: " & e.msg
+                                runHandler(cap, payload)
                     )
 
                 if hadAttr("id"):
@@ -361,48 +377,35 @@ proc defineModule*(moduleName: string) =
             signal(SIGTERM, proc(s: cint) {.noconv.} =
                 {.cast(gcsafe).}:
                     dispatchEvent("SigTerm", VNULL)
-                    try:
-                        while hasPendingOperations():
-                            poll(0)
-                    except CatchableError:
-                        discard
+                    drainDispatcher()
                     quit(128 + int(SIGTERM))
             )
 
             signal(SIGHUP, proc(s: cint) {.noconv.} =
                 {.cast(gcsafe).}:
                     dispatchEvent("SigHup", VNULL)
-                    try:
-                        while hasPendingOperations():
-                            poll(0)
-                    except CatchableError:
-                        discard
+                    drainDispatcher()
                     quit(128 + int(SIGHUP))
             )
 
-        # Process exit → emit `BeforeExit`, drain dispatcher (bounded ~2s).
+        # Process exit → emit `BeforeExit`, drain dispatcher (bounded).
         addExitProc(proc() {.noconv.} =
             {.cast(gcsafe).}:
                 shuttingDown = true
                 dispatchEvent("BeforeExit", VNULL)
-                var drainTicks = 0
-                try:
-                    while hasPendingOperations() and drainTicks < 100:
-                        poll(0)
-                        inc drainTicks
-                except CatchableError:
-                    discard
+                drainDispatcher()
         )
 
         # SIGINT → emit `CtrlC`, drain (Nim invokes hook at safe point).
+        # In the REPL, just stop whatever is running & get back to the prompt.
         setControlCHook(proc() {.noconv.} =
             {.cast(gcsafe).}:
+                if IsRepl:
+                    Interrupted = true
+                    return
                 dispatchEvent("CtrlC", VNULL)
-                try:
-                    while hasPendingOperations():
-                        poll(0)
-                except CatchableError:
-                    discard
+                drainDispatcher()
+                quit(128 + 2)   # SIGINT
         )
 
         # Pre-bound built-in events (`BeforeExit`, `SigTerm`, `SigHup`)

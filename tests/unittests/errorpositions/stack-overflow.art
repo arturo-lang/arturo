@@ -1,0 +1,4 @@
+f: function [x][
+    1 + f x
+]
+print f 1

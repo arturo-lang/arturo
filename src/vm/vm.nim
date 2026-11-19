@@ -22,6 +22,9 @@ import strutils, tables
 when defined(WEB):
     import jsffi, json
 
+when not defined(WEB):
+    import vm/faults
+
 import helpers/jsonobject
 when not defined(WEB):
     import helpers/stores
@@ -194,7 +197,8 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
         else: 
             pushFrame("")
 
-    Syms = initTable[string,Value]()
+    # pre-sized, to keep probe chains short
+    Syms = initSymSlots()
 
     # library
     setupLibrary()
@@ -215,11 +219,14 @@ template initialize(args: seq[string], filename: string, isFile:bool, scriptData
     initialized = true
 
 template handleVMErrors(blk: untyped): untyped =
+    when not defined(WEB):
+        setupFaultHandler()
+
     try:
         blk
     except CatchableError, Defect:
         let e = getCurrentException()   
-        showError(VError(e))
+        showError(toVError(e))
 
         when not defined(WEB):
             savePendingStores()
@@ -309,6 +316,9 @@ else:
             let evaled = doEval(mainCode, useStored=false)
 
             execUnscoped(evaled)
+
+            # print whatever is left (e.g. from `prints`)
+            flushPending()
 
             var ret: Value = VNULL
 

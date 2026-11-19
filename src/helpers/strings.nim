@@ -22,6 +22,22 @@ else:
 # Methods
 #=======================================
 
+func runeToByteIndex*(s: string, idx: int): int =
+    ## Convert given character index to the corresponding
+    ## byte index (indices out of range are kept as such,
+    ## relative to the end of the string)
+    if idx <= 0: return idx
+    result = s.runeOffset(idx)
+    if result < 0:
+        result = s.len + (idx - s.runeLen)
+
+func byteToRuneIndex*(s: string, idx: int): int =
+    ## Convert given byte index to the corresponding
+    ## character index
+    if idx <= 0: return idx
+    if idx >= s.len: return s.runeLen + (idx - s.len)
+    return s.toOpenArray(0, idx-1).runeLen
+
 func truncatePreserving*(s: string, at: int, with: string = "..."): string =
     result = s
     if runeLen(s) > at:
@@ -35,7 +51,7 @@ func truncatePreserving*(s: string, at: int, with: string = "..."): string =
 func truncate*(s: string, at: int, with: string = "..."): string =
     result = s
     if runeLen(s) > (at + len(with)):
-        setLen result, at+1
+        result = $(s.toRunes()[0..max(at, -1)])
         result.add with
 
 iterator tokenize*(text: string; sep: openArray[string]): string =

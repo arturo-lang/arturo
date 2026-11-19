@@ -37,6 +37,7 @@ var
     # the path stack
     FrameStack*     {.global.}  : seq[Frame]       ## The main frame stack
     FSP*            {.global.}  : int
+    ImportsInProgress* {.global.} : seq[string]    ## to catch circular imports
 
 #---------------------
 # Methods
@@ -57,13 +58,6 @@ template entryFrame*(): Frame =
 template currentFrame*(): Frame =
     ## get current frame
     FrameStack[FSP-1]
-
-template postCurrentFrame*(): Frame =
-    ## get frame at error point
-    ## Warning: Don't use that, unless we *know*
-    ## there is an extra frame (and that's normally 
-    ## only when an error was thrown)
-    FrameStack[FSP]
 
 template pushFrame*(newPath: string, fromFile: static bool = false) =
     ## add given frame to the stack

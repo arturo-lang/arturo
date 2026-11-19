@@ -76,7 +76,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced &&= y; !!= InPlaced
+                ensureInPlace(); inPlaceDo(`&&=`, y); inPlaceDo(`!!=`)
             elif normalIntegerOperation():
                 push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
             else:
@@ -101,7 +101,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced ||= y; !!= InPlaced
+                ensureInPlace(); inPlaceDo(`||=`, y); inPlaceDo(`!!=`)
             elif normalIntegerOperation():
                 push(normalIntegerNot(normalIntegerOr(x.i, y.i).i))
             else:
@@ -166,22 +166,25 @@ proc defineModule*(moduleName: string) =
             shl 'a 3           ; a: 16
         """:
             #=======================================================
-            if xKind in {Literal, PathLiteral}: 
-                ensureInPlaceAny(); 
-                let valBefore = InPlaced
-                InPlaced <<= y
-                if InPlaced < valBefore and (hadAttr("safe")):
-                    SetInPlaceAny(newBigInteger(valBefore.i) << y)
+            let safe = hadAttr("safe")
+
+            template overflows(v: Value): bool =
+                v.kind == Integer and v.iKind == NormalInteger and v.i != 0 and
+                    (y.i >= 63 or ((v.i shl y.i) shr y.i) != v.i)
+
+            if xKind in {Literal, PathLiteral}:
+                ensureInPlaceAny();
+                if safe and overflows(InPlaced):
+                    SetInPlaceAny(newBigInteger(InPlaced.i) << y)
+                else:
+                    inPlaceDo(`<<=`, y)
             elif normalIntegerOperation():
-                var res = normalIntegerShl(x.i, y.i)
-                if res < x and (hadAttr("safe")):
-                    res = newBigInteger(x.i) << y
-                push(res)
+                if safe and overflows(x):
+                    push(newBigInteger(x.i) << y)
+                else:
+                    push(normalIntegerShl(x.i, y.i))
             else:
-                var res = x << y
-                if res < x and (hadAttr("safe")):
-                    res = newBigInteger(x.i) << y
-                push(res)
+                push(x << y)
 
     builtin "shr",
         alias       = unaliased, 
@@ -222,7 +225,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced ^^= y; !!= InPlaced
+                ensureInPlace(); inPlaceDo(`^^=`, y); inPlaceDo(`!!=`)
             elif normalIntegerOperation():
                 push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
             else:

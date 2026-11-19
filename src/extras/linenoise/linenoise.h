@@ -69,6 +69,13 @@ typedef void(linenoiseFreeHintsCallback)(void *hint, void *userdata);
 void linenoiseSetHintsCallback(linenoiseHintsCallback *callback, void *userdata);
 void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *callback);
 
+/* [arturo] Called on Enter (multiline mode only), with the whole buffer.
+ * Returns the indentation for a new line, to keep editing the same entry,
+ * or NULL to accept it as is.
+ */
+typedef char*(linenoiseContinuationCallback)(const char *buf, void *userdata);
+void linenoiseSetContinuationCallback(linenoiseContinuationCallback *callback, void *userdata);
+
 #endif
 
 /*

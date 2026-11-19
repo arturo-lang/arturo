@@ -1,0 +1,10 @@
+import relative "callback-module.art"
+
+callback: function [x][
+    y: 1
+    x / 0
+]
+
+do [
+    apply 'callback
+]

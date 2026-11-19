@@ -4,7 +4,7 @@
       *.art
 
   ┃ File: tests/errors/runtime.FileNotFound.1.art
-  ┃ Line: 0
+  ┃ Line: 1
   ┃ 
-  ┃    1 ║  array "*.art"
-  ┃    2 ║
+  ┃    1 ║► array "*.art"
+  ┃    2 ║  

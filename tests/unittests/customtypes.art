@@ -68,3 +68,77 @@ print c = d
 print c <> d
 print sort @[c d]
 print sort.descending @[c d]
+
+;===========================
+; :THING
+;===========================
+
+define :thing [
+    init: method [v][ \val: v ]
+    show: method [][ prints ["" \val] ]
+
+    direct:     method [][ \show ]
+    viaIf:      method [][ if true [ \show ] ]
+    viaUnless:  method [][ unless false [ \show ] ]
+    viaWhile:   method [][ i: 0  while [i < 1][ \show  i: i + 1 ] ]
+]
+
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\direct ] print ""
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\viaIf ] print ""
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\viaUnless ] print ""
+loop [1 2 3] 'i [ t: to :thing @[i]!  t\viaWhile ] print ""
+
+
+;===========================
+; :NODE (references)
+;===========================
+
+define :node [
+    init: method [v, n][ \value: v  \next: n ]
+    bump: method [][ c: this  c\value: c\value + 1 ]
+    setNext: method [v][ n: this\next  n\value: v ]
+]
+
+; a field holding another object
+lst: to :node @[1 to :node @[2 null]]
+a: lst\next
+a\value: 99
+print lst\next\value
+
+b: get lst 'next
+b\value: 98
+print lst\next\value
+
+; the object we passed in
+inner: to :node @[3 null]
+outer: to :node @[4 inner]
+p: outer\next
+p\value: 33
+print [inner\value outer\next\value]
+
+; walking a linked structure
+chain: to :node @[1 to :node @[2 to :node @[3 null]]]
+q: chain
+while [not? null? q][
+    q\value: q\value * 10
+    q: q\next
+]
+print [chain\value chain\next\value chain\next\next\value]
+
+; `this`, from within a method
+x: to :node [5 null]
+do [x\bump]
+print x\value
+do [x\bump]
+print x\value
+
+; `this\field`, from within a method
+y: to :node @[6 to :node [7 null]]
+do [y\setNext 77]
+print y\next\value
+
+; plain assignment still is a reference
+o: to :node [8 null]
+r: o
+r\value: 88
+print o\value

@@ -17,3 +17,15 @@ false
 true
 [brand:Ford model:Mustang year:1967] [brand:Nissan model:Sunny year:1991] 
 [brand:Nissan model:Sunny year:1991] [brand:Ford model:Mustang year:1967] 
+ 1  2  3 
+ 1  2  3 
+ 1  2  3 
+ 1  2  3 
+99
+98
+33 33 
+10 20 30 
+6
+7
+77
+88

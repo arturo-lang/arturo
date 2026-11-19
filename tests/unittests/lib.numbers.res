@@ -1,4 +1,8 @@
 
+>> atan2
+[+] passed!
+[+] passed!
+
 >> ceil
 [+] passed!
 [+] passed!
@@ -76,7 +80,17 @@
 >> clamp - invalid operations
 [+] passed!
 
+>> factorial
+[+] passed!
+[+] passed!
+
 >> floor
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> odd? / even?
 [+] passed!
 [+] passed!
 [+] passed!

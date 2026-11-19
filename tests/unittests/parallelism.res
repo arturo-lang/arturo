@@ -124,3 +124,8 @@
 
 >> socket — connect.async parallel fan-out
 [+] passed!
+
+>> fibers — interleaved writes to the same symbols
+[+] passed!
+[+] passed!
+[+] passed!

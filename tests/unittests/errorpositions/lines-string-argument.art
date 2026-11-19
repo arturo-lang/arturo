@@ -1,0 +1,5 @@
+print 1
+x: add {
+    a
+    b
+} 1

@@ -130,8 +130,7 @@ var
     Quantities          : Table[SubUnit, Quantity]
     UserUnits           : Table[string, string]
 
-    LastSignature       : QuantitySignature = int(pow(6.0,11.0))
-    SignatureStep       : QuantitySignature = int(pow(6.0,20.0))
+    LastSignature       : QuantitySignature = int(pow(11.0,11.0))
 
     ExchangeRates       : Table[string, float]
 
@@ -146,6 +145,7 @@ generateConstantDefinitions()
 #=======================================
 
 proc toQuantity*(vstr: string, atoms: Atoms): Quantity
+proc `$`*(punit: PrefixedUnit): string
 proc `$`*(q: Quantity): string 
 proc inspect*(q: Quantity)
 
@@ -205,10 +205,15 @@ proc getPrimitive(unit: PrefixedUnit): Quantity =
     elif unit.p != No_Prefix:
         result.value *= Powers[ord(unit.p) + 18]
 
+func addSignature(a: var QuantitySignature, b: QuantitySignature, power: AtomExponent) {.inline.} =
+    # user-defined units have (pseudo-)random signatures,
+    # so we let the calculation wrap around
+    a = cast[QuantitySignature](cast[uint64](a) + cast[uint64](b) * cast[uint64](int64(power)))
+
 proc getSignature*(atoms: Atoms): QuantitySignature =
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result += prim.signature * atom.power
+        result.addSignature(prim.signature, atom.power)
 
 proc getValue(atoms: Atoms): QuantityValue =
     result = 1//1
@@ -225,6 +230,8 @@ proc flatten*(atoms: Atoms): Atoms =
 
     for (unit, power) in pairs(cnts):
         if power != 0:
+            if unlikely(power notin AtomExponent.low..AtomExponent.high):
+                Error_UnitExponentOutOfRange($(unit), power)
             result.add (unit: unit, power: AtomExponent(power))
 
 proc reverse*(atoms: Atoms): Atoms =
@@ -239,7 +246,9 @@ proc unitAlaCarte*(str: string): PrefixedUnit =
     var newQuantity = toQuantity("1", @[])
     newQuantity.signature = LastSignature
     newQuantity.base = true
-    LastSignature += SignatureStep
+    # next one: pseudo-random (as with evenly-spaced signatures,
+    # combinations of different units would collide)
+    LastSignature = cast[QuantitySignature](cast[uint64](LastSignature) * 6364136223846793005'u64 + 1442695040888963407'u64)
     Quantities[subu] = newQuantity
     UserUnits[str] = str
 
@@ -264,7 +273,10 @@ proc parseAtoms*(str: string): Atoms =
         result.unit = parseSubUnit(unitStr)
         result.power = 1
         if i < at.len:
-            result.power = parseInt(at[i..^1])
+            let power = parseInt(at[i..^1])
+            if unlikely(power > AtomExponent.high):
+                Error_UnitExponentOutOfRange(unitStr, (when denominator: -power else: power))
+            result.power = power
 
         when denominator:
             result.power = -result.power
@@ -297,7 +309,7 @@ proc toQuantity*(v: QuantityValue, atoms: Atoms): Quantity =
 
     for atom in atoms:
         let prim = getPrimitive(atom.unit)
-        result.signature += prim.signature * atom.power
+        result.signature.addSignature(prim.signature, atom.power)
         result.value *= prim.value ^ atom.power
 
         if unlikely(atom.unit.u.kind == User):
@@ -322,12 +334,16 @@ proc parseValue(s: string): QuantityValue =
         except ValueError:
             when defined(GMP):
                 result = toRational(newInt(ratparts[0]), newInt(ratparts[1]))
+            else:
+                result = toRational(parseFloat(ratparts[0]) / parseFloat(ratparts[1]))
     else:
         try:
             result = toRational(parseInt(s))
         except ValueError:
             when defined(GMP):
                 result = toRational(newInt(s))
+            else:
+                result = toRational(parseFloat(s))
 
 proc toQuantity*(str: string): Quantity =
     let parts = str.split(" ")
@@ -470,7 +486,7 @@ proc `==`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
 
-    let convB = b.convertTo(a.atoms)
+    let convB = b.convertQuantity(a.atoms)
 
     return a.original == convB.original
 
@@ -491,7 +507,7 @@ proc `<`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
 
-    let convB = b.convertTo(a.atoms)
+    let convB = b.convertQuantity(a.atoms)
 
     return a.original < convB.original
 
@@ -508,26 +524,19 @@ when defined(GMP):
     func `<`*(a: Int, b: Quantity): bool =
         return a < b.original
 
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.push warning[InvalidCmpOp]: off.}
+
 proc `>`*(a, b: Quantity): bool =
     if not (a =~ b):
         return false
 
-    let convB = b.convertTo(a.atoms)
+    let convB = b.convertQuantity(a.atoms)
 
     return a.original > convB.original
 
-func `>`*(a: Quantity, b: int | float | QuantityValue): bool =
-    return a.original > b
-
-func `>`*(a: int | float | QuantityValue, b: Quantity): bool =
-    return a > b.original
-
-when defined(GMP):
-    func `>`*(a: Quantity, b: Int): bool =
-        return a.original > b
-
-    func `>`*(a: Int, b: Quantity): bool =
-        return a > b.original
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.pop.}
 
 #=======================================
 # Operators
@@ -549,19 +558,14 @@ when defined(GMP):
         result = toQuantity(a.original + b, a.atoms)
 
 proc `+=`*(a: var Quantity, b: Quantity) =
-    if not (a =~ b):
-        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
-
-    let convB = b.convertTo(a.atoms)
-
-    a.original += convB.original
+    a = a + b
 
 proc `+=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original += b
+    a = a + b
 
 when defined(GMP):
     proc `+=`*(a: var Quantity, b: Int) =
-        a.original += b
+        a = a + b
 
 proc `-`*(a, b: Quantity): Quantity =
     if not (a =~ b):
@@ -579,19 +583,14 @@ when defined(GMP):
         result = toQuantity(a.original - b, a.atoms)
 
 proc `-=`*(a: var Quantity, b: Quantity) =
-    if not (a =~ b):
-        Error_CannotConvertDifferentDimensions(getProperty(a), getProperty(b))
-
-    let convB = b.convertTo(a.atoms)
-
-    a.original -= convB.original
+    a = a - b
 
 proc `-=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original -= b
+    a = a - b
 
 when defined(GMP):
     proc `-=`*(a: var Quantity, b: Int) =
-        a.original -= b
+        a = a - b
 
 proc `*`*(a, b: Quantity): Quantity =
     if a =~ b:
@@ -617,11 +616,11 @@ proc `*=`*(a: var Quantity, b: Quantity) =
     a = a * b
 
 proc `*=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original *= b
+    a = a * b
 
 when defined(GMP):
     proc `*=`*(a: var Quantity, b: Int) =
-        a.original *= b
+        a = a * b
 
 proc `/`*(a, b: Quantity): Quantity =
     if a =~ b:
@@ -641,11 +640,11 @@ proc `/=`*(a: var Quantity, b: Quantity) =
     a = a / b
 
 proc `/=`*(a: var Quantity, b: int | float | QuantityValue) =
-    a.original /= b
+    a = a / b
 
 when defined(GMP):
     proc `/=`*(a: var Quantity, b: Int) =
-        a.original /= b
+        a = a / b
 
 proc `//`*(a: Quantity, b: int | float | Quantity | QuantityValue): Quantity =
     a / b
@@ -717,7 +716,8 @@ proc `$`*(q: Quantity): string =
     elif unlikely(q.isTemperature()):
         result = stringify(q.original, TemperatureRational) & (if q.atoms[0].unit.u.core == K_CoreUnit: " " else: "") & $q.atoms
     else:
-        result = stringify(q.original) & " " & $q.atoms
+        let units = $q.atoms
+        result = stringify(q.original) & (if units.len > 0: " " & units else: "")
 
 func codify*(expo: AtomExponent): string =
     if expo notin [-1, 1]:

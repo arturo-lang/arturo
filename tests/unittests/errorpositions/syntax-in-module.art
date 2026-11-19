@@ -1,0 +1,2 @@
+print 1
+import relative "syntax-broken.art"

@@ -1,0 +1,6 @@
+go: function [][
+    do.async [
+        pause 30
+        relative "x"
+    ]
+]

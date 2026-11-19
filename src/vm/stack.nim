@@ -14,7 +14,7 @@
 
 import macros, strutils, tables
 
-import vm/profiler
+import vm/[errors, profiler]
 import vm/values/value
 
 #=======================================
@@ -42,7 +42,19 @@ var
 
 # Main stack
 
-proc push*(v: Value) = 
+proc stackFull*() {.noinline.} =
+    ## a stack that's (almost) full is of no use anyway,
+    ## so let's empty it & report it
+    SP = 0
+    Error_StackFull()
+
+template stackAlmostFull*(): bool =
+    ## are we about to run out of stack?
+    ## (not checked on every push, for performance reasons,
+    ## so we leave enough room for whatever comes in between)
+    SP > Stack.len - 10000
+
+proc push*(v: sink Value) {.inline.} =
     # TODO(Stack/push) performance enhancements?
     #  this was a `template` that we converted into a `proc` so that
     #  we could get the whole project to compile with Nim 2.0.8
@@ -143,13 +155,15 @@ proc getAttr*(attr: string): Value {.inline.} =
     ## get attribute ``attr`` from the attributes table
     ## 
     ## **Hint:** Returns ``VNULL`` if attribute doesn't exist
-    Attrs.getOrDefault(attr, VNULL)
+    if Attrs.len == 0: VNULL
+    else: Attrs.getOrDefault(attr, VNULL)
 
 proc popAttr*(attr: string): Value {.inline.} =
     ## pop attribute ``attr`` from the attributes table
     ## 
     ## **Hint:** Returns ``nil`` if attribute doesn't exist
     result = nil
+    if Attrs.len == 0: return
     hookProcProfiler("stack/popAttr"):
         discard Attrs.pop(attr, result)
 

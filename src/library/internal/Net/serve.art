@@ -7,12 +7,84 @@ ROUTES: #[
     DELETE: #[]
 ]
 
+; per-method fallbacks (`GET any -> ...`)
+FALLBACKS: #[]
+
+; Sinatra-style string routes, e.g. `/users/:id` or `/files/*`:
+; `:name` at the start of a segment matches that segment (named),
+; `*` matches anything, slashes included (unnamed, i.e. positional);
+; everything else is matched literally
+dynamicRoute?: function [route][
+    and? [string? route][
+        or? [contains? route "*"][contains? route {/(^|\/):[A-Za-z_]/}]
+    ]
+]
+
+routeToRegex: function [route][
+    segments: map split.by:"/" route 'segment [
+        prefix: ""
+        named: match.capture segment {/^:([A-Za-z_][A-Za-z0-9_]*)/}
+        unless empty? named [
+            prefix: ~"(?<|first named|>[^/]+?)"
+            segment: drop.times: 1 + size first named segment
+        ]
+        prefix ++ join.with:"(.*?)" map split.by:"*" segment 'part -> escape.regex part
+    ]
+    to :regex join.with:"/" segments
+]
+
 ; route helpers
-GET:    function [pattern, action]-> ROUTES\GET\[express pattern]: var'action
-POST:   function [pattern, action]-> ROUTES\POST\[express pattern]: var'action
-PUT:    function [pattern, action]-> ROUTES\PUT\[express pattern]: var'action
-PATCH:  function [pattern, action]-> ROUTES\PATCH\[express pattern]: var'action
-DELETE: function [pattern, action]-> ROUTES\DELETE\[express pattern]: var'action
+addRoute: function [method, pattern, action][
+    if :any = type pattern [
+        FALLBACKS\[method]: var'action
+        return null
+    ]
+    if dynamicRoute? pattern ->
+        pattern: routeToRegex pattern
+
+    ROUTES\[method]\[express pattern]: var'action
+]
+
+GET:    function [pattern, action]-> addRoute "GET" pattern var'action
+POST:   function [pattern, action]-> addRoute "POST" pattern var'action
+PUT:    function [pattern, action]-> addRoute "PUT" pattern var'action
+PATCH:  function [pattern, action]-> addRoute "PATCH" pattern var'action
+DELETE: function [pattern, action]-> addRoute "DELETE" pattern var'action
+
+; the name of each capturing group in given regex,
+; in order (or `null`, for unnamed ones) - so that
+; we can tell positional captures from named ones
+captureGroups: function [rx][
+    src: to :string rx
+    groups: new []
+    inClass: false
+    i: 0
+    while -> i < size src [
+        c: to :string get src i
+        when [
+            c = "\\" [ i: i + 1 ]           ; skip escaped char
+            inClass  [ if c = "]" -> inClass: false ]
+            c = "["  [ inClass: true ]
+            c = "(" [
+                rest: drop.times: i + 1 src
+                switch not? prefix? rest "?" ->
+                    'groups ++ @[null]
+                [
+                    ; (?<name>...), (?P<name>...) or (?'name'...);
+                    ; anything else - (?:...), lookarounds, inline
+                    ; flags - is not a capturing group
+                    named: match.capture rest {/^\?(?:P?<([A-Za-z_][A-Za-z0-9_]*)>|'([A-Za-z_][A-Za-z0-9_]*)')/}
+                    unless empty? named [
+                        name: first select first named => [not? null? &]
+                        'groups ++ name
+                    ]
+                ]
+            ]
+        ]
+        i: i + 1
+    ]
+    return groups
+]
 
 ; initial route initialization
 initServerInternal: function [serverRoutes][
@@ -58,24 +130,102 @@ serveInternal: function [Request][
         actionParams: keys get info.get 'actionFunc 'args
         passedParams: new []
         if positive? size actionParams [
-            matchedGroups: first match.named.capture Request\path ptrn
+            groupNames: new []
+            matchedGroups: #[]
+            unnamedValues: new []
+            if regex? ptrn [
+                anchored: to :regex "^" ++ (to :string ptrn) ++ "$"
+                groupNames: captureGroups ptrn
+
+                matches: match.named.capture Request\path anchored
+                unless empty? matches ->
+                    matchedGroups: first matches
+
+                ; values of unnamed groups, in order
+                if contains? groupNames null [
+                    positional: first match.capture Request\path anchored
+                    unless block? positional ->
+                        positional: @[positional]
+                    loop.with:'idx groupNames 'groupName [
+                        if null? groupName ->
+                            'unnamedValues ++ @[positional\[idx]]
+                    ]
+                ]
+            ]
             loop actionParams 'actionParam [
+                ; exactly one value per parameter (`null`, if missing);
+                ; precedence: route captures > query > body
+                paramValue: null
+
                 if and? [dictionary? Request\body][key? Request\body actionParam] ->
-                    'passedParams ++ Request\body\[actionParam]
+                    paramValue: Request\body\[actionParam]
 
                 if key? Request\query actionParam ->
-                    'passedParams ++ Request\query\[actionParam]
+                    paramValue: Request\query\[actionParam]
 
-                if key? matchedGroups actionParam ->
-                    'passedParams ++ matchedGroups\[actionParam]
+                switch contains? groupNames actionParam [
+                    ; named groups go by name...
+                    if key? matchedGroups actionParam ->
+                        paramValue: matchedGroups\[actionParam]
+                ][
+                    ; ...unnamed ones fill the remaining
+                    ; parameters, left to right
+                    unless empty? unnamedValues [
+                        paramValue: first unnamedValues
+                        unnamedValues: drop unnamedValues
+                    ]
+                ]
+
+                'passedParams ++ @[paramValue]
             ]
         ]
 
         call var'actionFunc passedParams
     ]
 
+    ; plain-block actions get the route's named
+    ; params (`:id`, `(?<id>...)`) as variables
+    runBlockAction: function [action, ptrn][
+        names: new []
+        if regex? ptrn ->
+            names: select captureGroups ptrn => [not? null? &]
+
+        if empty? names ->
+            return do action
+
+        groups: #[]
+        matches: match.named.capture Request\path to :regex "^" ++ (to :string ptrn) ++ "$"
+        unless empty? matches ->
+            groups: first matches
+
+        blockArgs: map names 'name -> to :word name
+        blockFunc: function blockArgs action
+        call 'blockFunc map names 'name [
+            (key? groups name)? -> groups\[name] -> null
+        ]
+    ]
+
+    runAction: function [action, ptrn][
+        routeError: try.verbose [
+            (block? var'action)? [
+                serverResponse\body: runBlockAction action ptrn
+            ][
+                serverResponse\body: callActionFunction var'action ptrn
+            ]
+            if null? serverResponse\status ->
+                serverResponse\status: 200 ; OK
+        ]
+        unless null? routeError [
+            serverResponse\body: "Internal Server Error"
+            serverResponse\status: 500
+        ]
+    ]
+
     getServerResponse: [
-        loop keys ROUTES\[Request\method] 'pattern [
+        ; methods we have no routes table for (HEAD, OPTIONS, ...)
+        ; simply fall through to the 404 below
+        methodRoutes: (key? ROUTES Request\method)? -> ROUTES\[Request\method] -> #[]
+        loop keys methodRoutes 'pattern [
             originalPattern: parse pattern
 
             matched?: (regex? originalPattern)? 
@@ -83,24 +233,14 @@ serveInternal: function [Request][
                 -> (to :string originalPattern) = Request\path
 
             if matched? [
-                action: ROUTES\[Request\method]\[pattern]
-
-                if throws? [
-                    (block? var'action)? [
-                        serverResponse\body: do action
-                    ][
-                        serverResponse\body: callActionFunction var'action originalPattern
-                    ]
-                    if null? serverResponse\status ->
-                        serverResponse\status: 200 ; OK
-                ] [
-                    serverResponse\body: "Internal Server Error"
-                    serverResponse\status: 500
-                ]
-
+                runAction methodRoutes\[pattern] originalPattern
                 break
             ]
         ]
+
+        ; nothing matched? try the method's fallback, if any
+        if and? [null? serverResponse\status][key? FALLBACKS Request\method] ->
+            runAction FALLBACKS\[Request\method] null
     ]
 
     serverResponse\benchmark: benchmark.get getServerResponse

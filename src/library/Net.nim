@@ -39,7 +39,10 @@ when defined(ssl):
         else:
             {.passL: "src/deps/openssl/macos/amd64/libssl.a src/deps/openssl/macos/amd64/libcrypto.a".}
     elif defined(windows): 
-        {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/deps/openssl/windows/arm64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
+        else:
+            {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
 
 #=======================================
 # Libraries
@@ -415,6 +418,10 @@ proc defineModule*(moduleName: string) =
                 GET "/"             -> "Welcome to my site!"
                 GET "/about"        -> "About us"
 
+                ; path params (`:name` for a segment, `*` for anything)
+                GET "/posts/:id"    $[id][ ~"Post #|id|" ]
+                GET "/files/*"      $[path][ ~"File: |path|" ]
+
                 ; regex route with a named capture group
                 GET {//user/(?<name>[a-z]+)/}  $[name][ 
                     emit.html ~"Hello, |name|!" 
@@ -427,7 +434,8 @@ proc defineModule*(moduleName: string) =
                     ] ø
                 ]
 
-                GET {//.*/}         -> "catch-all fallback"
+                ; fallback, if nothing else matched
+                GET any             -> "catch-all fallback"
             ]
 
             ; $> curl localhost:9000/
@@ -435,6 +443,12 @@ proc defineModule*(moduleName: string) =
 
             ; $> curl localhost:9000/about
             ; About us%
+
+            ; $> curl localhost:9000/posts/42
+            ; Post #42%
+
+            ; $> curl localhost:9000/files/css/main.css
+            ; File: css/main.css%
 
             ; $> curl localhost:9000/user/john
             ; Hello, john!%
@@ -583,11 +597,11 @@ proc defineModule*(moduleName: string) =
                                     callFunction(routes, "<closure>", @[requestDict])
                                     resp = stack.pop()
 
-                                    if resp.kind == String:
-                                        responseDict["body"] = resp
-                                    else:
+                                    if resp.kind == Dictionary:
                                         for k,v in resp.d.pairs:
                                             responseDict[k] = v
+                                    else:
+                                        responseDict["body"] = resp
 
                                 except VError as e:
                                     showError(e)
@@ -607,19 +621,33 @@ proc defineModule*(moduleName: string) =
                             if not responseDict["headers"].d.hasKey("Content-Type"):
                                 responseDict["headers"].d["Content-Type"] = newString("text/html")
 
+                        # whatever the handler returned,
+                        # make sure we send back something valid
+                        proc asResponseString(v: Value): string =
+                            case v.kind:
+                                of String: v.s
+                                of Null: ""
+                                of Binary:
+                                    var s = newString(v.n.len)
+                                    if s.len > 0:
+                                        copyMem(addr s[0], addr v.n[0], s.len)
+                                    s
+                                else: $(v)
+
+                        if responseDict["headers"].kind != Dictionary:
+                            responseDict["headers"] = newDictionary()
+
+                        let st = responseDict.getOrDefault("status", VNULL)
+                        if st.kind != Integer or st.iKind != NormalInteger or st.i < 100 or st.i > 999:
+                            responseDict["status"] = newInteger(500)
+
                         let headerStr = (toSeq(responseDict["headers"].d.pairs)).map(
                             proc(kv: (string,Value)): string = 
-                                kv[0] & ": " & kv[1].s
+                                kv[0] & ": " & asResponseString(kv[1])
                         ).join("\c\L")
 
                         # send response
-                        let bodyStr = if responseDict["body"].kind == Binary:
-                                var s = newString(responseDict["body"].n.len)
-                                if s.len > 0:
-                                    copyMem(addr s[0], addr responseDict["body"].n[0], s.len)
-                                s
-                            else:
-                                responseDict["body"].s
+                        let bodyStr = asResponseString(responseDict.getOrDefault("body", VNULL))
 
                         req.respond(newServerResponse(
                             bodyStr,
@@ -630,7 +658,7 @@ proc defineModule*(moduleName: string) =
                         # show request response info
                         # if we're on .verbose mode
                         if verbose:
-                            let contentType = responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))
+                            let contentType = newString(asResponseString(responseDict["headers"].d.getOrDefault("Content-Type", newString("--"))))
                             let requestPattern = responseDict.getOrDefault("pattern", newString(initialReqPath))
 
                             var colorCode = greenColor

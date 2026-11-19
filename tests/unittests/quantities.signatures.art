@@ -1,0 +1,16 @@
+; different dimensions shouldn't be mistaken for one another
+
+print conforms? `m3 `s/m3
+print conforms? `m4 `s/m2
+print property 1`s/m3
+print property 1`m3
+
+; ...not even with user-defined units
+
+a: 1`apples
+b: 1`pears
+c: 1`plums
+
+print conforms? a * c b * b
+print conforms? a * b b * a
+print (a * b) + 1`pears.apples

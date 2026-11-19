@@ -193,19 +193,22 @@ proc defineModule*(moduleName: string) =
                 try:
                     if (checkAttr("set")):
                         var source = x.s
-                        var perms: set[FilePermission]
+                        var perms = getFilePermissions(source)
 
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("read"): perms.incl(fpUserRead)
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("write"): perms.incl(fpUserWrite)
-                        if aSet.d.hasKey("user") and aSet.d["user"].d.hasKey("execute"): perms.incl(fpUserExec)
-
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("read"): perms.incl(fpGroupRead)
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("write"): perms.incl(fpGroupWrite)
-                        if aSet.d.hasKey("group") and aSet.d["group"].d.hasKey("execute"): perms.incl(fpGroupExec)
-
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("read"): perms.incl(fpOthersRead)
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("write"): perms.incl(fpOthersWrite)
-                        if aSet.d.hasKey("others") and aSet.d["others"].d.hasKey("execute"): perms.incl(fpOthersExec)
+                        for (who, flags) in [
+                            ("user",   [fpUserRead,   fpUserWrite,   fpUserExec]),
+                            ("group",  [fpGroupRead,  fpGroupWrite,  fpGroupExec]),
+                            ("others", [fpOthersRead, fpOthersWrite, fpOthersExec])
+                        ]:
+                            if aSet.d.hasKey(who) and aSet.d[who].kind == Dictionary:
+                                let entry {.cursor.} = aSet.d[who].d
+                                for i, what in ["read", "write", "execute"]:
+                                    if entry.hasKey(what):
+                                        let v {.cursor.} = entry[what]
+                                        if v.kind == Null or isFalse(v):
+                                            perms.excl(flags[i])
+                                        else:
+                                            perms.incl(flags[i])
 
                         setFilePermissions(move source, move perms)
                     else:

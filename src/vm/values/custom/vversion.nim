@@ -93,8 +93,14 @@ func `==`*(a, b: VVersion): bool {.inline.} =
 func `<`*(a, b: VVersion): bool {.inline.} =
     cmp(a,b) == -1
 
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.push warning[InvalidCmpOp]: off.}
+
 func `>`*(a, b: VVersion): bool {.inline.} =
     cmp(a,b) == 1
+
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.pop.}
 
 func `$`*(v: VVersion): string {.inline.} =
     fmt("{v.major}.{v.minor}.{v.patch}{v.prerelease}{v.extra}")

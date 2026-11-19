@@ -1,0 +1,2 @@
+print "starting"
+panic "cannot open /tmp/my_file_name.txt"

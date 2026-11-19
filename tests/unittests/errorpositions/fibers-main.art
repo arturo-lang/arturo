@@ -1,0 +1,8 @@
+import relative "fibers/module.art"
+
+do [
+    t: go
+    pause 5
+    print contains? relative "x" "fibers"
+    print contains? wait t "fibers"
+]

@@ -1,0 +1,49 @@
+cmdline
+error.crashes
+error.lines
+error.messages
+error.positions
+events.pending
+lib.files
+lib.stores
+lib.stores.inplace
+parallelism
+compiler.ScriptNotExists
+runtime.FileNotFound.1
+runtime.FileNotFound.2
+ABC incremental counts
+ABC words
+Alternade words
+Anadromes
+Anagrams
+Anagrams/Deranged anagrams
+Change e letters to i in words
+Changeable words
+Empty directory
+Execute Brain****
+Find words which contain all the vowels
+Find words which contain the most consonants
+Find words which contains more than 3 e vowels
+Find words whose first and last three letters are equal
+Find words with alternating vowels and consonants
+Hex words
+I before E except after C
+Modulinos -- Library
+Modulinos -- Main
+Odd word problem
+Odd words
+Ordered words
+Parallel calculations
+Prime words
+Read a configuration file
+Same fringe
+Stream merge
+Teacup rim text
+Textonyms
+Word wheel
+Words containing "the" substring
+Words from neighbour ones
+Execute Computer/Zero
+Harmonic series
+Wolstenholme numbers
+Factors of a Mersenne number

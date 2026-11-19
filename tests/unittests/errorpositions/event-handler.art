@@ -1,0 +1,8 @@
+e: event 'tick
+on e [
+    a: 1
+    b: a / 0
+]
+emit e
+pause 10
+print "still running"

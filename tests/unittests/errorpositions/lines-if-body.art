@@ -1,0 +1,4 @@
+a: true
+if a [
+    print 1/0
+]

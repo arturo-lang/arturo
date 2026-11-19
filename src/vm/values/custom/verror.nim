@@ -10,7 +10,7 @@
 # Libraries
 #=======================================
 
-import std/strformat
+import std/[strformat, strutils]
 
 #=======================================
 # Types
@@ -236,5 +236,8 @@ func kindByLabel*(label: string): VErrorKind =
 func `$`*(kind: VErrorKind): string {.inline.} =
     kind.label
 
-func `$`*(error: VError): string {.inline.} =
-    fmt"{error.kind}: {error.msg}"
+func `$`*(error: VError): string =
+    result = $(error.kind)
+    if error.context.file != "":
+        result.add fmt" ({error.context.file}:{error.context.line})"
+    result.add ": " & strip(dedent(error.msg))

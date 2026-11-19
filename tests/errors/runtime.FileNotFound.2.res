@@ -4,7 +4,7 @@
       ./test
 
   ┃ File: tests/errors/runtime.FileNotFound.2.art
-  ┃ Line: 0
+  ┃ Line: 1
   ┃ 
-  ┃    1 ║  dictionary "./test"
-  ┃    2 ║
+  ┃    1 ║► dictionary "./test"
+  ┃    2 ║  

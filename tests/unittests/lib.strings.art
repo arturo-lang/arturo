@@ -280,6 +280,13 @@ do [
     render 'sample2\sample
     ensure -> sample1 = sample2\sample
     passed
+
+    ; code that leaves nothing behind
+    ensure -> "" = render "| |"
+    ensure -> "ab" = ~"a| |b"
+    ensure -> "x2y" = ~"x|  ||1+1|y"
+    ensure -> "[1]" = ~"|a: 1|[|a|]"
+    passed
 ]
 
 topic « replace
@@ -441,6 +448,25 @@ do [
     wordwrap.at: 40 'sample2\sample
 
     ensure -> sample1 = sample2\sample
+    passed
+]
+
+topic « match.bounds - non-ASCII
+do [
+    ensure -> "[2..2 3..3]" = to :string match.bounds "héllo" "l"
+    ensure -> "[3..4]" = to :string match.bounds "héllo" {/lo/}
+    passed
+
+    m: match.full "héllo" {/(l)(o)/}
+    ensure -> "[3..4]" = to :string @[m\matches\0\1]
+    ensure -> "[3..3 4..4]" = to :string m\captures\0\1
+    passed
+]
+
+topic « truncate - non-ASCII
+do [
+    ensure -> "éééé..." = truncate "ééééééé" 3
+    ensure -> "日本語..." = truncate "日本語のテキスト" 2
     passed
 ]
 

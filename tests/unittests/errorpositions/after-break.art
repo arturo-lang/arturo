@@ -1,0 +1,4 @@
+print div 1 first map [1] 'x [
+    print x
+    break
+]

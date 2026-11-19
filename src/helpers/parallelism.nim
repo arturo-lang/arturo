@@ -15,7 +15,7 @@
 when not defined(WEB):
     import asyncdispatch, asyncfile, httpclient, httpcore
     import os, osproc
-    import std/tempfiles
+    import std/[monotimes, tempfiles]
     import streams, strtabs, strutils, times
     when defined(posix):
         import posix
@@ -28,6 +28,7 @@ when not defined(WEB):
 
     import extras/minicoro
 
+    import vm/errors
     import vm/lib
     import vm/[context, exec, parse, stack]
     import vm/values/custom/[vtask, verror]
@@ -121,7 +122,7 @@ when not defined(WEB):
     proc onMainFiber*(): bool {.inline.} =
         scheduler.currentFiber.isNil
 
-    proc spawnFiber*(entry: proc (), parentSyms: SymTable): Fiber =
+    proc spawnFiber*(entry: proc (), parentSyms: SymSlots): Fiber =
         ## Create fiber with fresh VMContext (shallow-copied syms), queue ready.
         if scheduler.mainCtx.isNil:
             initScheduler()
@@ -192,9 +193,22 @@ when not defined(WEB):
         else:
             return fut.read()
 
+    proc newTaskError*(e: ref Exception): Value =
+        ## Turn exception raised in a task into an `:error`,
+        ## without the traceback asyncdispatch adds to the message
+        let traceback = e.msg.find("\nAsync traceback:")
+        if traceback != -1:
+            e.msg.setLen(traceback)
+
+        if e of VError: newError(VError(e))
+        else:           newError(RuntimeErr, e.msg)
+
     proc coopWait*[T](fut: Future[T]): T =
         ## Block on `fut` from any context. Drives scheduler on main,
         ## yields on fiber.
+        let callerLine = CurrentLine
+        defer: CurrentLine = callerLine
+
         if onMainFiber():
             when T is void:
                 runUntilFutureDone(fut)
@@ -635,9 +649,18 @@ when not defined(WEB):
         else:
             p.terminate()
 
+    proc pollInterval(started: MonoTime): int {.inline.} =
+        ## Child-process poll interval: ~10% of elapsed time, within 1..20ms.
+        ## Quick tasks get noticed right away; long ones settle at the
+        ## same 20ms rate as the event/channel tailers.
+        clamp(int((getMonoTime() - started).inMilliseconds div 10), 1, 20)
+
     # Spawn child Arturo process, return future settling on exit. Child
     # writes result to temp file; we inherit its stdio so `print` flows live.
     proc runInChildProcess*(tsk: VTask, blockSrc: string): Future[Value] {.async.} =
+        # The child only gets the block's code, without any lines:
+        # all we can tell is where it was spawned from
+        let spawnedFrom = ErrorContext(line: markerLine(CurrentLine), file: markerFile(CurrentLine))
         let arturoBin = getAppFilename()
         let resFile = genTempPath("arturo-task-", ".art")
         let errFile = genTempPath("arturo-err-", ".art")        ## VError kind+msg side-channel
@@ -686,8 +709,9 @@ when not defined(WEB):
             {.cast(gcsafe).}: proc1.running)
         let chanTailFut = tailChannelFile(chanFile, proc(): bool {.gcsafe.} =
             {.cast(gcsafe).}: proc1.running)
+        let started = getMonoTime()
         while p.running and tsk.state != taskCancelled:
-            await sleepAsync(50)
+            await sleepAsync(pollInterval(started))
         if tsk.state == taskCancelled and p.running:
             terminateGroup(p)
             discard p.waitForExit()
@@ -736,7 +760,9 @@ when not defined(WEB):
                                 rebuiltMsg = dict.d["msg"].s
             except CatchableError:
                 discard
-            raise toError(rebuiltKind, rebuiltMsg)
+            let rebuilt = toError(rebuiltKind, rebuiltMsg)
+            rebuilt.context = spawnedFrom
+            raise rebuilt
         elif code == 0 and fileExists(resFile):
             let raw = readFile(resFile)
             removeFile(resFile)
@@ -772,8 +798,9 @@ when not defined(WEB):
                              options = {poUsePath, poEvalCommand, poStdErrToStdOut})
         detachToOwnGroup(p)
         tsk.process = p
+        let started = getMonoTime()
         while p.running and tsk.state != taskCancelled:
-            await sleepAsync(50)
+            await sleepAsync(pollInterval(started))
         if tsk.state == taskCancelled and p.running:
             terminateGroup(p)
             discard p.waitForExit()
@@ -1088,6 +1115,4 @@ when not defined(WEB):
                 result = VNULL
             else:
                 tsk.state = taskFailed
-                result =
-                    if e of VError: newError(VError(e))
-                    else:           newError(RuntimeErr, e.msg)
+                result = newTaskError(e)

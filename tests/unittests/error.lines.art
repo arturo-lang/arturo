@@ -1,0 +1,30 @@
+; helper functions
+topic: $[topic :string] -> print ~"\n>> |topic|"
+passed: $[] -> print "[+] passed!"
+
+reportsLine?: function [name, line][
+    fixture: relative ~"errorpositions/lines-|name|.art"
+    output: execute ~{|sys\binary| --no-color "|fixture|"}
+    contains? output ~"Line: |line|"
+]
+
+; tests
+
+loop [
+    "first-line"        1
+    "block-start"       3
+    "if-body"           3
+    "function-body"     2
+    "block-argument"    2
+    "string-argument"   2
+    "multiline-call"    1
+    "infix"             3
+    "call-result"       5
+    "after-try"         5
+    "identical-blocks"  9
+    "code-string"       3
+] [name, line][
+    topic name
+    ensure -> reportsLine? name line
+    passed
+]

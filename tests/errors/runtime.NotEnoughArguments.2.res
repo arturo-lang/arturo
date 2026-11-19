@@ -9,6 +9,6 @@
       3
 
   ┃ File: tests/errors/runtime.NotEnoughArguments.2.art
-  ┃ Line: 0
+  ┃ Line: 1
   ┃ 
-  ┃    1 ║  print map 1..10 'x
+  ┃    1 ║► print map 1..10 'x

@@ -1,0 +1,70 @@
+print (neg 9000000000000000000) + neg 9000000000000000000
+print (neg 9000000000000000000) - 9000000000000000000
+print (neg 5000000000) * 5000000000
+print (neg 5000000000) + 1:3
+print to :rational @[neg 5000000000 3]
+print to :rational @[5000000000 neg 3]
+
+; results that fit in a normal Integer shouldn't remain "big"
+z: (2^70) - ((2^70) - 3)
+print z
+print integer?.big z
+print shl 1 z
+print size 1..z
+print get [1 2 3 4] z
+print repeat "a" z
+print to :floating z
+print integer?.big div 2^70 2^68
+print integer?.big (neg 2^63)
+print integer?.big 2^63
+print integer?.big (9223372036854775807 + 1) - 1
+
+; the smallest Integer
+m: (neg 9223372036854775807) - 1
+print m / neg 1
+print m % neg 1
+print divmod m neg 1
+print 7 / neg 1
+print 7 % neg 1
+print divmod 7 neg 1
+a: m
+'a / neg 1
+print a
+b: m
+'b % neg 1
+print b
+c: m
+divmod 'c neg 1
+print c
+d: m
+neg 'd
+print d
+print abs m
+print digits m
+print gcd @[m 6]
+print gcd @[m m]
+print lcm @[m 2]
+print lcm @[3 m]
+
+; comparing with Floating values
+b: 10^100
+print ∞ > b
+print b > ∞
+print b < ∞
+print (neg ∞) < neg b
+print (neg b) > neg ∞
+print 1.0e300 > b
+print b < 1.0e300
+print 1.0e99 < b
+print b > 1.0e99
+print 1.0e20 = 10^20
+print (10^20) = 1.0e20
+print 1.5e20 > 10^20
+print (10^20) < 1.5e20
+print (neg 10^20) > neg 1.5e20
+print b = ∞
+print (∞ - ∞) = b
+print b < (∞ - ∞)
+print b > (∞ - ∞)
+print max @[b ∞ 1.0e300]
+print sort @[∞ b neg ∞ 1.0e300]

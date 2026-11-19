@@ -14,6 +14,9 @@
 
 import tables, times, unicode
     
+when defined(WEB):
+    import helpers/jsbignums
+
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
@@ -29,6 +32,14 @@ import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrationa
 
 const
     GMP = defined(GMP)
+    BignumSupport = defined(GMP) or defined(WEB)
+
+#=======================================
+# Helpers
+#=======================================
+
+template bothNormalIntegers(x, y: Value): bool =
+    x.kind == Integer and y.kind == Integer and x.iKind == NormalInteger and y.iKind == NormalInteger
 
 #=======================================
 # Forward declarations
@@ -47,11 +58,7 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline.} =
     return true
 
 when defined(GMP):
-    template toBig(v: untyped): untyped =
-        when defined(WEB):
-            big(v)
-        else:
-            v
+    template toBig(v: untyped): untyped = v
 
 #=======================================
 # Methods
@@ -70,6 +77,9 @@ when defined(GMP):
 #  labels: vm, values, enhancement, unit-test
 
 proc `==`*(x: Value, y: Value): bool =
+    if bothNormalIntegers(x, y):
+        return x.i == y.i
+
     const 
         numericKinds = {Integer, Rational, Floating, Quantity}
         errorKinds = {Error, ErrorKind}
@@ -99,16 +109,16 @@ proc `==`*(x: Value, y: Value): bool =
             of Quantity   || Floating  : return x.q == y.f
             of Quantity   || Rational  : return x.q == y.rat
             
-            of BigInteger || BigInteger: (when GMP: return x.bi == y.bi)
+            of BigInteger || BigInteger: (when BignumSupport: return x.bi == y.bi)
             
-            of BigInteger || Integer   : (when GMP: return x.bi == toBig(y.i))
+            of BigInteger || Integer   : (when BignumSupport: return x.bi == toBig(y.i))
             of BigInteger || Rational  : return false
-            of BigInteger || Floating  : (when GMP: return x.bi == toBig(int(y.f)))
+            of BigInteger || Floating  : (when BignumSupport: return x.bi == y.f)
             of BigInteger || Quantity  : (when GMP: return x.bi == y.q)
 
-            of Integer    || BigInteger: (when GMP: return toBig(x.i) == y.bi)
+            of Integer    || BigInteger: (when BignumSupport: return toBig(x.i) == y.bi)
             of Rational   || BigInteger: (when GMP: return x.rat == toRational(y.bi))
-            of Floating   || BigInteger: (when GMP: return toBig(int(x.f)) == y.bi)
+            of Floating   || BigInteger: (when BignumSupport: return x.f == y.bi)
             of Quantity   || BigInteger: (when GMP: return x.q == y.bi)
 
             of Error      || ErrorKind : return x.err.kind == y.errkind
@@ -270,21 +280,15 @@ proc `==`*(x: Value, y: Value): bool =
 #  see also: https://github.com/arturo-lang/arturo/pull/1139
 #  labels: bug,values,open discussion
 
-# TODO(VM/values/comparison) add `<`/`>` support for Inline values?
-#  currently, `=` is supported but not `<` and `>`!
-#  since Inline values are pretty much identical to Block values - internally -
-#  comparison operators should work for them in an identical fashion.
-#  The question is: when is Inline A smaller than Inline B? How do other
-#  languages handle this?
-#  see also: https://github.com/arturo-lang/arturo/pull/1139
-#  labels: bug,values,open discussion
-
 # TODO(VM/values/comparison) Re-visit/test handling of Block comparisons
 #  How do other languages (e.g. Python, Ruby, etc) handle comparisons between blocks/arrays?
 #  Do they even support it? If so, how?
 #  labels: enhancement,values,open discussion,unit-test
 
 proc `<`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i < y.i
+
     const numericKinds = {Integer, Rational, Floating, Quantity}
 
     if x.kind in numericKinds or y.kind in numericKinds:
@@ -311,16 +315,16 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Quantity   || Floating  :   return x.q < y.f
             of Quantity   || Rational  :   return x.q < y.rat
             
-            of BigInteger || BigInteger:   (when GMP: return x.bi < y.bi)
+            of BigInteger || BigInteger:   (when BignumSupport: return x.bi < y.bi)
             
-            of BigInteger || Integer   :   (when GMP: return x.bi < toBig(y.i))
+            of BigInteger || Integer   :   (when BignumSupport: return x.bi < toBig(y.i))
             of BigInteger || Rational  :   return false
-            of BigInteger || Floating  :   (when GMP: return x.bi < toBig(int(y.f)))
+            of BigInteger || Floating  :   (when BignumSupport: return x.bi < y.f)
             of BigInteger || Quantity  :   (when GMP: return x.bi < y.q)
 
-            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      < y.bi)
+            of Integer    || BigInteger:   (when BignumSupport: return toBig(x.i)      < y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           < toRational(y.bi))
-            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) < y.bi)
+            of Floating   || BigInteger:   (when BignumSupport: return x.f             < y.bi)
             of Quantity   || BigInteger:   (when GMP: return x.q             < y.bi)
             else:
                 discard
@@ -360,7 +364,13 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
         else: 
             return false
 
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.push warning[InvalidCmpOp]: off.}
+
 proc `>`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i > y.i
+
     const numericKinds = {Integer, Rational, Floating, Quantity}
 
     if x.kind in numericKinds or y.kind in numericKinds:
@@ -387,16 +397,16 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Quantity   || Floating  :   return x.q > y.f
             of Quantity   || Rational  :   return x.q > y.rat
             
-            of BigInteger || BigInteger:   (when GMP: return x.bi > y.bi)
+            of BigInteger || BigInteger:   (when BignumSupport: return x.bi > y.bi)
             
-            of BigInteger || Integer   :   (when GMP: return x.bi > toBig(y.i))
+            of BigInteger || Integer   :   (when BignumSupport: return x.bi > toBig(y.i))
             of BigInteger || Rational  :   return false
-            of BigInteger || Floating  :   (when GMP: return x.bi > toBig(int(y.f)))
+            of BigInteger || Floating  :   (when BignumSupport: return x.bi > y.f)
             of BigInteger || Quantity  :   (when GMP: return x.bi > y.q)
 
-            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      > y.bi)
+            of Integer    || BigInteger:   (when BignumSupport: return toBig(x.i)      > y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           > toRational(y.bi))
-            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) > y.bi)
+            of Floating   || BigInteger:   (when BignumSupport: return x.f             > y.bi)
             of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
             else:
                 discard
@@ -436,9 +446,13 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             return false
 
 proc `<=`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i <= y.i
     x < y or x == y
 
 proc `>=`*(x: Value, y: Value): bool {.inline.}=
+    if bothNormalIntegers(x, y):
+        return x.i >= y.i
     x > y or x == y
 
 # TODO(VM/values/comparison) Should we convert `!=` into a template?
@@ -447,6 +461,9 @@ proc `>=`*(x: Value, y: Value): bool {.inline.}=
 
 proc `!=`*(x: Value, y: Value): bool {.inline.}=
     not (x == y)
+
+when (NimMajor, NimMinor, NimPatch) >= (2, 2, 12):
+    {.pop.}
 
 proc cmp*(x: Value, y: Value): int {.inline.}=
     if x < y:

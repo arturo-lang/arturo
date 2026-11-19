@@ -1,0 +1,4 @@
+try [
+    do relative "failing.art"
+]
+print 1/0
