@@ -132,7 +132,7 @@ proc endsWith*(str: string, rx: VRegex): bool =
 
 proc replaceAll*(str: string, rx: VRegex, with: string): string =
     when defined(WEB):
-        $(replace(cstring(str), rx, cstring(with)))
+        $(replace(cstring(str), newRegExp(rx.source, cstring($(rx.flags) & "g")), cstring(with)))
     else:
         nre.replace(str, rx, with)
 
