@@ -65,7 +65,7 @@ proc escapeForRegex*(s: string): string =
 
 proc `$`*(rx: VRegex): string =
     when defined(WEB):
-        $(rx)
+        $(rx.source)
     else:
         rx.pattern
 
