@@ -54,6 +54,16 @@ jobs:
                                                 'bash'        }}
 
         steps:
+            # tests depend on the local time zone (e.g. DST changes in date arithmetic):
+            # make sure all Windows runners are on UTC, like the rest
+            - if: matrix.os == 'windows'
+              name: Set time zone to UTC
+              shell: pwsh
+              run: |
+                tzutil /g
+                tzutil /s "UTC"
+                tzutil /g
+
             - name: Checkout Arturo sources
               uses: actions/checkout@v6
               with:
