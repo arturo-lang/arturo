@@ -214,14 +214,14 @@ proc getFieldTable*(defs: ValueDict): ValueDict {.inline.} =
     result = newOrderedTable[string,Value]()
 
     if (let constructorMethod = defs.getOrDefault($ConstructorM, nil); not constructorMethod.isNil):
-        for p in constructorMethod.params:
+        for p in constructorMethod.mparams:
             if p != "this":
                 result[p] = newType(Any)
 
         let ensureW = newWord("ensure")
         var i = 1
-        while i < constructorMethod.main.a.len - 1:
-            if (let ensureBlock = constructorMethod.main.a[i+1]; constructorMethod.main.a[i] == ensureW and ensureBlock.kind == Block):
+        while i < constructorMethod.mmain.a.len - 1:
+            if (let ensureBlock = constructorMethod.mmain.a[i+1]; constructorMethod.mmain.a[i] == ensureW and ensureBlock.kind == Block):
                 let lastElement = ensureBlock.a[^1]
                 if lastElement.kind == Word:
                     if ensureBlock.a[^2].kind == Type:
@@ -233,15 +233,15 @@ proc getFieldTable*(defs: ValueDict): ValueDict {.inline.} =
             i += 2
 
 proc injectThis*(fun: Value) {.inline.} =
-    if fun.params.len < 1 or fun.params[0] != ThisRef:
-        fun.params.insert(ThisRef)
-        fun.arity += 1
+    if fun.mparams.len < 1 or fun.mparams[0] != ThisRef:
+        fun.mparams.insert(ThisRef)
+        fun.marity += 1
 
 proc uninjectingThis*(fun: Value): Value {.inline.} =
     result = copyValue(fun)
-    if result.params.len >= 1 and result.params[0] == ThisRef:
-        result.params.delete(0..0)
-        result.arity -= 1
+    if result.mparams.len >= 1 and result.mparams[0] == ThisRef:
+        result.mparams.delete(0..0)
+        result.marity -= 1
 
 proc injectingSuper*(fun: Value, super: Value): Value {.inline.} =
     result = copyValue(fun)
@@ -250,7 +250,7 @@ proc injectingSuper*(fun: Value, super: Value): Value {.inline.} =
         newLabel(SuperRef), newWord("function"), newBlock(super.mparams.map((w)=>newWord(w))), super.mmain
     ]
 
-    result.main.a.insert(injection)
+    result.mmain.a.insert(injection)
 
 proc generateNewObject*(pr: Prototype, values: ValueArray | ValueDict): Value =
     # create basic object
