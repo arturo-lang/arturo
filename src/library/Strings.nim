@@ -36,8 +36,7 @@ when defined(PARSERS):
 
 import vm/lib
 
-when not defined(WEB):
-    import vm/[eval, exec]
+import vm/[eval, exec]
 
 import vm/parse
 
@@ -47,13 +46,40 @@ import vm/values/custom/[vrange]
 # Variables
 #=======================================
 
-when not defined(WEB):
-    var
-        templateStore = initTable[string,Translation]()
+var
+    templateStore = initTable[string,Translation]()
 
 #=======================================
 # Helpers
 #=======================================
+
+when defined(WEB):
+    proc replaceInterpolated(s: string, replacer: proc (code: string): string): string =
+        # same as: s.replace(re"\|([^\|]+)\|", ...)
+        var i = 0
+        while i < s.len:
+            if s[i] == '|':
+                let j = s.find('|', i+1)
+                if j > i+1:
+                    result.add replacer(s[i+1 ..< j])
+                    i = j+1
+                    continue
+            result.add s[i]
+            inc i
+
+    proc hasInterpolated(s: string): bool =
+        # same as: s.find(re"\|([^\|]+)\|").isSome
+        var i = s.find('|')
+        while i >= 0:
+            let j = s.find('|', i+1)
+            if j > i+1: return true
+            i = j
+        return false
+
+    proc hasEmbeddable(s: string): bool =
+        # same as: s.contains(re"(?s)(\<\|\|.*?\|\|\>)")
+        let i = s.find("<||")
+        return i >= 0 and s.find("||>", i+3) >= 0
 
 template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
     requireValue(src, {String,Regex})
@@ -657,39 +683,35 @@ proc defineModule*(moduleName: string) =
                     ensureInPlaceAny()
                     InPlaced.s = unicode.align(InPlaced.s, y.i, padding=padding)
 
-    when not defined(WEB):
-        # TODO(Strings\render) function should also work for Web/JS builds
-        #  the lack of proper RegEx libraries could be handled by using the newly-added JS helper functions
-        #  labels: enhancement,library,web
+    builtin "render",
+        alias       = tilde, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "render template with |string| interpolation",
+        args        = {
+            "template"  : {String,Literal,PathLiteral}
+        },
+        attrs       = {
+            "once"      : ({Logical},"don't render recursively"),
+            "template"  : ({Logical},"render as a template")
+        },
+        returns     = {String,Nothing},
+        example     = """
+        x: 2
+        greeting: "hello"
+        print ~"|greeting|, your number is |x|"       ; hello, your number is 2
+        """:
+            #=======================================================
+            let recursive = not (hadAttr("once"))
+            let templated = (hadAttr("template"))
+            var res: string
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                res = InPlaced.s
+            else:
+                res = x.s
 
-        builtin "render",
-            alias       = tilde, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "render template with |string| interpolation",
-            args        = {
-                "template"  : {String,Literal,PathLiteral}
-            },
-            attrs       = {
-                "once"      : ({Logical},"don't render recursively"),
-                "template"  : ({Logical},"render as a template")
-            },
-            returns     = {String,Nothing},
-            example     = """
-            x: 2
-            greeting: "hello"
-            print ~"|greeting|, your number is |x|"       ; hello, your number is 2
-            """:
-                #=======================================================
-                let recursive = not (hadAttr("once"))
-                let templated = (hadAttr("template"))
-                var res: string
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    res = InPlaced.s
-                else:
-                    res = x.s
-
+            when not defined(WEB):
                 var Interpolated {.global.}: nre.Regex
                 var Embeddable {.global.}: re.Regex
 
@@ -698,50 +720,59 @@ proc defineModule*(moduleName: string) =
                 elif Interpolated.isNil:
                     Interpolated = nre.re"\|([^\|]+)\|"
 
-                if templated:
-                    var keepGoing = true
-                    if recursive: 
-                        keepGoing = res.contains(Embeddable)
+            if templated:
+                var keepGoing = true
+                if recursive: 
+                    keepGoing = (when defined(WEB): res.hasEmbeddable() else: res.contains(Embeddable))
 
-                    while keepGoing:
-                        var evaled: Translation
+                while keepGoing:
+                    var evaled: Translation
 
-                        evaled = templateStore.getOrDefault(res, nil)
-                        if evaled.isNil:
-                            let initial = res
-                            # make necessary substitutions
-                            res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
-                                ("||>","««"),
-                                ("<||","»»")
-                            ) & "»»"
+                    evaled = templateStore.getOrDefault(res, nil)
+                    if evaled.isNil:
+                        let initial = res
+                        # make necessary substitutions
+                        res = "««" & res.replace("<||=","<|| to :string ").multiReplace(
+                            ("||>","««"),
+                            ("<||","»»")
+                        ) & "»»"
 
-                            # parse string template
-                            evaled = doEval(doParse(res, isFile=false))
-                            templateStore[initial] = evaled
+                        # parse string template
+                        evaled = doEval(doParse(res, isFile=false))
+                        templateStore[initial] = evaled
 
-                        # execute/reduce ('array') the resulting block
-                        let stop = SP
-                        execUnscoped(evaled)
-    
-                        let arr: ValueArray = sTopsFrom(stop)
-                        SP = stop
+                    # execute/reduce ('array') the resulting block
+                    let stop = SP
+                    execUnscoped(evaled)
 
-                        # and join the different strings
-                        res = ""
-                        for i, v in arr:
-                            if (not v.isNil) and v.kind==String:
-                                add(res, v.s)
+                    let arr: ValueArray = sTopsFrom(stop)
+                    SP = stop
 
-                        # if recursive, check if there's still more embedded tags
-                        # otherwise, break out of the loop
-                        if recursive: keepGoing = res.contains(Embeddable)
-                        else: keepGoing = false
-                else:
-                    var keepGoing = true
-                    if recursive: 
-                        keepGoing = res.find(Interpolated).isSome
+                    # and join the different strings
+                    res = ""
+                    for i, v in arr:
+                        if (not v.isNil) and v.kind==String:
+                            add(res, v.s)
 
-                    while keepGoing:
+                    # if recursive, check if there's still more embedded tags
+                    # otherwise, break out of the loop
+                    if recursive: keepGoing = (when defined(WEB): res.hasEmbeddable() else: res.contains(Embeddable))
+                    else: keepGoing = false
+            else:
+                var keepGoing = true
+                if recursive: 
+                    keepGoing = (when defined(WEB): res.hasInterpolated() else: res.find(Interpolated).isSome)
+
+                while keepGoing:
+                    when defined(WEB):
+                        res = res.replaceInterpolated(proc (code: string): string =
+                                    let stop = SP
+                                    execUnscoped(doParse(code, isFile=false))
+                                    # (there may be nothing to pop, e.g. with `| |`)
+                                    if SP > stop: $(stack.pop())
+                                    else: ""
+                                )
+                    else:
                         res = res.replace(Interpolated, proc (match: RegexMatch): string =
                                     let stop = SP
                                     execUnscoped(doParse(match.captures[0], isFile=false))
@@ -750,16 +781,16 @@ proc defineModule*(moduleName: string) =
                                     else: ""
                                 )
 
-                        # if recursive, check if there's still more embedded tags
-                        # otherwise, break out of the loop
-                        if recursive: keepGoing = res.find(Interpolated).isSome
-                        else: keepGoing = false
+                    # if recursive, check if there's still more embedded tags
+                    # otherwise, break out of the loop
+                    if recursive: keepGoing = (when defined(WEB): res.hasInterpolated() else: res.find(Interpolated).isSome)
+                    else: keepGoing = false
 
-                if xKind in {Literal,PathLiteral}:
-                    ensureInPlaceAny()
-                    SetInPlaceAny(newString(res))
-                else:
-                    push(newString(res))
+            if xKind in {Literal,PathLiteral}:
+                ensureInPlaceAny()
+                SetInPlaceAny(newString(res))
+            else:
+                push(newString(res))
 
     # TODO(Strings\replace) better implementation with more options needed
     #  Obviously, no need to overdo it here. But at least, we could add support for things like `.once`
