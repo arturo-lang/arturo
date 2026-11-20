@@ -62,7 +62,7 @@ proc pgoTrain(binary: string) =
 
     if hostOS == "windows":
         # full builds need the webview DLLs next to the binary
-        let dlls = getCurrentDir()/"src"/"extras"/"webview"/"deps"/"dlls"/(if hostCPU == "arm64": "arm64" else: "x64")
+        let dlls = getCurrentDir()/"src"/"extras"/"webview"/"deps"/"dlls"/(if targetCPU == "arm64": "arm64" else: "x64")
         for dll in ["webview.dll", "WebView2Loader.dll"]:
             if fileExists(dlls/dll):
                 cpFile(dlls/dll, bin.parentDir/dll)
