@@ -43,6 +43,9 @@ when defined(WEB):
 
     proc write*(buffer: var string, str: string) =
         buffer &= str
+
+    proc write*(buffer: var string, c: char) =
+        buffer &= c
     
     proc flushFile*(buffer: var string) =
         # `echo` can only print whole lines: so we print

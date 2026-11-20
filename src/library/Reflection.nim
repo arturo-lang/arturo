@@ -21,8 +21,7 @@
 
 import helpers/benchmark
 
-when not defined(WEB):
-    import helpers/helper
+import helpers/helper
 
 import helpers/terminal as TerminalHelper
 
@@ -148,77 +147,75 @@ proc defineModule*(moduleName: string) =
                 benchmark "":
                     execUnscoped(preevaled)
 
-    when not defined(WEB):
+    builtin "info",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "print info for given symbol",
+        args        = {
+            "symbol": {String,Word,Literal,SymbolLiteral,PathLiteral}
+        },
+        attrs       = {
+            "get"       : ({Logical},"get information as dictionary")
+        },
+        returns     = {Dictionary,Nothing},
+        example     = """
+        info 'print
 
-        builtin "info",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "print info for given symbol",
-            args        = {
-                "symbol": {String,Word,Literal,SymbolLiteral,PathLiteral}
-            },
-            attrs       = {
-                "get"       : ({Logical},"get information as dictionary")
-            },
-            returns     = {Dictionary,Nothing},
-            example     = """
-            info 'print
+        ; |--------------------------------------------------------------------------------
+        ; |          print  :function                                                   Io
+        ; |--------------------------------------------------------------------------------
+        ; |                 print given value to screen with newline
+        ; |--------------------------------------------------------------------------------
+        ; |          usage  print value :any
+        ; |
+        ; |        options  .lines -> print each value in block in a new line
+        ; |
+        ; |        returns  :nothing
+        ; |--------------------------------------------------------------------------------
+        ..........
+        info '++
 
-            ; |--------------------------------------------------------------------------------
-            ; |          print  :function                                                   Io
-            ; |--------------------------------------------------------------------------------
-            ; |                 print given value to screen with newline
-            ; |--------------------------------------------------------------------------------
-            ; |          usage  print value :any
-            ; |
-            ; |        options  .lines -> print each value in block in a new line
-            ; |
-            ; |        returns  :nothing
-            ; |--------------------------------------------------------------------------------
-            ..........
-            info '++
+        ; |--------------------------------------------------------------------------------
+        ; |         append  :function                                          0x107555A10
+        ; |          alias  ++
+        ; |--------------------------------------------------------------------------------
+        ; |                 append value to given collection
+        ; |--------------------------------------------------------------------------------
+        ; |          usage  append collection :char :string :literal :block
+        ; |                        value :any
+        ; |
+        ; |        returns  :string :block :nothing
+        ; |--------------------------------------------------------------------------------
+        ..........
+        print info.get 'print
+        ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
+        """:
+            #=======================================================
+            var searchable: string
+            var value: Value = nil
 
-            ; |--------------------------------------------------------------------------------
-            ; |         append  :function                                          0x107555A10
-            ; |          alias  ++
-            ; |--------------------------------------------------------------------------------
-            ; |                 append value to given collection
-            ; |--------------------------------------------------------------------------------
-            ; |          usage  append collection :char :string :literal :block
-            ; |                        value :any
-            ; |
-            ; |        returns  :string :block :nothing
-            ; |--------------------------------------------------------------------------------
-            ..........
-            print info.get 'print
-            ; [name:print address:0x1028B3410 type::function module:Io args:[value:[:any]] attrs:[] returns:[:nothing] description:print given value to screen with newline example:print "Hello world!"          ; Hello world!]
-            """:
-                #=======================================================
-                var searchable: string
-                var value: Value = nil
+            if xKind == SymbolLiteral:
+                searchable = $(x.m)
+                for (sym, binding) in pairs(Aliases):
+                    if sym == x.m:
+                        searchable = binding.name.s
+                        value = FetchSym(searchable)
+                        break
 
-                if xKind == SymbolLiteral:
-                    searchable = $(x.m)
-                    for (sym, binding) in pairs(Aliases):
-                        if sym == x.m:
-                            searchable = binding.name.s
-                            value = FetchSym(searchable)
-                            break
-
-                    if value.isNil:
-                        Error_AliasNotFound($(x.m))
-                elif xKind == PathLiteral:
-                    searchable = $(x.p[^1])
-                    value = FetchPathSym(x.p)
-                else:
-                    searchable = x.s
-                    value = FetchSym(x.s)
-                
-                if (hadAttr("get")):
-                    push(newDictionary(getInfo(searchable, value, Aliases)))
-                else:
-                    printInfo(searchable, value, Aliases)
+                if value.isNil:
+                    Error_AliasNotFound($(x.m))
+            elif xKind == PathLiteral:
+                searchable = $(x.p[^1])
+                value = FetchPathSym(x.p)
+            else:
+                searchable = x.s
+                value = FetchSym(x.s)
+            
+            if (hadAttr("get")):
+                push(newDictionary(getInfo(searchable, value, Aliases)))
+            else:
+                printInfo(searchable, value, Aliases)
 
     builtin "inspect",
         alias       = unaliased, 
