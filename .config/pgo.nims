@@ -91,9 +91,13 @@ proc pgoMergeProfile(): bool =
     ## clang needs the raw profiles merged into one file;
     ## gcc just leaves .gcda files next to the object files
     if pgoUsesClang:
+        # pass the raw profiles via a list file: no shell
+        # (= no globbing) on Windows, and there may be lots of them
+        let inputs = pgoDir/"inputs.txt"
+        writeFile(inputs, pgoFilesIn(pgoDir, ".profraw").join("\n"))
         let
             profdata = if hostOS == "macosx": "xcrun llvm-profdata" else: "llvm-profdata"
-            res = gorgeEx(fmt"{profdata} merge -o {pgoProfile.quoteShell} {quoteShell(pgoDir)}/*.profraw")
+            res = gorgeEx(fmt"{profdata} merge -o {pgoProfile.quoteShell} --input-files={inputs.quoteShell}")
         if res.exitCode != 0:
             warn res.output
             return false
