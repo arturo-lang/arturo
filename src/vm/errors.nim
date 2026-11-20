@@ -881,8 +881,7 @@ func Error_ConfigNotFound*(gkey: string, akey: string) =
 func Error_OperationNotPermitted*(operation: string) =
     panic:
         toError VMErr, """
-            Unsafe operation: $#
-            not permitted in online playground
+            Operation not permitted: $#
         """ ~~ @[operation]
 
 func Error_UnsupportedFeature*(feature: string, context: string) =
