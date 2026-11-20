@@ -1189,7 +1189,7 @@ do [
     topic "prepend - :binary < :binary :integer"
     do [
         b: to :binary 1
-        ensure -> to :string .format:".b" = prepend b 0
+        ensure -> to :string .format:".b" 0 = prepend b 0
         passed
     ]
 
