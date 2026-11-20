@@ -333,10 +333,8 @@ proc defineModule*(moduleName: string) =
                     if x == arr[i]:
                         let blk {.cursor.} = arr[i+1]
                         if likely(blk.kind == Block):
-                            handleBranching:
-                                execUnscoped(arr[i+1])
-                            do:
-                                break
+                            execUnscoped(arr[i+1])
+                            break
                         else:
                             push(blk)
                     i += 2
@@ -353,10 +351,7 @@ proc defineModule*(moduleName: string) =
                 
                 if not gotValue.isNil:
                     if gotValue.kind == Block:
-                        handleBranching:
-                            execUnscoped(gotValue)
-                        do:
-                            discard
+                        execUnscoped(gotValue)
                     else:
                         push(gotValue)
 
@@ -1757,11 +1752,9 @@ proc defineModule*(moduleName: string) =
                     item = stack.pop()
                 
                 if not (item.kind==Null or isFalse(item)):
-                    handleBranching:
-                        execUnscoped(arr[i+1])
-                    do:
-                        if not withAny:
-                            break
+                    execUnscoped(arr[i+1])
+                    if not withAny:
+                        break
                 i += 2
 
     builtin "while",
