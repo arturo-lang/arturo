@@ -140,7 +140,8 @@ jobs:
                 create_artifact: 'true'
                 artifact_version: ${{ needs.Validate.outputs.version }}
                 release: 'true'
-                pgo: 'true'
+                # no PGO for Windows arm64 (yet): it's built with clang, and the PGO setup assumes GCC there
+                pgo: ${{ (matrix.os == 'windows' && matrix.arch == 'arm64') && 'false' || 'true' }}
 
     Release:
         runs-on: ubuntu-latest
