@@ -89,3 +89,12 @@ while continue: k: 4
 while continue: after loop: 5
 until continue: before loop
 until continue: after loop: 3
+when break: 1
+when break: 2
+when continue: 2
+when continue: 4
+case break: 1
+case break: 2
+case continue: 1
+case continue: 3
+case continue: 5
