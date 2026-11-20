@@ -69,9 +69,18 @@ proc substitute*(a: VBinary, needle: VBinary, replacement: VBinary): VBinary =
             i = i + 1
     result.add(a[i..^1])
 
+when defined(WEB):
+    # (on JS, we cannot `cast` a number to its bytes:
+    # we get them - little-endian - through typed arrays)
+    func numberBytes(i: int): seq[byte] {.importjs: "Array.from(new Uint8Array(new BigInt64Array([BigInt(#)]).buffer))".}
+    func numberBytes(f: float): seq[byte] {.importjs: "Array.from(new Uint8Array(new Float64Array([#]).buffer))".}
+
 proc numberToBinary*(i: int | float): VBinary =
     if i==0: return @[byte(0)]
-    var bytes = toSeq(cast[array[0..7, byte]](i)).reversed
+    when defined(WEB):
+        var bytes = numberBytes(i).reversed
+    else:
+        var bytes = toSeq(cast[array[0..7, byte]](i)).reversed
     var i=0
     while i < bytes.len and bytes[i] == 0:
         i += 1
