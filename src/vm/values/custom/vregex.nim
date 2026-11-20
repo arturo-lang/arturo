@@ -18,7 +18,10 @@ when defined(linux):
     else:   
         {.passL: "-Bstatic -Lsrc/deps/pcre/linux/amd64 -lpcre -Bdynamic".}
 elif defined(freebsd):
-    {.passL: "-Bstatic -Lsrc/deps/pcre/freebsd/amd64 -lpcre -Bdynamic".}
+    when defined(arm64):
+        {.passL: "-Bstatic -Lsrc/deps/pcre/freebsd/arm64 -lpcre -Bdynamic".}
+    else:
+        {.passL: "-Bstatic -Lsrc/deps/pcre/freebsd/amd64 -lpcre -Bdynamic".}
 elif defined(macosx):
     when defined(arm64):
         {.passL: "src/deps/pcre/macos/arm64/libpcre.a".}
