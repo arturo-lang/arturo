@@ -2489,7 +2489,7 @@ proc defineModule*(moduleName: string) =
                 ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
-                    if x.s.len > 0:
+                    if InPlaced.s.len > 0:
                         InPlaced.s = $(InPlaced.s.toRunes().take())
                 of Block:
                     if InPlaced.a.len > 0:
