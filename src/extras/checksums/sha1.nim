@@ -39,7 +39,8 @@ runnableExamples("-r:off"):
   assert a == b, "files don't match"
 
 import strutils
-from endians import bigEndian32, bigEndian64
+when not defined(js):
+  from endians import bigEndian32, bigEndian64
 
 when defined(nimPreviewSlimSystem):
   import std/syncio
@@ -87,7 +88,11 @@ proc transform(ctx: var Sha1State) =
   e = ctx.state[4]
 
   template shaF1(a, b, c, d, e, t: untyped) =
-    bigEndian32(addr w[t], addr ctx.buf[t * 4])
+    when defined(js):
+      w[t] = (uint32(ctx.buf[t * 4]) shl 24) or (uint32(ctx.buf[t * 4 + 1]) shl 16) or
+             (uint32(ctx.buf[t * 4 + 2]) shl 8) or uint32(ctx.buf[t * 4 + 3])
+    else:
+      bigEndian32(addr w[t], addr ctx.buf[t * 4])
     e += ror27(a) + w[t] + (d xor (b and (c xor d))) + 0x5A827999'u32
     b = ror2(b)
 
@@ -167,7 +172,10 @@ proc update*(ctx: var Sha1State, data: openArray[char]) =
   # Gather 64-bytes worth of data in order to perform a round with the leftover
   # data we had stored (but not processed yet)
   if len > 64 - i:
-    copyMem(addr ctx.buf[i], unsafeAddr data[j], 64 - i)
+    when defined(js):
+      for k in 0 ..< 64 - i: ctx.buf[i + k] = byte(data[j + k])
+    else:
+      copyMem(addr ctx.buf[i], unsafeAddr data[j], 64 - i)
     len -= 64 - i
     j += 64 - i
     transform(ctx)
@@ -176,7 +184,10 @@ proc update*(ctx: var Sha1State, data: openArray[char]) =
     i = 0
   # Process the bulk of the payload
   while len >= 64:
-    copyMem(addr ctx.buf[0], unsafeAddr data[j], 64)
+    when defined(js):
+      for k in 0 ..< 64: ctx.buf[k] = byte(data[j + k])
+    else:
+      copyMem(addr ctx.buf[0], unsafeAddr data[j], 64)
     len -= 64
     j += 64
     transform(ctx)
@@ -197,6 +208,9 @@ proc finalize*(ctx: var Sha1State): Sha1Digest =
   ## If you use the `secureHash proc <#secureHash,openArray[char]>`_,
   ## there's no need to call this function explicitly.
   var cnt = uint64(ctx.count * 8)
+  when defined(js):
+    # (we cannot use `cnt` here: in JS, uint64 is a BigInt)
+    var bits = ctx.count * 8
   # a 1 bit
   update(ctx, "\x80")
   # Add padding until we reach a complexive size of 64 - 8 bytes
@@ -204,12 +218,21 @@ proc finalize*(ctx: var Sha1State): Sha1Digest =
     update(ctx, "\x00")
   # The message length as a 64bit BE number completes the block
   var tmp: array[8, char]
-  bigEndian64(addr tmp[0], addr cnt)
+  when defined(js):
+    for i in countdown(7, 0):
+      tmp[i] = char(bits mod 256)
+      bits = bits div 256
+  else:
+    bigEndian64(addr tmp[0], addr cnt)
   update(ctx, tmp)
   # Turn the result into a single 160-bit number
-  for i in 0 ..< 5:
-    bigEndian32(addr ctx.state[i], addr ctx.state[i])
-  copyMem(addr result[0], addr ctx.state[0], Sha1DigestSize)
+  when defined(js):
+    for i in 0 ..< 5:
+      for k in 0 ..< 4: result[i * 4 + k] = uint8((ctx.state[i] shr uint32(24 - 8 * k)) and 0xFF'u32)
+  else:
+    for i in 0 ..< 5:
+      bigEndian32(addr ctx.state[i], addr ctx.state[i])
+    copyMem(addr result[0], addr ctx.state[0], Sha1DigestSize)
 
 # Public API
 
