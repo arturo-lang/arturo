@@ -24,6 +24,10 @@ when not defined(WEB):
 else:
     import helpers/jsbignums
 
+    # (no `oids` in JS: we generate a similar id -
+    # 8 hex digits of timestamp + 16 random ones)
+    func withWebOid(prefix: cstring): cstring {.importjs: "(# + Math.floor(Date.now() / 1000).toString(16).padStart(8, '0') + Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join(''))".}
+
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
@@ -2489,7 +2493,7 @@ proc defineModule*(moduleName: string) =
                 ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
-                    if x.s.len > 0:
+                    if InPlaced.s.len > 0:
                         InPlaced.s = $(InPlaced.s.toRunes().take())
                 of Block:
                     if InPlaced.a.len > 0:
@@ -2595,10 +2599,10 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if (hadAttr("id")):
-                # TODO(Collections\unique) make `.id` work for Web/JS builds
-                #  labels: library,enhancement,web
                 when not defined(WEB):
                     push newString(x.s & $(genOid()))
+                else:
+                    push newString($(withWebOid(cstring(x.s))))
             else:
                 if xKind == Block:
                     push(newBlock(x.a.deduplicated()))
