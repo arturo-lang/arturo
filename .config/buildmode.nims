@@ -7,17 +7,21 @@ proc miniBuildConfig() =
 proc webBuildConfig() =
     --define:WEB
 
-proc fullBuildConfig() =
+proc fullBuildConfig(withUI = true) =
     --define:GMP
     --define:useOpenssl3
     --define:ssl
     --define:DOCGEN
 
-    --define:CLIPBOARD
-    --define:DIALOGS
     --define:PARSERS
     --define:SQLITE
-    --define:WEBVIEW
+
+    if withUI:
+        --define:CLIPBOARD
+        --define:DIALOGS
+        --define:WEBVIEW
+    else:
+        --define:NOUI
 
 proc bundleConfig() =
     --define:BUNDLE
