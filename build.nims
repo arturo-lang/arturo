@@ -214,7 +214,7 @@ proc installAll*(config: BuildConfig, targetFile: string) =
 
     proc copyWebView() =
         let 
-            sourcePath = "src\\extras\\webview\\deps\\dlls\\" & (if hostCPU == "arm64": "arm64" else: "x64") & "\\"
+            sourcePath = "src\\extras\\webview\\deps\\dlls\\" & (if targetCPU == "arm64": "arm64" else: "x64") & "\\"
             targetPath = "bin"
         log "copying webview..."
         "webview.dll".copy(sourcePath, targetPath)
@@ -294,7 +294,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         ## training run, then the final build
         let baseLen = flags.len
 
-        log "building instrumented binary..."
+        log "building instrumented binary (" & (if pgoUsesClang: "clang" else: "gcc") & ")..."
         pgoCleanUp()
         flags.add pgoFlags(generate=true)
         config.tryCompilation()

@@ -9,14 +9,15 @@
 ##  3. build again, letting the C compiler optimize
 ##     based on that profile
 ##
-## Nim uses clang on macOS & the BSDs and gcc elsewhere,
+## Nim uses clang on macOS & the BSDs (and on Windows, when
+## there's no gcc - e.g. on arm64) and gcc elsewhere,
 ## and the two of them have different flags and profile
 ## formats.
 
 {. push used .}
 
 let
-    pgoUsesClang = hostOS in ["macosx", "freebsd", "openbsd"]
+    pgoUsesClang = hostOS in ["macosx", "freebsd", "openbsd"] or (hostOS == "windows" and findExe("gcc") == "")
     pgoCacheDir = getCurrentDir()/".cache"
     pgoDir = pgoCacheDir/"pgo"
     pgoProfile = pgoDir/"arturo.profdata"
@@ -61,7 +62,7 @@ proc pgoTrain(binary: string) =
 
     if hostOS == "windows":
         # full builds need the webview DLLs next to the binary
-        let dlls = getCurrentDir()/"src"/"extras"/"webview"/"deps"/"dlls"/"x64"
+        let dlls = getCurrentDir()/"src"/"extras"/"webview"/"deps"/"dlls"/(if targetCPU == "arm64": "arm64" else: "x64")
         for dll in ["webview.dll", "WebView2Loader.dll"]:
             if fileExists(dlls/dll):
                 cpFile(dlls/dll, bin.parentDir/dll)
@@ -90,9 +91,13 @@ proc pgoMergeProfile(): bool =
     ## clang needs the raw profiles merged into one file;
     ## gcc just leaves .gcda files next to the object files
     if pgoUsesClang:
+        # pass the raw profiles via a list file: no shell
+        # (= no globbing) on Windows, and there may be lots of them
+        let inputs = pgoDir/"inputs.txt"
+        writeFile(inputs, pgoFilesIn(pgoDir, ".profraw").join("\n"))
         let
             profdata = if hostOS == "macosx": "xcrun llvm-profdata" else: "llvm-profdata"
-            res = gorgeEx(fmt"{profdata} merge -o {pgoProfile.quoteShell} {quoteShell(pgoDir)}/*.profraw")
+            res = gorgeEx(fmt"{profdata} merge -o {pgoProfile.quoteShell} --input-files={inputs.quoteShell}")
         if res.exitCode != 0:
             warn res.output
             return false
