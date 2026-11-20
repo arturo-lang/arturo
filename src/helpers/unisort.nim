@@ -15,7 +15,7 @@ import algorithm, sequtils, tables, unicode
 import helpers/sets
 import helpers/charsets as CharsetsHelper
 
-import vm/values/value
+import vm/values/[comparison, value]
 
 #=======================================
 # Compile-Time Helpers
@@ -273,7 +273,10 @@ proc unisort*(a: var ValueDict, lang: string, sensitive:bool = false, order = So
 
     if byValue:
         a.sort(proc (x, y: (string, Value)): int = 
-            unicmp(x[1], y[1], charset, transformable, ngraphset, sensitive)
+            if x[1].kind == String and y[1].kind == String:
+                unicmp(x[1], y[1], charset, transformable, ngraphset, sensitive)
+            else:
+                cmp(x[1], y[1])
         , order = order)
     else:
         a.sort(proc (x, y: (string, Value)): int = 
