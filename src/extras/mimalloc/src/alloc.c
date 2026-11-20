@@ -519,7 +519,9 @@ static bool mi_try_new_handler(bool nothrow) {
 #else
 typedef void (*std_new_handler_t)(void);
 
-#if (defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER)))  // exclude clang-cl, see issue #631
+// Arturo: exclude clang on Windows too (e.g. arm64): there, with LTO, the weak symbol
+// below clashes with libc++'s `std::get_new_handler` (duplicate symbol)
+#if (defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER))) && !(defined(__clang__) && defined(_WIN32))  // exclude clang-cl, see issue #631
 std_new_handler_t __attribute__((weak)) _ZSt15get_new_handlerv(void) {
   return NULL;
 }
