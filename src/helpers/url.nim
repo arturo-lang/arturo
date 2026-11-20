@@ -12,6 +12,8 @@
 
 when not defined(WEB):
     import re
+else:
+    import std/jsre
 import strutils, tables, uri
 
 import vm/values/value
@@ -29,7 +31,10 @@ func isUrl*(s: string): bool {.inline.} =
         
         return s.match(re"^localhost:\d+(?:[/?#][\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\x80-\xff]*)?$") or s.match(re"^https?:\/\/(?:[\w\-\._~!\$&'\(\)\*\+,;=:%\x80-\xff]*@)?(?:[\w\x80-\xff][\w.\-\x80-\xff]*|\[[0-9a-fA-F:.]+\])(?::\d*)?(?:[/?#][\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\x80-\xff]*)?$")
     else:
-        return false
+        # (the same RegExes - with JS strings being UTF-16, 
+        # `\x80-\xff` becomes `\u0080-\uffff`)
+        let str = cstring(s)
+        return str.contains(newRegExp(cstring(r"^localhost:\d+(?:[/?#][\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\u0080-\uffff]*)?$"))) or str.contains(newRegExp(cstring(r"^https?:\/\/(?:[\w\-\._~!\$&'\(\)\*\+,;=:%\u0080-\uffff]*@)?(?:[\w\u0080-\uffff][\w.\-\u0080-\uffff]*|\[[0-9a-fA-F:.]+\])(?::\d*)?(?:[/?#][\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\u0080-\uffff]*)?$")))
 
 func parseUrlComponents*(s: string): OrderedTable[string,Value] {.inline.} =
     var res = initUri()
