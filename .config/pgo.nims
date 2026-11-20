@@ -9,14 +9,15 @@
 ##  3. build again, letting the C compiler optimize
 ##     based on that profile
 ##
-## Nim uses clang on macOS & the BSDs and gcc elsewhere,
+## Nim uses clang on macOS & the BSDs (and Windows arm64,
+## where there's no gcc) and gcc elsewhere,
 ## and the two of them have different flags and profile
 ## formats.
 
 {. push used .}
 
 let
-    pgoUsesClang = hostOS in ["macosx", "freebsd", "openbsd"]
+    pgoUsesClang = hostOS in ["macosx", "freebsd", "openbsd"] or (hostOS == "windows" and hostCPU == "arm64")
     pgoCacheDir = getCurrentDir()/".cache"
     pgoDir = pgoCacheDir/"pgo"
     pgoProfile = pgoDir/"arturo.profdata"
