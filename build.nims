@@ -294,7 +294,7 @@ proc buildArturo*(config: BuildConfig, targetFile: string) =
         ## training run, then the final build
         let baseLen = flags.len
 
-        log "building instrumented binary..."
+        log "building instrumented binary (" & (if pgoUsesClang: "clang" else: "gcc") & ")..."
         pgoCleanUp()
         flags.add pgoFlags(generate=true)
         config.tryCompilation()
