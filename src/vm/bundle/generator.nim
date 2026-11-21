@@ -244,12 +244,17 @@ proc analyzeBlock(conf: BundleConfig, filename: string, bl: ValueArray) =
             of Path:
                 conf.symbols.add("get")
 
-                if (let symv = Syms.getOrDefault(item.p[0].s, nil); not symv.isNil):
+                if item.p[0].kind == Inline:
+                    conf.analyzeBlock(filename, item.p[0].a)
+                elif (let symv = Syms.getOrDefault(item.p[0].s, nil); not symv.isNil):
                     if symv.isStdlibSymbol():
                         conf.symbols.add(item.p[0].s)
 
             of PathLabel:
                 conf.symbols.add("set")
+
+                if item.p[0].kind == Inline:
+                    conf.analyzeBlock(filename, item.p[0].a)
 
             else:
                 discard

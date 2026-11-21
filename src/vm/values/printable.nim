@@ -765,7 +765,8 @@ proc codify*(v: Value, pretty = false, unwrapped = false, level: int=0, isLast: 
             result &= v.p.map(proc (x: Value): string =
                 case x.kind:
                     of Word, Literal            : x.s
-                    of Integer, Floating, Block : codify(x, safeStrings=safeStrings)
+                    of Integer, Floating, Block,
+                       Inline                   : codify(x, safeStrings=safeStrings)
                     # anything else can only be read back as a computed field
                     else                        : "[" & codify(x, safeStrings=safeStrings) & "]"
             ).join("\\")

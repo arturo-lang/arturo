@@ -19,3 +19,33 @@ Joe
 Someplace
 Somewhere
 [name:Jane age:999 details:[city:Anotherplace country:Somewhere]]
+40
+30
+20
+30
+2
+1
+y
+1
+John
+green
+3
+2
+e
+C
+é
+11
+11
+3
+interpolated: 30
+3
+a
+10
+20
+30
+100 2 3 
+[inner:[k:2]]
+[inner:[k:2 j:3]]
+2 5 
+10
+[(e)\0 (e ++ [1])\[i]:]
