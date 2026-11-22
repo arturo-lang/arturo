@@ -18,4 +18,9 @@ import strutils
 
 const
     systemArch* = hostCPU.replace("i386","x86")
-    systemOs* = hostOS.replace("macosx","macos")
+
+when defined(WASI):
+    # (for Nim, it's just Linux)
+    const systemOs* = "wasi"
+else:
+    const systemOs* = hostOS.replace("macosx","macos")
