@@ -12,9 +12,16 @@
 ; ARTURO_JS_ENGINE: node (default) or deno
 ; ARTURO_JS: the build to use (default: bin/arturo.js)
 ; ARTURO_JS_TIMEOUT: time limit per test, in seconds (default: 120)
+;
+; With --wasi, every test is run using our
+; WASI/WebAssembly build instead:
+;
+; ARTURO_WASM_RUNTIME: the runtime to use (default: wasmtime)
+; ARTURO_WASM: the build to use (default: bin/arturo.wasm)
 
 web?: in? "--web" arg
-args: remove arg "--web"
+wasi?: in? "--wasi" arg
+args: remove remove arg "--web" "--wasi"
 
 errorMargin: 0
 if 1 = size args -> errorMargin: to :integer first args
@@ -44,6 +51,21 @@ if web? [
     if in? releaseCheck ["mini" "full"] -> release: to :literal releaseCheck
 ]
 
+if wasi? [
+    wasmRuntime: "wasmtime"
+    if key? env "ARTURO_WASM_RUNTIME" -> wasmRuntime: env\ARTURO_WASM_RUNTIME
+    unless in? wasmRuntime ["wasmtime"] ->
+        panic.code:1 ~"Unknown WebAssembly runtime: |wasmRuntime|"
+
+    wasm: relative "../bin/arturo.wasm"
+    if key? env "ARTURO_WASM" -> wasm: env\ARTURO_WASM
+
+    ; the whole file system is made available, and we start
+    ; from the current directory (see: extras/wasi.nim)
+    runCommand: ~{|wasmRuntime| run --dir /::/ --env HOME --env PWD "|wasm|" --no-color}
+    release: 'mini
+]
+
 supersuccess: 0
 superskipped: 0
 supertotal: 0
@@ -51,6 +73,8 @@ supertotal: 0
 ; the tests to exclude (one per line, in tester.exclude.*.lst):
 ; - web: whatever cannot work in Web builds at all (it needs
 ;   the file system, other processes, concurrency or a script context)
+; - wasi: whatever cannot work in WASI builds at all (it needs
+;   other processes, networking or more than 32-bit integers)
 ; - mini/full: depending on the release
 ; (and the ones in tester.include.web.lst are mini exclusions
 ;  that do work in Web builds - e.g. thanks to their big Integers)
@@ -60,6 +84,7 @@ excluded: function [kind][
 
 exclusions: []
 if web? -> exclusions: exclusions ++ excluded "web"
+if wasi? -> exclusions: exclusions ++ excluded "wasi"
 if release='mini -> exclusions: exclusions ++ excluded "mini"
 if release='full -> exclusions: exclusions ++ excluded "full"
 
@@ -148,6 +173,10 @@ releaseInfo: ~"@|release|"
 if web? [
     title: "Web Unit Tester"
     releaseInfo: ~"@|release| (web, |jsEngine|)"
+]
+if wasi? [
+    title: "WASI Unit Tester"
+    releaseInfo: ~"@|release| (wasi, |wasmRuntime|)"
 ]
 
 print color #green.bold "\n  Arturo"
