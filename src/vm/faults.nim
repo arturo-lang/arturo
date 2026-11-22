@@ -28,7 +28,7 @@ import vm/runtime
 # Variables
 #=======================================
 
-when not defined(windows):
+when not defined(windows) and not defined(WASI):
     var
         signalStack: array[65536, byte]     ## needed for reporting stack overflows
 
@@ -90,7 +90,7 @@ when defined(windows):
             return ContinueSearch
         reportFault()
         c_exit(139)
-else:
+elif not defined(WASI):
     proc faultHandler(sig: cint) {.noconv.} =
         reportFault()
         exitnow(128 + sig)
@@ -106,6 +106,9 @@ proc setupFaultHandler*() =
         var reserved = ReservedStack
         discard SetThreadStackGuarantee(addr reserved)
         discard SetUnhandledExceptionFilter(cast[pointer](faultFilter))
+    elif defined(WASI):
+        # no signals: a fault just traps
+        discard
     else:
         var stk: Stack
         var old: Stack

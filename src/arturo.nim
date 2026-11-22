@@ -17,10 +17,12 @@
 # Libraries
 #=======================================
 
-when not defined(WEB):
-    import segFaults
-else:
+when defined(WEB):
     import jsffi
+elif defined(WASI):
+    import extras/wasi
+else:
+    import segFaults
 
 when defined(PROFILE):
     import nimprof
