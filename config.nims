@@ -28,6 +28,11 @@ proc configWebTimes() =
         patchFile("stdlib", "times", projectDir() / "extras" / "web" / "times")
 
 proc configMimalloc() =
+    if defined(WASI):
+        # wasi-libc comes with its own allocator
+        --define:useMalloc
+        return
+
     let
         mimallocPath = projectDir() / "extras" / "mimalloc"
         mimallocStatic = "mimallocStatic=\"" & (mimallocPath / "src" / "static.c") & '"'
@@ -94,7 +99,37 @@ proc configSSL() =
         --dynlibOverride:crypto
 
 proc configPlatform() =
-    if hostOS == "macosx":
+    if defined(WASI):
+        let sdk = getEnv("WASI_SDK_PATH", "/opt/wasi-sdk")
+
+        --cc:clang
+        switch "clang.exe", sdk / "bin" / "clang"
+        switch "clang.linkerexe", sdk / "bin" / "clang"
+        --define:noSignalHandler
+        --define:"nimIoselector=poll"
+        --define:"httpxSendServerDate=false"
+
+        # stand-ins for the POSIX headers WASI doesn't have
+        switch "passC", "-I" & (projectDir() / "extras" / "wasi" / "include")
+        switch "passC", "-include " & (projectDir() / "extras" / "wasi" / "include" / "wasi-shim.h")
+
+        # emulated bits of POSIX that wasi-libc
+        # doesn't provide out of the box
+        --passC:"-D_WASI_EMULATED_SIGNAL"
+        --passC:"-D_WASI_EMULATED_PROCESS_CLOCKS"
+        --passC:"-D_WASI_EMULATED_MMAN"
+        --passC:"-D_WASI_EMULATED_GETPID"
+        --passC:"-DFIOCLEX=0x5451 -DFIONCLEX=0x5450"
+        --passL:"-lwasi-emulated-signal"
+        --passL:"-lwasi-emulated-process-clocks"
+        --passL:"-lwasi-emulated-mman"
+        --passL:"-lwasi-emulated-getpid"
+
+        # the default (64KB) is way too small for the VM
+        --passL:"-Wl,-z,stack-size=8388608"
+        --passL:"-lm"
+
+    elif hostOS == "macosx":
         # Headers
         --passC:"-I/opt/homebrew/include"      # ARM64 Homebrew
         --passC:"-I/usr/local/include"         # Intel Homebrew
