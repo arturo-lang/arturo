@@ -39,7 +39,9 @@ else:
             kind: string
             expo: int
 
-        CTRational = Rational[int]
+        # on 32-bit targets (e.g. WASI), `int` is too
+        # small to hold some of the intermediate values
+        CTRational = Rational[int64]
 
         Quantity = tuple
             original: CTRational
@@ -111,6 +113,26 @@ template unitId(str: string): string =
 #=======================================
 
 when not defined(WEB):
+    # Same as `std/rationals`' `toRational`, as it works on
+    # a 64-bit platform - but with int64s, so that we get the
+    # exact same results on 32-bit platforms too
+    func toCTRational(x: float, n: int64 = int64(high(int32))): CTRational =
+        var
+            m11, m22 = 1'i64
+            m12, m21 = 0'i64
+            ai = int64(x)
+            x = x
+        while m21 * ai + m22 <= n:
+            swap m12, m11
+            swap m22, m21
+            m11 = m12 * ai + m11
+            m21 = m22 * ai + m21
+            if x == float(ai): break # division by zero
+            x = 1 / (x - float(ai))
+            if x > float(high(int32)): break # representation failure
+            ai = int64(x)
+        result = m11 // m21
+
     # The std library doesn't support this!
     func `^`(x: CTRational, y: int): CTRational =
         if y < 0:
@@ -120,12 +142,34 @@ when not defined(WEB):
             result.num = x.num ^ y
             result.den = x.den ^ y
 
+    when defined(bit32):
+        # On 32-bit targets (e.g. WASI), our normal rationals
+        # are 32-bit ones: so there are units we cannot support
+        # (e.g. `au`: 149597870700 m)
+
+        const MaxInt32 = int64(high(int32))
+
+        func fits32(ct: CTRational): bool =
+            ct.num in -MaxInt32..MaxInt32 and ct.den in -MaxInt32..MaxInt32
+
+        func to32(ct: CTRational): CTRational =
+            ## the closest approximation with a 32-bit
+            ## numerator & denominator, if there's one
+            if ct.fits32(): return ct
+
+            let x = ct.num.float / ct.den.float
+            var n = MaxInt32
+            result = toCTRational(x, n)
+            while not result.fits32() and n > 1:
+                n = n div 2
+                result = toCTRational(x, n)
+
     proc getDefined(str: string): Quantity =
         let (pref, unit) = parsable[str]
         result = defs[unit]
 
         if pref != "No":
-            var prefVal = toRational(pow(10.0, abs(float(prefixes[pref].val))))
+            var prefVal = toCTRational(pow(10.0, abs(float(prefixes[pref].val))))
             if prefixes[pref].val < 0:
                 prefVal = reciprocal(prefVal)
 
@@ -192,9 +236,9 @@ when not defined(WEB):
         proc parseValue(str: string): CTRational =
             if str.contains(":"):
                 let parts = str.replace("pi", $(PI)).split(":")
-                return toRational(parseFloat(parts[0]) / parseFloat(parts[1]))
+                return toCTRational(parseFloat(parts[0]) / parseFloat(parts[1]))
             else:
-                return toRational(parseFloat(str))
+                return toCTRational(parseFloat(str))
 
         var components = s.split(" ")
 
@@ -252,7 +296,7 @@ proc defUnit*(unit: string, symbol: string, prefixed: bool, definition: string, 
     when not defined(WEB):
         if definition[0] in 'A'..'Z':
             baseUnits.add(unit)
-            defs[unit] = newQuantity(1//1, @[(kind: unit, expo: 1)], base=true)
+            defs[unit] = newQuantity(1'i64 // 1'i64, @[(kind: unit, expo: 1)], base=true)
         else:
             defs[unit] = parseQuantity(definition)
 
@@ -285,7 +329,7 @@ proc defConstant*(name: string, precalculated: bool, definition: string, descrip
         else:
             constants[name] = (
                 definition: definition, 
-                value: newQuantity(1//1, @[(kind: name, expo: 1)], base=true),
+                value: newQuantity(1'i64 // 1'i64, @[(kind: name, expo: 1)], base=true),
                 precalculated: precalculated,
                 description: description
             )
@@ -307,6 +351,12 @@ when not defined(WEB):
     # Overloads
 
     proc newLit(ct: CTRational): NimNode =
+        var ct = ct
+        when defined(bit32):
+            ct = ct.to32()
+            if not ct.fits32():
+                error "Quantity factor doesn't fit in a 32-bit rational: " & $ct
+
         nnkObjConstr.newTree(
             newIdentNode("VRational"),
             nnkExprColonExpr.newTree(
@@ -315,15 +365,24 @@ when not defined(WEB):
             ),
             nnkExprColonExpr.newTree(
                 newIdentNode("num"),
-                newLit(ct.num)
+                newLit(int(ct.num))
             ),
             nnkExprColonExpr.newTree(
                 newIdentNode("den"),
-                newLit(ct.den)
+                newLit(int(ct.den))
             )
         )
 
     # Helpers
+
+    proc isSupported(unit: string): bool =
+        ## whether we can support the given unit
+        ## (on 32-bit targets, we may not)
+        when defined(bit32):
+            let q = defs[unit]
+            q.value.to32().fits32() and q.original.to32().fits32()
+        else:
+            true
 
     proc getAtomsSeq(ats: seq[Atom]): NimNode =
         var atoms = nnkBracket.newTree()
@@ -428,6 +487,8 @@ macro generateParsables*(): untyped =
 
     for (parsable,content) in pairs(parsable):
         let (prefix, unit) = content
+        when not defined(WEB):
+            if not unit.isSupported(): continue
 
         items.add nnkExprColonExpr.newTree(
             newLit(parsable),
@@ -446,6 +507,9 @@ macro generateUnitParser*(): untyped =
     var reverseParsable: OrderedTable[(string, string), seq[string]]
 
     for (parsable, content) in pairs(parsable):
+        when not defined(WEB):
+            if not content[1].isSupported(): continue
+
         if not reverseParsable.hasKey(content):
             reverseParsable[content] = @[]
 
@@ -568,9 +632,11 @@ macro generateQuantities*(): untyped =
     let items = nnkTableConstr.newTree()
     when not defined(WEB):
         for (unit,quantity) in pairs(defs):
+            if not unit.isSupported(): continue
+
             var atomsSeq = getAtomsSeq(quantity.atoms)
 
-            if not (quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C"))):
+            if not (quantity.value == 0'i64 // 1'i64 and quantity.signature != (static parsePropertyFormula("C"))):
                 # if the value is 0 and it's not a currency unit,
                 # it means we should have properly calculated it, but couldn't.
                 # postpone their calculation for `addRuntimeQuantities`
@@ -605,7 +671,7 @@ macro addRuntimeQuantities*(): untyped =
     let items = nnkStmtList.newTree()
     when not defined(WEB):
         for (unit,quantity) in pairs(defs):
-            if quantity.value == 0 // 1 and quantity.signature != (static parsePropertyFormula("C")):
+            if quantity.value == 0'i64 // 1'i64 and quantity.signature != (static parsePropertyFormula("C")):
                 items.add nnkAsgn.newTree(
                     nnkBracketExpr.newTree(
                         newIdentNode("Quantities"),
