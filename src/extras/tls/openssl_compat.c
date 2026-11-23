@@ -282,6 +282,9 @@ SSL_CTX* SSL_CTX_new(const SSL_METHOD* method) {
     mbedtls_ssl_conf_rng(&ctx->conf, mbedtls_psa_get_random, MBEDTLS_PSA_RANDOM_STATE);
     mbedtls_ssl_conf_authmode(&ctx->conf, MBEDTLS_SSL_VERIFY_NONE);   /* OpenSSL's default */
 
+    /* like OpenSSL 3 (security level 2): no DHE groups below 2048 bits */
+    mbedtls_ssl_conf_dhm_min_bitlen(&ctx->conf, 2048);
+
     return ctx;
 }
 
