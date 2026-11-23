@@ -1,0 +1,220 @@
+name: "TLS (temporary)"
+
+# temporary: whole CI matrix + extended TLS tests (tools/tls-tests.art), for the
+# replace-openssl branch; on native full builds, the same TLS tests also run with
+# the current (OpenSSL-based) nightly on the same runner, and anything that works
+# there but not with our build fails the job (to be removed once green)
+
+on:
+    push:
+        branches:
+            - 'replace-openssl'
+
+concurrency: 
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    Test:
+        runs-on: ${{ 
+            (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
+            (matrix.os == 'windows') && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-latest') || 
+                                        'ubuntu-latest'  }}
+                                                                   
+        strategy:
+            fail-fast: false
+            matrix:
+                include: 
+                    - {os: linux,   arch: amd64}
+                    - {os: linux,   arch: amd64,    support: legacy}
+                    - {os: linux,   arch: amd64,    mode: mini}
+                    - {os: linux,   arch: arm64}
+                    - {os: linux,   arch: arm64,    support: legacy}
+                    - {os: linux,   arch: arm64,    mode: mini}
+                    - {os: freebsd, arch: amd64}
+                    - {os: freebsd, arch: amd64,    mode: mini}
+                    - {os: macos,   arch: amd64}
+                    - {os: macos,   arch: amd64,    mode: mini}
+                    - {os: macos,   arch: arm64}
+                    - {os: macos,   arch: arm64,    mode: mini}
+                    - {os: windows, arch: amd64}
+                    - {os: windows, arch: amd64,    mode: mini}
+                    - {os: windows, arch: arm64}
+                    - {os: windows, arch: arm64,    mode: mini}
+                    - {os: web,     arch: js,       mode: mini}
+
+        defaults:
+            run:
+                shell: ${{ 
+                    (matrix.os == 'freebsd') && 'freebsd {0}' ||
+                    (matrix.os == 'windows') && 'msys2 {0}'   || 
+                                                'bash'        }}
+
+        steps:
+            - name: Checkout Arturo sources
+              uses: actions/checkout@v6
+              with:
+                submodules: recursive
+                path: arturo
+                ref: ${{ github.ref }}
+                fetch-depth: 0
+
+            - name: Prepare artifact version
+              id: version
+              shell: bash
+              run: |
+                cd arturo
+                git_hash=$(git rev-parse --short HEAD)
+                
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    version="pr${{ github.event.pull_request.number }}.${git_hash}"
+                else
+                    version="${{ github.ref_name }}.${git_hash}"
+                fi
+                
+                echo "VERSION=$version" >> "$GITHUB_OUTPUT"
+                echo "Building version: $version"
+
+            - name: Install Arturo
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                mode: ${{ matrix.mode }}
+                support: ${{ matrix.support }}
+                src: ${{ github.ref }}
+                metadata: ${{ steps.version.outputs.VERSION }}
+                create_artifact: 'false'
+                artifact_version: ${{ steps.version.outputs.VERSION }}
+
+            - name: Check if tests should be skipped
+              id: check_skip
+              shell: bash
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    COMMIT_MSG=$(git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }})
+                else
+                    COMMIT_MSG=$(git log -1 --pretty=%B HEAD)
+                fi
+                
+                if echo "$COMMIT_MSG" | grep -q "\[skip tests\]"; then
+                    echo "skip=true" >> "$GITHUB_OUTPUT"
+                else
+                    echo "skip=false" >> "$GITHUB_OUTPUT"
+                fi
+
+            - if: (env.arturoCanRun == 'true' || matrix.os == 'web') && steps.check_skip.outputs.skip != 'true'
+              name: Run tests
+              timeout-minutes: 15
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+
+                if [ "${{ matrix.os }}" = "web" ]; then
+                    mkdir -p bin
+                    cp "$HOME/.arturo/bin/arturo.js" bin/arturo.js
+                    fails=0
+                    for art in tests/web/*.art; do
+                        res="${art%.art}.res"
+                        [ -f "$res" ] || continue
+                        echo "--- $art"
+                        actual=$(node tools/run.js "$art")
+                        expected=$(cat "$res")
+                        if [ "$actual" = "$expected" ]; then
+                            echo "OK"
+                        else
+                            echo "FAIL"
+                            echo "expected: $expected"
+                            echo "actual:   $actual"
+                            fails=$((fails + 1))
+                        fi
+                    done
+                    exit $fails
+                else
+                    git clone https://github.com/arturo-lang/examples.git ../examples
+
+                    arturo -v
+                    if ! arturo tools/tester.art; then
+                        exit 1
+                    fi
+
+                    if [ "${{ matrix.mode }}" != "mini" ]; then
+                        arturo -p install unitt
+                        if ! arturo tools/unitt-tester.art; then
+                            exit 1
+                        fi
+                    fi
+                fi
+
+            - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
+              name: TLS tests (this build, mbedTLS)
+              timeout-minutes: 30
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                arturo -v
+                TLS_VERBOSE=1 arturo tools/tls-tests.art | tee ../tls-mbed.txt
+
+            - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
+              name: Install Arturo nightly (OpenSSL-based, for comparison)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                from: latest
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                support: ${{ matrix.support }}
+                mode: full
+
+            - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
+              name: TLS tests (nightly, OpenSSL)
+              timeout-minutes: 30
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                arturo -v
+                TLS_VERBOSE=1 arturo tools/tls-tests.art | tee ../tls-ossl.txt
+
+            - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
+              name: Compare TLS tests (mbedTLS vs OpenSSL)
+              run: |
+                cd $GITHUB_WORKSPACE
+                sed 's/ | .*//' tls-mbed.txt | grep '^\[' > m.txt
+                sed 's/ | .*//' tls-ossl.txt | grep '^\[' > o.txt
+                echo "== checks: $(wc -l < m.txt) (mbedTLS) / $(wc -l < o.txt) (OpenSSL)"
+                echo "== mbedTLS: ok=$(grep -c ': ok$' m.txt) error=$(grep -c ': error$' m.txt)"
+                echo "== OpenSSL: ok=$(grep -c ': ok$' o.txt) error=$(grep -c ': error$' o.txt)"
+                echo "== differences (< OpenSSL nightly, > this build):"
+                diff o.txt m.txt || true
+                # regressions: ok with OpenSSL, error with mbedTLS
+                # (known: 1000-sans' ~28 KB certificate message exceeds mbedTLS's 16 KB limit)
+                awk -F': ' 'NR==FNR { o[$1]=$2; next } o[$1]=="ok" && $2=="error" { print $1 }' o.txt m.txt \
+                    | grep -v '^\[badssl\] 1000-sans noverify$' > regressions.txt || true
+                if [ -s regressions.txt ]; then
+                    echo "== REGRESSIONS:"
+                    while read -r r; do grep -F "$r:" tls-mbed.txt; grep -F "$r:" tls-ossl.txt; done < regressions.txt
+                    exit 1
+                fi
+                echo "== no regressions"
+
+            - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
+              name: Install Arturo nightly (for running the tester)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                from: latest
+                mode: mini
+
+            - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
+              name: Run tester (Web build)
+              timeout-minutes: 90
+              # not blocking (yet): there are still
+              # too many Web-specific issues
+              continue-on-error: true
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                git clone https://github.com/arturo-lang/examples.git ../examples
+
+                arturo -v
+                ARTURO_JS=bin/arturo.js arturo tools/tester.art --web
