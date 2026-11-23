@@ -237,7 +237,6 @@ curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/libgmp-10.dll -o bin/lib
 curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/libmpfr-6.dll -o bin/libmpfr-6.dll
 curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/sqlite3_64.dll -o bin/sqlite3_64.dll
 curl -L https://arturo-lang.s3.amazonaws.com/deps/amd64/libgcc_s_seh-1.dll -o bin/libgcc_s_seh-1.dll
-curl -L https://curl.se/ca/cacert.pem -o bin/cacert.pem
 cp /mingw64/bin/libwinpthread-1.dll bin
 ```
 
