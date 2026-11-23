@@ -251,7 +251,7 @@ Would choosenim work? Perhaps, but haven't tested it.
 ```sh
 pkg update
 pkg install -y wget curl bash ca_root_nss jq
-pkg install -y pkgconf openssl
+pkg install -y pkgconf
 pkg install -y nim git
 ```
 
