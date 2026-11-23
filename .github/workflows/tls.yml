@@ -158,7 +158,13 @@ jobs:
                 TLS_VERBOSE=1 arturo tools/tls-tests.art | tee ../tls-mbed.txt
 
             - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
+              name: Move this build aside (so the nightly can be installed)
+              run: |
+                mv "$arturoDistPath" "$arturoDistPath-mbedtls"
+
+            - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
               name: Install Arturo nightly (OpenSSL-based, for comparison)
+              id: nightly
               uses: arturo-lang/setup-arturo@v2
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
@@ -168,15 +174,16 @@ jobs:
                 support: ${{ matrix.support }}
                 mode: full
 
-            - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
+            - if: ${{ !cancelled() && steps.nightly.outcome == 'success' }}
               name: TLS tests (nightly, OpenSSL)
               timeout-minutes: 30
               run: |
                 cd $GITHUB_WORKSPACE/arturo
                 arturo -v
+                if arturo -v | grep -q "replace-openssl"; then echo "ERROR: this is not the nightly"; exit 1; fi
                 TLS_VERBOSE=1 arturo tools/tls-tests.art | tee ../tls-ossl.txt
 
-            - if: ${{ !cancelled() && env.arturoCanRun == 'true' && matrix.os != 'web' && matrix.mode != 'mini' }}
+            - if: ${{ !cancelled() && steps.nightly.outcome == 'success' }}
               name: Compare TLS tests (mbedTLS vs OpenSSL)
               run: |
                 cd $GITHUB_WORKSPACE
