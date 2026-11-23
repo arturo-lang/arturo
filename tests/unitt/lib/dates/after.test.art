@@ -1,0 +1,68 @@
+import {unitt}!
+
+date: $[][
+    to :date .format:"yyyy-MM-dd" "2024-03-15"
+]
+
+describe "after" [
+
+    it "works for ns" [
+        expects.be: 'equal? @["2024-03-15T00:00:00-00:10", to :string after.nanoseconds: 10 date]
+        expects.be: 'equal? @["2024-03-15T00:00:00-01:00", to :string after.nanoseconds: 1000000 date]
+    ]
+
+    it "works for ms" [
+        expects.be: 'equal? @["2024-03-15T00:00:00-10:00", to :string after.milliseconds: 10 date]
+        expects.be: 'equal? @["2024-03-15T00:00:01-00:00", to :string after.milliseconds: 1000 date]
+    ]
+
+    it "works for seconds" [
+        expects.be: 'equal? @["2024-03-15T00:00:10-00:00", to :string after.seconds: 10 date]
+        expects.be: 'equal? @["2024-03-15T00:01:00-00:00", to :string after.seconds: 60 date]
+    ]
+
+    it "works for minutes" [
+        expects.be: 'equal? @["2024-03-15T00:02:00-00:00", to :string after.minutes: 2 date]
+        expects.be: 'equal? @["2024-03-15T01:00:00-00:00", to :string after.minutes: 60 date]
+    ]
+
+    it "works for hours" [
+        expects.be: 'equal? @["2024-03-15T03:05:00-00:00", to :string after.hours: 5 date]
+        expects.be: 'equal? @["2024-03-16T00:00:00-00:00", to :string after.hours: 24 date]
+    ]
+
+    it "works for days" [
+        expects.be: 'equal? @["2024-03-17T00:00:00-00:00", to :string after.days: 2 date]
+        expects.be: 'equal? @["2024-03-22T00:00:00-00:00", to :string after.days: 7 date]
+    ]
+
+    it "works for weeks" [
+        expects.be: 'equal? @["2024-03-29T00:00:00-00:00", to :string after.weeks: 2 date]
+        expects.be: 'equal? @["2024-04-05T00:00:00-00:00", to :string after.weeks: 3 date]
+    ]
+
+    it "works for months" [
+        expects.be: 'equal? @["2024-05-15T00:00:00-00:00", to :string after.months: 2 date]
+        expects.be: 'equal? @["2025-01-15T00:00:00-00:00", to :string after.months: 10 date]
+    ]
+
+    it "works for years" [
+        expects.be: 'equal? @["2026-03-15T00:00:00-00:00", to :string after.years: 2 date]
+        expects.be: 'equal? @["2034-03-15T00:00:00-00:00", to :string after.years: 10 date]
+    ]
+
+    it "works for combinations" [
+        expects.be: 'equal? @[
+            "2025-06-20T15:30:45-00:00", 
+            to :string after
+                .years: 1 
+                .months: 3 
+                .days: 5
+                .hours: 15 
+                .minutes: 30 
+                .seconds: 45 
+                date
+        ]
+    ]
+
+]
