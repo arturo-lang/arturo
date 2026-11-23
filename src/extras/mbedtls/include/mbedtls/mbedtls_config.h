@@ -6,7 +6,7 @@
  *
  * Starts from the default configuration and keeps only what a
  * TLS 1.2/1.3 *client* needs: ECDHE-RSA/ECDHE-ECDSA (+ DHE-RSA, for older servers), AES-GCM,
- * ChaCha20-Poly1305, CBC, P-256/P-384/X25519, RSA, SHA-1/256/512,
+ * ChaCha20-Poly1305, CBC, P-256/P-384/P-521/X25519/X448, RSA, SHA-1/256/512,
  * X.509 + PEM parsing, SNI and ALPN
  *
  * Left out: the server side, DTLS, PSK, session tickets, renegotiation,
@@ -27,7 +27,9 @@
 #define MBEDTLS_CIPHER_PADDING_PKCS7
 #define MBEDTLS_ECP_DP_SECP256R1_ENABLED
 #define MBEDTLS_ECP_DP_SECP384R1_ENABLED
+#define MBEDTLS_ECP_DP_SECP521R1_ENABLED
 #define MBEDTLS_ECP_DP_CURVE25519_ENABLED
+#define MBEDTLS_ECP_DP_CURVE448_ENABLED
 #define MBEDTLS_ECP_NIST_OPTIM
 #define MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
 #define MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
