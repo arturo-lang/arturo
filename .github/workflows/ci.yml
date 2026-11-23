@@ -80,7 +80,7 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/setup-arturo@v2
+              uses: arturo-lang/setup-arturo@wasi
               with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
@@ -154,7 +154,7 @@ jobs:
 
             - if: (matrix.os == 'web' || matrix.os == 'wasi') && steps.check_skip.outputs.skip != 'true'
               name: Install Arturo nightly (for running the tester)
-              uses: arturo-lang/setup-arturo@v2
+              uses: arturo-lang/setup-arturo@wasi
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 from: latest
