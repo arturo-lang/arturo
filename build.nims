@@ -193,6 +193,8 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
             discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
             #discard gorgeEx "src\\extras\\webview\\deps\\build-new.bat"
 
+    flags.add getEnv("ARTURO_EXTRA").splitWhitespace()
+
     let
         params = flags.join(" ")
         cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
