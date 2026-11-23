@@ -16,7 +16,13 @@
 # Compilation & Linking
 #=======================================
 
-{.passL: "-lmpfr -lgmp".}
+import std/os
+
+# PocketBignum: header-only GMP/MPFR-compatible library (vendored)
+const pocketBignumDir = currentSourcePath().parentDir() / "pocketbignum"
+
+{.compile: pocketBignumDir / "pocketbignum.c".}
+{.passC: "-I" & (pocketBignumDir / "compat").}
 
 {.push header: "<gmp.h>", cdecl.}
 
