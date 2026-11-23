@@ -153,6 +153,7 @@ lines: map filter map lines 'line [
         {"tables"}
         {"termios"}
         {"times"}
+        {"tls"}                     ; extras
         {"typetraits"}
         {"unicode"}
         {"unidecode"}

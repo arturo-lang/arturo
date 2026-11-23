@@ -19,7 +19,10 @@
 # Compilation & Linking
 #=======================================
 
-when defined(ssl):
+when defined(ssl) and not defined(OPENSSL):
+    # TLS through mbedTLS (see extras/tls)
+    import extras/tls
+elif defined(ssl):
     when defined(linux):
         when defined(LEGACYUNIX):
             when defined(arm64):
