@@ -96,6 +96,7 @@ typedef struct ssl_ctx_st {
     int                 hasCert;
     int                 hasKey;
     int                 embeddedMerged;
+    void*               exData[16];
 } SSL_CTX;
 
 typedef struct ssl_st {
@@ -405,6 +406,26 @@ int SSL_CTX_check_private_key(const SSL_CTX* ctx) {
     if (!ctx->hasCert || !ctx->hasKey) return 0;
     return mbedtls_pk_check_pair(&ctx->ownCert.pk, &ctx->ownKey,
                                  mbedtls_psa_get_random, MBEDTLS_PSA_RANDOM_STATE) == 0 ? 1 : 0;
+}
+
+/* arbitrary data attached to a context (Nim: getSslContextExtraDataIndex,
+ * setExtraData, getExtraData, destroyContext) */
+
+int SSL_CTX_get_ex_new_index(long argl, void* argp, void* newFunc, void* dupFunc, void* freeFunc) {
+    static int next = 0;
+    (void)argl; (void)argp; (void)newFunc; (void)dupFunc; (void)freeFunc;
+    return next < 16 ? next++ : -1;
+}
+
+int SSL_CTX_set_ex_data(SSL_CTX* ctx, int idx, void* data) {
+    if (idx < 0 || idx >= 16) return -1;
+    ctx->exData[idx] = data;
+    return 1;
+}
+
+void* SSL_CTX_get_ex_data(const SSL_CTX* ctx, int idx) {
+    if (idx < 0 || idx >= 16) return NULL;
+    return ctx->exData[idx];
 }
 
 /* sets the trusted CAs on the context's config, right before it's used */
