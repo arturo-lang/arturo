@@ -12,7 +12,9 @@
 # Compilation & Linking
 #=======================================
 
-when defined(linux):
+when defined(WASI):
+    {.passL: "src/deps/pcre/wasi/wasm32/libpcre.a".}
+elif defined(linux):
     when defined(arm64):
         {.passL: "-Bstatic -Lsrc/deps/pcre/linux/arm64 -lpcre -Bdynamic".}
     else:   

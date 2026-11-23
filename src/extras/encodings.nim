@@ -297,10 +297,19 @@ else:
   else:
     const iconvDll = "(libc.so.6|libiconv.so)"
 
-  const
-    E2BIG = 7.cint
-    EINVAL = 22.cint
-  when defined(linux):
+  when defined(WASI):
+    # (WASI has its own errno values)
+    let
+      E2BIG {.importc, header: "<errno.h>".}: cint
+      EINVAL {.importc, header: "<errno.h>".}: cint
+      EILSEQ {.importc, header: "<errno.h>".}: cint
+  else:
+    const
+      E2BIG = 7.cint
+      EINVAL = 22.cint
+  when defined(WASI):
+    discard
+  elif defined(linux):
     const EILSEQ = 84.cint
   elif defined(macosx):
     const EILSEQ = 92.cint
@@ -313,7 +322,7 @@ else:
 
   var errno {.importc, header: "<errno.h>".}: cint
 
-  when defined(bsd):
+  when defined(bsd) or defined(WASI):
     {.pragma: importIconv, cdecl, header: "<iconv.h>".}
     when defined(freebsd) or defined(openbsd):
       {.passL: "-liconv".}

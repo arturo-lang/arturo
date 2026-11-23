@@ -45,6 +45,7 @@ jobs:
                     - {os: windows, arch: arm64}
                     - {os: windows, arch: arm64,    mode: mini}
                     - {os: web,     arch: js,       mode: mini}
+                    - {os: wasi,    arch: wasm32,   mode: mini}
 
         defaults:
             run:
@@ -79,7 +80,7 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/setup-arturo@v2
+              uses: arturo-lang/setup-arturo@wasi
               with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
@@ -151,9 +152,9 @@ jobs:
                     fi
                 fi
 
-            - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
+            - if: (matrix.os == 'web' || matrix.os == 'wasi') && steps.check_skip.outputs.skip != 'true'
               name: Install Arturo nightly (for running the tester)
-              uses: arturo-lang/setup-arturo@v2
+              uses: arturo-lang/setup-arturo@wasi
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 from: latest
@@ -171,3 +172,16 @@ jobs:
 
                 arturo -v
                 ARTURO_JS=bin/arturo.js arturo tools/tester.art --web
+
+            - if: matrix.os == 'wasi' && steps.check_skip.outputs.skip != 'true'
+              name: Run tester (WASI build)
+              timeout-minutes: 90
+              # not blocking (yet): we're only just
+              # getting started with WASI builds
+              continue-on-error: true
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                git clone https://github.com/arturo-lang/examples.git ../examples
+
+                arturo -v
+                ARTURO_WASM=$HOME/.arturo/bin/arturo.wasm arturo tools/tester.art --wasi

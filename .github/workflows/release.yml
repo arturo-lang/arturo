@@ -123,6 +123,7 @@ jobs:
                     - {os: windows, arch: arm64}
                     - {os: windows, arch: arm64,    mode: mini}
                     - {os: web,     arch: js,       mode: mini}
+                    - {os: wasi,    arch: wasm32,   mode: mini}
  
         defaults:
             run:

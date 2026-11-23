@@ -76,6 +76,9 @@ func silentCompilation(config: BuildConfig): bool =
 func webVersion(config: BuildConfig): bool =
     config.version == "@web"
 
+func wasiVersion(config: BuildConfig): bool =
+    config.version == "@wasi"
+
 func buildConfig(): BuildConfig =
     (
         binary:             "bin/arturo".toExe,
@@ -137,6 +140,20 @@ proc miniBuild*() =
         --verbosity:3
 
 proc postProcess(config: BuildConfig) =
+    if config.wasiVersion:
+        section "Post-processing"
+
+        ## Our coroutines (minicoro) need Binaryen's
+        ## asyncify transformation to work on WASI
+        log "asyncifying..."
+
+        let wasmOpt = getEnv("WASM_OPT", "wasm-opt")
+        let asyncifyResult = gorgeEx fmt"{wasmOpt} --asyncify -O2 --enable-bulk-memory --enable-nontrapping-float-to-int --enable-sign-ext --enable-mutable-globals {config.binary} -o {config.binary}"
+
+        if asyncifyResult.exitCode != QuitSuccess:
+            panic "wasm-opt (Binaryen) is needed for WASI builds. Please install it and try again.", asyncifyResult.exitCode
+        return
+
     if ((not config.shouldCompress) or (not config.webVersion)) and (hostOS != "macosx"):
         return
 
@@ -236,6 +253,10 @@ proc installAll*(config: BuildConfig, targetFile: string) =
 
         if config.webVersion:
             log "Web builds can't be installed, please don't use --install"
+
+        if config.wasiVersion:
+            log "WASI builds can't be installed, please don't use --install"
+            return
 
         verifyDirectories()
         config.copyArturo(targetFile)
@@ -442,7 +463,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##          [amd64, arm, arm64, i386, x86]
     ##     --as: arturo                 changes the name of the binary
     ##     --mode -m: full              chooses the target Build Version
-    ##          [full, mini, noui, web]
+    ##          [full, mini, noui, wasi, web]
     ##     --os: $hostOS                chooses the target OS
     ##          [freebsd, linux, openbsd, mac, macos, macosx, netbsd, win, windows]
     ##     --profiler -p: none          defines which profiler use
@@ -462,7 +483,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
                           "x86-32", "arm", "arm-32"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
-        availableBuilds = @["full", "mini", "noui", "web"]
+        availableBuilds = @["full", "mini", "noui", "wasi", "web"]
         availableProfilers = @["default", "mem", "native", "profile"]
 
     var config = buildConfig()
@@ -493,6 +514,11 @@ cmd build, "[default] Build arturo and optionally install the executable":
         >> ["noui"]:
             fullBuildConfig(withUI=false)
             config.version = "@noui"
+        >> ["wasi"]:
+            config.binary     = config.binary.replace(".exe", "") & ".wasm"
+            config.version    = "@wasi"
+            wasiBuildConfig()
+            miniBuild()
         >> ["web"]:
             config.binary     = config.binary.replace(".exe", "") & ".js"
             config.version    = "@web"
@@ -549,6 +575,8 @@ cmd build, "[default] Build arturo and optionally install the executable":
     if args.hasFlag("pgo"):
         if config.webVersion:
             warn "--pgo has no effect on web builds"
+        elif config.wasiVersion:
+            warn "--pgo has no effect on WASI builds"
         else:
             config.withPGO = true
 

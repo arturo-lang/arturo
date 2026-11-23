@@ -7,6 +7,14 @@ proc miniBuildConfig() =
 proc webBuildConfig() =
     --define:WEB
 
+proc wasiBuildConfig() =
+    # WebAssembly, via WASI (preview 1): a 32-bit
+    # target, as far as Nim (& Arturo) are concerned
+    --define:WASI
+    --define:bit32
+    --cpu:wasm32
+    --os:linux
+
 proc fullBuildConfig(withUI = true) =
     --define:GMP
     --define:useOpenssl3
