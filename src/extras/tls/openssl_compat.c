@@ -108,6 +108,7 @@ typedef struct ssl_st {
     int                 hostnameSet;
     int                 isServer;
     int                 shutdown;
+    int                 eof;            /* 1: close_notify, 2: EOF without it */
 } SSL;
 
 typedef struct x509_st {
@@ -647,11 +648,13 @@ static int fail(SSL* s, int ret) {
             return -1;
         case MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY:
             s->lastError = SSL_ERROR_ZERO_RETURN;
+            s->eof = 1;
             return 0;
         case 0:
         case MBEDTLS_ERR_SSL_CONN_EOF:
             /* EOF without a close_notify */
             s->lastError = SSL_ERROR_SYSCALL;
+            s->eof = 2;
             return 0;
         case MBEDTLS_ERR_NET_SEND_FAILED:
         case MBEDTLS_ERR_NET_RECV_FAILED:
@@ -704,6 +707,14 @@ int SSL_in_init(const SSL* s) {
 
 int SSL_read(SSL* s, void* buf, int num) {
     if (num <= 0) return 0;
+
+    /* like OpenSSL: once the peer has closed, keep reporting it (mbedTLS
+     * would go back to the transport and wait for more data) */
+    if (s->eof) {
+        s->lastError = (s->eof == 1) ? SSL_ERROR_ZERO_RETURN : SSL_ERROR_SYSCALL;
+        return 0;
+    }
+
     if (!s->hostnameSet && !mbedtls_ssl_is_handshake_over(&s->ssl)) {
         int h = SSL_do_handshake(s);
         if (h != 1) return h;
