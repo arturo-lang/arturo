@@ -1,0 +1,28 @@
+; temporary: TLS smoke test (mbedTLS) for the replace-openssl ci workflow
+
+failures: 0
+check: function [label, ok][
+    print [(ok)? -> "  ok  " -> "  FAIL" label]
+    unless ok -> failures: failures + 1
+]
+
+tmp: path\temp ++ "tls-smoke.html"
+
+; no verification (CVerifyNone): read, request, async variants
+check "read https" 1000 < size read "https://arturo-lang.io"
+check "request https" 200 = get request "https://github.com" ø 'status
+check "request.async https" 200 = get wait request.async "https://arturo-lang.io" ø 'status
+check "read.async https (x2)" every? map @[read.async "https://arturo-lang.io" read.async "https://www.google.com"] 'x -> wait x 'z -> 1000 < size z
+check "read expired cert (no verification)" 0 < size read "https://expired.badssl.com"
+check "read tls 1.2-only server" 0 < size read "https://tls-v1-2.badssl.com:1012"
+
+; default context (CVerifyPeer, with the embedded CA bundle): download
+check "download (verified)" not? throws? [download.as: tmp "https://arturo-lang.io"]
+check "download size" 1000 < size read tmp
+check "download expired cert rejected" throws? [download.as: tmp "https://expired.badssl.com"]
+check "download self-signed cert rejected" throws? [download.as: tmp "https://self-signed.badssl.com"]
+check "download wrong host rejected" throws? [download.as: tmp "https://wrong.host.badssl.com"]
+check "download untrusted root rejected" throws? [download.as: tmp "https://untrusted-root.badssl.com"]
+
+if failures > 0 -> panic ~"|failures| TLS check(s) failed"
+print "all TLS checks passed"
