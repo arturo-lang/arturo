@@ -30,6 +30,9 @@ import vm/opcodes
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 import vm/values/flags
 
+when defined(NANBOX):
+    import std/macros
+
 when not defined(WEB):
     import vm/values/custom/[vsocket]
 
@@ -392,7 +395,159 @@ type
 
     ValueObj* = typeof(ValueRef()[])
 
-    Value* = ValueRef
+    # With -d:NANBOX, a Value is a single 64-bit word
+    # (see: NaN-boxing, below)
+    NanBoxedValue* = object
+        bits*: uint64
+
+    Value* = (when defined(NANBOX): NanBoxedValue else: ValueRef)
+
+#=======================================
+# NaN-boxing
+#=======================================
+
+# With -d:NANBOX, a Value is a single 64-bit word: the values that fit in it
+# are held right there (no allocation, no reference counting) and everything
+# else is a pointer to a ValueRef on the heap.
+#
+# An IEEE 754 double is laid out like this:
+#
+#   S[Exponent-][Mantissa------------------------------------------]
+#   1 sign bit, 11 exponent bits, 52 mantissa bits
+#
+# and any double with all of its exponent bits set is a NaN - there are
+# lots of different bit patterns for it, but we need just one. All the others
+# are free for us to use.
+#
+# Here, the top 16 bits of a Value tell what it is:
+#
+#   top 16 bits      | what it is          | the rest (48 bits)
+#   -----------------|---------------------|------------------------------
+#   0x0000           | pointer to ValueRef | the address (0 = nil)
+#   0x0001           | -                   | (unused)
+#   0x0002 .. 0xFFF2 | -                   | (unused, for now)
+#   0xFFF3 .. 0xFFFE | -                   | (unused)
+#   0xFFFF           | Integer             | its value: 48 bits, signed
+#
+# Why so:
+#
+# - A pointer is held as it is: no tag, no masking. On 64-bit systems,
+#   addresses only use the lower 48 bits, so the top 16 bits are always 0.
+#   And all-zero is nil - which is what the memory we get from Nim
+#   (new sequence items, fields, results) starts as.
+#
+# - An Integer that doesn't fit in 48 bits (beyond ±140737488355327) is
+#   a regular ValueRef on the heap. Values are always constructed through
+#   newInteger, so the inline form is used whenever possible.
+
+when defined(NANBOX):
+    const
+        NbPayload       = 0x0000_FFFF_FFFF_FFFF'u64
+        NbIntegerTag    = 0xFFFF_0000_0000_0000'u64
+        NbIntegerMin*   = -(1 shl 47)
+        NbIntegerMax*   = (1 shl 47) - 1
+
+    # The hooks have to be declared before anything that contains a Value
+    # gets its own ones generated
+    proc `=wasMoved`*(v: var NanBoxedValue) {.inline.}
+    proc `=destroy`*(v: NanBoxedValue) {.inline.}
+    proc `=copy`*(d: var NanBoxedValue, s: NanBoxedValue) {.inline.}
+    proc `=dup`*(s: NanBoxedValue): NanBoxedValue {.inline.}
+    proc `=sink`*(d: var NanBoxedValue, s: NanBoxedValue) {.inline.}
+
+    template nbTop(v: NanBoxedValue): uint64 = v.bits shr 48
+    template isRef*(v: NanBoxedValue): bool = nbTop(v) == 0         # (nil included)
+    template heapObj*(v: NanBoxedValue): ptr ValueObj = cast[ptr ValueObj](v.bits)
+    template heapRef(v: NanBoxedValue): ValueRef = cast[ValueRef](cast[pointer](v.bits))
+    template ownsRef(v: NanBoxedValue): bool = isRef(v) and v.bits != 0
+
+    proc `=wasMoved`*(v: var NanBoxedValue) {.inline.} =
+        v.bits = 0
+
+    proc `=destroy`*(v: NanBoxedValue) {.inline.} =
+        if ownsRef(v): GC_unref(heapRef(v))
+
+    proc `=copy`*(d: var NanBoxedValue, s: NanBoxedValue) {.inline.} =
+        if d.bits == s.bits: return
+        if ownsRef(s): GC_ref(heapRef(s))
+        if ownsRef(d): GC_unref(heapRef(d))
+        d.bits = s.bits
+
+    proc `=dup`*(s: NanBoxedValue): NanBoxedValue {.inline.} =
+        if ownsRef(s): GC_ref(heapRef(s))
+        result.bits = s.bits
+
+    proc `=sink`*(d: var NanBoxedValue, s: NanBoxedValue) {.inline.} =
+        if ownsRef(d): GC_unref(heapRef(d))
+        d.bits = s.bits
+
+    converter toValue*(r: sink ValueRef): NanBoxedValue {.inline.} =
+        ## a heap value, as a Value (that holds a reference to it)
+        result.bits = cast[uint64](cast[pointer](r))
+        if not r.isNil: GC_ref(r)
+
+    converter toValue*(n: typeof(nil)): NanBoxedValue {.inline.} =
+        result.bits = 0
+
+    proc isNil*(v: NanBoxedValue): bool {.inline.} = v.bits == 0
+    proc `==`*(v: NanBoxedValue, n: typeof(nil)): bool {.inline.} = v.bits == 0
+
+    template isInlineInteger*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFF
+
+    func inlineInteger*(i: int): NanBoxedValue {.inline.} =
+        NanBoxedValue(bits: NbIntegerTag or (cast[uint64](i) and NbPayload))
+
+    # The fields of a ValueRef, on a Value
+
+    proc kind*(v: NanBoxedValue): ValueKind {.inline.} =
+        if isRef(v): heapObj(v).kind
+        else: Integer
+
+    proc iKind*(v: NanBoxedValue): IntegerKind {.inline.} =
+        if isRef(v): heapObj(v).iKind else: NormalInteger
+
+    proc i*(v: NanBoxedValue): int {.inline.} =
+        if isInlineInteger(v): cast[int](v.bits shl 16) shr 16
+        else: heapObj(v).i
+
+    proc `i=`*(v: var NanBoxedValue, x: int) {.inline.} =
+        if isRef(v): heapObj(v).i = x
+        elif x >= NbIntegerMin and x <= NbIntegerMax: v = inlineInteger(x)
+        else: v = ValueRef(kind: Integer, iKind: NormalInteger, i: x)
+
+    proc flags*(v: NanBoxedValue): ValueFlags {.inline.} =
+        if isRef(v): heapObj(v).flags else: {}
+
+    proc `flags=`*(v: NanBoxedValue, x: ValueFlags) {.inline.} =
+        if isRef(v): heapObj(v).flags = x
+
+    proc info*(v: NanBoxedValue): ValueInfo {.inline.} =
+        if isRef(v): heapObj(v).info else: nil
+
+    proc `info=`*(v: NanBoxedValue, x: ValueInfo) {.inline.} =
+        if isRef(v): heapObj(v).info = x
+
+    proc ln*(v: NanBoxedValue): uint32 {.inline.} =
+        if isRef(v): heapObj(v).ln else: 0
+
+    proc `ln=`*(v: NanBoxedValue, x: uint32) {.inline.} =
+        if isRef(v): heapObj(v).ln = x
+
+    template `[]`*(v: NanBoxedValue): untyped = heapObj(v)[]
+
+    macro refFields(names: varargs[untyped]): untyped =
+        ## the fields that only heap values have: read & written in place
+        result = newStmtList()
+        for n in names:
+            let name = postfix(n, "*")
+            result.add quote do:
+                template `name`(v: NanBoxedValue): untyped = heapObj(v).`n`
+
+    refFields(bi, f, z, rat, version, t, tpKind, tid, c, s, sid, p, m, rx, u, q, err, errKind,
+              l, e, eobj, n, a, data, cachedTrans, singleton, rng, d, proto, o, magic,
+              sto, funcType, methType, dbKind, trans, tsk, evt)
+    when defined(SQLITE): refFields(sqlitedb)
+    when not defined(WEB): refFields(sock, chn)
 
 #=======================================
 # Constants

@@ -210,7 +210,11 @@ when defined(GMP):
 
 func newInteger*(i: int): Value {.inline.} =
     ## create Integer value from int
-    result = ValueRef(kind: Integer, iKind: NormalInteger, i: i)
+    when defined(NANBOX):
+        if likely(i >= NbIntegerMin and i <= NbIntegerMax): inlineInteger(i)
+        else: ValueRef(kind: Integer, iKind: NormalInteger, i: i)
+    else:
+        ValueRef(kind: Integer, iKind: NormalInteger, i: i)
 
 func newInteger*(i: int64): Value {.inline.} =
     ## create Integer value from int64
