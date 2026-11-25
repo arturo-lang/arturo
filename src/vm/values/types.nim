@@ -566,17 +566,15 @@ when defined(NANBOX):
     proc otherKind(v: NanBoxedValue): ValueKind {.noinline.} =
         if isInlineChar(v): Char
         elif isInlineType(v): Type
-        elif isSingleton(v):
-            case v.bits and 0xFF:
-                of 0: Null
-                of 1: Any
-                else: Logical
         else: Floating
 
     proc kind*(v: NanBoxedValue): ValueKind {.nbInline.} =
         if likely(isRef(v)): heapObj(v).kind
         elif isInlineInteger(v): Integer
         elif isInlineFloating(v): Floating
+        elif isSingleton(v):
+            let k = v.bits and 0xFF
+            if k >= 2: Logical elif k == 0: Null else: Any
         else: otherKind(v)
 
     proc iKind*(v: NanBoxedValue): IntegerKind {.nbInline.} =
