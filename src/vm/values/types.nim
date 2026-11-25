@@ -453,6 +453,8 @@ when sizeof(ValueObj) > 64:
 template readonly*(val: Value): bool = IsReadOnly in val.flags
 template `readonly=`*(val: Value, newVal: bool) = val.flags[IsReadOnly] = newVal
 
+template shared*(val: Value): bool = IsShared in val.flags
+
 template dynamic*(val: Value): bool = IsDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
 

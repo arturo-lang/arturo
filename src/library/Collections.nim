@@ -2562,14 +2562,14 @@ proc defineModule*(moduleName: string) =
                 for r in runes(x.s): 
                     let str = $(r)
                     if not occurrences.hasKey(str):
-                        occurrences[str] = newInteger(0)
+                        occurrences[str] = newIntegerFresh(0)     # (modified in place below)
 
                     occurrences[str].i += 1
             else:
                 for item in x.a:
                     let str = $(item)
                     if not occurrences.hasKey(str):
-                        occurrences[str] = newInteger(0)
+                        occurrences[str] = newIntegerFresh(0)     # (modified in place below)
                         
                     occurrences[str].i += 1
             

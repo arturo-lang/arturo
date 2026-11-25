@@ -87,7 +87,7 @@ template addReplaceOpWithIndex(instructions: var VBinary, oper: OpCode, num: unt
 proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true) {.inline.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
-        let newv = v
+        let newv = (if v.shared: copyValue(v) else: v)    # (never mark the cached Integers)
         # objects are never literals: when one ends up here
         # (e.g. `this` for a method call), it's the object itself
         # - so, marking it would make it be copied on assignment
@@ -101,7 +101,7 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
 proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: Value, op: OpCode, hasShortcut: static bool=true): int {.inline.} =
     result = consts.indexOfValue(v)
     if result == -1:
-        let newv = v
+        let newv = (if v.shared: copyValue(v) else: v)    # (never mark the cached Integers)
         # (objects: see above)
         if newv.kind != Object:
             newv.readonly = true
@@ -113,7 +113,7 @@ proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: V
 proc addVariableLoad(consts: var ValueArray, instructions: var VBinary, nd: Node, v: Value, previousStore: int, previousStorePos: int) {.inline.} =
     var indx = consts.indexOfValue(v)
     if indx == -1:
-        let newv = v
+        let newv = (if v.shared: copyValue(v) else: v)    # (never mark the cached Integers)
         newv.readonly = true
         consts.add(newv)
         indx = consts.len-1

@@ -29,6 +29,9 @@ type
         IsFalse         # Logical FALSE
         IsMaybe         # Logical MAYBE
 
+        IsShared        # EXPERIMENTAL: from the small-Integer cache - 
+                        #               copy it before modifying it in place
+
     ValueFlags* = set[ValueFlag]
 
 #=======================================

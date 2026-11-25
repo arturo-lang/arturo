@@ -206,17 +206,46 @@ when defined(WEB):
 
 when defined(GMP) and not defined(WEB):
     # EXPERIMENTAL: Integers as PocketBignum's small-or-big integers
+    func newIntegerFresh*(i: int): Value {.inline.} =
+        ## create Integer value from int - always a new one
+        ## (for values that are going to be modified in place)
+        Value(kind: Integer, bint: toPbi(i))
+
+    # EXPERIMENTAL: small-Integer cache - one shared Value per small int,
+    # marked IsShared, so that in-place operations copy it first
+    const
+        SmallIntMin = -128
+        SmallIntMax = 1023
+
+    let SmallInts = block:
+        var a: array[SmallIntMin..SmallIntMax, Value]
+        for k in SmallIntMin..SmallIntMax:
+            a[k] = newIntegerFresh(k)
+            a[k].flags.incl(IsShared)
+        a
+
+    template cachedInteger(k: int): Value =
+        {.cast(noSideEffect).}:
+            {.cast(gcsafe).}:
+                SmallInts[k]
+
+    const IntCache = not defined(NOINTCACHE)      # (-d:NOINTCACHE: without it, for comparisons)
+
+    func newInteger*(i: int): Value {.inline.} =
+        ## create Integer value from int
+        when IntCache:
+            if i >= SmallIntMin and i <= SmallIntMax: return cachedInteger(i)
+        newIntegerFresh(i)
+
     proc newInteger*(n: sink Pbi): Value {.inline.} =
         ## create Integer value from a small-or-big integer
+        when IntCache:
+            if n.isSmall and n.s >= SmallIntMin and n.s <= SmallIntMax: return cachedInteger(n.s)
         Value(kind: Integer, bint: n)
 
     proc newInteger*(bi: Int): Value {.inline.} =
         # (results that fit in a normal Integer come back small)
-        Value(kind: Integer, bint: toPbi(bi))
-
-    func newInteger*(i: int): Value {.inline.} =
-        ## create Integer value from int
-        Value(kind: Integer, bint: toPbi(i))
+        newInteger(toPbi(bi))
 else:
     when defined(GMP):
         proc newInteger*(bi: Int): Value {.inline.} =
@@ -231,6 +260,8 @@ else:
         ## create Integer value from int
         result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
+    template newIntegerFresh*(i: int): Value = newInteger(i)
+
 func newInteger*(i: int64): Value {.inline.} =
     ## create Integer value from int64
     newInteger(int(i))
@@ -238,7 +269,8 @@ func newInteger*(i: int64): Value {.inline.} =
 proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
     ## create Integer value from string
     try:
-        return newInteger(parseInt(i))
+        # (fresh: the compiler marks literals read-only & sets their line in place)
+        return newIntegerFresh(parseInt(i))
     except ValueError:
         when defined(WEB):
             return newInteger(big(i.cstring))
@@ -1011,14 +1043,17 @@ proc copyValue*(v: Value): Value {.inline.} =
         of Null:            result = VNULL
         of Logical:         result = newLogical(v.b)
         of Integer:     
-            if likely(v.iKind == NormalInteger): 
-                result = newInteger(v.i)
+            when defined(GMP) and not defined(WEB):
+                result = Value(kind: Integer, bint: v.bint)     # always a new one (never the cached one)
             else:
-                when defined(GMP): 
-                    result = newInteger(copyInt(v.bi))
+                if likely(v.iKind == NormalInteger): 
+                    result = newInteger(v.i)
                 else:
-                    when defined(WEB):
-                        result = newInteger(v.bi)
+                    when defined(GMP): 
+                        result = newInteger(copyInt(v.bi))
+                    else:
+                        when defined(WEB):
+                            result = newInteger(v.bi)
         of Floating:        result = newFloating(v.f)
         of Complex:         result = newComplex(v.z)
         of Rational:        result = newRational(copyRational(v.rat))
