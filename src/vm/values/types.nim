@@ -426,7 +426,8 @@ type
 #   0x0000           | pointer to ValueRef | the address (0 = nil)
 #   0x0001           | -                   | (unused)
 #   0x0002 .. 0xFFF2 | Floating            | its bits + 2^49 (with the top 16)
-#   0xFFF3 .. 0xFFFB | -                   | (unused)
+#   0xFFF3 .. 0xFFFA | -                   | (unused)
+#   0xFFFB           | Type (built-in)     | the ValueKind it stands for
 #   0xFFFC           | Char                | its code point
 #   0xFFFD           | Null, Any, Logical  | 0: null, 1: any, 2: false,
 #                    |                     | 3: true, 4: maybe
@@ -446,6 +447,9 @@ type
 #   and 0xFFF2... - and every NaN is held as the same one, so that none of
 #   them gets in the way of the other kinds.
 #
+# - A built-in Type (:integer, :string, ...) is the ValueKind it stands for;
+#   user-defined types are regular ValueRefs.
+#
 # - A Char is its code point (a Rune: 32 bits).
 #
 # - Null, Any & the three Logicals are just a number each: comparing them
@@ -460,6 +464,7 @@ when defined(NANBOX):
         NbPayload       = 0x0000_FFFF_FFFF_FFFF'u64
         NbIntegerTag    = 0xFFFF_0000_0000_0000'u64
         NbFloatingShift = 1'u64 shl 49
+        NbTypeTag       = 0xFFFB_0000_0000_0000'u64
         NbCharTag       = 0xFFFC_0000_0000_0000'u64
         NbSingletonTag  = 0xFFFD_0000_0000_0000'u64
         NbIntegerMin*   = -(1 shl 47)
@@ -527,6 +532,11 @@ when defined(NANBOX):
                     else: 4'u64
         ))
 
+    template isInlineType*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFB
+
+    func inlineType*(t: ValueKind): NanBoxedValue {.inline.} =
+        NanBoxedValue(bits: NbTypeTag or uint64(ord(t)))
+
     template isInlineChar*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFC
 
     func inlineChar*(c: Rune): NanBoxedValue {.inline.} =
@@ -546,6 +556,7 @@ when defined(NANBOX):
         if isRef(v): heapObj(v).kind
         elif isInlineInteger(v): Integer
         elif isInlineChar(v): Char
+        elif isInlineType(v): Type
         elif isSingleton(v):
             case v.bits and 0xFF:
                 of 0: Null
@@ -564,6 +575,13 @@ when defined(NANBOX):
         if isRef(v): heapObj(v).i = x
         elif x >= NbIntegerMin and x <= NbIntegerMax: v = inlineInteger(x)
         else: v = ValueRef(kind: Integer, iKind: NormalInteger, i: x)
+
+    proc t*(v: NanBoxedValue): ValueKind {.inline.} =
+        if isRef(v): heapObj(v).t
+        else: ValueKind(v.bits and 0xFF)
+
+    proc tpKind*(v: NanBoxedValue): TypeKind {.inline.} =
+        if isRef(v): heapObj(v).tpKind else: BuiltinType
 
     proc c*(v: NanBoxedValue): Rune {.inline.} =
         if isRef(v): heapObj(v).c
@@ -616,7 +634,7 @@ when defined(NANBOX):
             result.add quote do:
                 template `name`(v: NanBoxedValue): untyped = heapObj(v).`n`
 
-    refFields(bi, z, rat, version, t, tpKind, tid, s, sid, p, m, rx, u, q, err, errKind,
+    refFields(bi, z, rat, version, tid, s, sid, p, m, rx, u, q, err, errKind,
               l, e, eobj, n, a, data, cachedTrans, singleton, rng, d, proto, o, magic,
               sto, funcType, methType, dbKind, trans, tsk, evt)
     when defined(SQLITE): refFields(sqlitedb)

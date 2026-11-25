@@ -76,6 +76,10 @@ template singletonConst(k: ValueKind): Value =
     when defined(NANBOX): inlineSingleton(k)
     else: ValueRef(kind: k)
 
+template typeConst(t: ValueKind): Value =
+    when defined(NANBOX): inlineType(t)
+    else: ValueRef(kind: Type, tpKind: BuiltinType, t: t)
+
 template makeConst(v: Value): untyped =
     var res = v
     res.readOnly = true
@@ -118,8 +122,8 @@ let
     VEMPTYARR*      = makeConst ValueRef(kind: Block, a: @[], data: nil)                         ## constant []
     VEMPTYDICT*     = makeConst ValueRef(kind: Dictionary, d: newOrderedTable[string,Value]())  ## constant #[]
 
-    VSTRINGT*       = makeConst ValueRef(kind: Type, tpKind: BuiltinType, t: String)     ## constant ``:string``
-    VINTEGERT*      = makeConst ValueRef(kind: Type, tpKind: BuiltinType, t: Integer)    ## constant ``:integer``
+    VSTRINGT*       = makeConst typeConst(String)                                        ## constant ``:string``
+    VINTEGERT*      = makeConst typeConst(Integer)                                       ## constant ``:integer``
 
     #--------
 
@@ -358,7 +362,8 @@ func newVersion*(v: VVersion): Value {.inline.} =
 
 func newType*(t: ValueKind): Value {.inline.} =
     ## create Type (BuiltinType) value from ValueKind
-    ValueRef(kind: Type, tpKind: BuiltinType, t: t)
+    when defined(NANBOX): inlineType(t)
+    else: ValueRef(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(tid: string, proto: Prototype = nil): Value {.inline.} =
     setType(tid, proto)
