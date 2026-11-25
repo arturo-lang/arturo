@@ -21,6 +21,9 @@
 
 import vm/lib
 
+when defined(GMP) and not defined(WEB):
+    import helpers/bignums     # EXPERIMENTAL (pbi): shl.safe
+
 #=======================================
 # Definitions
 #=======================================
@@ -175,12 +178,12 @@ proc defineModule*(moduleName: string) =
             if xKind in {Literal, PathLiteral}:
                 ensureInPlaceAny();
                 if safe and overflows(InPlaced):
-                    SetInPlaceAny(newBigInteger(InPlaced.i) << y)
+                    SetInPlaceAny((when defined(GMP) and not defined(WEB): newInteger(newInt(InPlaced.i) shl culong(y.i)) else: newBigInteger(InPlaced.i) << y))
                 else:
                     inPlaceDo(`<<=`, y)
             elif normalIntegerOperation():
                 if safe and overflows(x):
-                    push(newBigInteger(x.i) << y)
+                    push((when defined(GMP) and not defined(WEB): newInteger(newInt(x.i) shl culong(y.i)) else: newBigInteger(x.i) << y))
                 else:
                     push(normalIntegerShl(x.i, y.i))
             else:

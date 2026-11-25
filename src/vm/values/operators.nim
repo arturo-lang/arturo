@@ -37,6 +37,7 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, vlogical, vquantity, vrange,
 
 const
     BignumSupport = defined(GMP) or defined(WEB)
+    PbiIntegers = defined(GMP) and not defined(WEB)     # EXPERIMENTAL: Integers as small-or-big `Pbi`s
 
 #=======================================
 # Pragmas
@@ -213,46 +214,58 @@ template normalIntegerOperation*(inPlace=false): bool =
 template normalIntegerAdd*(x, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and return result
-    var res: int
-    if unlikely(addIntWithOverflow(x, y, res)):
-        when BignumSupport:
-            newInteger(toNewBig(x) + toBig(y))
-        else:
-            Error_IntegerOperationOverflow("add", Dumper(newInteger(x)), Dumper(newInteger(y)))
-            VNULL
+    when PbiIntegers:
+        newInteger(toPbi(x) + toPbi(y))
     else:
-        newInteger(res)
+        var res: int
+        if unlikely(addIntWithOverflow(x, y, res)):
+            when BignumSupport:
+                newInteger(toNewBig(x) + toBig(y))
+            else:
+                Error_IntegerOperationOverflow("add", Dumper(newInteger(x)), Dumper(newInteger(y)))
+                VNULL
+        else:
+            newInteger(res)
 
 template normalIntegerAddI*(x: var Value, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(addIntWithOverflowI(x.i, y, x.i)):
-        when BignumSupport:
-            x = newInteger(toNewBig(x.i) + toBig(y))
-        else:
-            Error_IntegerOperationOverflow("add", Dumper(x), Dumper(newInteger(y)))
+    when PbiIntegers:
+        x.bint += toPbi(y)
+    else:
+        if unlikely(addIntWithOverflowI(x.i, y, x.i)):
+            when BignumSupport:
+                x = newInteger(toNewBig(x.i) + toBig(y))
+            else:
+                Error_IntegerOperationOverflow("add", Dumper(x), Dumper(newInteger(y)))
 
 template normalIntegerInc*(x: int): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and return result
-    var res: int
-    if unlikely(addIntWithOverflow(x, 1, res)):
-        when BignumSupport:
-            newInteger(toNewBig(x) + toBig(1))
-        else:
-            Error_IntegerSingleOperationOverflow("inc", Dumper(newInteger(x)))
-            VNULL
+    when PbiIntegers:
+        newInteger(toPbi(x) + toPbi(1))
     else:
-        newInteger(res)
+        var res: int
+        if unlikely(addIntWithOverflow(x, 1, res)):
+            when BignumSupport:
+                newInteger(toNewBig(x) + toBig(1))
+            else:
+                Error_IntegerSingleOperationOverflow("inc", Dumper(newInteger(x)))
+                VNULL
+        else:
+            newInteger(res)
 
 template normalIntegerIncI*(x: var Value): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and set result in-place
-    if unlikely(addIntWithOverflowI(x.i, 1, x.i)):
-        when BignumSupport:
-            x = newInteger(toNewBig(x.i) + toBig(1))
-        else:
-            Error_IntegerSingleOperationOverflow("inc", Dumper(x))
+    when PbiIntegers:
+        x.bint += toPbi(1)
+    else:
+        if unlikely(addIntWithOverflowI(x.i, 1, x.i)):
+            when BignumSupport:
+                x = newInteger(toNewBig(x.i) + toBig(1))
+            else:
+                Error_IntegerSingleOperationOverflow("inc", Dumper(x))
 
 template normalIntegerSub*(x, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
@@ -605,10 +618,18 @@ proc `+`*(x: Value, y: Value): Value =
 
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   return normalIntegerAdd(x.i, y.i)
-        of Integer    || BigInteger     :   (when BignumSupport: return newInteger(toBig(x.i) + y.bi))
-        of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi + toBig(y.i)))
-        of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi + y.bi))
+        of Integer    || Integer,
+           Integer    || BigInteger,
+           BigInteger || Integer,
+           BigInteger || BigInteger     :
+            when PbiIntegers:
+                return newInteger(x.bint + y.bint)
+            else:
+                case pair:
+                    of Integer    || Integer        :   return normalIntegerAdd(x.i, y.i)
+                    of Integer    || BigInteger     :   (when BignumSupport: return newInteger(toBig(x.i) + y.bi))
+                    of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi + toBig(y.i)))
+                    else                            :   (when BignumSupport: return newInteger(x.bi + y.bi))
         of Integer    || Floating       :   return newFloating(x.i + y.f)
         of BigInteger || Floating       :   (when BignumSupport: return newFloating(x.bi + y.f))
         of Integer    || Rational       :   return newRational(x.i + y.rat)
@@ -648,10 +669,18 @@ proc `+=`*(x: var Value, y: Value) =
 
     let pair = getValuePair()
     case pair:
-        of Integer    || Integer        :   normalIntegerAddI(x, y.i)
-        of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) + y.bi))
-        of BigInteger || Integer        :   (when BignumSupport: x.bi += toBig(y.i))
-        of BigInteger || BigInteger     :   (when BignumSupport: x.bi += y.bi)
+        of Integer    || Integer,
+           Integer    || BigInteger,
+           BigInteger || Integer,
+           BigInteger || BigInteger     :
+            when PbiIntegers:
+                x.bint += y.bint
+            else:
+                case pair:
+                    of Integer    || Integer        :   normalIntegerAddI(x, y.i)
+                    of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) + y.bi))
+                    of BigInteger || Integer        :   (when BignumSupport: x.bi += toBig(y.i))
+                    else                            :   (when BignumSupport: x.bi += y.bi)
         of Integer    || Floating       :   x = newFloating(x.i + y.f)
         of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi + y.f))
         of Integer    || Rational       :   x = newRational(x.i + y.rat)
@@ -689,7 +718,7 @@ proc inc*(x: Value): Value =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: return normalIntegerInc(x.i)
-            else: (when BignumSupport: return newInteger(x.bi+toBig(1)))
+            else: (when PbiIntegers: return newInteger(x.bint + toPbi(1)) elif BignumSupport: return newInteger(x.bi+toBig(1)))
         of Floating: return newFloating(x.f+1.0)
         of Rational: return newRational(x.rat+1)
         of Complex: return newComplex(x.z+1.0)
@@ -706,7 +735,7 @@ proc incI*(x: var Value) =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerIncI(x)
-            else: (when BignumSupport: inc(x.bi, 1))
+            else: (when PbiIntegers: x.bint += toPbi(1) elif BignumSupport: inc(x.bi, 1))
         of Floating: x.f += 1.0
         of Rational: x.rat += 1
         of Complex: x.z = x.z + 1.0
@@ -764,8 +793,8 @@ proc `-=`*(x: var Value, y: Value) =
     case pair:
         of Integer    || Integer        :   normalIntegerSubI(x, y.i)
         of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) - y.bi))
-        of BigInteger || Integer        :   (when BignumSupport: x.bi -= toBig(y.i))
-        of BigInteger || BigInteger     :   (when BignumSupport: x.bi -= y.bi)
+        of BigInteger || Integer        :   (when PbiIntegers: x = newInteger(x.bi - toBig(y.i)) elif BignumSupport: x.bi -= toBig(y.i))
+        of BigInteger || BigInteger     :   (when PbiIntegers: x = newInteger(x.bi - y.bi) elif BignumSupport: x.bi -= y.bi)
         of Integer    || Floating       :   x = newFloating(x.i - y.f)
         of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi - y.f))
         of Integer    || Rational       :   x = newRational(x.i - y.rat)
@@ -820,7 +849,7 @@ proc decI*(x: var Value) =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerDecI(x)
-            else: (when BignumSupport: dec(x.bi, 1))
+            else: (when PbiIntegers: x = newInteger(x.bi - toBig(1)) elif BignumSupport: dec(x.bi, 1))
         of Floating: x.f -= 1.0
         of Rational: x.rat -= 1
         of Complex: x.z = x.z - 1.0
@@ -893,8 +922,8 @@ proc `*=`*(x: var Value, y: Value) =
     case pair:
         of Integer    || Integer        :   normalIntegerMulI(x, y.i)
         of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) * y.bi))
-        of BigInteger || Integer        :   (when BignumSupport: x.bi *= toBig(y.i))
-        of BigInteger || BigInteger     :   (when BignumSupport: x.bi *= y.bi)
+        of BigInteger || Integer        :   (when PbiIntegers: x = newInteger(x.bi * toBig(y.i)) elif BignumSupport: x.bi *= toBig(y.i))
+        of BigInteger || BigInteger     :   (when PbiIntegers: x = newInteger(x.bi * y.bi) elif BignumSupport: x.bi *= y.bi)
         of Integer    || Floating       :   x = newFloating(x.i * y.f)
         of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi * y.f))
         of Integer    || Rational       :   x = newRational(x.i * y.rat)
