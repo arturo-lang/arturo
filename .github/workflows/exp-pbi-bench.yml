@@ -32,7 +32,21 @@ jobs:
 
             - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/arturo-base"
 
-            - name: Build pbi (exp-pbi)
+            - name: Build pbi, no small-Integer cache (exp-pbi)
+              uses: arturo-lang/setup-arturo@v2
+              env:
+                ARTURO_EXTRA: -d:NOINTCACHE
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                mode: noui
+                src: ${{ github.sha }}
+
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/pbi"
+
+            - name: Build pbi + small-Integer cache (exp-pbi)
               uses: arturo-lang/setup-arturo@v2
               with:
                 do: compile
@@ -42,9 +56,10 @@ jobs:
                 mode: noui
                 src: ${{ github.sha }}
 
-            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/arturo-pbi"
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/pbi+cache"
 
             - name: Benchmark
               run: |
                 echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1)"
-                RUNNER="sudo nice -n -20 taskset -c 1" python3 tools/exp-pbi/run.py "$HOME/bins/arturo-base" "$HOME/bins/arturo-pbi" 9 | tee -a "$GITHUB_STEP_SUMMARY"
+                mv "$HOME/bins/arturo-base" "$HOME/bins/base"
+                RUNNER="sudo nice -n -20 taskset -c 1" python3 tools/exp-pbi/run.py "$HOME/bins/base" "$HOME/bins/pbi" "$HOME/bins/pbi+cache" --reps 9 | tee -a "$GITHUB_STEP_SUMMARY"
