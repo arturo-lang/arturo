@@ -45,6 +45,17 @@ jobs:
 
             - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/nanbox"
 
+            - name: Tests (NANBOX, then without)
+              run: |
+                git clone -q https://github.com/arturo-lang/examples.git ../examples
+                fails=0
+                for v in nanbox boxed; do
+                    mkdir -p "$HOME/as-$v" && ln -sf "$HOME/bins/$v" "$HOME/as-$v/arturo"
+                    echo "=== $v"
+                    PATH="$HOME/as-$v:$PATH" arturo tools/tester.art || fails=$((fails + 1))
+                done
+                exit $fails
+
             - name: Benchmark
               run: |
                 echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1)"
