@@ -19,7 +19,35 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
-            - name: Build master
+            - name: Build master (release, as published)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                src: master
+                release: 'true'
+                pgo: 'true'
+
+            - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/master"
+
+            - name: Build nan-boxing (release, as published, -d:NANBOX)
+              uses: arturo-lang/setup-arturo@v2
+              env:
+                ARTURO_EXTRA: -d:NANBOX
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                src: ${{ github.sha }}
+                release: 'true'
+                pgo: 'true'
+
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/nanbox"
+
+            - name: Build master (with symbols, for profiling)
               uses: arturo-lang/setup-arturo@v2
               with:
                 do: compile
@@ -28,9 +56,9 @@ jobs:
                 arch: ${{ matrix.arch }}
                 src: master
 
-            - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/master"
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/master-sym"
 
-            - name: Build nan-boxing (-d:NANBOX)
+            - name: Build nan-boxing (with symbols, for profiling)
               uses: arturo-lang/setup-arturo@v2
               env:
                 ARTURO_EXTRA: -d:NANBOX
@@ -41,7 +69,7 @@ jobs:
                 arch: ${{ matrix.arch }}
                 src: ${{ github.sha }}
 
-            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/nanbox"
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/nanbox-sym"
 
             - name: Same results
               run: |
@@ -72,4 +100,12 @@ jobs:
                     ir() { valgrind --tool=callgrind --callgrind-out-file=/dev/null "$1" "$f" 2>&1 >/dev/null | sed -n 's/.*Collected : \([0-9]*\).*/\1/p'; }
                     a=$(ir "$HOME/bins/master"); b=$(ir "$HOME/bins/nanbox")
                     echo "| $(basename "$f" .art) | $a | $b | $(echo "scale=3; $b / $a" | bc) |" | tee -a "$GITHUB_STEP_SUMMARY"
+                done
+
+            - name: Profile (blocks)
+              run: |
+                for b in master-sym nanbox-sym; do
+                    echo "=== $b"
+                    valgrind --tool=callgrind --callgrind-out-file="/tmp/cg.$b" "$HOME/bins/$b" tools/bench-nanbox/blocks.art > /dev/null 2>&1
+                    callgrind_annotate --inclusive=no "/tmp/cg.$b" 2>/dev/null | grep -E '^ *[0-9,]+ ' | head -30
                 done
