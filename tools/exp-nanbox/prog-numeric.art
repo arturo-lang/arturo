@@ -1,0 +1,6 @@
+s: 0.0  c: 0
+loop 1..1000000 'k [
+    if 0 = k % 3 -> c: c + 1
+    s: s + (to :floating k) / 7.0
+]
+print [c s]

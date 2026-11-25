@@ -1,0 +1,56 @@
+# EXPERIMENTAL (throwaway): Arturo with NaN-boxed Values (-d:NANBOX) vs the same commit without
+name: exp-nanbox-bench
+
+on:
+    push:
+        branches: [exp-nanbox]
+    workflow_dispatch:
+
+jobs:
+    bench:
+        name: bench (${{ matrix.name }})
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { name: linux-amd64, os: ubuntu-latest,    arch: amd64 }
+                    - { name: linux-arm64, os: ubuntu-24.04-arm, arch: arm64 }
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Build (without NANBOX)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                mode: noui
+                src: ${{ github.sha }}
+
+            - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/boxed"
+
+            - name: Build (NANBOX)
+              uses: arturo-lang/setup-arturo@v2
+              env:
+                ARTURO_EXTRA: -d:NANBOX
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                mode: noui
+                src: ${{ github.sha }}
+
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/nanbox"
+
+            - name: Benchmark
+              run: |
+                echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1)"
+                RUNNER="sudo nice -n -20 taskset -c 1" python3 tools/exp-nanbox/run.py "$HOME/bins/boxed" "$HOME/bins/nanbox" --reps 7 | tee -a "$GITHUB_STEP_SUMMARY"
+
+            - name: Instruction counts
+              run: |
+                sudo apt-get install -y valgrind > /dev/null
+                tools/exp-nanbox/icount.sh "$HOME/bins/boxed" "$HOME/bins/nanbox" | tee -a "$GITHUB_STEP_SUMMARY"
