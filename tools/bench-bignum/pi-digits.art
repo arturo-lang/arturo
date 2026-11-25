@@ -1,0 +1,14 @@
+q: 1  r: 0  t: 1  k: 1  n: 3  l: 3  digits: 0  out: ""
+while [digits < 4000][
+    switch ((4 * q) + r - t) < n * t [
+        out: out ++ to :string n  digits: digits + 1
+        nr: 10 * (r - n * t)
+        n: ((10 * ((3 * q) + r)) / t) - 10 * n
+        q: q * 10  r: nr
+    ][
+        nr: ((2 * q) + r) * l
+        nn: ((q * (7 * k)) + 2 + r * l) / (t * l)
+        q: q * k  t: t * l  l: l + 2  k: k + 1  n: nn  r: nr
+    ]
+]
+print [size out take out 20]

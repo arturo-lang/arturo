@@ -1,0 +1,77 @@
+# TEMPORARY (pocket-bignum): master (GMP & MPFR) vs this branch (PocketBignum)
+name: Benchmark PocketBignum
+
+on:
+    push:
+        branches: [pocket-bignum]
+    workflow_dispatch:
+
+jobs:
+    bench:
+        name: bench (${{ matrix.name }})
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { name: linux-amd64, os: ubuntu-latest,    arch: amd64 }
+                    - { name: linux-arm64, os: ubuntu-24.04-arm, arch: arm64 }
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Build master (release, as published)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                src: master
+                release: 'true'
+                pgo: 'true'
+
+            - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/gmp"
+
+            - name: Build pocket-bignum (release, as published)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                src: ${{ github.sha }}
+                release: 'true'
+                pgo: 'true'
+
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/pocketbignum"
+
+            - name: Same results
+              run: |
+                for f in tools/bench-bignum/*.art; do
+                    a=$("$HOME/bins/gmp" "$f"); b=$("$HOME/bins/pocketbignum" "$f")
+                    [ "$a" = "$b" ] && echo "same: $(basename "$f")" || { echo "DIFFERENT: $f"; echo "$a"; echo "$b"; exit 1; }
+                done
+
+            - name: Timings (hyperfine)
+              run: |
+                sudo apt-get install -y hyperfine > /dev/null
+                echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1)" | tee -a "$GITHUB_STEP_SUMMARY"
+                for f in tools/bench-bignum/*.art; do
+                    n=$(basename "$f" .art)
+                    sudo nice -n -20 hyperfine -N --warmup 3 --runs 20 \
+                        -n "$n (gmp)" "taskset -c 1 $HOME/bins/gmp $f" \
+                        -n "$n (pocketbignum)" "taskset -c 1 $HOME/bins/pocketbignum $f" \
+                        --export-markdown "/tmp/$n.md"
+                    cat "/tmp/$n.md" >> "$GITHUB_STEP_SUMMARY"
+                done
+
+            - name: Instruction counts (callgrind)
+              run: |
+                sudo apt-get install -y valgrind > /dev/null
+                echo "| script | gmp | pocketbignum | pocketbignum / gmp |" | tee -a "$GITHUB_STEP_SUMMARY"
+                echo "|---|---|---|---|" | tee -a "$GITHUB_STEP_SUMMARY"
+                for f in tools/bench-bignum/*.art; do
+                    ir() { valgrind --tool=callgrind --callgrind-out-file=/dev/null "$1" "$f" 2>&1 >/dev/null | sed -n 's/.*Collected : \([0-9]*\).*/\1/p'; }
+                    a=$(ir "$HOME/bins/gmp"); b=$(ir "$HOME/bins/pocketbignum")
+                    echo "| $(basename "$f" .art) | $a | $b | $(echo "scale=3; $b / $a" | bc) |" | tee -a "$GITHUB_STEP_SUMMARY"
+                done

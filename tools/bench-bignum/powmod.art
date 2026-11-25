@@ -1,0 +1,2 @@
+m: (2^127) - 1  loop 1..200000 'k [y: powmod 3 k m]
+print y

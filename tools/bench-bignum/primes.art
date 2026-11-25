@@ -1,0 +1,2 @@
+c: 0  loop 1..200000 'k [if prime? (2^100) + k -> c: c + 1]
+print c

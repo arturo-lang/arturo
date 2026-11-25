@@ -1,0 +1,2 @@
+a: 3^500  loop 1..300000 'k [y: to :string a]
+print size y

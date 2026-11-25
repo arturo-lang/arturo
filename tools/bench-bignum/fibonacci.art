@@ -1,0 +1,2 @@
+a: 0  b: 1  loop 1..400000 'k [t: a + b  a: b  b: t]
+print size to :string a
