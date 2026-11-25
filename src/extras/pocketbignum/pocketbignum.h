@@ -378,6 +378,60 @@ static inline int pbq_sgn(pbq_srcptr q) { return pbz_sgn(&q->_mp_num); }
 #define pbq_numref(q) (&(q)->_mp_num)
 #define pbq_denref(q) (&(q)->_mp_den)
 
+
+/* ========================================================================= */
+/* pbi: small-or-big integers (experimental). A value is either a machine    */
+/* int64 (b == NULL) or a reference to an immutable, reference-counted       */
+/* bignum that doesn't fit in one (header & limbs in one allocation).        */
+/* Results come back in the small form whenever they fit, so callers never   */
+/* deal with promotion or demotion. Every pbi returned is owned by the       */
+/* caller (pbi_release it, or pbi_retain to share it); arguments are         */
+/* borrowed. Reference counts are not atomic.                                 */
+/* ========================================================================= */
+
+typedef struct pbi_big {
+    long     refc;
+    int      alloc;      /* limbs allocated                                   */
+    int      size;       /* |size| = limbs used, sign = sign of the number    */
+    pbn_limb d[1];       /* limbs, least significant first (alloc of them)     */
+} pbi_big;
+
+typedef struct {
+    int64_t  s;          /* the value, when b == NULL */
+    pbi_big *b;
+} pbi;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+PBN_API pbi  pbi_add_slow(pbi a, pbi b);
+PBN_API void pbi_free_big(pbi_big *b);
+PBN_API pbi  pbi_from_pbz(pbz_srcptr z);
+PBN_API void pbi_get_pbz(pbz_ptr r, pbi a);
+PBN_API int  pbi_cmp(pbi a, pbi b);
+#ifdef __cplusplus
+}
+#endif
+
+static inline pbi  pbi_from_si(int64_t v) { pbi r; r.s = v; r.b = NULL; return r; }
+static inline int  pbi_small_p(pbi a)     { return a.b == NULL; }
+static inline void pbi_retain(pbi a)      { if (a.b) a.b->refc++; }
+static inline void pbi_release(pbi a)     { if (a.b && --a.b->refc == 0) pbi_free_big(a.b); }
+static inline int  pbi_sgn(pbi a)         { return a.b ? (a.b->size < 0 ? -1 : 1) : (a.s > 0) - (a.s < 0); }
+
+static inline pbi pbi_add(pbi a, pbi b) {
+    if (!a.b && !b.b) {
+#if defined(__GNUC__) || defined(__clang__)
+        pbi r;
+        if (__builtin_expect(!__builtin_add_overflow(a.s, b.s, &r.s), 1)) { r.b = NULL; return r; }
+#else
+        int64_t s = (int64_t)((uint64_t)a.s + (uint64_t)b.s);
+        if (((a.s ^ s) & (b.s ^ s)) >= 0) return pbi_from_si(s);
+#endif
+    }
+    return pbi_add_slow(a, b);
+}
+
 #endif /* POCKETBIGNUM_H */
 
 /* ========================================================================= */
@@ -6861,6 +6915,115 @@ PBN_DEF int pbf_pow(pbf_ptr r, pbf_srcptr xs, pbf_srcptr ys, pbf_rnd_t rnd) {
             w += w / 2 + 32;
         }
     }
+}
+
+
+/* ---- pbi: small-or-big integers ---- */
+
+#define PBI_MAXSMALL_LIMBS ((int)(64 / PBN_B))
+
+/* |v| as limbs into t; returns the count */
+static int pbi_mag_limbs(pbn_limb *t, uint64_t m) {
+    int n = 0;
+    while (m) {
+        t[n++] = (pbn_limb)m;
+#if PBN_B == 64
+        m = 0;
+#else
+        m >>= PBN_B;
+#endif
+    }
+    return n;
+}
+
+typedef struct { const pbn_limb *p; pbn_size n; int neg; pbn_limb t[2]; } pbi_view;
+
+static void pbi_view_of(pbi_view *v, const pbi *a) {
+    if (a->b) {
+        v->p = a->b->d; v->n = PBN_ABS(a->b->size); v->neg = a->b->size < 0;
+    } else {
+        uint64_t m = a->s < 0 ? 0 - (uint64_t)a->s : (uint64_t)a->s;
+        v->n = pbi_mag_limbs(v->t, m); v->p = v->t; v->neg = a->s < 0;
+    }
+}
+
+static pbi_big *pbi_new_big(pbn_size n) {
+    pbi_big *b = (pbi_big *)pbn_alloc_fn(sizeof(pbi_big) + (size_t)(n > 1 ? n - 1 : 0) * sizeof(pbn_limb));
+    b->refc = 1; b->alloc = (int)(n > 1 ? n : 1); b->size = 0;
+    return b;
+}
+
+PBN_DEF void pbi_free_big(pbi_big *b) {
+    pbn_free_fn(b, sizeof(pbi_big) + (size_t)(b->alloc - 1) * sizeof(pbn_limb));
+}
+
+/* the result in b (n limbs, normalized, sign neg): small if it fits (b is freed then) */
+static pbi pbi_finish(pbi_big *b, pbn_size n, int neg) {
+    pbi r;
+    if (n <= PBI_MAXSMALL_LIMBS) {
+        uint64_t m = 0;
+        pbn_size i;
+        for (i = n; i-- > 0; ) m = (PBN_B == 64 ? 0 : (m << (PBN_B % 64))) | b->d[i];
+        if (m <= (uint64_t)INT64_MAX || (neg && m == (uint64_t)1 << 63)) {
+            r.s = neg ? (int64_t)(0 - m) : (int64_t)m; r.b = NULL;
+            pbi_free_big(b);
+            return r;
+        }
+    }
+    b->size = neg ? -(int)n : (int)n;
+    r.s = 0; r.b = b;
+    return r;
+}
+
+PBN_DEF pbi pbi_add_slow(pbi a, pbi b) {
+    pbi_view x, y, *u = &x, *v = &y;
+    pbi_big *r;
+    pbn_size n;
+    pbi_view_of(&x, &a); pbi_view_of(&y, &b);
+    if (x.n < y.n) { u = &y; v = &x; }
+    if (u->neg == v->neg) {
+        r = pbi_new_big(u->n + 1);
+        r->d[u->n] = pbn_n_add(r->d, u->p, u->n, v->p, v->n);
+        n = u->n + (r->d[u->n] != 0);
+        return pbi_finish(r, n, u->neg);
+    }
+    if (u->n == v->n) {
+        int c = pbn_n_cmp(u->p, v->p, u->n);
+        if (c == 0) return pbi_from_si(0);
+        if (c < 0) { pbi_view *t = u; u = v; v = t; }
+    }
+    r = pbi_new_big(u->n);
+    pbn_n_sub(r->d, u->p, u->n, v->p, v->n);
+    n = u->n;
+    while (n > 0 && r->d[n - 1] == 0) n--;
+    return pbi_finish(r, n, u->neg);
+}
+
+PBN_DEF pbi pbi_from_pbz(pbz_srcptr z) {
+    pbn_size n = PBN_ABS(z->_mp_size);
+    pbi_big *b = pbi_new_big(n);
+    if (n) memcpy(b->d, z->_mp_d, (size_t)n * sizeof(pbn_limb));
+    if (n == 0) { pbi_free_big(b); return pbi_from_si(0); }
+    return pbi_finish(b, n, z->_mp_size < 0);
+}
+
+PBN_DEF void pbi_get_pbz(pbz_ptr r, pbi a) {
+    pbi_view v;
+    pbn_limb *d;
+    pbi_view_of(&v, &a);
+    d = pbz_limbs_write(r, v.n ? v.n : 1);
+    if (v.n) memcpy(d, v.p, (size_t)v.n * sizeof(pbn_limb));
+    pbz_limbs_finish(r, v.neg ? -v.n : v.n);
+}
+
+PBN_DEF int pbi_cmp(pbi a, pbi b) {
+    pbi_view x, y;
+    int c;
+    if (!a.b && !b.b) return (a.s > b.s) - (a.s < b.s);
+    pbi_view_of(&x, &a); pbi_view_of(&y, &b);
+    if (x.neg != y.neg) return x.neg ? -1 : 1;
+    c = x.n != y.n ? (x.n < y.n ? -1 : 1) : pbn_n_cmp(x.p, y.p, x.n);
+    return x.neg ? -c : c;
 }
 
 #ifdef __cplusplus
