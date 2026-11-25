@@ -679,9 +679,9 @@ proc `+=`*(x: var Value, y: Value) =
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(x.bi + y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) + y.z)
 
-        of Floating   || Integer        :   x.f += float(y.i)
+        of Floating   || Integer        :   x.f = x.f + (float(y.i))
         of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f + y.bi))
-        of Floating   || Floating       :   x.f += y.f
+        of Floating   || Floating       :   x.f = x.f + (y.f)
         of Floating   || Rational       :   x = newRational(toRational(x.f) + y.rat)
         of Floating   || Complex        :   x = newComplex(x.f + y.z)
 
@@ -728,7 +728,7 @@ proc incI*(x: var Value) =
         of Integer:
             if x.iKind==NormalInteger: normalIntegerIncI(x)
             else: (when BignumSupport: inc(x.bi, 1))
-        of Floating: x.f += 1.0
+        of Floating: x.f = x.f + (1.0)
         of Rational: x.rat += 1
         of Complex: x.z = x.z + 1.0
         of Quantity: x.q += 1
@@ -793,9 +793,9 @@ proc `-=`*(x: var Value, y: Value) =
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(x.bi - y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) - y.z)
 
-        of Floating   || Integer        :   x.f -= float(y.i)
+        of Floating   || Integer        :   x.f = x.f - (float(y.i))
         of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f - y.bi))
-        of Floating   || Floating       :   x.f -= y.f
+        of Floating   || Floating       :   x.f = x.f - (y.f)
         of Floating   || Rational       :   x = newRational(toRational(x.f) - y.rat)
         of Floating   || Complex        :   x = newComplex(x.f - y.z)
 
@@ -842,7 +842,7 @@ proc decI*(x: var Value) =
         of Integer:
             if x.iKind==NormalInteger: normalIntegerDecI(x)
             else: (when BignumSupport: dec(x.bi, 1))
-        of Floating: x.f -= 1.0
+        of Floating: x.f = x.f - (1.0)
         of Rational: x.rat -= 1
         of Complex: x.z = x.z - 1.0
         of Quantity: x.q -= 1
@@ -926,9 +926,9 @@ proc `*=`*(x: var Value, y: Value) =
         of Integer    || Unit           :   x = newQuantity(x, y.u)
         of BigInteger || Unit           :   (when defined(GMP): x = newQuantity(x, y.u))
 
-        of Floating   || Integer        :   x.f *= float(y.i)
+        of Floating   || Integer        :   x.f = x.f * (float(y.i))
         of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f * y.bi))
-        of Floating   || Floating       :   x.f *= y.f
+        of Floating   || Floating       :   x.f = x.f * (y.f)
         of Floating   || Rational       :   x = newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   x = newComplex(x.f * y.z)
         of Floating   || Quantity       :   x = newQuantity(x.f * y.q)
@@ -986,7 +986,7 @@ proc negI*(x: var Value) =
         of Integer:
             if x.iKind==NormalInteger: normalIntegerNegI(x)
             else: (when BignumSupport: negI(x.bi))
-        of Floating: x.f *= -1.0
+        of Floating: x.f = x.f * (-1.0)
         of Rational: x.rat *= -1
         of Complex: x.z *= -1.0
         of Quantity: x.q *= -1
@@ -1050,9 +1050,9 @@ proc `/=`*(x: var Value, y: Value) =
         of BigInteger || Rational       :   (when defined(GMP): x = newInteger(toRational(x.bi) div notZero(y.rat)))
         of Integer    || Complex        :   x = newComplex(float(x.i) / notZero(y.z))
 
-        of Floating   || Integer        :   x.f /= float(notZero(y.i))
+        of Floating   || Integer        :   x.f = x.f / (float(notZero(y.i)))
         of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f / notZero(y.bi)))
-        of Floating   || Floating       :   x.f /= notZero(y.f)
+        of Floating   || Floating       :   x.f = x.f / (notZero(y.f))
         of Floating   || Rational       :   x = newInteger(toRational(x.f) div notZero(y.rat))
         of Floating   || Complex        :   x = newComplex(x.f / notZero(y.z))
 
@@ -1119,9 +1119,9 @@ proc `//=`*(x: var Value, y: Value) =
         of Integer    || Rational       :   x = newRational(x.i / notZero(y.rat))
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(x.bi / notZero(y.rat)))
 
-        of Floating   || Integer        :   x.f /= float(notZero(y.i))
+        of Floating   || Integer        :   x.f = x.f / (float(notZero(y.i)))
         of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f / notZero(y.bi)))
-        of Floating   || Floating       :   x.f /= notZero(y.f)
+        of Floating   || Floating       :   x.f = x.f / (notZero(y.f))
         of Floating   || Rational       :   x = newRational(toRational(x.f) / notZero(y.rat))
 
         of Rational   || Integer        :   x.rat /= notZero(y.i)
