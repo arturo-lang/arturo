@@ -172,6 +172,7 @@ proc defineModule*(moduleName: string) =
                     InPlaced.s = InPlaced.s.capitalize()
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
+                    commitInPlaceAny()
 
     builtin "escape",
         alias       = unaliased, 
@@ -435,6 +436,7 @@ proc defineModule*(moduleName: string) =
                     InPlaced.s = InPlaced.s.toLower()
                 else:
                     InPlaced.c = InPlaced.c.toLower()
+                    commitInPlaceAny()
 
     # TODO(Strings\match) add support for Char values as the value-to-match
     #  labels: library, enhancement
@@ -1046,6 +1048,7 @@ proc defineModule*(moduleName: string) =
                     InPlaced.s = InPlaced.s.toUpper()
                 else:
                     InPlaced.c = InPlaced.c.toUpper()
+                    commitInPlaceAny()
 
     builtin "wordwrap",
         alias       = unaliased, 

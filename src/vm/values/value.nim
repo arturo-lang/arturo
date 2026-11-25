@@ -357,15 +357,18 @@ proc newType*(t: string): Value {.inline.} =
 
 func newChar*(c: Rune): Value {.inline.} =
     ## create Char value from Rune
-    ValueRef(kind: Char, c: c)
+    when defined(NANBOX): inlineChar(c)
+    else: ValueRef(kind: Char, c: c)
 
 func newChar*(c: char): Value {.inline.} =
     ## create Char value from char
-    ValueRef(kind: Char, c: ($c).runeAt(0))
+    when defined(NANBOX): inlineChar(($c).runeAt(0))
+    else: ValueRef(kind: Char, c: ($c).runeAt(0))
 
 func newChar*(c: string): Value {.inline.} =
     ## create Char value from string
-    ValueRef(kind: Char, c: c.runeAt(0))
+    when defined(NANBOX): inlineChar(c.runeAt(0))
+    else: ValueRef(kind: Char, c: c.runeAt(0))
 
 func newString*(s: sink string, dedented: static bool = false): Value {.inline.} =
     ## create String value from string
