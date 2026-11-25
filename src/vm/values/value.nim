@@ -66,44 +66,44 @@ template makeConst(v: Value): untyped =
     res
 
 let
-    I0*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 0)      ## constant 0
-    I1*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 1)      ## constant 1
-    I2*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 2)      ## constant 2
-    I3*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 3)      ## constant 3
-    I4*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 4)      ## constant 4
-    I5*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 5)      ## constant 5
-    I6*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 6)      ## constant 6
-    I7*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 7)      ## constant 7
-    I8*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 8)      ## constant 8
-    I9*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 9)      ## constant 9
-    I10*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 10)     ## constant 10
-    I11*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 11)     ## constant 11
-    I12*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 12)     ## constant 12
-    I13*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 13)     ## constant 13
-    I14*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 14)     ## constant 14
-    I15*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 15)     ## constant 15
+    I0*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 0)      ## constant 0
+    I1*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 1)      ## constant 1
+    I2*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 2)      ## constant 2
+    I3*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 3)      ## constant 3
+    I4*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 4)      ## constant 4
+    I5*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 5)      ## constant 5
+    I6*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 6)      ## constant 6
+    I7*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 7)      ## constant 7
+    I8*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 8)      ## constant 8
+    I9*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 9)      ## constant 9
+    I10*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 10)     ## constant 10
+    I11*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 11)     ## constant 11
+    I12*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 12)     ## constant 12
+    I13*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 13)     ## constant 13
+    I14*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 14)     ## constant 14
+    I15*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 15)     ## constant 15
 
-    I1M*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: -1)     ## constant -1
+    I1M*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: -1)     ## constant -1
 
-    F0*             = makeConst Value(kind: Floating, f: 0.0)                         ## constant 0.0
-    F1*             = makeConst Value(kind: Floating, f: 1.0)                         ## constant 1.0
-    F2*             = makeConst Value(kind: Floating, f: 2.0)                         ## constant 2.0
+    F0*             = makeConst ValueRef(kind: Floating, f: 0.0)                         ## constant 0.0
+    F1*             = makeConst ValueRef(kind: Floating, f: 1.0)                         ## constant 1.0
+    F2*             = makeConst ValueRef(kind: Floating, f: 2.0)                         ## constant 2.0
 
-    F1M*            = makeConst Value(kind: Floating, f: -1.0)                        ## constant -1.0
+    F1M*            = makeConst ValueRef(kind: Floating, f: -1.0)                        ## constant -1.0
 
-    VTRUE*          = makeConst Value(kind: Logical, flags: ValueFlags(True))         ## constant True
-    VFALSE*         = makeConst Value(kind: Logical, flags: ValueFlags(False))        ## constant False
-    VMAYBE*         = makeConst Value(kind: Logical, flags: ValueFlags(Maybe))        ## constant Maybe
+    VTRUE*          = makeConst ValueRef(kind: Logical, flags: ValueFlags(True))         ## constant True
+    VFALSE*         = makeConst ValueRef(kind: Logical, flags: ValueFlags(False))        ## constant False
+    VMAYBE*         = makeConst ValueRef(kind: Logical, flags: ValueFlags(Maybe))        ## constant Maybe
 
-    VNULL*          = makeConst Value(kind: Null)                                     ## constant Null
-    VANY*           = makeConst Value(kind: Any)                                      ## constant Any
+    VNULL*          = makeConst ValueRef(kind: Null)                                     ## constant Null
+    VANY*           = makeConst ValueRef(kind: Any)                                      ## constant Any
 
-    VEMPTYSTR*      = makeConst Value(kind: String, s: "")                                    ## constant ""
-    VEMPTYARR*      = makeConst Value(kind: Block, a: @[], data: nil)                         ## constant []
-    VEMPTYDICT*     = makeConst Value(kind: Dictionary, d: newOrderedTable[string,Value]())  ## constant #[]
+    VEMPTYSTR*      = makeConst ValueRef(kind: String, s: "")                                    ## constant ""
+    VEMPTYARR*      = makeConst ValueRef(kind: Block, a: @[], data: nil)                         ## constant []
+    VEMPTYDICT*     = makeConst ValueRef(kind: Dictionary, d: newOrderedTable[string,Value]())  ## constant #[]
 
-    VSTRINGT*       = makeConst Value(kind: Type, tpKind: BuiltinType, t: String)     ## constant ``:string``
-    VINTEGERT*      = makeConst Value(kind: Type, tpKind: BuiltinType, t: Integer)    ## constant ``:integer``
+    VSTRINGT*       = makeConst ValueRef(kind: Type, tpKind: BuiltinType, t: String)     ## constant ``:string``
+    VINTEGERT*      = makeConst ValueRef(kind: Type, tpKind: BuiltinType, t: Integer)    ## constant ``:integer``
 
     #--------
 
@@ -195,22 +195,27 @@ when defined(WEB):
         # results that fit in a normal Integer
         # shouldn't remain "big"
         if bi.fitsSignedInt():
-            result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
+            result = ValueRef(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
         else:
-            result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+            result = ValueRef(kind: Integer, iKind: BigInteger, bi: bi)
 
 when defined(GMP):
     proc newInteger*(bi: Int): Value {.inline.} =
         # results that fit in a normal Integer
         # shouldn't remain "big"
         if bi.fitsSignedInt():
-            result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
+            result = ValueRef(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
         else:
-            result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+            result = ValueRef(kind: Integer, iKind: BigInteger, bi: bi)
 
 func newInteger*(i: int): Value {.inline.} =
     ## create Integer value from int
-    result = Value(kind: Integer, iKind: NormalInteger, i: i)
+    when defined(NANBOX):
+        # EXPERIMENTAL: held inline (no allocation) when it fits in 48 bits
+        if likely(i >= NbIntMin and i <= NbIntMax): immInteger(i)
+        else: ValueRef(kind: Integer, iKind: NormalInteger, i: i)
+    else:
+        result = ValueRef(kind: Integer, iKind: NormalInteger, i: i)
 
 func newInteger*(i: int64): Value {.inline.} =
     ## create Integer value from int64
@@ -231,17 +236,20 @@ proc newInteger*(i: string, lineno: int = 1): Value {.inline.} =
 func newBigInteger*(i: int): Value {.inline.} =
     ## create Integer (BigInteger) value from int
     when defined(WEB):
-        result = Value(kind: Integer, iKind: BigInteger, bi: big(i))
+        result = ValueRef(kind: Integer, iKind: BigInteger, bi: big(i))
     elif defined(GMP):
-        result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
+        result = ValueRef(kind: Integer, iKind: BigInteger, bi: newInt(i))
 
 func newFloating*(f: float): Value {.inline.} =
     ## create Floating value from float
-    Value(kind: Floating, f: f)
+    when defined(NANBOX):
+        immFloating(f)      # EXPERIMENTAL: held inline (no allocation)
+    else:
+        ValueRef(kind: Floating, f: f)
 
 func newFloating*(f: int): Value {.inline.} =
     ## create Floating value from int
-    Value(kind: Floating, f: float(f))
+    ValueRef(kind: Floating, f: float(f))
 
 proc newFloating*(f: string): Value {.inline.} =
     ## create Floating value from string
@@ -249,11 +257,11 @@ proc newFloating*(f: string): Value {.inline.} =
 
 func newComplex*(com: VComplex): Value {.inline.} =
     ## create Complex value from VComplex
-    Value(kind: Complex, z: com)
+    ValueRef(kind: Complex, z: com)
 
 func newComplex*(fre: float, fim: float): Value {.inline.} =
     ## create Complex value from real + imaginary parts (float)
-    Value(kind: Complex, z: VComplex(re: fre, im: fim))
+    ValueRef(kind: Complex, z: VComplex(re: fre, im: fim))
 
 func newComplex*(fre: Value, fim: Value): Value {.inline.} =
     ## create Complex value from real + imaginary parts (Value)
@@ -270,28 +278,28 @@ func newComplex*(fre: Value, fim: Value): Value {.inline.} =
 
 func newRational*(rat: VRational): Value {.inline.} =
     ## create Rational value from VRational
-    Value(kind: Rational, rat: rat)
+    ValueRef(kind: Rational, rat: rat)
 
 when defined(GMP):
     func newRational*(n: int | float | Int): Value {.inline.} =
         ## create Rational value from int, float or Int
-        Value(kind: Rational, rat: toRational(n))
+        ValueRef(kind: Rational, rat: toRational(n))
 
     func newRational*(num: int | float | Int, den: int | float | Int): Value {.inline.} = 
         ## create Rational value from numerator + denominator (int, float or Int)
-        Value(kind: Rational, rat: toRational(num, den))
+        ValueRef(kind: Rational, rat: toRational(num, den))
 
     func newRational*(rat: Rat): Value {.inline.} =
         ## create Rational value from Rat
-        Value(kind: Rational, rat: toRational(rat))
+        ValueRef(kind: Rational, rat: toRational(rat))
 else:
     func newRational*(n: int | float): Value {.inline.} =
         ## create Rational value from int or float
-        Value(kind: Rational, rat: toRational(n))
+        ValueRef(kind: Rational, rat: toRational(n))
 
     func newRational*(num: int | float, den: int | float): Value {.inline.} = 
         ## create Rational value from numerator + denominator (int or float)
-        Value(kind: Rational, rat: toRational(num, den))
+        ValueRef(kind: Rational, rat: toRational(num, den))
 
 func newRational*(num: Value, den: Value): Value {.inline.} =
     ## create Rational value from numerator + denominator (Value)
@@ -327,19 +335,19 @@ func newRational*(num: Value, den: Value): Value {.inline.} =
 
 func newVersion*(v: string): Value {.inline.} =
     ## create Version value from string
-    Value(kind: Version, version: newVVersion(v))
+    ValueRef(kind: Version, version: newVVersion(v))
 
 func newVersion*(v: VVersion): Value {.inline.} =
     ## create Version value from VVersion
-    Value(kind: Version, version: v)
+    ValueRef(kind: Version, version: v)
 
 func newType*(t: ValueKind): Value {.inline.} =
     ## create Type (BuiltinType) value from ValueKind
-    Value(kind: Type, tpKind: BuiltinType, t: t)
+    ValueRef(kind: Type, tpKind: BuiltinType, t: t)
 
 proc newUserType*(tid: string, proto: Prototype = nil): Value {.inline.} =
     setType(tid, proto)
-    Value(kind: Type, tpKind: UserType, t: Object, tid: tid)
+    ValueRef(kind: Type, tpKind: UserType, t: Object, tid: tid)
 
 proc newType*(t: string): Value {.inline.} =
     ## create Type value from string
@@ -350,22 +358,22 @@ proc newType*(t: string): Value {.inline.} =
 
 func newChar*(c: Rune): Value {.inline.} =
     ## create Char value from Rune
-    Value(kind: Char, c: c)
+    ValueRef(kind: Char, c: c)
 
 func newChar*(c: char): Value {.inline.} =
     ## create Char value from char
-    Value(kind: Char, c: ($c).runeAt(0))
+    ValueRef(kind: Char, c: ($c).runeAt(0))
 
 func newChar*(c: string): Value {.inline.} =
     ## create Char value from string
-    Value(kind: Char, c: c.runeAt(0))
+    ValueRef(kind: Char, c: c.runeAt(0))
 
 func newString*(s: sink string, dedented: static bool = false): Value {.inline.} =
     ## create String value from string
     when not dedented: 
-        Value(kind: String, s: s)
+        ValueRef(kind: String, s: s)
     else: 
-        Value(kind: String, s: unicode.strip(dedent(s)))
+        ValueRef(kind: String, s: unicode.strip(dedent(s)))
 
 func newString*(s: cstring, dedented: static bool = false): Value {.inline.} =
     ## create String value from cstring
@@ -373,39 +381,39 @@ func newString*(s: cstring, dedented: static bool = false): Value {.inline.} =
 
 func newWord*(w: sink string): Value {.inline.} =
     ## create Word value from string
-    Value(kind: Word, s: w)
+    ValueRef(kind: Word, s: w)
 
 func newLiteral*(l: sink string): Value {.inline.} =
     ## create Literal value from string
-    Value(kind: Literal, s: l)
+    ValueRef(kind: Literal, s: l)
 
 func newLabel*(l: sink string): Value {.inline.} =
     ## create Label value from string
-    Value(kind: Label, s: l)
+    ValueRef(kind: Label, s: l)
 
 func newAttribute*(a: sink string): Value {.inline.} =
     ## create Attribute value from string
-    Value(kind: Attribute, s: a)
+    ValueRef(kind: Attribute, s: a)
 
 func newAttributeLabel*(a: sink string): Value {.inline.} =
     ## create AttributeLabel value from string
-    Value(kind: AttributeLabel, s: a)
+    ValueRef(kind: AttributeLabel, s: a)
 
 func newPath*(p: sink ValueArray): Value {.inline.} =
     ## create Path value from ValueArray
-    Value(kind: Path, p: p)
+    ValueRef(kind: Path, p: p)
 
 func newPathLabel*(p: sink ValueArray): Value {.inline.} =
     ## create PathLabel value from ValueArray
-    Value(kind: PathLabel, p: p)
+    ValueRef(kind: PathLabel, p: p)
 
 func newPathLiteral*(p: sink ValueArray): Value {.inline.} =
     ## create PathLiteral value from ValueArray
-    Value(kind: PathLiteral, p: p)
+    ValueRef(kind: PathLiteral, p: p)
 
 func newSymbol*(m: VSymbol): Value {.inline.} =
     ## create Symbol value from VSymbol
-    Value(kind: Symbol, m: m)
+    ValueRef(kind: Symbol, m: m)
 
 func newSymbol*(m: sink string): Value {.inline.} =
     ## create Symbol value from string
@@ -413,7 +421,7 @@ func newSymbol*(m: sink string): Value {.inline.} =
 
 func newSymbolLiteral*(m: VSymbol): Value {.inline.} =
     ## create SymbolLiteral value from VSymbol
-    Value(kind: SymbolLiteral, m: m)
+    ValueRef(kind: SymbolLiteral, m: m)
 
 func newSymbolLiteral*(m: string): Value {.inline.} =
     ## create SymbolLiteral value from string
@@ -421,7 +429,7 @@ func newSymbolLiteral*(m: string): Value {.inline.} =
 
 proc newUnit*(u: VUnit): Value {.inline.} =
     ## create Unit value from VUnit
-    Value(kind: Unit, u: u)
+    ValueRef(kind: Unit, u: u)
 
 proc newUnit*(u: string): Value {.inline.} =
     ## create Unit value from string
@@ -429,7 +437,7 @@ proc newUnit*(u: string): Value {.inline.} =
 
 proc newQuantity*(v: Value, atoms: VUnit): Value {.inline.} =
     ## create Quantity value from a numerical value ``v`` (Value) + ``atoms`` (VUnit)
-    result = Value(kind: Quantity)
+    result = ValueRef(kind: Quantity)
     if v.kind == Integer: 
         if v.iKind == NormalInteger:
             result.q = toQuantity(v.i, atoms)
@@ -448,33 +456,33 @@ proc newQuantity*(v: Value, atoms: string): Value {.inline.} =
 proc newQuantity*(q: VQuantity, copy: static bool = false): Value {.inline.} =
     ## create Quantity value from QuantityValue ``q`` (VQuantity)
     when copy:
-        Value(kind: Quantity, q: toQuantity(q.original, q.atoms))
+        ValueRef(kind: Quantity, q: toQuantity(q.original, q.atoms))
     else:
-        Value(kind: Quantity, q: q)
+        ValueRef(kind: Quantity, q: q)
 
 proc newErrorKind*(): Value {.inline.} =
-    Value(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
+    ValueRef(kind: ErrorKind, errKind: VErrorKind(label: "Generic Error"))
 
 proc newErrorKind*(label: string, description: string = ""): Value {.inline.} =
-    Value(kind: ErrorKind, errKind: VErrorKind(label: label, description: description))
+    ValueRef(kind: ErrorKind, errKind: VErrorKind(label: label, description: description))
 
 proc newErrorKind*(errKind: VErrorKind = RuntimeErr): Value {.inline.} =
-    Value(kind: ErrorKind, errKind: errKind)
+    ValueRef(kind: ErrorKind, errKind: errKind)
 
 proc newError*(error: ref Exception | CatchableError | Defect): Value {.inline.} =
-    result = Value(kind: Error, err: VError(kind: RuntimeErr))
+    result = ValueRef(kind: Error, err: VError(kind: RuntimeErr))
     result.err.msg = error.msg
 
 proc newError*(kind: VErrorKind = RuntimeErr, msg: string = ""): Value {.inline.} =
-    result = Value(kind: Error, err: VError(kind: kind))
+    result = ValueRef(kind: Error, err: VError(kind: kind))
     result.err.msg = msg
 
 proc newError*(err: VError): Value {.inline.} =
-    Value(kind: Error, err: err)
+    ValueRef(kind: Error, err: err)
 
 func newRegex*(rx: sink VRegex): Value {.inline.} =
     ## create Regex value from VRegex
-    Value(kind: Regex, rx: rx)
+    ValueRef(kind: Regex, rx: rx)
 
 proc newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
     ## create Regex value from string
@@ -489,7 +497,7 @@ proc newRegex*(rx: string, rflags: string = ""): Value {.inline.} =
 
 func newColor*(l: VColor): Value {.inline.} =
     ## create Color value from VColor
-    Value(kind: Color, l: l)
+    ValueRef(kind: Color, l: l)
 
 func newColor*(rgb: RGB): Value {.inline.} =
     ## create Color value from RGB
@@ -516,15 +524,15 @@ func newDate*(dt: sink DateTime): Value {.inline.} =
     }.toOrderedTable
     let newTime = new DateTime
     newTime[] = dt
-    Value(kind: Date, e: edict, eobj: newTime)
+    ValueRef(kind: Date, e: edict, eobj: newTime)
 
 func newBinary*(n: VBinary = @[]): Value {.inline.} =
     ## create Binary value from VBinary
-    Value(kind: Binary, n: n)
+    ValueRef(kind: Binary, n: n)
 
 func newDictionary*(d: sink ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
     ## create Dictionary value from ValueDict
-    Value(kind: Dictionary, d: d)
+    ValueRef(kind: Dictionary, d: d)
 
 func newDictionary*(d: sink SymTable): Value {.inline.} =
     ## create Dictionary value from SymTable
@@ -532,7 +540,7 @@ func newDictionary*(d: sink SymTable): Value {.inline.} =
 
 func newObject*(proto: sink Prototype, o: sink ValueDict = newOrderedTable[string,Value](), magic: MagicMethods = MagicMethods()): Value {.inline.} =
     ## create Object value from ValueDict with given prototype
-    Value(kind: Object, proto: proto, o: o, magic: magic)
+    ValueRef(kind: Object, proto: proto, o: o, magic: magic)
 
 # proc newObject*(args: ValueArray, prot: Prototype, initializer: proc (self: Value, prot: Prototype), o: ValueDict = newOrderedTable[string,Value]()): Value {.inline.} =
 #     ## create Object value from ValueArray with given prototype 
@@ -565,11 +573,11 @@ func newObject*(proto: sink Prototype, o: sink ValueDict = newOrderedTable[strin
 
 proc newStore*(sto: VStore): Value {.inline.} =
     ## create Store value from VStore
-    Value(kind: Store, sto: sto)
+    ValueRef(kind: Store, sto: sto)
 
 func newFunction*(params: seq[string], main: Value, imports: Value = nil, exports: Value = nil, memoize: bool = false, inline: bool = false): Value {.inline.} =
     ## create Function (UserFunction) value with given parameters, ``main`` body, etc
-    Value(
+    ValueRef(
         kind: Function,
         info: nil,
         funcType: VFunction(
@@ -586,7 +594,7 @@ func newFunction*(params: seq[string], main: Value, imports: Value = nil, export
     )
 
 func newMethod*(params: seq[string], main: Value, isDistinct: bool = false, isPublic: bool = false, injectThis: static bool = true): Value {.inline.} =
-    Value(
+    ValueRef(
         kind: Method,
         info: nil,
         methType: VMethod(
@@ -834,7 +842,7 @@ func newMethodFromDefinition*(params: ValueArray, main: Value, isDistinct: bool 
 
 func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: sink OrderedTable[string,ValueSpec], at: sink OrderedTable[string,(ValueSpec,string)], ret: ValueSpec, exa: sink string, opc: OpCode, act: BuiltinAction): Value {.inline.} =
     ## create Function (BuiltinFunction) value with given details
-    result = Value(
+    result = ValueRef(
         kind: Function,
         info: ValueInfo(
             descr: desc,
@@ -858,23 +866,23 @@ func newBuiltin*(desc: sink string, modl: sink string, line: int, ar: int8, ag: 
 when defined(SQLITE):
     proc newDatabase*(db: sqlite.DbConn): Value {.inline.} =
         ## create Database value from DbConn
-        Value(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
+        ValueRef(kind: Database, dbKind: SqliteDatabase, sqlitedb: db)
 
 when not defined(WEB):
     proc newSocket*(sock: VSocket): Value {.inline.} =
         ## create Socket value from Socket
-        Value(kind: Socket, sock: sock)
+        ValueRef(kind: Socket, sock: sock)
 
 # proc newDatabase*(db: mysql.DbConn): Value {.inline.} =
-#     Value(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
+#     ValueRef(kind: Database, dbKind: MysqlDatabase, mysqldb: db)
 
 func newBytecode*(t: sink Translation): Value {.inline.} =
     ## create Bytecode value from Translation
-    Value(kind: Bytecode, trans: t)
+    ValueRef(kind: Bytecode, trans: t)
 
 proc newTask*(tsk: VTask): Value {.inline.} =
     ## create Task value from VTask
-    Value(kind: Task, tsk: tsk)
+    ValueRef(kind: Task, tsk: tsk)
     
 proc initTask*(): VTask {.inline.} =
     ## create a fresh, pending VTask
@@ -899,19 +907,19 @@ when not defined(WEB):
 
 proc newEvent*(evt: VEvent): Value {.inline.} =
     ## create Event value from VEvent
-    Value(kind: Event, evt: evt)
+    ValueRef(kind: Event, evt: evt)
 
 proc newEvent*(name: string): Value {.inline.} =
     ## create Event value from a name string
-    Value(kind: Event, evt: VEvent(name: name))
+    ValueRef(kind: Event, evt: VEvent(name: name))
 
 func newInline*(a: sink ValueArray = @[]): Value {.inline.} =
     ## create Inline value from ValueArray
-    Value(kind: Inline, a: a)
+    ValueRef(kind: Inline, a: a)
 
 func newBlock*(a: sink ValueArray = @[], data: sink Value = nil): Value {.inline.} =
     ## create Block value from ValueArray
-    Value(kind: Block, a: a, data: data)
+    ValueRef(kind: Block, a: a, data: data)
 
 func newBlock*(a: (Value, Value)): Value {.inline.} =
     ## create Block value from tuple of two values
@@ -934,10 +942,10 @@ proc newWordBlock*(a: sink seq[string]): Value {.inline.} =
     newBlock(a.map(proc (x:string):Value = newWord(x)))
 
 proc newModule*(singleton: Value): Value {.inline.} =
-    Value(kind: Module, singleton: singleton)
+    ValueRef(kind: Module, singleton: singleton)
 
 proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, forward: bool): Value {.inline.} =
-    Value(kind: Range, rng: 
+    ValueRef(kind: Range, rng: 
         VRange(
             start: start, 
             stop: stop, 
@@ -949,7 +957,7 @@ proc newRange*(start: int, stop: int, step: int, infinite: bool, numeric: bool, 
     )
 
 proc newRange*(rng: VRange): Value {.inline.} =
-    Value(kind: Range, rng: rng)
+    ValueRef(kind: Range, rng: rng)
 
 proc newStringDictionary*(a: Table[string, string]): Value =
     ## create Dictionary value from a string-string Table
@@ -1090,7 +1098,7 @@ proc copyValue*(v: Value): Value {.inline.} =
 
         of Channel:
             when not defined(WEB):
-                result = Value(kind: Channel, chn: v.chn)
+                result = ValueRef(kind: Channel, chn: v.chn)
 
         of Nothing, Any:
             discard
