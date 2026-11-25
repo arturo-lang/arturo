@@ -145,13 +145,7 @@ proc FetchSym*(s: string, unsafe: static bool = false): Value {.inline.} =
     else:
         Syms[s]
 
-when defined(NANBOX) and (defined(gcc) or defined(clang) or defined(llvm_gcc)):
-    # (with NaN-boxing, the C compiler doesn't inline it on its own anymore)
-    {.pragma: hotInline, inline, codegenDecl: "static inline __attribute__((always_inline)) $# $#$#".}
-else:
-    {.pragma: hotInline, inline.}
-
-proc FetchSymById*(v: Value): Value {.hotInline.} =
+proc FetchSymById*(v: Value): Value {.inline.} =
     ## Same as `FetchSym`, for a Word/Literal/... value
     if (result = Syms.getById(symIdOf(v)); unlikely(result.isNil)):
         Error_SymbolNotFound(v.s, suggestAlternative(v.s))
