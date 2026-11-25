@@ -26,29 +26,16 @@ jobs:
                                         'ubuntu-latest'  }}
                                                                    
         strategy:
+            fail-fast: false        # TEMPORARY (nan-boxing): NaN-boxed builds only, for now
             matrix:
                 include: 
-                    - {os: linux,   arch: amd64}
-                    - {os: linux,   arch: amd64,    support: legacy}
-                    - {os: linux,   arch: amd64,    mode: mini}
-                    - {os: linux,   arch: arm64}
-                    - {os: linux,   arch: arm64,    support: legacy}
-                    - {os: linux,   arch: arm64,    mode: mini}
                     - {os: linux,   arch: amd64,    nanbox: true}
                     - {os: linux,   arch: arm64,    nanbox: true}
-                    - {os: freebsd, arch: amd64}
-                    - {os: freebsd, arch: amd64,    mode: mini}
-                    - {os: macos,   arch: amd64}
-                    - {os: macos,   arch: amd64,    mode: mini}
-                    - {os: macos,   arch: arm64}
-                    - {os: macos,   arch: arm64,    mode: mini}
+                    - {os: freebsd, arch: amd64,    nanbox: true}
                     - {os: macos,   arch: amd64,    nanbox: true}
                     - {os: macos,   arch: arm64,    nanbox: true}
-                    - {os: windows, arch: amd64}
-                    - {os: windows, arch: amd64,    mode: mini}
-                    - {os: windows, arch: arm64}
-                    - {os: windows, arch: arm64,    mode: mini}
-                    - {os: web,     arch: js,       mode: mini}
+                    - {os: windows, arch: amd64,    nanbox: true}
+                    - {os: windows, arch: arm64,    nanbox: true}
 
         defaults:
             run:
