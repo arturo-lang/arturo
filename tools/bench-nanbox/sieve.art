@@ -1,0 +1,8 @@
+n: 300000  flags: array.of: n + 1 true  c: 0
+loop 2..n 'i [
+    if flags\[i] [
+        c: c + 1  j: i * i
+        while [j =< n][flags\[j]: false  j: j + i]
+    ]
+]
+print c

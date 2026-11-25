@@ -1,0 +1,3 @@
+s: ""  loop 1..25000 'k [s: s ++ to :string k]
+words: split.every: 7 s
+print [size s size words size join.with: "-" words]
