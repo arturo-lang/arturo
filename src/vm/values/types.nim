@@ -430,10 +430,12 @@ when sizeof(ValueObj) > 64:
 # Flags
 
 template readonly*(val: Value): bool = IsReadOnly in val.flags
-template `readonly=`*(val: Value, newVal: bool) = val.flags[IsReadOnly] = newVal
+template `readonly=`*(val: Value, newVal: bool) =
+    var fl = val.flags; fl[IsReadOnly] = newVal; val.flags = fl
 
 template dynamic*(val: Value): bool = IsDynamic in val.flags
-template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
+template `dynamic=`*(val: Value, newVal: bool) =
+    var fl = val.flags; fl[IsDynamic] = newVal; val.flags = fl
 
 template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
 template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
