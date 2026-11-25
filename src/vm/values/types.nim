@@ -288,7 +288,7 @@ type
             senders*     : Deque[tuple[v: Value, f: Future[void]]]  # parked while full
             receivers*   : Deque[Future[Value]]                # parked while empty
 
-    Value* {.final,acyclic.} = ref object
+    ValueRef* {.final,acyclic.} = ref object
         info*   : ValueInfo
 
         ln*     : uint32
@@ -390,7 +390,9 @@ type
                 when not defined(WEB):
                     chn*: VChannel
 
-    ValueObj = typeof(Value()[])
+    ValueObj* = typeof(ValueRef()[])
+
+    Value* = ValueRef
 
 #=======================================
 # Constants

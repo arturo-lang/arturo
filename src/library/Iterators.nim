@@ -138,14 +138,14 @@ template iterateRangeWithLiteral(
         do:
             when cap:
                 captured =
-                    if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                    if likely(numeric): ValueRef(kind: Integer, iKind: NormalInteger, i: jr)
                     else: newChar(char(jr))
 
                 jr += step
             
                 setIterSym(iterLitId, captured)
             else:
-                setIterSym(iterLitId, (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                setIterSym(iterLitId, (if likely(numeric): ValueRef(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
                 jr += step
 
             execUnscoped(preevaled)
@@ -227,7 +227,7 @@ template iterateRangeWithParams(
                 var cnt = 0
                 while k < indx+loopStep:
                     captured[cnt] = 
-                        if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr)
+                        if likely(numeric): ValueRef(kind: Integer, iKind: NormalInteger, i: jr)
                         else: newChar(char(jr))
                     jr += step
                     k += 1
@@ -235,7 +235,7 @@ template iterateRangeWithParams(
             
             var ip = 0
             if idx:
-                setIterSym(iterPrmIds[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
+                setIterSym(iterPrmIds[ip], ValueRef(kind: Integer, iKind: NormalInteger, i: run))
                 inc ip
 
             when rll:
@@ -250,7 +250,7 @@ template iterateRangeWithParams(
                         inc ip
                 else:
                     for i in indx..indx+loopStep-1:     
-                        setIterSym(iterPrmIds[ip], (if likely(numeric): Value(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
+                        setIterSym(iterPrmIds[ip], (if likely(numeric): ValueRef(kind: Integer, iKind: NormalInteger, i: jr) else: newChar(char(jr))))
                         jr += step
                         inc ip
 
@@ -303,7 +303,7 @@ template iterateBlockWithParams(
             
             var ip = 0
             if idx:
-                setIterSym(iterPrmIds[ip], Value(kind: Integer, iKind: NormalInteger, i: run))
+                setIterSym(iterPrmIds[ip], ValueRef(kind: Integer, iKind: NormalInteger, i: run))
                 inc ip
 
             when rll:
