@@ -30,7 +30,7 @@ jobs:
                 mode: noui
                 src: exp-pbn-base
 
-            - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/arturo-base"
+            - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/base"
 
             - name: Build pbi, no small-Integer cache (exp-pbi)
               uses: arturo-lang/setup-arturo@v2
@@ -59,12 +59,15 @@ jobs:
             - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/pbi+cache"
 
             - name: Benchmark
+              if: false
               run: |
                 echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1)"
-                mv "$HOME/bins/arturo-base" "$HOME/bins/base"
                 RUNNER="sudo nice -n -20 taskset -c 1" python3 tools/exp-pbi/run.py "$HOME/bins/base" "$HOME/bins/pbi" "$HOME/bins/pbi+cache" --reps 9 | tee -a "$GITHUB_STEP_SUMMARY"
 
             - name: Instruction counts
               run: |
                 sudo apt-get install -y valgrind > /dev/null
                 tools/exp-pbi/icount.sh "$HOME/bins/base" "$HOME/bins/pbi" "$HOME/bins/pbi+cache" | tee -a "$GITHUB_STEP_SUMMARY"
+
+            - name: Profile
+              run: tools/exp-pbi/profile.sh "$HOME/bins/base" "$HOME/bins/pbi" "$HOME/bins/pbi+cache"
