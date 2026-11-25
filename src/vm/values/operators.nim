@@ -226,11 +226,14 @@ template normalIntegerAdd*(x, y: int): untyped =
 template normalIntegerAddI*(x: var Value, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(addIntWithOverflowI(x.i, y, x.i)):
+    var inPlaceRes: int
+    if unlikely(addIntWithOverflow(x.i, y, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(y))
         else:
             Error_IntegerOperationOverflow("add", Dumper(x), Dumper(newInteger(y)))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerInc*(x: int): untyped =
     ## increment a normal Integer value by 1, checking for overflow
@@ -248,11 +251,14 @@ template normalIntegerInc*(x: int): untyped =
 template normalIntegerIncI*(x: var Value): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and set result in-place
-    if unlikely(addIntWithOverflowI(x.i, 1, x.i)):
+    var inPlaceRes: int
+    if unlikely(addIntWithOverflow(x.i, 1, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(1))
         else:
             Error_IntegerSingleOperationOverflow("inc", Dumper(x))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerSub*(x, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
@@ -270,11 +276,14 @@ template normalIntegerSub*(x, y: int): untyped =
 template normalIntegerSubI*(x: var Value, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(subIntWithOverflowI(x.i, y, x.i)):
+    var inPlaceRes: int
+    if unlikely(subIntWithOverflow(x.i, y, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(y))
         else:
             Error_IntegerOperationOverflow("sub", Dumper(x), Dumper(newInteger(y)))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerDec*(x: int): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
@@ -292,11 +301,14 @@ template normalIntegerDec*(x: int): untyped =
 template normalIntegerDecI*(x: var Value): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
     ## and set result in-place
-    if unlikely(subIntWithOverflowI(x.i, 1, x.i)):
+    var inPlaceRes: int
+    if unlikely(subIntWithOverflow(x.i, 1, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(1))
         else:
             Error_IntegerSingleOperationOverflow("dec", Dumper(x))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerMul*(x, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
@@ -314,11 +326,14 @@ template normalIntegerMul*(x, y: int): untyped =
 template normalIntegerMulI*(x: var Value, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(mulIntWithOverflowI(x.i, y, x.i)):
+    var inPlaceRes: int
+    if unlikely(mulIntWithOverflow(x.i, y, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) * toBig(y))
         else:
             Error_IntegerOperationOverflow("mul", Dumper(x), Dumper(newInteger(y)))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerNeg*(x: int): untyped =
     ## negate a normal Integer value, checking for overflow
@@ -336,11 +351,14 @@ template normalIntegerNeg*(x: int): untyped =
 template normalIntegerNegI*(x: var Value): untyped =
     ## negate a normal Integer value, checking for overflow
     ## and set result in-place
-    if unlikely(mulIntWithOverflowI(x.i, -1, x.i)):
+    var inPlaceRes: int
+    if unlikely(mulIntWithOverflow(x.i, -1, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) * toBig(-1))
         else:
             Error_IntegerSingleOperationOverflow("neg", Dumper(x))
+    else:
+        x.i = inPlaceRes
 
 proc normalIntegerDivEdge(x, y: int): Value {.noinline.} =
     ## divide by 0 or -1 (the latter overflows,
@@ -426,13 +444,16 @@ template normalIntegerPowI*(x: var Value, y: int): untyped =
     ## get the power of two normal Integer values, checking for overflow
     ## and set result in-place
     if likely(y >= 0):
-        if unlikely(powIntWithOverflowI(x.i, y, x.i)):
+        var inPlaceRes: int
+        if unlikely(powIntWithOverflow(x.i, y, inPlaceRes)):
             when defined(GMP):
                 x = newInteger(pow(x.i, culong(y)))
             elif defined(WEB):
                 x = newInteger(big(x.i) ** big(y))  
             else:
                 Error_IntegerOperationOverflow("pow", Dumper(x), Dumper(newInteger(y)))
+        else:
+            x.i = inPlaceRes
     else:
         x = newFloating(pow(float(x.i), float(y)))
 
