@@ -596,6 +596,10 @@ when defined(NANBOX):
     proc tpKind*(v: NanBoxedValue): TypeKind {.nbInline.} =
         if isRef(v): heapObj(v).tpKind else: BuiltinType
 
+    proc tid*(v: NanBoxedValue): string =
+        ## (a built-in Type has no name of its own: "", as when reading it from a ValueRef)
+        if isRef(v): heapObj(v).tid else: ""
+
     proc c*(v: NanBoxedValue): Rune {.nbInline.} =
         if isRef(v): heapObj(v).c
         else: Rune(cast[int32](uint32(v.bits and 0xFFFF_FFFF'u64)))
@@ -647,7 +651,7 @@ when defined(NANBOX):
             result.add quote do:
                 template `name`(v: NanBoxedValue): untyped = heapObj(v).`n`
 
-    refFields(bi, z, rat, version, tid, s, sid, p, m, rx, u, q, err, errKind,
+    refFields(bi, z, rat, version, s, sid, p, m, rx, u, q, err, errKind,
               l, e, eobj, n, a, data, cachedTrans, singleton, rng, d, proto, o, magic,
               sto, funcType, methType, dbKind, trans, tsk, evt)
     when defined(SQLITE): refFields(sqlitedb)
