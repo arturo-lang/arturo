@@ -1,5 +1,7 @@
 # PocketBignum
 
+[![CI](https://github.com/pocket-libs/pocket-bignum/actions/workflows/ci.yml/badge.svg)](https://github.com/pocket-libs/pocket-bignum/actions/workflows/ci.yml)
+
 Small, fast, portable arbitrary-precision arithmetic in a single C99 header:
 integers, rationals and correctly rounded binary floats. Exposes the subset of
 GMP + MPFR that [Arturo](https://arturo-lang.io) uses, with drop-in `gmp.h` /
@@ -17,16 +19,6 @@ As a GMP/MPFR replacement, put `compat/` on the include path; `<gmp.h>` and
 struct layouts and field names (`__mpz_struct`, `__mpq_struct`, `__mpfr_struct`).
 
 Options: `PBN_STATIC`, `PBN_LIMB_BITS=32|64`, `PBN_PORTABLE` (no intrinsics / `__int128`), `PBN_ABORT(msg)`.
-
-## Arturo integration (not applied, Arturo untouched)
-
-`tools/check_arturo_surface.sh [arturo-dir]` (or `make arturo-check`) extracts all
-118 GMP/MPFR identifiers used by `src/helpers/bignums.nim` + `src/vm/env.nim` and
-compiles a program referencing each through the compat headers.
-
-Switching Arturo over would mean, in `src/extras/gmp.nim`, replacing
-`{.passL: "-lmpfr -lgmp".}` with `{.compile: "<path>/pocketbignum.c".}` and
-`{.passC: "-I<path>/compat".}`. Nothing else in the wrappers needs to change.
 
 ## Scope
 
@@ -48,28 +40,47 @@ make test                  # everything below
 make test64 test32 testportable   # mpz fuzz vs GMP (64-bit limbs, 32-bit limbs, pure C)
 make testqf                # mpq fuzz vs GMP + mpfr fuzz vs MPFR, same three builds
 make testcompat            # program written against <gmp.h> names
+make testthresholds        # fuzz with tiny thresholds: Karatsuba, Toom-3 & divide-and-conquer
+                           # radix conversion on almost every operation
 make bench                 # timings vs GMP / MPFR
+make bench-ruby            # timings vs Ruby's Integer (needs ruby)
+make bench-small           # small numbers (1-3 limbs), the way Arturo uses them
 ```
 
 Fuzzers run under ASan + UBSan and compare every result, ternary value and aliasing
 variant against GMP 6.3 / MPFR 4.2.2 (needed only for testing: `GMP=/prefix`).
 
-## Performance (rough, vs GMP 6.3 / MPFR 4.2.2, x86-64)
+## Performance (vs GMP 6.3 / MPFR 4.2.2)
 
-| | ratio (pbn / reference) |
-|---|---|
-| mpz 1-limb add/mul | ~0.9× |
-| mpz mul 2–512 limbs | 1.2–2.5× (GMP uses hand-written asm) |
-| mpz gcd, division, powm | 1–2.5× |
-| mpq small (1-limb parts) add/mul/div/cmp | 0.9–1.2× |
-| mpq ~2-limb parts | 2–2.5× |
-| mpfr 53-bit add/sub/mul/cmp/get_d/set_d | 0.3–1.0× (faster or equal) |
-| mpfr 53-bit div, set_str, get_str | 1–2× |
-| mpfr pow / pow_z | 2–3× |
+Ratio = PocketBignum's time / GMP's or MPFR's (lower is better), medians of 5 runs
+on CI (Linux, 64-bit limbs; amd64: AMD EPYC, arm64: Neoverse-N2).
+
+| | amd64 | arm64 |
+|---|---|---|
+| mpz add, mul, sqr, sqrt (1–2 limbs) | 0.8–1.1× | 0.4–1.0× |
+| mpz mul, sqr (4–64 limbs) | 1.3–1.7× | 0.9–1.5× |
+| mpz mul, sqr (128–4096 limbs) | 1.5–2.1× | 1.5–2.2× |
+| mpz division (2n by n limbs) | 0.9–1.6× | 1.1–1.6× |
+| mpz gcd | 0.6× (1 limb) – 1.8× | 1.0–2.7× |
+| mpz powm, prime_p | 1.1–1.9× | 1.0–1.3× |
+| mpz fac_ui | 1.1–3.2× | 0.7–2.8× |
+| mpz get_str, set_str (base 10) | 0.9–1.9× | 1.1–1.9× |
+| mpq (small & ~120-bit parts) add, mul, div, cmp | 0.8–1.1× | 0.4–1.2× |
+| mpq get_d | 2.0–2.1× | 1.3–1.5× |
+| mpfr 53-bit add, sub, mul, cmp, set_d, get_d, get_str, set_str | 0.4–1.2× | 0.6–1.4× |
+| mpfr 53-bit div | 1.1× | 1.1× |
+| mpfr 256-bit add, sub | 2.9–4.2× | 2.0–3.6× |
+| mpfr 256-bit mul, div | 1.2–1.4× | 1.1× |
+| mpfr pow, pow_z | 1.8–2.6× | 1.7–2.3× |
+| **all 99 benchmarks (geometric mean)** | **1.23×** | **1.19×** |
+
+`make bench` runs the same benchmarks locally.
 
 ## Known gaps / roadmap
 
 - `mpfr_pow`: correct rounding via Ziv + atanh/Taylor series; needs double-limb kernels to reach MPFR speed
-- Toom-3 multiplication, divide-and-conquer division & radix conversion for very large numbers
+- Multi-limb float add/sub: no same-precision fast path yet
 - Errors (division by zero, NaN to integer) call `PBN_ABORT` instead of raising SIGFPE
 - Not implemented (unused by Arturo): `mpf_*`, `mpn_*`, random numbers, `mpz_import/export`, I/O streams, other MPFR transcendentals
+
+See also the [open issues](https://github.com/pocket-libs/pocket-bignum/issues).
