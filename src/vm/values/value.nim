@@ -60,30 +60,35 @@ const
 # Fixed Values
 #=======================================
 
+when defined(GMP) and not defined(WEB):
+    template intConst(x: int): Value = Value(kind: Integer, bint: toPbi(x))
+else:
+    template intConst(x: int): Value = Value(kind: Integer, iKind: NormalInteger, i: x)
+
 template makeConst(v: Value): untyped =
     var res = v
     res.readOnly = true
     res
 
 let
-    I0*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 0)      ## constant 0
-    I1*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 1)      ## constant 1
-    I2*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 2)      ## constant 2
-    I3*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 3)      ## constant 3
-    I4*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 4)      ## constant 4
-    I5*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 5)      ## constant 5
-    I6*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 6)      ## constant 6
-    I7*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 7)      ## constant 7
-    I8*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 8)      ## constant 8
-    I9*             = makeConst Value(kind: Integer, iKind: NormalInteger, i: 9)      ## constant 9
-    I10*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 10)     ## constant 10
-    I11*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 11)     ## constant 11
-    I12*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 12)     ## constant 12
-    I13*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 13)     ## constant 13
-    I14*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 14)     ## constant 14
-    I15*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: 15)     ## constant 15
+    I0*             = makeConst intConst(0)      ## constant 0
+    I1*             = makeConst intConst(1)      ## constant 1
+    I2*             = makeConst intConst(2)      ## constant 2
+    I3*             = makeConst intConst(3)      ## constant 3
+    I4*             = makeConst intConst(4)      ## constant 4
+    I5*             = makeConst intConst(5)      ## constant 5
+    I6*             = makeConst intConst(6)      ## constant 6
+    I7*             = makeConst intConst(7)      ## constant 7
+    I8*             = makeConst intConst(8)      ## constant 8
+    I9*             = makeConst intConst(9)      ## constant 9
+    I10*            = makeConst intConst(10)     ## constant 10
+    I11*            = makeConst intConst(11)     ## constant 11
+    I12*            = makeConst intConst(12)     ## constant 12
+    I13*            = makeConst intConst(13)     ## constant 13
+    I14*            = makeConst intConst(14)     ## constant 14
+    I15*            = makeConst intConst(15)     ## constant 15
 
-    I1M*            = makeConst Value(kind: Integer, iKind: NormalInteger, i: -1)     ## constant -1
+    I1M*            = makeConst intConst(-1)     ## constant -1
 
     F0*             = makeConst Value(kind: Floating, f: 0.0)                         ## constant 0.0
     F1*             = makeConst Value(kind: Floating, f: 1.0)                         ## constant 1.0
@@ -199,18 +204,32 @@ when defined(WEB):
         else:
             result = Value(kind: Integer, iKind: BigInteger, bi: bi)
 
-when defined(GMP):
-    proc newInteger*(bi: Int): Value {.inline.} =
-        # results that fit in a normal Integer
-        # shouldn't remain "big"
-        if bi.fitsSignedInt():
-            result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
-        else:
-            result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+when defined(GMP) and not defined(WEB):
+    # EXPERIMENTAL: Integers as PocketBignum's small-or-big integers
+    proc newInteger*(n: sink Pbi): Value {.inline.} =
+        ## create Integer value from a small-or-big integer
+        Value(kind: Integer, bint: n)
 
-func newInteger*(i: int): Value {.inline.} =
-    ## create Integer value from int
-    result = Value(kind: Integer, iKind: NormalInteger, i: i)
+    proc newInteger*(bi: Int): Value {.inline.} =
+        # (results that fit in a normal Integer come back small)
+        Value(kind: Integer, bint: toPbi(bi))
+
+    func newInteger*(i: int): Value {.inline.} =
+        ## create Integer value from int
+        Value(kind: Integer, bint: toPbi(i))
+else:
+    when defined(GMP):
+        proc newInteger*(bi: Int): Value {.inline.} =
+            # results that fit in a normal Integer
+            # shouldn't remain "big"
+            if bi.fitsSignedInt():
+                result = Value(kind: Integer, iKind: NormalInteger, i: bi.getSignedInt())
+            else:
+                result = Value(kind: Integer, iKind: BigInteger, bi: bi)
+
+    func newInteger*(i: int): Value {.inline.} =
+        ## create Integer value from int
+        result = Value(kind: Integer, iKind: NormalInteger, i: i)
 
 func newInteger*(i: int64): Value {.inline.} =
     ## create Integer value from int64
@@ -233,7 +252,7 @@ func newBigInteger*(i: int): Value {.inline.} =
     when defined(WEB):
         result = Value(kind: Integer, iKind: BigInteger, bi: big(i))
     elif defined(GMP):
-        result = Value(kind: Integer, iKind: BigInteger, bi: newInt(i))
+        result = newInteger(i)     # EXPERIMENTAL: there's no "big" form of a small value anymore
 
 func newFloating*(f: float): Value {.inline.} =
     ## create Floating value from float

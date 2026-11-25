@@ -26,6 +26,11 @@ when defined(WEB):
 when defined(GMP):
     import helpers/bignums
 
+when defined(GMP) and not defined(WEB):
+    # EXPERIMENTAL: Integers as PocketBignum's small-or-big integers
+    import helpers/pbints
+    export pbints
+
 import vm/opcodes
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 import vm/values/flags
@@ -301,6 +306,9 @@ type
                Logical:
                    discard
             of Integer:
+              when defined(GMP) and not defined(WEB):
+                bint*: Pbi      # small (int64) or big - the library promotes & demotes
+              else:
                 case iKind*: IntegerKind:
                     # TODO(VM/values/types) Wrap Normal and BigInteger in one type
                     #  Perhaps, we could do that via class inheritance, with the two types inheriting a new `Integer` type, provided that it's properly benchmarked first.
@@ -410,6 +418,21 @@ var
 #=======================================
 # Compile-Time Warnings
 #=======================================
+
+when defined(GMP) and not defined(WEB):
+    # EXPERIMENTAL: the old Integer fields, on top of the new storage
+    # (`.bi` is a copy: in-place operations have to assign the result)
+    template iKind*(v: Value): IntegerKind =
+        (if v.bint.isSmall: NormalInteger else: BigInteger)
+
+    template i*(v: Value): int =
+        v.bint.s
+
+    template `i=`*(v: Value, x: int) =
+        v.bint = toPbi(x)
+
+    proc bi*(v: Value): Int {.inline.} =
+        toInt(v.bint)
 
 when sizeof(ValueObj) > 64:
     type

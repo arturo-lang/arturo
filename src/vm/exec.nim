@@ -201,7 +201,8 @@ template callByIndex(idx: int):untyped =
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, stack.pop())
 
-template performConditionalJump(symb: untyped, short: static bool=false): untyped =
+template performConditionalJump(symb: untyped, short: static bool=false): untyped {.dirty.} =
+    # (dirty: `i` is the caller's instruction index, not Value's `.i`)
     when short:
         let x = stack.pop()
         let y = stack.pop()
