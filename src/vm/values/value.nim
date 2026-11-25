@@ -241,11 +241,14 @@ func newBigInteger*(i: int): Value {.inline.} =
 
 func newFloating*(f: float): Value {.inline.} =
     ## create Floating value from float
-    ValueRef(kind: Floating, f: f)
+    when defined(NANBOX):
+        inlineFloating(f)
+    else:
+        ValueRef(kind: Floating, f: f)
 
 func newFloating*(f: int): Value {.inline.} =
     ## create Floating value from int
-    ValueRef(kind: Floating, f: float(f))
+    newFloating(float(f))
 
 proc newFloating*(f: string): Value {.inline.} =
     ## create Floating value from string

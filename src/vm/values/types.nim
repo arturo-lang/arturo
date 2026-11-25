@@ -425,7 +425,7 @@ type
 #   -----------------|---------------------|------------------------------
 #   0x0000           | pointer to ValueRef | the address (0 = nil)
 #   0x0001           | -                   | (unused)
-#   0x0002 .. 0xFFF2 | -                   | (unused, for now)
+#   0x0002 .. 0xFFF2 | Floating            | its bits + 2^49 (with the top 16)
 #   0xFFF3 .. 0xFFFE | -                   | (unused)
 #   0xFFFF           | Integer             | its value: 48 bits, signed
 #
@@ -436,6 +436,12 @@ type
 #   And all-zero is nil - which is what the memory we get from Nim
 #   (new sequence items, fields, results) starts as.
 #
+# - A Floating is held with 2^49 added to its bits - so that 0.0 is not
+#   all-zero (that's nil), and that no double ends up in 0x0000 or 0x0001.
+#   Doubles go up to 0xFFF0... (-inf), so they end up between 0x0002...
+#   and 0xFFF2... - and every NaN is held as the same one, so that none of
+#   them gets in the way of the other kinds.
+#
 # - An Integer that doesn't fit in 48 bits (beyond ±140737488355327) is
 #   a regular ValueRef on the heap. Values are always constructed through
 #   newInteger, so the inline form is used whenever possible.
@@ -444,6 +450,7 @@ when defined(NANBOX):
     const
         NbPayload       = 0x0000_FFFF_FFFF_FFFF'u64
         NbIntegerTag    = 0xFFFF_0000_0000_0000'u64
+        NbFloatingShift = 1'u64 shl 49
         NbIntegerMin*   = -(1 shl 47)
         NbIntegerMax*   = (1 shl 47) - 1
 
@@ -494,14 +501,22 @@ when defined(NANBOX):
 
     template isInlineInteger*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFF
 
+    template isInlineFloating*(v: NanBoxedValue): bool = nbTop(v) >= 0x0002 and nbTop(v) <= 0xFFF2
+
     func inlineInteger*(i: int): NanBoxedValue {.inline.} =
         NanBoxedValue(bits: NbIntegerTag or (cast[uint64](i) and NbPayload))
+
+    func inlineFloating*(f: float): NanBoxedValue {.inline.} =
+        var b = cast[uint64](f)
+        if f != f: b = 0x7FF8_0000_0000_0000'u64       # one NaN for all
+        NanBoxedValue(bits: b + NbFloatingShift)
 
     # The fields of a ValueRef, on a Value
 
     proc kind*(v: NanBoxedValue): ValueKind {.inline.} =
         if isRef(v): heapObj(v).kind
-        else: Integer
+        elif isInlineInteger(v): Integer
+        else: Floating
 
     proc iKind*(v: NanBoxedValue): IntegerKind {.inline.} =
         if isRef(v): heapObj(v).iKind else: NormalInteger
@@ -514,6 +529,14 @@ when defined(NANBOX):
         if isRef(v): heapObj(v).i = x
         elif x >= NbIntegerMin and x <= NbIntegerMax: v = inlineInteger(x)
         else: v = ValueRef(kind: Integer, iKind: NormalInteger, i: x)
+
+    proc f*(v: NanBoxedValue): float {.inline.} =
+        if isRef(v): heapObj(v).f
+        else: cast[float](v.bits - NbFloatingShift)
+
+    proc `f=`*(v: var NanBoxedValue, x: float) {.inline.} =
+        if isRef(v): heapObj(v).f = x
+        else: v = inlineFloating(x)
 
     proc flags*(v: NanBoxedValue): ValueFlags {.inline.} =
         if isRef(v): heapObj(v).flags else: {}
@@ -543,7 +566,7 @@ when defined(NANBOX):
             result.add quote do:
                 template `name`(v: NanBoxedValue): untyped = heapObj(v).`n`
 
-    refFields(bi, f, z, rat, version, t, tpKind, tid, c, s, sid, p, m, rx, u, q, err, errKind,
+    refFields(bi, z, rat, version, t, tpKind, tid, c, s, sid, p, m, rx, u, q, err, errKind,
               l, e, eobj, n, a, data, cachedTrans, singleton, rng, d, proto, o, magic,
               sto, funcType, methType, dbKind, trans, tsk, evt)
     when defined(SQLITE): refFields(sqlitedb)
