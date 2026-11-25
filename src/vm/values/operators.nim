@@ -68,6 +68,7 @@ macro generateOperationA*(name: static[string], op: untyped, inplaceOp: untyped)
     result = quote do:
         if xKind in {Literal,PathLiteral}: 
             ensureInPlaceAny()
+            unshare(InPlaced)
             if normalIntegerOperation(inPlace=true):
                 `normalIntegerI`(InPlaced)
             else:
@@ -86,6 +87,7 @@ macro generateOperationB*(name: static[string], op: untyped, inplaceOp: untyped)
     result = quote do:
         if xKind in {Literal,PathLiteral}: 
             ensureInPlaceAny()
+            unshare(InPlaced)
             if normalIntegerOperation(inPlace=true):
                 `normalIntegerI`(InPlaced, y.i)
             else:
@@ -215,7 +217,9 @@ template normalIntegerAdd*(x, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and return result
     when PbiIntegers:
-        newInteger(toPbi(x) + toPbi(y))
+        var res: int
+        if likely(not addIntWithOverflow(x, y, res)): newInteger(res)
+        else: newInteger(toPbi(x) + toPbi(y))
     else:
         var res: int
         if unlikely(addIntWithOverflow(x, y, res)):
@@ -243,7 +247,9 @@ template normalIntegerInc*(x: int): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and return result
     when PbiIntegers:
-        newInteger(toPbi(x) + toPbi(1))
+        var res: int
+        if likely(not addIntWithOverflow(x, 1, res)): newInteger(res)
+        else: newInteger(toPbi(x) + toPbi(1))
     else:
         var res: int
         if unlikely(addIntWithOverflow(x, 1, res)):
@@ -591,6 +597,12 @@ template arithmeticFastpathB*(slowOp, intFastFn: untyped): untyped =
         else:
             slowOp()
 
+template unshare*(x: var Value): untyped =
+    ## EXPERIMENTAL: a cached (shared) small Integer is never modified
+    ## in place - it's replaced by a copy of its own first
+    when PbiIntegers:
+        if unlikely(x.shared): x = copyValue(x)
+
 template objectOperationOrNothing*(operation: string, mgkMeth: MagicMethod, oneparam: static bool = false, inplace: static bool = false): untyped =
     if x.kind == Object and x.magic.fetch(mgkMeth):
         when inplace:
@@ -667,6 +679,7 @@ proc `+=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer,
@@ -732,6 +745,7 @@ proc incI*(x: var Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerIncI(x)
@@ -789,6 +803,7 @@ proc `-=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerSubI(x, y.i)
@@ -846,6 +861,7 @@ proc decI*(x: var Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerDecI(x)
@@ -918,6 +934,7 @@ proc `*=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
     
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerMulI(x, y.i)
@@ -990,6 +1007,7 @@ proc negI*(x: var Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerNegI(x)
@@ -1046,6 +1064,7 @@ proc `/=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerDivI(x, y.i)
@@ -1118,6 +1137,7 @@ proc `//=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
     
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerFDivI(x, y.i)
@@ -1181,6 +1201,7 @@ proc `%=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerModI(x, y.i)
@@ -1253,6 +1274,7 @@ proc `/%=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
     
+    unshare(x)
     x = x /% y
 
 proc `^`*(x: Value, y: Value): Value =
@@ -1292,6 +1314,7 @@ proc `^=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutation operation
     
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerPowI(x, y.i)
@@ -1343,6 +1366,7 @@ proc `&&=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutation operation
     
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerAndI(x, y.i)
@@ -1380,6 +1404,7 @@ proc `||=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutation operation
     
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerOrI(x, y.i)
@@ -1417,6 +1442,7 @@ proc `^^=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutation operation
     
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerXorI(x, y.i)
@@ -1448,6 +1474,7 @@ proc `!!=`*(x: var Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    unshare(x)
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerNotI(x)
@@ -1472,6 +1499,7 @@ proc `<<=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutation operation
 
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerShlI(x, y.i)
@@ -1495,6 +1523,7 @@ proc `>>=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutation operation
 
+    unshare(x)
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerShrI(x, y.i)
