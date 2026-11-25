@@ -426,7 +426,10 @@ type
 #   0x0000           | pointer to ValueRef | the address (0 = nil)
 #   0x0001           | -                   | (unused)
 #   0x0002 .. 0xFFF2 | Floating            | its bits + 2^49 (with the top 16)
-#   0xFFF3 .. 0xFFFE | -                   | (unused)
+#   0xFFF3 .. 0xFFFC | -                   | (unused)
+#   0xFFFD           | Null, Any, Logical  | 0: null, 1: any, 2: false,
+#                    |                     | 3: true, 4: maybe
+#   0xFFFE           | -                   | (unused)
 #   0xFFFF           | Integer             | its value: 48 bits, signed
 #
 # Why so:
@@ -442,6 +445,9 @@ type
 #   and 0xFFF2... - and every NaN is held as the same one, so that none of
 #   them gets in the way of the other kinds.
 #
+# - Null, Any & the three Logicals are just a number each: comparing them
+#   is comparing the bits.
+#
 # - An Integer that doesn't fit in 48 bits (beyond ±140737488355327) is
 #   a regular ValueRef on the heap. Values are always constructed through
 #   newInteger, so the inline form is used whenever possible.
@@ -451,6 +457,7 @@ when defined(NANBOX):
         NbPayload       = 0x0000_FFFF_FFFF_FFFF'u64
         NbIntegerTag    = 0xFFFF_0000_0000_0000'u64
         NbFloatingShift = 1'u64 shl 49
+        NbSingletonTag  = 0xFFFD_0000_0000_0000'u64
         NbIntegerMin*   = -(1 shl 47)
         NbIntegerMax*   = (1 shl 47) - 1
 
@@ -503,6 +510,19 @@ when defined(NANBOX):
 
     template isInlineFloating*(v: NanBoxedValue): bool = nbTop(v) >= 0x0002 and nbTop(v) <= 0xFFF2
 
+    template isSingleton*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFD
+
+    func inlineSingleton*(k: ValueKind, l: VLogical = False): NanBoxedValue {.inline.} =
+        NanBoxedValue(bits: NbSingletonTag or (
+            case k:
+                of Null: 0'u64
+                of Any: 1'u64
+                else:
+                    if l == False: 2'u64
+                    elif l == True: 3'u64
+                    else: 4'u64
+        ))
+
     func inlineInteger*(i: int): NanBoxedValue {.inline.} =
         NanBoxedValue(bits: NbIntegerTag or (cast[uint64](i) and NbPayload))
 
@@ -516,6 +536,11 @@ when defined(NANBOX):
     proc kind*(v: NanBoxedValue): ValueKind {.inline.} =
         if isRef(v): heapObj(v).kind
         elif isInlineInteger(v): Integer
+        elif isSingleton(v):
+            case v.bits and 0xFF:
+                of 0: Null
+                of 1: Any
+                else: Logical
         else: Floating
 
     proc iKind*(v: NanBoxedValue): IntegerKind {.inline.} =
@@ -539,7 +564,14 @@ when defined(NANBOX):
         else: v = inlineFloating(x)
 
     proc flags*(v: NanBoxedValue): ValueFlags {.inline.} =
-        if isRef(v): heapObj(v).flags else: {}
+        if isRef(v): heapObj(v).flags
+        elif isSingleton(v):
+            case v.bits and 0xFF:
+                of 2: ValueFlags(False)
+                of 3: ValueFlags(True)
+                of 4: ValueFlags(Maybe)
+                else: {}
+        else: {}
 
     proc `flags=`*(v: NanBoxedValue, x: ValueFlags) {.inline.} =
         if isRef(v): heapObj(v).flags = x

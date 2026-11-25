@@ -91,12 +91,12 @@ let
 
     F1M*            = makeConst ValueRef(kind: Floating, f: -1.0)                        ## constant -1.0
 
-    VTRUE*          = makeConst ValueRef(kind: Logical, flags: ValueFlags(True))         ## constant True
-    VFALSE*         = makeConst ValueRef(kind: Logical, flags: ValueFlags(False))        ## constant False
-    VMAYBE*         = makeConst ValueRef(kind: Logical, flags: ValueFlags(Maybe))        ## constant Maybe
+    VTRUE*          = makeConst (when defined(NANBOX): inlineSingleton(Logical, True) else: ValueRef(kind: Logical, flags: ValueFlags(True)))         ## constant True
+    VFALSE*         = makeConst (when defined(NANBOX): inlineSingleton(Logical, False) else: ValueRef(kind: Logical, flags: ValueFlags(False)))        ## constant False
+    VMAYBE*         = makeConst (when defined(NANBOX): inlineSingleton(Logical, Maybe) else: ValueRef(kind: Logical, flags: ValueFlags(Maybe)))        ## constant Maybe
 
-    VNULL*          = makeConst ValueRef(kind: Null)                                     ## constant Null
-    VANY*           = makeConst ValueRef(kind: Any)                                      ## constant Any
+    VNULL*          = makeConst (when defined(NANBOX): inlineSingleton(Null) else: ValueRef(kind: Null))                                     ## constant Null
+    VANY*           = makeConst (when defined(NANBOX): inlineSingleton(Any) else: ValueRef(kind: Any))                                      ## constant Any
 
     VEMPTYSTR*      = makeConst ValueRef(kind: String, s: "")                                    ## constant ""
     VEMPTYARR*      = makeConst ValueRef(kind: Block, a: @[], data: nil)                         ## constant []
