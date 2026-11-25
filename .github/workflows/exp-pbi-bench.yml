@@ -1,0 +1,50 @@
+# EXPERIMENTAL (throwaway): Arturo with Integers as PocketBignum's small-or-big `pbi`
+# vs the same Arturo + PocketBignum without it (branch exp-pbn-base), on `+`
+name: exp-pbi-bench
+
+on:
+    push:
+        branches: [exp-pbi]
+    workflow_dispatch:
+
+jobs:
+    bench:
+        name: bench (${{ matrix.name }})
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { name: linux-amd64, os: ubuntu-latest,    arch: amd64 }
+                    - { name: linux-arm64, os: ubuntu-24.04-arm, arch: arm64 }
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Build base (exp-pbn-base)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                mode: noui
+                src: exp-pbn-base
+
+            - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/arturo-base"
+
+            - name: Build pbi (exp-pbi)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: linux
+                arch: ${{ matrix.arch }}
+                mode: noui
+                src: ${{ github.sha }}
+
+            - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/arturo-pbi"
+
+            - name: Benchmark
+              run: |
+                echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1)"
+                RUNNER="sudo nice -n -20 taskset -c 1" python3 tools/exp-pbi/run.py "$HOME/bins/arturo-base" "$HOME/bins/arturo-pbi" 9 | tee -a "$GITHUB_STEP_SUMMARY"
