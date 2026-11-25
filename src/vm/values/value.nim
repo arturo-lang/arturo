@@ -60,43 +60,59 @@ const
 # Fixed Values
 #=======================================
 
+template integerConst(x: int): Value =
+    when defined(NANBOX): inlineInteger(x)
+    else: ValueRef(kind: Integer, iKind: NormalInteger, i: x)
+
+template floatingConst(x: float): Value =
+    when defined(NANBOX): inlineFloating(x)
+    else: ValueRef(kind: Floating, f: x)
+
+template logicalConst(l: VLogical): Value =
+    when defined(NANBOX): inlineSingleton(Logical, l)
+    else: ValueRef(kind: Logical, flags: ValueFlags(l))
+
+template singletonConst(k: ValueKind): Value =
+    when defined(NANBOX): inlineSingleton(k)
+    else: ValueRef(kind: k)
+
 template makeConst(v: Value): untyped =
     var res = v
     res.readOnly = true
     res
 
 let
-    I0*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 0)      ## constant 0
-    I1*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 1)      ## constant 1
-    I2*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 2)      ## constant 2
-    I3*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 3)      ## constant 3
-    I4*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 4)      ## constant 4
-    I5*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 5)      ## constant 5
-    I6*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 6)      ## constant 6
-    I7*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 7)      ## constant 7
-    I8*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 8)      ## constant 8
-    I9*             = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 9)      ## constant 9
-    I10*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 10)     ## constant 10
-    I11*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 11)     ## constant 11
-    I12*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 12)     ## constant 12
-    I13*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 13)     ## constant 13
-    I14*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 14)     ## constant 14
-    I15*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: 15)     ## constant 15
+    I0*             = makeConst integerConst(0)                                          ## constant 0
+    I1*             = makeConst integerConst(1)                                          ## constant 1
+    I2*             = makeConst integerConst(2)                                          ## constant 2
+    I3*             = makeConst integerConst(3)                                          ## constant 3
+    I4*             = makeConst integerConst(4)                                          ## constant 4
+    I5*             = makeConst integerConst(5)                                          ## constant 5
+    I6*             = makeConst integerConst(6)                                          ## constant 6
+    I7*             = makeConst integerConst(7)                                          ## constant 7
+    I8*             = makeConst integerConst(8)                                          ## constant 8
+    I9*             = makeConst integerConst(9)                                          ## constant 9
+    I10*            = makeConst integerConst(10)                                         ## constant 10
+    I11*            = makeConst integerConst(11)                                         ## constant 11
+    I12*            = makeConst integerConst(12)                                         ## constant 12
+    I13*            = makeConst integerConst(13)                                         ## constant 13
+    I14*            = makeConst integerConst(14)                                         ## constant 14
+    I15*            = makeConst integerConst(15)                                         ## constant 15
 
-    I1M*            = makeConst ValueRef(kind: Integer, iKind: NormalInteger, i: -1)     ## constant -1
+    I1M*            = makeConst integerConst(-1)                                         ## constant -1
 
-    F0*             = makeConst ValueRef(kind: Floating, f: 0.0)                         ## constant 0.0
-    F1*             = makeConst ValueRef(kind: Floating, f: 1.0)                         ## constant 1.0
-    F2*             = makeConst ValueRef(kind: Floating, f: 2.0)                         ## constant 2.0
+    F0*             = makeConst floatingConst(0.0)                                       ## constant 0.0
+    F1*             = makeConst floatingConst(1.0)                                       ## constant 1.0
+    F2*             = makeConst floatingConst(2.0)                                       ## constant 2.0
 
-    F1M*            = makeConst ValueRef(kind: Floating, f: -1.0)                        ## constant -1.0
+    F1M*            = makeConst floatingConst(-1.0)                                      ## constant -1.0
 
-    VTRUE*          = makeConst (when defined(NANBOX): inlineSingleton(Logical, True) else: ValueRef(kind: Logical, flags: ValueFlags(True)))         ## constant True
-    VFALSE*         = makeConst (when defined(NANBOX): inlineSingleton(Logical, False) else: ValueRef(kind: Logical, flags: ValueFlags(False)))        ## constant False
-    VMAYBE*         = makeConst (when defined(NANBOX): inlineSingleton(Logical, Maybe) else: ValueRef(kind: Logical, flags: ValueFlags(Maybe)))        ## constant Maybe
+    VTRUE*          = makeConst logicalConst(True)                                       ## constant True
+    VFALSE*         = makeConst logicalConst(False)                                      ## constant False
+    VMAYBE*         = makeConst logicalConst(Maybe)                                      ## constant Maybe
 
-    VNULL*          = makeConst (when defined(NANBOX): inlineSingleton(Null) else: ValueRef(kind: Null))                                     ## constant Null
-    VANY*           = makeConst (when defined(NANBOX): inlineSingleton(Any) else: ValueRef(kind: Any))                                      ## constant Any
+    VNULL*          = makeConst singletonConst(Null)                                     ## constant Null
+    VANY*           = makeConst singletonConst(Any)                                      ## constant Any
 
     VEMPTYSTR*      = makeConst ValueRef(kind: String, s: "")                                    ## constant ""
     VEMPTYARR*      = makeConst ValueRef(kind: Block, a: @[], data: nil)                         ## constant []
