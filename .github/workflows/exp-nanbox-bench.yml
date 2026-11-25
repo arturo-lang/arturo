@@ -26,7 +26,6 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: linux
                 arch: ${{ matrix.arch }}
-                mode: noui
                 src: ${{ github.sha }}
 
             - run: mkdir -p "$HOME/bins" && cp "$HOME/.arturo/bin/arturo" "$HOME/bins/boxed"
@@ -40,7 +39,6 @@ jobs:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: linux
                 arch: ${{ matrix.arch }}
-                mode: noui
                 src: ${{ github.sha }}
 
             - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/nanbox"
