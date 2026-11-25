@@ -76,9 +76,9 @@ template singletonConst(k: ValueKind): Value =
     when defined(NANBOX): inlineSingleton(k)
     else: ValueRef(kind: k)
 
-template typeConst(t: ValueKind): Value =
-    when defined(NANBOX): inlineType(t)
-    else: ValueRef(kind: Type, tpKind: BuiltinType, t: t)
+template typeConst(k: ValueKind): Value =
+    when defined(NANBOX): inlineType(k)
+    else: ValueRef(kind: Type, tpKind: BuiltinType, t: k)
 
 template makeConst(v: Value): untyped =
     var res = v
