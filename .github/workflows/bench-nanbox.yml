@@ -102,10 +102,10 @@ jobs:
                     echo "| $(basename "$f" .art) | $a | $b | $(echo "scale=3; $b / $a" | bc) |" | tee -a "$GITHUB_STEP_SUMMARY"
                 done
 
-            - name: Profile (blocks)
+            - name: Profile (sieve)
               run: |
                 for b in master-sym nanbox-sym; do
                     echo "=== $b"
-                    valgrind --tool=callgrind --callgrind-out-file="/tmp/cg.$b" "$HOME/bins/$b" tools/bench-nanbox/blocks.art > /dev/null 2>&1
+                    valgrind --tool=callgrind --callgrind-out-file="/tmp/cg.$b" "$HOME/bins/$b" tools/bench-nanbox/sieve.art > /dev/null 2>&1
                     callgrind_annotate --inclusive=no "/tmp/cg.$b" 2>/dev/null | grep -E '^ *[0-9,]+ ' | head -30
                 done
