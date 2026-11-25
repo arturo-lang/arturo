@@ -474,6 +474,10 @@ when defined(NANBOX):
         NbTypeTag       = 0xFFFB_0000_0000_0000'u64
         NbCharTag       = 0xFFFC_0000_0000_0000'u64
         NbSingletonTag  = 0xFFFD_0000_0000_0000'u64
+        NbNullBits*     = NbSingletonTag or 0
+        NbFalseBits*    = NbSingletonTag or 2
+        NbTrueBits*     = NbSingletonTag or 3
+        NbMaybeBits*    = NbSingletonTag or 4
         NbIntegerMin*   = -(1 shl 47)
         NbIntegerMax*   = (1 shl 47) - 1
 
@@ -694,7 +698,16 @@ template dynamic*(val: Value): bool = IsDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) =
     var fl = val.flags; fl[IsDynamic] = newVal; val.flags = fl
 
-template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
+when defined(NANBOX):
+    # (Logicals are held inline: no need to go through the flags)
+    proc b*(val: Value): VLogical {.nbInline.} =
+        case val.bits:
+            of NbTrueBits: True
+            of NbFalseBits: False
+            of NbMaybeBits: Maybe
+            else: VLogical(val.flags - NonLogicalF)
+else:
+    template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
 template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
 
 template makeAccessor(field, subfield: untyped) =

@@ -171,10 +171,23 @@ converter toOrderedTableRef*(valueDict: sink ValueDictObj): ValueDict =
 # Helpers
 #=======================================
 
-template isNull*(val: Value): bool  = val.kind == Null
-template isFalse*(val: Value): bool = IsFalse in val.flags
-template isMaybe*(val: Value): bool = IsMaybe in val.flags
-template isTrue*(val: Value): bool  = IsTrue in val.flags
+when defined(NANBOX):
+    template isNull*(val: Value): bool  = (let v {.cursor.} = val; v.bits == NbNullBits or (v.isRef and not v.isNil and heapObj(v).kind == Null))
+else:
+    template isNull*(val: Value): bool  = val.kind == Null
+when defined(NANBOX):
+    # (Logicals are held inline: checking one is comparing the bits)
+    template isFalse*(val: Value): bool = (let v {.cursor.} = val; v.bits == NbFalseBits or (v.isRef and not v.isNil and IsFalse in heapObj(v).flags))
+else:
+    template isFalse*(val: Value): bool = IsFalse in val.flags
+when defined(NANBOX):
+    template isMaybe*(val: Value): bool = (let v {.cursor.} = val; v.bits == NbMaybeBits or (v.isRef and not v.isNil and IsMaybe in heapObj(v).flags))
+else:
+    template isMaybe*(val: Value): bool = IsMaybe in val.flags
+when defined(NANBOX):
+    template isTrue*(val: Value): bool  = (let v {.cursor.} = val; v.bits == NbTrueBits or (v.isRef and not v.isNil and IsTrue in heapObj(v).flags))
+else:
+    template isTrue*(val: Value): bool  = IsTrue in val.flags
 
 func canBeInlined(v: Value): bool  =
     for item in v.a:
