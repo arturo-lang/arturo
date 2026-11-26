@@ -1,0 +1,17 @@
+; sieve of Eratosthenes over a block of logicals
+n: 1000000
+isPrime: array.of: n + 1 true
+set isPrime 0 false
+set isPrime 1 false
+i: 2
+while [(i * i) =< n][
+    if isPrime\[i] [
+        j: i * i
+        while [j =< n][
+            set isPrime j false
+            j: j + i
+        ]
+    ]
+    i: i + 1
+]
+print size select 0..n 'k -> isPrime\[k]

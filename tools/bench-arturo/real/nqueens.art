@@ -1,0 +1,17 @@
+; n-queens, counting solutions by backtracking (recursion, blocks)
+safe?: function [qs col][
+    row: size qs
+    loop.with:'r qs 'c [
+        if or? c = col (abs c - col) = row - r -> return false
+    ]
+    true
+]
+solve: function [qs n][
+    if n = size qs -> return 1
+    s: 0
+    loop 0..dec n 'col [
+        if safe? qs col -> s: s + solve qs ++ col n
+    ]
+    s
+]
+print solve [] 8

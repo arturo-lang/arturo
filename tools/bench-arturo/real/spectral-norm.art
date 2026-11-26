@@ -1,0 +1,32 @@
+; spectral norm (floating-point, nested loops, function calls)
+n: 100
+A: function [i j][
+    1.0 / to :floating ((i + j) * (i + j + 1) / 2) + i + 1
+]
+mulAv: function [v][
+    map 0..dec n 'i [
+        s: 0.0
+        loop 0..dec n 'j -> s: s + (A i j) * v\[j]
+        s
+    ]
+]
+mulAtv: function [v][
+    map 0..dec n 'i [
+        s: 0.0
+        loop 0..dec n 'j -> s: s + (A j i) * v\[j]
+        s
+    ]
+]
+u: map 1..n 'x -> 1.0
+v: []
+loop 1..10 'k [
+    v: mulAtv mulAv u
+    u: mulAtv mulAv v
+]
+vBv: 0.0
+vv: 0.0
+loop 0..dec n 'i [
+    vBv: vBv + u\[i] * v\[i]
+    vv: vv + v\[i] * v\[i]
+]
+print to :integer 1000000000 * sqrt vBv / vv

@@ -1,0 +1,15 @@
+; regular expressions over a generated log
+seed: 11
+codes: [200 301 404 500]
+lines: []
+loop 1..4000 'i [
+    seed: ((seed * 1103515245) + 12345) % 2147483648
+    ip: ~"10.|seed % 256|.|(seed / 256) % 256|.|i % 256|"
+    code: codes\[seed % 4]
+    'lines ++ ~"|ip| - GET /item/|i| HTTP/1.1 |code| user|seed % 97|@example.com"
+]
+logtext: join.with: "\n" lines
+errors: size match logtext {/ 5\d\d /}
+mails: size match logtext {/user\d+@example\.com/}
+ids: sum map match logtext {/item\/(\d+)/} 'm -> to :integer last split.by: "/" m
+print [errors mails ids]

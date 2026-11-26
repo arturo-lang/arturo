@@ -1,0 +1,26 @@
+; edit distance between pairs of strings (2-D dynamic programming)
+lev: function [a b][
+    prev: to :block 0..size b
+    loop.with:'i a 'ca [
+        curr: @[i + 1]
+        loop.with:'j b 'cb [
+            cost: (ca = cb) ? -> 0 -> 1
+            'curr ++ min @[(prev\[j+1]) + 1  (curr\[j]) + 1  (prev\[j]) + cost]
+        ]
+        prev: curr
+    ]
+    last prev
+]
+seed: 3
+gen: []
+loop 1..150 'i [
+    s: ""
+    loop 1..40 'k [
+        seed: ((seed * 1103515245) + 12345) % 2147483648
+        's ++ to :string to :char 97 + seed % 6
+    ]
+    'gen ++ s
+]
+total: 0
+loop 0..148 'i -> total: total + lev gen\[i] gen\[i+1]
+print total

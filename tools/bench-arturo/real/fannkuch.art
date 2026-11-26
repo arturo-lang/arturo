@@ -1,0 +1,19 @@
+; fannkuch-redux: permutations & in-place block reversals
+n: 8
+perm: to :block 0..dec n
+maxFlips: 0
+checksum: 0
+count: 0
+loop permutate perm 'p [
+    q: new p
+    flips: 0
+    while [q\0 <> 0][
+        k: q\0
+        q: (reverse first.n: k+1 q) ++ drop.times: k+1 q
+        flips: flips + 1
+    ]
+    if flips > maxFlips -> maxFlips: flips
+    checksum: checksum + (even? count) ? -> flips -> neg flips
+    count: count + 1
+]
+print [checksum maxFlips]

@@ -1,0 +1,7 @@
+; block operations: map, select, fold, append
+b: []
+loop 1..200000 'i -> 'b ++ i
+m: map b 'x -> x * 2
+s: select m 'x -> zero? x % 3
+f: fold s [a x] -> a + x
+print [size b size s f]

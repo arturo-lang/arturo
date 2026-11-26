@@ -1,0 +1,6 @@
+; integer arithmetic in a tight loop
+s: 0
+loop 1..3000000 'i [
+    s: s + (i * 3) % 7
+]
+print s

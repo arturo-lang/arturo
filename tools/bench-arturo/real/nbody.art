@@ -1,0 +1,63 @@
+; n-body simulation (floating-point arithmetic, blocks updated in place)
+pi: 3.141592653589793
+sm: 4 * pi * pi
+dpy: 365.24
+
+xs:  @[0.0 4.84143144246472090 8.34336671824457987 12.8943695621391310 15.3796971148509165]
+ys:  @[0.0 neg 1.16032004402742839 4.12479856412430479 neg 15.1111514016986312 neg 25.9193146099879641]
+zs:  @[0.0 neg 0.103622044471123109 neg 0.403523417114321381 neg 0.223307578892655734 0.179258772950371181]
+vxs: @[0.0 0.00166007664274403694 * dpy neg 0.00276742510726862411 * dpy 0.00296460137564761618 * dpy 0.00268067772490389322 * dpy]
+vys: @[0.0 0.00769901118419740425 * dpy 0.00499852801234917238 * dpy 0.00237847173959480950 * dpy 0.00162824170038242295 * dpy]
+vzs: @[0.0 neg 0.0000690460016972063023 * dpy 0.0000230417297573763929 * dpy neg 0.0000296589568540237556 * dpy neg 0.0000951592254519715870 * dpy]
+ms:  @[sm 0.000954791938424326609 * sm 0.000285885980666130812 * sm 0.0000436624404335156298 * sm 0.0000515138902046611451 * sm]
+n: size xs
+
+; every pair of bodies, once
+pairs: []
+loop 0..dec n 'i -> loop 0..dec n 'j -> if j > i -> 'pairs ++ @[@[i j]]
+
+energy: function [][
+    e: 0.0
+    loop 0..dec n 'i [
+        e: e + 0.5 * ms\[i] * ((vxs\[i] * vxs\[i]) + (vys\[i] * vys\[i]) + vzs\[i] * vzs\[i])
+    ]
+    loop pairs 'p [
+        i: p\0
+        j: p\1
+        dx: xs\[i] - xs\[j]
+        dy: ys\[i] - ys\[j]
+        dz: zs\[i] - zs\[j]
+        e: e - (ms\[i] * ms\[j]) / sqrt (dx*dx) + (dy*dy) + dz*dz
+    ]
+    e
+]
+
+print to :integer 1000000000 * energy
+
+dt: 0.01
+loop 1..10000 'k [
+    loop pairs 'p [
+            i: p\0
+            j: p\1
+            dx: xs\[i] - xs\[j]
+            dy: ys\[i] - ys\[j]
+            dz: zs\[i] - zs\[j]
+            d2: (dx*dx) + (dy*dy) + dz*dz
+            mag: dt / d2 * sqrt d2
+            bm: ms\[i] * mag
+            cm: ms\[j] * mag
+            set vxs i vxs\[i] - dx * cm
+            set vys i vys\[i] - dy * cm
+            set vzs i vzs\[i] - dz * cm
+            set vxs j vxs\[j] + dx * bm
+            set vys j vys\[j] + dy * bm
+            set vzs j vzs\[j] + dz * bm
+    ]
+    loop 0..dec n 'i [
+        set xs i xs\[i] + dt * vxs\[i]
+        set ys i ys\[i] + dt * vys\[i]
+        set zs i zs\[i] + dt * vzs\[i]
+    ]
+]
+
+print to :integer 1000000000 * energy

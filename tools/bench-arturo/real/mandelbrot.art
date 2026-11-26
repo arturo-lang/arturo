@@ -1,0 +1,27 @@
+; Mandelbrot set, rendered as text (floating-point, strings)
+w: 110
+h: 44
+total: 0
+loop 0..dec h 'y [
+    line: ""
+    loop 0..dec w 'x [
+        cr: (to :floating x) * 3.0 / to :floating w
+        cr: cr - 2.0
+        ci: (to :floating y) * 2.4 / to :floating h
+        ci: ci - 1.2
+        zr: 0.0
+        zi: 0.0
+        m: 0.0
+        k: 0
+        while [and? (k < 100) (m < 4.0)][
+            t: (zr*zr) - (zi*zi) + cr
+            zi: (2.0 * zr * zi) + ci
+            zr: t
+            m: (zr*zr) + zi*zi
+            k: k + 1
+        ]
+        total: total + k
+        'line ++ (k = 100) ? -> "#" -> "."
+    ]
+]
+print total
