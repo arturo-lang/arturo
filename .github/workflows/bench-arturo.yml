@@ -29,6 +29,7 @@ jobs:
             - uses: actions/checkout@v6
 
             - name: Arturo 0.10.0 (as released)
+              if: matrix.os != 'windows'
               uses: arturo-lang/setup-arturo@v2
               with:
                 do: fetch
@@ -37,10 +38,20 @@ jobs:
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
 
+            - name: Arturo 0.10.0 (as released, Windows)
+              if: matrix.os == 'windows'
+              shell: bash
+              run: |
+                # (self-contained: the executable & its DLLs)
+                curl -fsSL -o arturo.zip https://github.com/arturo-lang/arturo/releases/download/v0.10.0/arturo-0.10.0-windows-amd64.zip
+                python -c "import zipfile; zipfile.ZipFile('arturo.zip').extractall('bins/0.10.0')"
+
             - name: Keep it
               shell: bash
               run: |
-                python -c "import os, shutil; shutil.copytree(os.environ['arturoDistPath'], 'bins/0.10.0')"
+                if [ "${{ matrix.os }}" != "windows" ]; then
+                    python3 -c "import os, shutil; shutil.copytree(os.environ['arturoDistPath'], 'bins/0.10.0')"
+                fi
                 ls bins/0.10.0
                 v=$(bins/0.10.0/arturo -v)
                 echo "$v"
@@ -58,8 +69,14 @@ jobs:
                 pgo: 'true'
 
             - name: Keep it
-              shell: bash
-              run: python -c "import os, shutil; shutil.copytree(os.environ['arturoDistPath'], 'bins/master')"
+              shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
+              run: |
+                mkdir -p bins/master
+                if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/master/
+                else cp -R "$arturoDistPath"/. bins/master/; fi
+                bins/master/arturo -v
+                # (setup-arturo can't install Nim twice in the same place)
+                rm -rf nim
 
             - name: Arturo master + PocketBignum (release, PGO)
               uses: arturo-lang/setup-arturo@v2
@@ -73,14 +90,20 @@ jobs:
                 pgo: 'true'
 
             - name: Keep it
-              shell: bash
-              run: python -c "import os, shutil; shutil.copytree(os.environ['arturoDistPath'], 'bins/pocketbignum')"
+              shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
+              run: |
+                mkdir -p bins/pocketbignum
+                if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/pocketbignum/
+                else cp -R "$arturoDistPath"/. bins/pocketbignum/; fi
+                bins/pocketbignum/arturo -v
 
             - name: Benchmarks
-              shell: bash
+              # (on Windows, in MSYS2: the builds' DLLs are on its path)
+              shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
               run: |
                 exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
-                python tools/bench-arturo/run.py \
+                py=$(command -v python3 || command -v python)
+                "$py" tools/bench-arturo/run.py \
                     --bin "0.10.0=bins/0.10.0/arturo$exe" \
                     --bin "master=bins/master/arturo$exe" \
                     --bin "master+pocketbignum=bins/pocketbignum/arturo$exe" \
