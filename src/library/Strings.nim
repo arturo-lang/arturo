@@ -21,7 +21,7 @@
 
 when not defined(WEB):
     import re except Regex
-    import nre except Regex, toSeq
+    import extras/nre except Regex, toSeq
 
 import std/editdistance, json, os
 import sequtils, strutils, sugar
@@ -1289,8 +1289,8 @@ proc defineModule*(moduleName: string) =
             elif yKind==Regex:
                 push(newLogical(x.s.endsWith(y.rx)))
             else:
-                let slen = x.s.runeLen()
-                push(newLogical(slen > 0 and x.s.runeAtPos(slen-1) == y.c))
+                # (just the last character)
+                push(newLogical(x.s.len > 0 and x.s.lastRune(x.s.high)[0] == y.c))
 
     builtin "upper?",
         alias       = unaliased, 

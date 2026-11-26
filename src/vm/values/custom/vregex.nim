@@ -43,7 +43,7 @@ when defined(WEB):
     import jsffi, jsre, options, sequtils, sugar
     export options
 else:
-    import nre except toSeq
+    import extras/nre except toSeq
 
 #=======================================
 # Types
