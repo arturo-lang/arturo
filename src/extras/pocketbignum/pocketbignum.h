@@ -418,6 +418,39 @@ extern "C" {
 #define ALLOC(x) ((x)->_mp_alloc)
 #define PTR(x)   ((x)->_mp_d)
 
+/* thresholds that differ by CPU (tools/tune.sh); the rest are further down, all of them
+   overridable with -D */
+#if defined(__aarch64__) || defined(_M_ARM64)
+#  ifndef PBN_MUL_FFT_THRESHOLD
+#    define PBN_MUL_FFT_THRESHOLD 3000
+#  endif
+#  ifndef PBN_SQR_FFT_THRESHOLD
+#    define PBN_SQR_FFT_THRESHOLD 3000
+#  endif
+#  ifndef PBN_GCD_LEHMER2_THRESHOLD
+#    define PBN_GCD_LEHMER2_THRESHOLD 300
+#  endif
+#  ifndef PBN_GCD_HGCD_THRESHOLD
+#    define PBN_GCD_HGCD_THRESHOLD 200
+#  endif
+#elif defined(__x86_64__) || defined(_M_X64)
+#  ifndef PBN_MUL_FFT_THRESHOLD
+#    define PBN_MUL_FFT_THRESHOLD 5500     /* (from 3500 on, the FFT is faster at some sizes, slower at others) */
+#  endif
+#  ifndef PBN_SQR_FFT_THRESHOLD
+#    define PBN_SQR_FFT_THRESHOLD 5500
+#  endif
+#  ifndef PBN_GCD_HGCD_THRESHOLD
+#    define PBN_GCD_HGCD_THRESHOLD 400
+#  endif
+#  ifndef PBN_GET_STR_DC_THRESHOLD
+#    define PBN_GET_STR_DC_THRESHOLD 16
+#  endif
+#  ifndef PBN_SET_STR_DC_THRESHOLD
+#    define PBN_SET_STR_DC_THRESHOLD 192
+#  endif
+#endif
+
 #ifndef PBN_MUL_KARA_THRESHOLD
 #  define PBN_MUL_KARA_THRESHOLD 28
 #endif
@@ -428,7 +461,7 @@ extern "C" {
 #  define PBN_MUL_TOOM3_THRESHOLD 100
 #endif
 #ifndef PBN_MUL_TOOM4_THRESHOLD
-#  define PBN_MUL_TOOM4_THRESHOLD 300
+#  define PBN_MUL_TOOM4_THRESHOLD 250
 #endif
 #ifndef PBN_SQR_TOOM4_THRESHOLD
 #  define PBN_SQR_TOOM4_THRESHOLD 400
@@ -2381,10 +2414,53 @@ static void pbn_n_tdiv_qr_dc(pbn_limb *qp, pbn_limb *rp, const pbn_limb *np, pbn
     PBN_TMP_FREE(u, nn + 1 + dn);
 }
 
+static void pbn_n_tdiv_qr(pbn_limb *qp, pbn_limb *rp, const pbn_limb *np, pbn_size nn,
+                          const pbn_limb *dp, pbn_size dn);
+
+/* a quotient much shorter than the divisor (m = nn-dn+1 limbs, dn > 2m): it only depends
+   on the top of both, so the top 2m limbs by the top m+1 of the divisor give it to within
+   a couple of units; one product (m by dn limbs) and a few adds or subtractions then fix
+   it, and give the remainder. (Dividing by the whole divisor would be quadratic) */
+static void pbn_n_tdiv_qr_unbalanced(pbn_limb *qp, pbn_limb *rp, const pbn_limb *np, pbn_size nn,
+                                     const pbn_limb *dp, pbn_size dn) {
+    pbn_size m = nn - dn + 1, t = m + 1, qn = m;
+    pbn_limb *tq = PBN_TMP_ALLOC(t + (nn + 1) + (nn + 1)), *pp = tq + t, *xp = pp + nn + 1;
+
+    pbn_n_tdiv_qr(qp, tq, np + (dn - t), 2 * m, dp + (dn - t), t);
+
+    /* pp = q dp (nn+1 limbs), xp = the dividend (nn+1 limbs) */
+    PBN_NORM(qp, qn);
+    if (qn) {
+        pbn_n_mul(pp, dp, dn, qp, qn);
+        pbn_n_zero(pp + dn + qn, nn + 1 - (dn + qn));
+    } else {
+        pbn_n_zero(pp, nn + 1);
+    }
+    pbn_n_zero(qp + qn, m - qn);
+    pbn_n_copy(xp, np, nn);
+    xp[nn] = 0;
+
+    /* too big: q -= 1, pp -= d */
+    while (pbn_n_cmp(pp, xp, nn + 1) > 0) {
+        pbn_n_sub_1(qp, qp, m, 1);
+        pbn_n_sub(pp, pp, nn + 1, dp, dn);
+    }
+    /* r = x - pp; too small: q += 1, r -= d */
+    pbn_n_sub_n(xp, xp, pp, nn + 1);
+    while (pbn_n_cmp2(xp, nn + 1, dp, dn) >= 0) {
+        pbn_n_add_1(qp, qp, m, 1);
+        pbn_n_sub(xp, xp, nn + 1, dp, dn);
+    }
+    pbn_n_copy(rp, xp, dn);
+    PBN_TMP_FREE(tq, t + (nn + 1) + (nn + 1));
+}
+
 /* qp: nn-dn+1 limbs, rp: dn limbs; nothing may overlap */
 static void pbn_n_tdiv_qr(pbn_limb *qp, pbn_limb *rp, const pbn_limb *np, pbn_size nn,
                           const pbn_limb *dp, pbn_size dn) {
-    if (dn >= PBN_DC_DIV_THRESHOLD && nn - dn + 1 >= PBN_DC_DIV_THRESHOLD)
+    if (nn - dn + 1 >= PBN_DC_DIV_THRESHOLD && dn > 2 * (nn - dn + 1))
+        pbn_n_tdiv_qr_unbalanced(qp, rp, np, nn, dp, dn);
+    else if (dn >= PBN_DC_DIV_THRESHOLD && nn - dn + 1 >= PBN_DC_DIV_THRESHOLD)
         pbn_n_tdiv_qr_dc(qp, rp, np, nn, dp, dn);
     else
         pbn_n_tdiv_qr_basecase(qp, rp, np, nn, dp, dn);
@@ -3852,9 +3928,140 @@ static void pbz_powm_even(pbz_ptr r, pbz_srcptr base, pbz_srcptr e, pbz_srcptr m
     pbz_clear(x);
 }
 
+/* ---- powm for odd moduli of 1 or 2 limbs (Arturo's usual case): Montgomery products
+        written out (CIOS), no allocation at all ---- */
+
+/* a b / B mod m (a, b < m) */
+PBN_INLINE pbn_limb pbn_mont1(pbn_limb a, pbn_limb b, pbn_limb m, pbn_limb minv) {
+    pbn_limb hi, lo = pbn_umul(a, b, &hi), h2, r, c;
+    pbn_umul(lo * minv, m, &h2);
+    r = hi + h2;               /* (ab + qm) / B, the low halves adding up to 0 or B */
+    c = r < hi;
+    r += lo != 0;
+    c |= r < (pbn_limb)(lo != 0);
+    return c || r >= m ? r - m : r;
+}
+
+/* {r, 2} = a b / B^2 mod m (a, b < m); a*b + c + d never exceeds two limbs */
+PBN_INLINE void pbn_mont2(pbn_limb *r, const pbn_limb *a, const pbn_limb *b, const pbn_limb *m, pbn_limb minv) {
+    pbn_limb t0, t1, t2, t3, t4, hi, lo, c, q;
+    t0 = pbn_umul(a[0], b[0], &c);
+    lo = pbn_umul(a[0], b[1], &hi); t1 = lo + c; t2 = hi + (t1 < lo);
+    q = t0 * minv;
+    lo = pbn_umul(q, m[0], &hi); t0 += lo; c = hi + (t0 < lo);
+    lo = pbn_umul(q, m[1], &hi); lo += c; hi += lo < c; t1 += lo; hi += t1 < lo;
+    t2 += hi; t3 = t2 < hi;
+    /* (t1, t2, t3): one limb down */
+    lo = pbn_umul(a[1], b[0], &hi); t1 += lo; c = hi + (t1 < lo);
+    lo = pbn_umul(a[1], b[1], &hi); lo += c; hi += lo < c; t2 += lo; hi += t2 < lo;
+    t3 += hi; t4 = t3 < hi;     /* (with m close to B^2, this can carry already) */
+    q = t1 * minv;
+    lo = pbn_umul(q, m[0], &hi); t1 += lo; c = hi + (t1 < lo);
+    lo = pbn_umul(q, m[1], &hi); lo += c; hi += lo < c; t2 += lo; hi += t2 < lo;
+    t3 += hi; c = t4 + (t3 < hi);
+    /* (t2, t3, c) < 2m */
+    if (c || t3 > m[1] || (t3 == m[1] && t2 >= m[0])) {
+        pbn_limb bw = t2 < m[0];
+        t2 -= m[0];
+        t3 = t3 - m[1] - bw;
+    }
+    r[0] = t2;
+    r[1] = t3;
+}
+
+#define PBN_MONT(x, y, z) do {                                                      \
+        if (n == 1) (x)[0] = pbn_mont1((y)[0], (z)[0], mp[0], minv);                \
+        else pbn_mont2((x), (y), (z), mp, minv);                                    \
+    } while (0)
+
+/* r = b^e mod m, m odd with n = 1 or 2 limbs (and > 1), e > 0 */
+static void pbz_powm_small(pbz_ptr r, pbz_srcptr b, pbz_srcptr e, const pbn_limb *mp, pbn_size n) {
+    pbn_limb minv = pbn_binvert_neg(mp[0]), x[2] = { 0, 0 }, t[2], tbl[8][2], q[4], num[4] = { 0, 0, 0, 0 };
+    const pbn_limb *ep = PTR(e);
+    pbn_size bn = PBN_ABS(SIZ(b)), i;
+    pbn_bitcnt ebits = pbz_bitlen(e);
+    long bi;
+    int k, first = 1;
+
+    /* the base, reduced (b mod m, then m - that for b < 0) */
+    if (bn > n || (bn == n && pbn_n_cmp(PTR(b), mp, n) >= 0)) {
+        pbn_limb *qq = PBN_TMP_ALLOC(bn - n + 1);
+        pbn_n_tdiv_qr(qq, t, PTR(b), bn, mp, n);
+        PBN_TMP_FREE(qq, bn - n + 1);
+    } else {
+        t[1] = 0;
+        pbn_n_copy(t, PTR(b), bn);
+        if (bn < 2) t[1] = 0;
+        if (bn == 0) t[0] = 0;
+    }
+    if (n == 1) t[1] = 0;
+    if (t[0] == 0 && t[1] == 0) { SIZ(r) = 0; return; }
+    if (SIZ(b) < 0) pbn_n_sub_n(t, mp, t, n);
+
+    /* into Montgomery form: t B^n mod m */
+    pbn_n_copy(num + n, t, n);
+    {
+        pbn_size nn = 2 * n;
+        PBN_NORM(num, nn);
+        pbn_n_tdiv_qr(q, tbl[0], num, nn, mp, n);
+    }
+
+    k = ebits <= 7 ? 1 : ebits <= 24 ? 2 : ebits <= 80 ? 3 : 4;
+    if (k > 1) {
+        PBN_MONT(x, tbl[0], tbl[0]);
+        for (i = 1; i < ((pbn_size)1 << (k - 1)); i++) PBN_MONT(tbl[i], tbl[i - 1], x);
+    }
+
+    bi = (long)ebits - 1;
+    while (bi >= 0) {
+        long j, s;
+        unsigned w;
+        if (!PBN_GETBIT(ep, (pbn_bitcnt)bi)) {
+            PBN_MONT(x, x, x);
+            bi--;
+            continue;
+        }
+        j = bi - k + 1;
+        if (j < 0) j = 0;
+        while (!PBN_GETBIT(ep, (pbn_bitcnt)j)) j++;
+        w = 0;
+        for (s = bi; s >= j; s--) w = (w << 1) | (unsigned)PBN_GETBIT(ep, (pbn_bitcnt)s);
+        if (first) {
+            x[0] = tbl[w >> 1][0];
+            x[1] = tbl[w >> 1][1];
+            first = 0;
+        } else {
+            for (s = 0; s < bi - j + 1; s++) PBN_MONT(x, x, x);
+            PBN_MONT(x, x, tbl[w >> 1]);
+        }
+        bi = j - 1;
+    }
+
+    /* out of Montgomery form: x * 1 / B^n */
+    t[0] = 1;
+    t[1] = 0;
+    PBN_MONT(x, x, t);
+    {
+        pbn_limb *rp = PBZ_GROW(r, n);
+        pbn_size rn = n;
+        pbn_n_copy(rp, x, n);
+        PBN_NORM(rp, rn);
+        SIZ(r) = (int)rn;
+    }
+}
+#undef PBN_MONT
+
 PBN_DEF void pbz_powm(pbz_ptr r, pbz_srcptr b, pbz_srcptr e, pbz_srcptr m) {
     pbz_t base, mm, ee;
     if (SIZ(m) == 0) pbn_divzero();
+    {
+        /* small odd moduli, e > 0: straight to the limbs (no temporaries) */
+        pbn_size n = PBN_ABS(SIZ(m));
+        if (n <= 2 && SIZ(e) > 0 && (PTR(m)[0] & 1) && (n == 2 || PTR(m)[0] > 1)) {
+            pbz_powm_small(r, b, e, PTR(m), n);
+            return;
+        }
+    }
     pbz_init(base);
     pbz_init(mm);
     pbz_abs(mm, m);
@@ -4340,7 +4547,7 @@ static pbn_size pbn_n_gcd(pbn_limb **res, pbn_limb *ap, pbn_size an, pbn_limb *b
 #    define PBN_GCD_HGCD_THRESHOLD 1000      /* limbs (of the smaller operand): half-gcd from here */
 #  endif
 #  ifndef PBN_HGCD_THRESHOLD
-#    define PBN_HGCD_THRESHOLD 100           /* limbs: below, the half-gcd by Lehmer steps */
+#    define PBN_HGCD_THRESHOLD 40            /* limbs: below, the half-gcd by Lehmer steps */
 #  endif
 
 typedef struct { pbz_t u[4]; int s; } pbn_hmat;
