@@ -2298,15 +2298,7 @@ proc defineModule*(moduleName: string) =
                         SetInPlaceAny(newStringBlock(@[runeSubStr(InPlaced.s, 0, aAt.i),
                                 runeSubStr(InPlaced.s, aAt.i)]))
                     elif checkAttr("every"):
-                        var ret: seq[string]
-                        var length = runeLen(InPlaced.s)
-                        var i = 0
-
-                        while i < length:
-                            ret.add(runeSubStr(InPlaced.s, i, aEvery.i))
-                            i += aEvery.i
-
-                        SetInPlaceAny(newStringBlock(ret))
+                        SetInPlaceAny(newStringBlock(splitEvery(InPlaced.s, aEvery.i)))
 
                     else:
                         SetInPlaceAny(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
@@ -2355,15 +2347,7 @@ proc defineModule*(moduleName: string) =
                 elif checkAttr("at"):
                     push(newStringBlock(@[runeSubStr(x.s, 0, aAt.i), runeSubStr(x.s, aAt.i)]))
                 elif checkAttr("every"):
-                    var ret: seq[string]
-                    var length = runeLen(x.s)
-                    var i = 0
-
-                    while i < length:
-                        ret.add(runeSubStr(x.s, i, aEvery.i))
-                        i += aEvery.i
-
-                    push(newStringBlock(ret))
+                    push(newStringBlock(splitEvery(x.s, aEvery.i)))
                 
                 else:
                     push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))

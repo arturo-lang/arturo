@@ -185,6 +185,21 @@ proc realLen*(s: string): int =
             s
     return cleanString.runeLen()
 
+func splitEvery*(s: string, n: int): seq[string] =
+    ## Split given string into chunks of `n` characters
+    ## (the last one may be shorter), in a single pass
+    if n <= 0: return @[s]
+    var start, pos, count = 0
+    while pos < s.len:
+        pos += s.runeLenAt(pos)
+        inc count
+        if count == n:
+            result.add(s[start ..< pos])
+            start = pos
+            count = 0
+    if start < s.len:
+        result.add(s[start ..< s.len])
+
 proc realFind*(s: string, subs: string): int =
     let cleanString = 
         when not defined(WEB):
