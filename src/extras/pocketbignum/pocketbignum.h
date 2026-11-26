@@ -738,9 +738,42 @@ static int pbn_n_cmp2(const pbn_limb *ap, pbn_size an, const pbn_limb *bp, pbn_s
     return pbn_n_cmp(ap, bp, an);
 }
 
+#ifndef PBN_ADDSUB_ASM_THRESHOLD
+#  define PBN_ADDSUB_ASM_THRESHOLD 8     /* limbs: below, the (inlined) C loop is just as fast */
+#endif
+
+/* from PBN_ADDSUB_ASM_THRESHOLD limbs on (further down: assembly where there is) */
+static pbn_limb pbn_n_add_n_long(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n);
+static pbn_limb pbn_n_sub_n_long(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n);
+
+static pbn_limb pbn_n_add_n_c(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n, pbn_limb cy) {
+    pbn_size i = 0;
+    for (; i + 4 <= n; i += 4) {
+        rp[i]     = pbn_addc(ap[i],     bp[i],     cy, &cy);
+        rp[i + 1] = pbn_addc(ap[i + 1], bp[i + 1], cy, &cy);
+        rp[i + 2] = pbn_addc(ap[i + 2], bp[i + 2], cy, &cy);
+        rp[i + 3] = pbn_addc(ap[i + 3], bp[i + 3], cy, &cy);
+    }
+    for (; i < n; i++) rp[i] = pbn_addc(ap[i], bp[i], cy, &cy);
+    return cy;
+}
+
+static pbn_limb pbn_n_sub_n_c(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n, pbn_limb bw) {
+    pbn_size i = 0;
+    for (; i + 4 <= n; i += 4) {
+        rp[i]     = pbn_subb(ap[i],     bp[i],     bw, &bw);
+        rp[i + 1] = pbn_subb(ap[i + 1], bp[i + 1], bw, &bw);
+        rp[i + 2] = pbn_subb(ap[i + 2], bp[i + 2], bw, &bw);
+        rp[i + 3] = pbn_subb(ap[i + 3], bp[i + 3], bw, &bw);
+    }
+    for (; i < n; i++) rp[i] = pbn_subb(ap[i], bp[i], bw, &bw);
+    return bw;
+}
+
 static pbn_limb pbn_n_add_n(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n) {
     pbn_size i = 0;
     pbn_limb cy = 0;
+    if (n >= PBN_ADDSUB_ASM_THRESHOLD) return pbn_n_add_n_long(rp, ap, bp, n);
     for (; i + 4 <= n; i += 4) {
         rp[i]     = pbn_addc(ap[i],     bp[i],     cy, &cy);
         rp[i + 1] = pbn_addc(ap[i + 1], bp[i + 1], cy, &cy);
@@ -754,6 +787,7 @@ static pbn_limb pbn_n_add_n(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp
 static pbn_limb pbn_n_sub_n(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n) {
     pbn_size i = 0;
     pbn_limb bw = 0;
+    if (n >= PBN_ADDSUB_ASM_THRESHOLD) return pbn_n_sub_n_long(rp, ap, bp, n);
     for (; i + 4 <= n; i += 4) {
         rp[i]     = pbn_subb(ap[i],     bp[i],     bw, &bw);
         rp[i + 1] = pbn_subb(ap[i + 1], bp[i + 1], bw, &bw);
@@ -953,6 +987,70 @@ static int pbn_cpu_adx(void) {
     return have;
 }
 
+/* add_n / sub_n: k >= 1 blocks of 4 limbs, carry (borrow) in and out; lea & dec leave
+   the carry flag alone */
+static pbn_limb pbn_add_n_x86(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size k, pbn_limb cy) {
+    pbn_limb a0, a1, a2, a3;
+    __asm__ __volatile__(
+        "neg %[cy]\n"                                /* CF = cy */
+        "1:\n\t"
+        "mov (%[ap]), %[a0]\n\t"
+        "mov 8(%[ap]), %[a1]\n\t"
+        "mov 16(%[ap]), %[a2]\n\t"
+        "mov 24(%[ap]), %[a3]\n\t"
+        "adc (%[bp]), %[a0]\n\t"
+        "adc 8(%[bp]), %[a1]\n\t"
+        "adc 16(%[bp]), %[a2]\n\t"
+        "adc 24(%[bp]), %[a3]\n\t"
+        "mov %[a0], (%[rp])\n\t"
+        "mov %[a1], 8(%[rp])\n\t"
+        "mov %[a2], 16(%[rp])\n\t"
+        "mov %[a3], 24(%[rp])\n\t"
+        "lea 32(%[ap]), %[ap]\n\t"
+        "lea 32(%[bp]), %[bp]\n\t"
+        "lea 32(%[rp]), %[rp]\n\t"
+        "dec %[k]\n\t"
+        "jnz 1b\n\t"
+        "mov $0, %k[cy]\n\t"
+        "adc $0, %[cy]\n"
+        : [a0] "=&r"(a0), [a1] "=&r"(a1), [a2] "=&r"(a2), [a3] "=&r"(a3), [cy] "+&r"(cy),
+          [ap] "+r"(ap), [bp] "+r"(bp), [rp] "+r"(rp), [k] "+r"(k)
+        :
+        : "cc", "memory");
+    return cy;
+}
+
+static pbn_limb pbn_sub_n_x86(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size k, pbn_limb bw) {
+    pbn_limb a0, a1, a2, a3;
+    __asm__ __volatile__(
+        "neg %[bw]\n"                                /* CF = bw */
+        "1:\n\t"
+        "mov (%[ap]), %[a0]\n\t"
+        "mov 8(%[ap]), %[a1]\n\t"
+        "mov 16(%[ap]), %[a2]\n\t"
+        "mov 24(%[ap]), %[a3]\n\t"
+        "sbb (%[bp]), %[a0]\n\t"
+        "sbb 8(%[bp]), %[a1]\n\t"
+        "sbb 16(%[bp]), %[a2]\n\t"
+        "sbb 24(%[bp]), %[a3]\n\t"
+        "mov %[a0], (%[rp])\n\t"
+        "mov %[a1], 8(%[rp])\n\t"
+        "mov %[a2], 16(%[rp])\n\t"
+        "mov %[a3], 24(%[rp])\n\t"
+        "lea 32(%[ap]), %[ap]\n\t"
+        "lea 32(%[bp]), %[bp]\n\t"
+        "lea 32(%[rp]), %[rp]\n\t"
+        "dec %[k]\n\t"
+        "jnz 1b\n\t"
+        "mov $0, %k[bw]\n\t"
+        "adc $0, %[bw]\n"
+        : [a0] "=&r"(a0), [a1] "=&r"(a1), [a2] "=&r"(a2), [a3] "=&r"(a3), [bw] "+&r"(bw),
+          [ap] "+r"(ap), [bp] "+r"(bp), [rp] "+r"(rp), [k] "+r"(k)
+        :
+        : "cc", "memory");
+    return bw;
+}
+
 /* n a positive multiple of 4; cy: carry in (the limb to add at position 0) */
 static pbn_limb pbn_mul_1_adx(pbn_limb *rp, const pbn_limb *ap, pbn_size n, pbn_limb b, pbn_limb cy) {
     pbn_limb l0, l1, l2, l3, h0, h1, h2;
@@ -1067,6 +1165,48 @@ static pbn_limb pbn_submul_1_adx(pbn_limb *rp, const pbn_limb *ap, pbn_size n, p
     && defined(PBN_HAVE_DLIMB) && defined(__aarch64__)
 #  define PBN_ASM_ARM64 1
 
+/* add_n / sub_n: k >= 1 pairs of limbs, carry (borrow) in and out; sub & cbnz leave the
+   flags alone (on arm64, C is set when there's *no* borrow) */
+static pbn_limb pbn_add_n_arm(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size k, pbn_limb cy) {
+    pbn_limb a0, a1, b0, b1;
+    __asm__ __volatile__(
+        "cmp %[cy], #1\n\t"                        /* C = cy */
+        "1:\n\t"
+        "ldp %[a0], %[a1], [%[ap]], #16\n\t"
+        "ldp %[b0], %[b1], [%[bp]], #16\n\t"
+        "adcs %[a0], %[a0], %[b0]\n\t"
+        "adcs %[a1], %[a1], %[b1]\n\t"
+        "stp %[a0], %[a1], [%[rp]], #16\n\t"
+        "sub %[k], %[k], #1\n\t"
+        "cbnz %[k], 1b\n\t"
+        "cset %[cy], cs\n\t"
+        : [a0] "=&r"(a0), [a1] "=&r"(a1), [b0] "=&r"(b0), [b1] "=&r"(b1), [cy] "+r"(cy),
+          [ap] "+r"(ap), [bp] "+r"(bp), [rp] "+r"(rp), [k] "+r"(k)
+        :
+        : "cc", "memory");
+    return cy;
+}
+
+static pbn_limb pbn_sub_n_arm(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size k, pbn_limb bw) {
+    pbn_limb a0, a1, b0, b1;
+    __asm__ __volatile__(
+        "cmp xzr, %[bw]\n\t"                       /* C = !bw */
+        "1:\n\t"
+        "ldp %[a0], %[a1], [%[ap]], #16\n\t"
+        "ldp %[b0], %[b1], [%[bp]], #16\n\t"
+        "sbcs %[a0], %[a0], %[b0]\n\t"
+        "sbcs %[a1], %[a1], %[b1]\n\t"
+        "stp %[a0], %[a1], [%[rp]], #16\n\t"
+        "sub %[k], %[k], #1\n\t"
+        "cbnz %[k], 1b\n\t"
+        "cset %[bw], cc\n\t"
+        : [a0] "=&r"(a0), [a1] "=&r"(a1), [b0] "=&r"(b0), [b1] "=&r"(b1), [bw] "+r"(bw),
+          [ap] "+r"(ap), [bp] "+r"(bp), [rp] "+r"(rp), [k] "+r"(k)
+        :
+        : "cc", "memory");
+    return bw;
+}
+
 /* k >= 1 pairs of limbs; cy in, returns cy out */
 static pbn_limb pbn_mul_1_arm(pbn_limb *rp, const pbn_limb *ap, pbn_size k, pbn_limb b, pbn_limb cy) {
     pbn_limb a0, a1, l0, l1, h0, h1;
@@ -1142,6 +1282,38 @@ static pbn_limb pbn_submul_1_arm(pbn_limb *rp, const pbn_limb *ap, pbn_size k, p
     return cy;
 }
 #endif
+
+static pbn_limb pbn_n_add_n_long(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n) {
+#if defined(PBN_ASM_X86)
+    {
+        pbn_size r = n & 3;
+        pbn_limb cy = pbn_add_n_x86(rp, ap, bp, n >> 2, 0);
+        return r ? pbn_n_add_n_c(rp + (n - r), ap + (n - r), bp + (n - r), r, cy) : cy;
+    }
+#elif defined(PBN_ASM_ARM64)
+    {
+        pbn_limb cy = pbn_add_n_arm(rp, ap, bp, n >> 1, 0);
+        return (n & 1) ? pbn_n_add_n_c(rp + n - 1, ap + n - 1, bp + n - 1, 1, cy) : cy;
+    }
+#endif
+    return pbn_n_add_n_c(rp, ap, bp, n, 0);
+}
+
+static pbn_limb pbn_n_sub_n_long(pbn_limb *rp, const pbn_limb *ap, const pbn_limb *bp, pbn_size n) {
+#if defined(PBN_ASM_X86)
+    {
+        pbn_size r = n & 3;
+        pbn_limb bw = pbn_sub_n_x86(rp, ap, bp, n >> 2, 0);
+        return r ? pbn_n_sub_n_c(rp + (n - r), ap + (n - r), bp + (n - r), r, bw) : bw;
+    }
+#elif defined(PBN_ASM_ARM64)
+    {
+        pbn_limb bw = pbn_sub_n_arm(rp, ap, bp, n >> 1, 0);
+        return (n & 1) ? pbn_n_sub_n_c(rp + n - 1, ap + n - 1, bp + n - 1, 1, bw) : bw;
+    }
+#endif
+    return pbn_n_sub_n_c(rp, ap, bp, n, 0);
+}
 
 static pbn_limb pbn_n_mul_1(pbn_limb *rp, const pbn_limb *ap, pbn_size n, pbn_limb b) {
 #if defined(PBN_ASM_X86)
