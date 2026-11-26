@@ -31,6 +31,8 @@ import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vq
 import vm/values/flags
 
 when defined(NANBOX):
+    when defined(WEB) or sizeof(int) < 8:
+        {.error: "NaN-boxing (-d:NANBOX) needs a 64-bit native build".}
     import std/macros
 
 when not defined(WEB):
