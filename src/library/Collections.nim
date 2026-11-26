@@ -867,10 +867,13 @@ proc defineModule*(moduleName: string) =
                         let rLen = y.rng.len
                         var res: seq[Rune] = newSeq[Rune](rLen)
                         var i = 0
-                        let xStrLen = x.s.runeLen()
+                        # (decoded once: indexing characters one by one
+                        # would go through the string again every time)
+                        let xRunes = x.s.toRunes()
+                        let xStrLen = xRunes.len
                         for item in items(y.rng):
                             if likely(item.i >= 0 and item.i < xStrLen):
-                                res[i] = x.s.runeAtPos(item.i)
+                                res[i] = xRunes[item.i]
                             else:
                                 Error_OutOfBounds(item.i, Dumper(x), xStrLen-1, "String")
                             i += 1
