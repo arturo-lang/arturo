@@ -1412,12 +1412,28 @@ static void pbn_n_tdiv_qr_basecase(pbn_limb *qp, pbn_limb *rp, const pbn_limb *n
 
 /* ---- multiplication ---- */
 
+/* With the x86-64 kernels (BMI2 & ADX), from this many limbs on, the schoolbook rows go
+   one at a time through addmul_1 (faster there than two at a time with the C addmul_2) */
+#ifndef PBN_MUL_ASM_ROWS
+#  define PBN_MUL_ASM_ROWS 12
+#endif
+
+PBN_INLINE int pbn_asm_rows(pbn_size n) {
+#if defined(PBN_ASM_X86)
+    return n >= PBN_MUL_ASM_ROWS && pbn_cpu_adx();
+#else                                   /* (on arm64, the C addmul_2 is faster) */
+    (void)n;
+    return 0;
+#endif
+}
+
 static void pbn_n_mul_basecase(pbn_limb *rp, const pbn_limb *ap, pbn_size an, const pbn_limb *bp, pbn_size bn) {
     pbn_size i = 1;
     rp[an] = pbn_n_mul_1(rp, ap, an, bp[0]);
 #if defined(PBN_HAVE_ADDMUL_2)
-    for (; i + 2 <= bn; i += 2)
-        rp[an + i + 1] = pbn_n_addmul_2(rp + i, ap, an, bp[i], bp[i + 1]);
+    if (!pbn_asm_rows(an))
+        for (; i + 2 <= bn; i += 2)
+            rp[an + i + 1] = pbn_n_addmul_2(rp + i, ap, an, bp[i], bp[i + 1]);
 #endif
     for (; i < bn; i++)
         rp[an + i] = pbn_n_addmul_1(rp + i, ap, an, bp[i]);
@@ -1880,7 +1896,8 @@ static void pbn_n_sqr_n(pbn_limb *rp, const pbn_limb *ap, pbn_size n, pbn_limb *
 
 /* ---- FFT multiplication (64-bit limbs): number-theoretic transforms modulo three primes
         p = c 2^k + 1 < 2^62, one limb per coefficient; every coefficient of the product is
-        below n 2^128 < p1 p2 p3 (~2^184), so the Chinese remainder theorem recovers it ---- */
+        below n 2^128 < p1 p2 p3 (~2^185.9), so the Chinese remainder theorem recovers it.
+        3 divides every c, so the lengths can be 2^k or 3 2^k (less padding) ---- */
 
 #if PBN_B == 64 && !defined(PBN_NO_FFT)
 #  define PBN_HAVE_FFT 1
@@ -1891,8 +1908,8 @@ static void pbn_n_sqr_n(pbn_limb *rp, const pbn_limb *ap, pbn_size n, pbn_limb *
 #    define PBN_SQR_FFT_THRESHOLD 7000
 #  endif
 
-static const pbn_limb pbn_ntt_p[3] = { 4179340454199820289u, 2485986994308513793u, 1945555039024054273u };
-static const pbn_limb pbn_ntt_g[3] = { 3, 5, 5 };   /* primitive roots: 29 2^57 + 1, 69 2^55 + 1, 27 2^56 + 1 */
+static const pbn_limb pbn_ntt_p[3] = { 4546383823830515713u, 4522739925786820609u, 4512606826625236993u };
+static const pbn_limb pbn_ntt_g[3] = { 10, 37, 7 };   /* primitive roots: 2019 2^51 + 1, 4017 2^50 + 1, 501 2^53 + 1 */
 
 /* branch-free reductions (values < 2^62: x - p is negative exactly when its top bit is set);
    data-dependent branches here would be mispredicted half the time */
@@ -1937,93 +1954,249 @@ static pbn_limb pbn_ntt_powmod(const pbn_ntt_mod *m, pbn_limb b, pbn_limb e) {
     return r;
 }
 
-/* tw[h + j] = w_{2h}^j (Montgomery form) for every stage h = 1, 2, ..., L/2 and j < h,
-   w the L-th root of unity given (plain) */
-static void pbn_ntt_twiddles(pbn_limb *tw, pbn_size L, pbn_limb w, const pbn_ntt_mod *m) {
-    pbn_size h = L / 2, j;
-    pbn_limb wm = pbn_ntt_mulmod(m, w, m->r1);
-    tw[h] = m->r1;
-    for (j = 1; j < h; j++) tw[h + j] = pbn_ntt_mont(tw[h + j - 1], wm, m->p, m->ni);
-    for (h >>= 1; h >= 1; h >>= 1)
-        for (j = 0; j < h; j++) tw[h + j] = tw[2 * h + 2 * j];
+/* Shoup's multiplication by a known w < p: with ws = floor(w B / p), x w mod p for any x,
+   as a value in [0, 2p) - one high product, the rest wraps around */
+PBN_INLINE pbn_limb pbn_ntt_shoup(pbn_limb x, pbn_limb w, pbn_limb ws, pbn_limb p) {
+    pbn_limb q;
+    pbn_umul(x, ws, &q);
+    return x * w - q * p;
 }
 
-/* forward transform (decimation in frequency: natural order in, bit-reversed out) */
-static void pbn_ntt_fwd(pbn_limb *a, pbn_size L, const pbn_limb *tw, const pbn_ntt_mod *m) {
-    pbn_limb p = m->p, ni = m->ni;
-    pbn_size h, s, j;
-    for (h = L / 2; h >= 1; h >>= 1)
-        for (s = 0; s < L; s += 2 * h) {
-            pbn_limb *x = a + s, *y = a + s + h;
-            const pbn_limb *t = tw + h;
-            for (j = 0; j < h; j++) {
-                pbn_limb u = x[j], v = y[j];
-                x[j] = pbn_ntt_add(u, v, p);
-                y[j] = pbn_ntt_mont(pbn_ntt_sub(u, v, p), t[j], p, ni);
-            }
+/* floor(w B / p), w < p */
+static pbn_limb pbn_ntt_shoup_const(pbn_limb w, pbn_limb p) {
+    int s = pbn_clz(p);
+    pbn_limb r, d = p << s;
+    return pbn_div_preinv(&r, w << s, 0, d, pbn_invert_limb(d));
+}
+
+/* tw[j] = w^j (plain) and ts[j] its Shoup constant, for j < n */
+static void pbn_ntt_powers(pbn_limb *tw, pbn_limb *ts, pbn_size n, pbn_limb w, const pbn_ntt_mod *m) {
+    /* powers of w in Montgomery form (wB mod p), one product each; from those, the plain
+       value is a reduction, and floor(wB / p) = (wB - (wB mod p)) / p an exact division:
+       -(wB mod p) / p mod B, with no division at all */
+    pbn_size j;
+    pbn_limb p = m->p, pinv = (pbn_limb)0 - m->ni, wm = pbn_ntt_mulmod(m, w, m->r1), x = m->r1;
+    for (j = 0; j < n; j++) {
+        tw[j] = pbn_ntt_mont(x, 1, p, m->ni);
+        ts[j] = ((pbn_limb)0 - x) * pinv;
+        x = pbn_ntt_mont(x, wm, p, m->ni);
+    }
+}
+
+/* tw[h + j] = w_{2h}^j (plain) and ts[h + j] its Shoup constant, for every stage
+   h = 1, 2, ..., L/2 and j < h; w the L-th root of unity given */
+static void pbn_ntt_twiddles(pbn_limb *tw, pbn_limb *ts, pbn_size L, pbn_limb w, const pbn_ntt_mod *m) {
+    pbn_size h = L / 2, j;
+    pbn_ntt_powers(tw + h, ts + h, h, w, m);
+    for (h >>= 1; h >= 1; h >>= 1)
+        for (j = 0; j < h; j++) {
+            tw[h + j] = tw[2 * h + 2 * j];
+            ts[h + j] = ts[2 * h + 2 * j];
         }
+}
+
+/* the same tables for the inverse root, from the ones of w: for the 2h-th roots,
+   w^-j = -w^(h-j), and floor((p - w) B / p) = B - 1 - floor(w B / p) (w B is never a
+   multiple of p) */
+static void pbn_ntt_twiddles_inverse(pbn_limb *iw, pbn_limb *is, const pbn_limb *tw, const pbn_limb *ts,
+                                     pbn_size L, pbn_limb p) {
+    pbn_size h, j;
+    for (h = 1; h < L; h <<= 1) {
+        iw[h] = tw[h];
+        is[h] = ts[h];
+        for (j = 1; j < h; j++) {
+            iw[h + j] = p - tw[2 * h - j];
+            is[h + j] = ~ts[2 * h - j];
+        }
+    }
+}
+
+/* Above this length, the transforms go depth-first: the first (last) stage over the whole
+   array, then each half on its own - so that the rest of the work stays in cache */
+#ifndef PBN_NTT_BLOCK
+#  define PBN_NTT_BLOCK 4096
+#endif
+
+/* The stages keep their values in [0, 2p) and never reduce them further (Harvey's
+   lazy butterflies): with p < 2^62, sums & differences up to 4p still fit in a limb */
+
+/* one decimation-in-frequency stage: butterflies h apart, over L */
+PBN_INLINE void pbn_ntt_fwd_stage(pbn_limb *a, pbn_size L, pbn_size h, const pbn_limb *tw, const pbn_limb *ts, pbn_limb p) {
+    pbn_limb p2 = 2 * p;
+    pbn_size s, j;
+    for (s = 0; s < L; s += 2 * h) {
+        pbn_limb *x = a + s, *y = a + s + h;
+        const pbn_limb *t = tw + h, *q = ts + h;
+        for (j = 0; j < h; j++) {
+            pbn_limb u = x[j], v = y[j];
+            x[j] = pbn_ntt_fix(u + v - p2, p2);
+            y[j] = pbn_ntt_shoup(u - v + p2, t[j], q[j], p);
+        }
+    }
+}
+
+/* one decimation-in-time stage */
+PBN_INLINE void pbn_ntt_inv_stage(pbn_limb *a, pbn_size L, pbn_size h, const pbn_limb *tw, const pbn_limb *ts, pbn_limb p) {
+    pbn_limb p2 = 2 * p;
+    pbn_size s, j;
+    for (s = 0; s < L; s += 2 * h) {
+        pbn_limb *x = a + s, *y = a + s + h;
+        const pbn_limb *t = tw + h, *q = ts + h;
+        for (j = 0; j < h; j++) {
+            pbn_limb u = x[j], v = pbn_ntt_shoup(y[j], t[j], q[j], p);
+            x[j] = pbn_ntt_fix(u + v - p2, p2);
+            y[j] = pbn_ntt_fix(u - v, p2);
+        }
+    }
+}
+
+/* forward transform (decimation in frequency: natural order in, bit-reversed out);
+   tw[h + j] only depends on the stage, so the halves use the same table */
+static void pbn_ntt_fwd(pbn_limb *a, pbn_size L, const pbn_limb *tw, const pbn_limb *ts, pbn_limb p) {
+    pbn_size h;
+    if (L > PBN_NTT_BLOCK) {
+        pbn_ntt_fwd_stage(a, L, L / 2, tw, ts, p);
+        pbn_ntt_fwd(a, L / 2, tw, ts, p);
+        pbn_ntt_fwd(a + L / 2, L / 2, tw, ts, p);
+        return;
+    }
+    for (h = L / 2; h >= 1; h >>= 1) pbn_ntt_fwd_stage(a, L, h, tw, ts, p);
 }
 
 /* inverse transform without the 1/L (decimation in time: bit-reversed in, natural out),
    tw built from the inverse root */
-static void pbn_ntt_inv(pbn_limb *a, pbn_size L, const pbn_limb *tw, const pbn_ntt_mod *m) {
-    pbn_limb p = m->p, ni = m->ni;
-    pbn_size h, s, j;
-    for (h = 1; h < L; h <<= 1)
-        for (s = 0; s < L; s += 2 * h) {
-            pbn_limb *x = a + s, *y = a + s + h;
-            const pbn_limb *t = tw + h;
-            for (j = 0; j < h; j++) {
-                pbn_limb u = x[j], v = pbn_ntt_mont(y[j], t[j], p, ni);
-                x[j] = pbn_ntt_add(u, v, p);
-                y[j] = pbn_ntt_sub(u, v, p);
-            }
-        }
+static void pbn_ntt_inv(pbn_limb *a, pbn_size L, const pbn_limb *tw, const pbn_limb *ts, pbn_limb p) {
+    pbn_size h;
+    if (L > PBN_NTT_BLOCK) {
+        pbn_ntt_inv(a, L / 2, tw, ts, p);
+        pbn_ntt_inv(a + L / 2, L / 2, tw, ts, p);
+        pbn_ntt_inv_stage(a, L, L / 2, tw, ts, p);
+        return;
+    }
+    for (h = 1; h < L; h <<= 1) pbn_ntt_inv_stage(a, L, h, tw, ts, p);
+}
+
+/* Length 3M: a radix-3 stage on top of three transforms of length M. With z a cube root
+   of unity (1 + z + z^2 = 0), u = z (x1 - x2) gives the three sums for one product:
+       x0 + x1 + x2,   x0 + z x1 + z^2 x2 = x0 - x2 + u,   x0 + z^2 x1 + z x2 = x0 - x1 - u
+   the last two then times w^i, w^2i (w the 3M-th root); values in [0, 2p) in & out */
+static void pbn_ntt_fwd3(pbn_limb *a, pbn_size M, const pbn_limb *t1, const pbn_limb *s1, const pbn_limb *t2,
+                         const pbn_limb *s2, pbn_limb z, pbn_limb zs, pbn_limb p) {
+    pbn_limb p2 = 2 * p, *b = a + M, *c = a + 2 * M;
+    pbn_size i;
+    for (i = 0; i < M; i++) {
+        pbn_limb x0 = a[i], x1 = b[i], x2 = c[i];
+        pbn_limb u = pbn_ntt_shoup(x1 - x2 + p2, z, zs, p);
+        pbn_limb y1 = pbn_ntt_fix(x0 - x2, p2), y2 = pbn_ntt_fix(x0 - x1, p2);
+        a[i] = pbn_ntt_fix(pbn_ntt_fix(x0 + x1 - p2, p2) + x2 - p2, p2);
+        b[i] = pbn_ntt_shoup(y1 + u, t1[i], s1[i], p);
+        c[i] = pbn_ntt_shoup(y2 + p2 - u, t2[i], s2[i], p);
+    }
+}
+
+/* its inverse (up to the factor 3): w^-i, w^-2i first, then the same sums with z^-1 */
+static void pbn_ntt_inv3(pbn_limb *a, pbn_size M, const pbn_limb *t1, const pbn_limb *s1, const pbn_limb *t2,
+                         const pbn_limb *s2, pbn_limb z, pbn_limb zs, pbn_limb p) {
+    pbn_limb p2 = 2 * p, *b = a + M, *c = a + 2 * M;
+    pbn_size i;
+    for (i = 0; i < M; i++) {
+        pbn_limb x0 = a[i], x1 = pbn_ntt_shoup(b[i], t1[i], s1[i], p), x2 = pbn_ntt_shoup(c[i], t2[i], s2[i], p);
+        pbn_limb u = pbn_ntt_shoup(x1 - x2 + p2, z, zs, p);
+        pbn_limb y1 = pbn_ntt_fix(x0 - x2, p2), y2 = pbn_ntt_fix(x0 - x1, p2);
+        a[i] = pbn_ntt_fix(pbn_ntt_fix(x0 + x1 - p2, p2) + x2 - p2, p2);
+        b[i] = pbn_ntt_fix(y1 + u - p2, p2);
+        c[i] = pbn_ntt_fix(y2 - u, p2);
+    }
 }
 
 /* rp[0..an+bn) = a * b (sq: b is a); an, bn >= 1 */
 static void pbn_n_mul_fft(pbn_limb *rp, const pbn_limb *ap, pbn_size an, const pbn_limb *bp, pbn_size bn, int sq) {
-    pbn_size cn = an + bn - 1, L = 1, k, i;
-    pbn_limb *buf, *fa, *fb, *tw, *res[3], c0 = 0, c1 = 0, c2 = 0;
+    pbn_size cn = an + bn - 1, L = 1, M, k, i;
+    pbn_limb *buf, *fa, *fb, *tw, *ts, *iw, *is, *r3 = NULL, *res[3], c0 = 0, c1 = 0, c2 = 0;
     pbn_ntt_mod md[3];
     size_t total;
+    int three;
 
     while (L < cn) L <<= 1;
     if (L < 2) L = 2;
-    total = (size_t)3 * L + (size_t)3 * cn;
+    /* 3 2^k when that's enough: a quarter less (radix-3 tables: 8M = 2L/3 limbs) */
+    three = L >= 8 && 3 * (L / 4) >= cn;
+    if (three) L = 3 * (L / 4);
+    M = three ? L / 3 : L;
+    total = (size_t)2 * L + (size_t)4 * M + (three ? (size_t)8 * M : 0) + (size_t)3 * cn;
     buf = (pbn_limb *)pbn_alloc_fn(total * sizeof(pbn_limb));
     fa = buf;
     fb = fa + L;
     tw = fb + L;
-    res[0] = tw + L;
+    ts = tw + M;
+    iw = ts + M;
+    is = iw + M;
+    res[0] = is + M;
+    if (three) { r3 = res[0]; res[0] = r3 + 8 * M; }
     res[1] = res[0] + cn;
     res[2] = res[1] + cn;
 
     for (k = 0; k < 3; k++) {
         const pbn_ntt_mod *m = &md[k];
-        pbn_limb p, w, scale;
+        pbn_limb p, w, one, scale, scales, x;
         pbn_ntt_mod_init(&md[k], pbn_ntt_p[k]);
+        pbn_limb z = 0, zs = 0, zi = 0, zis = 0;
         p = m->p;
         w = pbn_ntt_powmod(m, pbn_ntt_g[k], (p - 1) / (pbn_limb)L);
-        pbn_ntt_twiddles(tw, L, w, m);
+        if (three) {
+            /* w^i, w^2i, w^-i, w^-2i (i < M), and the cube roots z = w^M, 1/z = z^2 */
+            pbn_limb wi = pbn_ntt_powmod(m, w, L - 1);
+            pbn_ntt_powers(r3, r3 + M, M, w, m);
+            pbn_ntt_powers(r3 + 2 * M, r3 + 3 * M, M, pbn_ntt_mulmod(m, w, w), m);
+            pbn_ntt_powers(r3 + 4 * M, r3 + 5 * M, M, wi, m);
+            pbn_ntt_powers(r3 + 6 * M, r3 + 7 * M, M, pbn_ntt_mulmod(m, wi, wi), m);
+            z = pbn_ntt_powmod(m, w, M);
+            zs = pbn_ntt_shoup_const(z, p);
+            zi = pbn_ntt_mulmod(m, z, z);
+            zis = pbn_ntt_shoup_const(zi, p);
+            w = pbn_ntt_mulmod(m, pbn_ntt_mulmod(m, w, w), w);   /* the M-th root */
+        }
+        pbn_ntt_twiddles(tw, ts, M, w, m);
 
-        /* inputs in Montgomery form (this also reduces each limb mod p) */
-        for (i = 0; i < an; i++) fa[i] = pbn_ntt_mont(ap[i], m->r2, p, m->ni);
+        /* the inputs, reduced into [0, 2p) (a Shoup product by 1) */
+        one = pbn_ntt_shoup_const(1, p);
+        for (i = 0; i < an; i++) fa[i] = pbn_ntt_shoup(ap[i], 1, one, p);
         for (; i < L; i++) fa[i] = 0;
-        pbn_ntt_fwd(fa, L, tw, m);
+        if (three) {
+            pbn_ntt_fwd3(fa, M, r3, r3 + M, r3 + 2 * M, r3 + 3 * M, z, zs, p);
+            for (i = 0; i < 3; i++) pbn_ntt_fwd(fa + i * M, M, tw, ts, p);
+        } else {
+            pbn_ntt_fwd(fa, L, tw, ts, p);
+        }
+        /* pointwise: Montgomery products (inputs < 2p < B / 2: results < p), each with an
+           extra 1/B, taken back below */
         if (sq) {
             for (i = 0; i < L; i++) fa[i] = pbn_ntt_mont(fa[i], fa[i], p, m->ni);
         } else {
-            for (i = 0; i < bn; i++) fb[i] = pbn_ntt_mont(bp[i], m->r2, p, m->ni);
+            for (i = 0; i < bn; i++) fb[i] = pbn_ntt_shoup(bp[i], 1, one, p);
             for (; i < L; i++) fb[i] = 0;
-            pbn_ntt_fwd(fb, L, tw, m);
+            if (three) {
+                pbn_ntt_fwd3(fb, M, r3, r3 + M, r3 + 2 * M, r3 + 3 * M, z, zs, p);
+                for (i = 0; i < 3; i++) pbn_ntt_fwd(fb + i * M, M, tw, ts, p);
+            } else {
+                pbn_ntt_fwd(fb, L, tw, ts, p);
+            }
             for (i = 0; i < L; i++) fa[i] = pbn_ntt_mont(fa[i], fb[i], p, m->ni);
         }
-        /* inverse: twiddles from the inverse root; then 1/L (and the Montgomery factor) */
-        pbn_ntt_twiddles(tw, L, pbn_ntt_powmod(m, w, p - 2), m);
-        pbn_ntt_inv(fa, L, tw, m);
-        scale = pbn_ntt_powmod(m, (pbn_limb)L % p, p - 2);          /* 1/L, plain */
-        for (i = 0; i < cn; i++) res[k][i] = pbn_ntt_mont(fa[i], scale, p, m->ni);
+        /* inverse: twiddles of the inverse root; then B / L (both factors at once) */
+        pbn_ntt_twiddles_inverse(iw, is, tw, ts, M, p);
+        if (three) {
+            for (i = 0; i < 3; i++) pbn_ntt_inv(fa + i * M, M, iw, is, p);
+            pbn_ntt_inv3(fa, M, r3 + 4 * M, r3 + 5 * M, r3 + 6 * M, r3 + 7 * M, zi, zis, p);
+        } else {
+            pbn_ntt_inv(fa, L, iw, is, p);
+        }
+        scale = pbn_ntt_mulmod(m, m->r1, pbn_ntt_powmod(m, (pbn_limb)L % p, p - 2));
+        scales = pbn_ntt_shoup_const(scale, p);
+        for (i = 0; i < cn; i++) {
+            x = pbn_ntt_shoup(fa[i], scale, scales, p);
+            res[k][i] = x >= p ? x - p : x;
+        }
     }
 
     /* Garner: x = v1 + p1 v2 + p1 p2 v3, then carried into rp */
@@ -2574,11 +2747,17 @@ static pbn_limb pbn_big_base(int base, int *k) {
 #  define PBN_SET_STR_DC_THRESHOLD 128    /* limbs (worth of digits) */
 #endif
 
-/* powers of the "big base" bb = base^k: pw[i] = bb^(2^i), worth k*2^i digits */
+/* powers of the "big base" bb = base^k: pw[i] = bb^(2^i), worth k*2^i digits. They're kept
+   without their low zero limbs (of which an even base has plenty: 10^k = 2^k 5^k), so
+   pw[i] = {p[i], n[i]} * B^z[i], and dividing or multiplying by it works on fewer limbs */
 typedef struct {
     pbn_limb *p[64];
-    pbn_size  n[64];
+    pbn_size  n[64];       /* limbs, without the zero ones */
+    pbn_size  z[64];       /* low zero limbs */
+    pbn_size  full[64];    /* n + z */
     size_t    digits[64];
+    pbn_limb *mem[64];     /* allocations (p[i] points into them) */
+    pbn_size  memn[64];
     int       count;
     pbn_limb  b0;          /* storage for p[0] (no allocation for small numbers) */
 } pbn_powtab;
@@ -2588,15 +2767,23 @@ static void pbn_powtab_init(pbn_powtab *t, pbn_limb bb, int k, pbn_size maxn) {
     t->b0 = bb;
     t->p[0] = &t->b0;
     t->n[0] = 1;
+    t->z[0] = 0;
+    t->full[0] = 1;
     t->digits[0] = (size_t)k;
     t->count = 1;
-    while (t->count < 64 && 2 * t->n[t->count - 1] <= maxn + 1) {
+    while (t->count < 64 && 2 * t->full[t->count - 1] <= maxn + 1) {
         int i = t->count;
-        pbn_size n = 2 * t->n[i - 1];
-        t->p[i] = PBN_TMP_ALLOC(n);
-        pbn_n_sqr(t->p[i], t->p[i - 1], t->n[i - 1]);
-        PBN_NORM(t->p[i], n);
+        pbn_size n = 2 * t->n[i - 1], z = 2 * t->z[i - 1];
+        pbn_limb *p = PBN_TMP_ALLOC(n);
+        t->mem[i] = p;
+        t->memn[i] = n;
+        pbn_n_sqr(p, t->p[i - 1], t->n[i - 1]);
+        PBN_NORM(p, n);
+        while (p[0] == 0) { p++; n--; z++; }
+        t->p[i] = p;
         t->n[i] = n;
+        t->z[i] = z;
+        t->full[i] = n + z;
         t->digits[i] = 2 * t->digits[i - 1];
         t->count++;
     }
@@ -2604,7 +2791,7 @@ static void pbn_powtab_init(pbn_powtab *t, pbn_limb bb, int k, pbn_size maxn) {
 
 static void pbn_powtab_clear(pbn_powtab *t) {
     int i;
-    for (i = 1; i < t->count; i++) PBN_TMP_FREE(t->p[i], 2 * t->n[i - 1]);
+    for (i = 1; i < t->count; i++) PBN_TMP_FREE(t->mem[i], t->memn[i]);
 }
 
 /* writes exactly nd digits of {np, nn} (zero-padded; the number must fit) into out;
@@ -2639,8 +2826,8 @@ static void pbn_get_str_rec(char *out, size_t nd, pbn_limb *np, pbn_size nn, con
         int i = t->count - 1;
         pbn_size qn, rn;
         pbn_limb *qp, *rp;
-        while (i > 0 && (2 * t->n[i] > nn + 1 || t->digits[i] >= nd)) i--;
-        rn = t->n[i];
+        while (i > 0 && (2 * t->full[i] > nn + 1 || t->digits[i] >= nd)) i--;
+        rn = t->full[i];
         if (nn < rn) {
             pbn_get_str_rec(out + nd - t->digits[i], t->digits[i], np, nn, t, base, digs);
             memset(out, '0', nd - t->digits[i]);
@@ -2649,7 +2836,9 @@ static void pbn_get_str_rec(char *out, size_t nd, pbn_limb *np, pbn_size nn, con
         qn = nn - rn + 1;
         qp = PBN_TMP_ALLOC(qn + rn);
         rp = qp + qn;
-        pbn_n_tdiv_qr(qp, rp, np, nn, t->p[i], rn);
+        /* n = (nh B^z + nl) by p B^z: q = nh / p, and the remainder is (nh mod p) B^z + nl */
+        pbn_n_tdiv_qr(qp, rp + t->z[i], np + t->z[i], nn - t->z[i], t->p[i], t->n[i]);
+        pbn_n_copy(rp, np, t->z[i]);
         pbn_get_str_rec(out, nd - t->digits[i], qp, qn, t, base, digs);
         pbn_get_str_rec(out + nd - t->digits[i], t->digits[i], rp, rn, t, base, digs);
         PBN_TMP_FREE(qp, qn + rn);
@@ -2701,10 +2890,11 @@ static pbn_size pbn_set_str_rec(pbn_limb *rp, const unsigned char *dv, size_t nd
             pbn_n_copy(rp, lp, ln);
             rn = ln;
         } else {
-            pbn_size pn = t->n[i];
-            if (hn >= pn) pbn_n_mul(rp, hp, hn, t->p[i], pn);
-            else          pbn_n_mul(rp, t->p[i], pn, hp, hn);
-            rn = hn + pn;
+            pbn_size pn = t->n[i], z = t->z[i];
+            if (hn >= pn) pbn_n_mul(rp + z, hp, hn, t->p[i], pn);
+            else          pbn_n_mul(rp + z, t->p[i], pn, hp, hn);
+            pbn_n_zero(rp, z);
+            rn = hn + pn + z;
             if (ln) pbn_n_add(rp, rp, rn, lp, ln);
             PBN_NORM(rp, rn);
         }
@@ -4451,17 +4641,23 @@ PBN_DEF int pbz_invert(pbz_ptr r, pbz_srcptr a, pbz_srcptr m) {
 
 /* ---- factorial ---- */
 
+#ifndef PBN_PRODLIMBS_THRESHOLD
+#  define PBN_PRODLIMBS_THRESHOLD 32
+#endif
+
+/* r = v[lo] * ... * v[hi - 1] (hi > lo, all of them nonzero) */
 static void pbn_prod_limbs(pbz_ptr r, const pbn_limb *v, pbn_size lo, pbn_size hi) {
-    if (hi - lo <= 16) {
-        pbn_size i;
-        pbz_set_ui(r, 1);
-        for (i = lo; i < hi; i++) {
-            pbn_size rn = SIZ(r);
-            pbn_limb *rp = PBZ_GROW(r, rn + 1), cy;
-            cy = pbn_n_mul_1(rp, rp, rn, v[i]);
+    if (hi - lo <= PBN_PRODLIMBS_THRESHOLD) {
+        /* one limb at a time, into a result sized once (k limbs make at most k) */
+        pbn_limb *rp = PBZ_GROW(r, hi - lo);
+        pbn_size i, rn = 1;
+        rp[0] = v[lo];
+        for (i = lo + 1; i < hi; i++) {
+            pbn_limb cy = pbn_n_mul_1(rp, rp, rn, v[i]);
             rp[rn] = cy;
-            SIZ(r) = (int)(rn + (cy != 0));
+            rn += cy != 0;
         }
+        SIZ(r) = (int)rn;
     } else {
         pbz_t t;
         pbn_size mid = lo + (hi - lo) / 2;
@@ -4495,17 +4691,19 @@ PBN_INLINE void pbn_fac_push(pbn_limb *v, pbn_size *cnt, pbn_limb *cur, pbn_limb
 
 /* r = oddpart(m!) = the product of the odd parts of 2..m (m >= 1), packed into limbs
    and multiplied with a product tree */
+#define PBN_FAC_STACK (PBN_FAC_SWING_THRESHOLD / 2 + 2)   /* packed factors of m < the threshold */
+
 static void pbn_fac_odd(pbz_ptr r, unsigned long m) {
     pbn_size cnt = 0, cap = (pbn_size)(m / 2 + 2);
-    pbn_limb cur = 1, *v;
+    pbn_limb cur = 1, *v, buf[PBN_FAC_STACK];
     unsigned long i;
     if (PBN_B == 32 && m > 65535UL) cap = (pbn_size)(m + 2);
-    v = PBN_TMP_ALLOC(cap);
+    v = cap <= PBN_FAC_STACK ? buf : PBN_TMP_ALLOC(cap);
     for (i = 3; i <= m; i++)
         pbn_fac_push(v, &cnt, &cur, (pbn_limb)i >> pbn_ctz((pbn_limb)i));
     v[cnt++] = cur;
     pbn_prod_limbs(r, v, 0, cnt);
-    PBN_TMP_FREE(v, cap);
+    if (v != buf) PBN_TMP_FREE(v, cap);
 }
 
 static unsigned long pbn_popcount_ul(unsigned long x) {
@@ -4580,6 +4778,21 @@ static const uint64_t pbn_fac_tab[21] = {
     6402373705728000u, 121645100408832000u, 2432902008176640000u
 };
 
+/* n! below the swing threshold: the direct product of 2..n, packed into limbs (no separate
+   power of 2: its shift would cost more than it saves); a function of its own, so that its
+   stack buffer doesn't weigh on the n! that come from the table */
+static PBN_NOINLINE void pbn_fac_small(pbz_ptr r, unsigned long n) {
+    pbn_size cnt = 0, cap = (pbn_size)(n / 2 + 2);
+    pbn_limb cur = 1, *v, buf[PBN_FAC_STACK];
+    unsigned long i;
+    if (PBN_B == 32 && n > 65535UL) cap = (pbn_size)(n + 2);
+    v = cap <= PBN_FAC_STACK ? buf : PBN_TMP_ALLOC(cap);
+    for (i = 2; i <= n; i++) pbn_fac_push(v, &cnt, &cur, (pbn_limb)i);
+    v[cnt++] = cur;
+    pbn_prod_limbs(r, v, 0, cnt);
+    if (v != buf) PBN_TMP_FREE(v, cap);
+}
+
 PBN_DEF void pbz_fac_ui(pbz_ptr r, unsigned long n) {
     if (n <= (PBN_B == 64 ? 20UL : 12UL)) {
         /* n! fits in a limb */
@@ -4589,18 +4802,8 @@ PBN_DEF void pbz_fac_ui(pbz_ptr r, unsigned long n) {
         return;
     }
     if ((pbn_limb)n != n) PBN_ABORT("factorial argument too large");
-    if (n >= PBN_FAC_SWING_THRESHOLD) { pbn_fac_swing(r, n); return; }
-    {
-        /* direct product of 2..n, packed into limbs (small n: no separate power of 2, its
-           shift would cost more than it saves) */
-        pbn_size cnt = 0, cap = (pbn_size)(n / 2 + 2);
-        pbn_limb cur = 1, *v = PBN_TMP_ALLOC(cap);
-        unsigned long i;
-        for (i = 2; i <= n; i++) pbn_fac_push(v, &cnt, &cur, (pbn_limb)i);
-        v[cnt++] = cur;
-        pbn_prod_limbs(r, v, 0, cnt);
-        PBN_TMP_FREE(v, cap);
-    }
+    if (n >= PBN_FAC_SWING_THRESHOLD) pbn_fac_swing(r, n);
+    else pbn_fac_small(r, n);
 }
 
 /* ---- primality ---- */
@@ -6311,7 +6514,7 @@ PBN_DEF int pbf_set_str(pbf_ptr r, const char *s, int base, pbf_rnd_t rnd) {
     /* special values */
     if ((k = pbf_match_ci(p, "@nan@")) != 0 || ((base <= 16) && (k = pbf_match_ci(p, "nan")) != 0)) {
         p += k;
-        if (k == 3 && *p == '(') {
+        if (*p == '(') {
             const char *q = p + 1;
             while ((*q >= '0' && *q <= '9') || (*q >= 'a' && *q <= 'z') || (*q >= 'A' && *q <= 'Z') || *q == '_') q++;
             if (*q == ')') p = q + 1;
