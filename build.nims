@@ -193,6 +193,8 @@ proc compile*(config: BuildConfig, showFooter: bool = false): int
             discard gorgeEx "src\\extras\\webview\\deps\\build.bat"
             #discard gorgeEx "src\\extras\\webview\\deps\\build-new.bat"
 
+    flags.add getEnv("ARTURO_EXTRA").splitWhitespace()
+
     let
         params = flags.join(" ")
         cmd = fmt"nim {config.backend} {params} -o:{config.binary} {paths.mainFile}"
@@ -434,12 +436,22 @@ cliInstance.defaultCommand = "build"
 let 
     args = cliInstance.args
 
+
+proc useNanbox(config: BuildConfig, disabled: bool): bool =
+    ## NaN-boxed values: for every 64-bit native build,
+    ## unless asked not to (--no-nanbox, or -d:NONANBOX
+    ## through ARTURO_EXTRA)
+    not disabled and
+        not config.webVersion and
+        targetCPU in ["amd64", "arm64"] and
+        not getEnv("ARTURO_EXTRA").contains("NONANBOX")
+
 cmd build, "[default] Build arturo and optionally install the executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
     ##     --arch -a: $hostCPU          chooses the target CPU
-    ##          [amd64, arm, arm64, i386, x86]
+    ##          [amd64, arm64]
     ##     --as: arturo                 changes the name of the binary
     ##     --mode -m: full              chooses the target Build Version
     ##          [full, mini, noui, web]
@@ -452,14 +464,15 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##     --debug -d                   enables debugging
     ##     --install -i                 installs the final binary
     ##     --log -l                     shows compilation logs
+    ##     --no-nanbox                  no NaN-boxed values (they're the default
+    ##                                  for 64-bit native builds)
     ##     --pgo                        profile-guided optimization (slower build, faster binary)
     ##     --raw                        disables compression
     ##     --release                    enable release config mode
     ##     --help
 
     let
-        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
-                          "x86-32", "arm", "arm-32"]
+        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
         availableBuilds = @["full", "mini", "noui", "web"]
@@ -475,13 +488,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
         let
             amd64 = availableCPUs[0..2]
             arm64 = [availableCPUs[3]]
-            x86 = availableCPUs[4..6]
-            arm32 = availableCPUs[7..8]
 
         >> amd64: amd64Config()
         >> arm64: arm64Config()
-        >> x86:   arm64Config()
-        >> arm32: arm32Config()
 
     match args.getOptionValue("mode", short="m", default="full", into=availableBuilds):
         >> ["full"]:
@@ -546,6 +555,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
     if args.hasFlag("release"):
         releaseConfig()
 
+    if useNanbox(config, args.hasFlag("no-nanbox")):
+        --define:NANBOX
+
     if args.hasFlag("pgo"):
         if config.webVersion:
             warn "--pgo has no effect on web builds"
@@ -559,12 +571,11 @@ cmd package, "Package arturo app and build executable":
     ##     Compiles packages into executables.
     ##
     ##     --arch: $hostCPU             chooses the target CPU
-    ##          [amd64, arm, arm64, i386, x86]
+    ##          [amd64, arm64]
     ##     --debug -d                   enables debugging
     ##     --help
 
-    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
-                          "x86-32", "arm", "arm-32"]
+    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64"]
 
     var config = buildConfig()
     config.binary = args.getPositionalArg(2)
@@ -575,17 +586,16 @@ cmd package, "Package arturo app and build executable":
         let
             amd64 = availableCPUs[0..2]
             arm64 = [availableCPUs[3]]
-            x86 = availableCPUs[4..6]
-            arm32 = availableCPUs[7..8]
 
         >> amd64: amd64Config()
         >> arm64: arm64Config()
-        >> x86:   arm64Config()
-        >> arm32: arm32Config()
 
     if args.hasFlag("debug", "d"):
         config.shouldCompress = false
         debugConfig()
+
+    if useNanbox(config, args.hasFlag("no-nanbox")):
+        --define:NANBOX
 
     config.buildPackage()
 

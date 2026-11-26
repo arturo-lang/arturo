@@ -17,37 +17,32 @@ when not defined(WEB):
 # Helpers
 #=======================================
 
-when defined(bit32):
-    func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_sadd_overflow", nodecl, nosideeffect.}
-    func subIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_ssub_overflow", nodecl, nosideeffect.}
-    func mulIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_smul_overflow", nodecl, nosideeffect.}
-else:
-    when not defined(WEB):
-        when sizeof(int) == sizeof(clong):
-            func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
-            func subIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_ssubl_overflow", nodecl, nosideeffect.}
-            func mulIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_smull_overflow", nodecl, nosideeffect.}
-        elif sizeof(int) == sizeof(clonglong):
-            func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
-            func subIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_ssubll_overflow", nodecl, nosideeffect.}
-            func mulIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_smulll_overflow", nodecl, nosideeffect.}        
-        else:
-            {.error: "No matching __builtin_*_overflow for current platform int size.".}
+when not defined(WEB):
+    when sizeof(int) == sizeof(clong):
+        func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_saddl_overflow", nodecl, nosideeffect.}
+        func subIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_ssubl_overflow", nodecl, nosideeffect.}
+        func mulIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_smull_overflow", nodecl, nosideeffect.}
+    elif sizeof(int) == sizeof(clonglong):
+        func addIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_saddll_overflow", nodecl, nosideeffect.}
+        func subIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_ssubll_overflow", nodecl, nosideeffect.}
+        func mulIntWithOverflow*(a, b: int, res: var int): bool {.importc: "__builtin_smulll_overflow", nodecl, nosideeffect.}        
     else:
-        # see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-        func isSafeInteger*(a: int): bool {.importjs: "Number.isSafeInteger(#)".}
-        
-        func addIntWithOverflow*(a, b: int, res: var int): bool =
-            res = a + b
-            return not isSafeInteger(res)
+        {.error: "No matching __builtin_*_overflow for current platform int size.".}
+else:
+    # see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+    func isSafeInteger*(a: int): bool {.importjs: "Number.isSafeInteger(#)".}
+    
+    func addIntWithOverflow*(a, b: int, res: var int): bool =
+        res = a + b
+        return not isSafeInteger(res)
 
-        func subIntWithOverflow*(a, b: int, res: var int): bool =
-            res = a - b
-            return not isSafeInteger(res)
+    func subIntWithOverflow*(a, b: int, res: var int): bool =
+        res = a - b
+        return not isSafeInteger(res)
 
-        func mulIntWithOverflow*(a, b: int, res: var int): bool =
-            res = a * b
-            return not isSafeInteger(res)
+    func mulIntWithOverflow*(a, b: int, res: var int): bool =
+        res = a * b
+        return not isSafeInteger(res)
 
 #=======================================
 # Methods

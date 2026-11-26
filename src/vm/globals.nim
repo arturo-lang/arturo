@@ -460,6 +460,13 @@ template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
 
+template commitInPlaceAny*(): untyped =
+    ## With NaN-boxing, a value that's held inline and reached 
+    ## through a path is a copy of the element - so, after 
+    ## an in-place change, it has to be stored back
+    when defined(NANBOX):
+        if xKind != Literal: SetPathSym(x.p, InPlaced)
+
 template SetInPlaceAny*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     if likely(xKind == Literal):

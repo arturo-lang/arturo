@@ -51,6 +51,9 @@ func addressOf(v: Value): string {.inline.} =
     when defined(WEB):
         # (no memory addresses in JS)
         "0x0"
+    elif defined(NANBOX):
+        # (values held inline have no address)
+        if v.isRef: fmt"{v.bits:#X}" else: "0x0"
     else:
         fmt"{cast[uint](v):#X}"
 

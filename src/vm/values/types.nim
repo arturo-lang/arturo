@@ -30,6 +30,11 @@ import vm/opcodes
 import vm/values/custom/[vbinary, vcolor, vcomplex, verror, vevent, vlogical, vquantity, vrange, vrational, vregex, vsymbol, vtask, vversion]
 import vm/values/flags
 
+when defined(NANBOX):
+    when defined(WEB) or sizeof(int) < 8:
+        {.error: "NaN-boxing (-d:NANBOX) needs a 64-bit native build".}
+    import std/macros
+
 when not defined(WEB):
     import vm/values/custom/[vsocket]
 
@@ -288,7 +293,7 @@ type
             senders*     : Deque[tuple[v: Value, f: Future[void]]]  # parked while full
             receivers*   : Deque[Future[Value]]                # parked while empty
 
-    Value* {.final,acyclic.} = ref object
+    ValueRef* {.final,acyclic.} = ref object
         info*   : ValueInfo
 
         ln*     : uint32
@@ -390,7 +395,269 @@ type
                 when not defined(WEB):
                     chn*: VChannel
 
-    ValueObj = typeof(Value()[])
+    ValueObj* = typeof(ValueRef()[])
+
+    # With -d:NANBOX, a Value is a single 64-bit word
+    # (see: NaN-boxing, below)
+    NanBoxedValue* = object
+        bits*: uint64
+
+    Value* = (when defined(NANBOX): NanBoxedValue else: ValueRef)
+
+#=======================================
+# NaN-boxing
+#=======================================
+
+# With -d:NANBOX, a Value is a single 64-bit word: the values that fit in it
+# are held right there (no allocation, no reference counting) and everything
+# else is a pointer to a ValueRef on the heap.
+#
+# An IEEE 754 double is laid out like this:
+#
+#   S[Exponent-][Mantissa------------------------------------------]
+#   1 sign bit, 11 exponent bits, 52 mantissa bits
+#
+# and any double with all of its exponent bits set is a NaN - there are
+# lots of different bit patterns for it, but we need just one. All the others
+# are free for us to use.
+#
+# Here, the top 16 bits of a Value tell what it is:
+#
+#   top 16 bits      | what it is          | the rest (48 bits)
+#   -----------------|---------------------|------------------------------
+#   0x0000           | pointer to ValueRef | the address (0 = nil)
+#   0x0001           | -                   | (unused)
+#   0x0002 .. 0xFFF2 | Floating            | its bits + 2^49 (with the top 16)
+#   0xFFF3 .. 0xFFFA | -                   | (unused)
+#   0xFFFB           | Type (built-in)     | the ValueKind it stands for
+#   0xFFFC           | Char                | its code point
+#   0xFFFD           | Null, Any, Logical  | 0: null, 1: any, 2: false,
+#                    |                     | 3: true, 4: maybe
+#   0xFFFE           | -                   | (unused)
+#   0xFFFF           | Integer             | its value: 48 bits, signed
+#
+# Why so:
+#
+# - A pointer is held as it is: no tag, no masking. On 64-bit systems,
+#   addresses only use the lower 48 bits, so the top 16 bits are always 0.
+#   And all-zero is nil - which is what the memory we get from Nim
+#   (new sequence items, fields, results) starts as.
+#
+# - A Floating is held with 2^49 added to its bits - so that 0.0 is not
+#   all-zero (that's nil), and that no double ends up in 0x0000 or 0x0001.
+#   Doubles go up to 0xFFF0... (-inf), so they end up between 0x0002...
+#   and 0xFFF2... - and every NaN is held as the same one, so that none of
+#   them gets in the way of the other kinds.
+#
+# - A built-in Type (:integer, :string, ...) is the ValueKind it stands for;
+#   user-defined types are regular ValueRefs.
+#
+# - A Char is its code point (a Rune: 32 bits).
+#
+# - Null, Any & the three Logicals are just a number each: comparing them
+#   is comparing the bits.
+#
+# - An Integer that doesn't fit in 48 bits (beyond ±140737488355327) is
+#   a regular ValueRef on the heap. Values are always constructed through
+#   newInteger, so the inline form is used whenever possible.
+
+when defined(NANBOX):
+    # The accessors are tiny & on every hot path: {.inline.} is
+    # only a hint to the C compiler, so we insist
+    when defined(gcc) or defined(clang) or defined(llvm_gcc):
+        {.pragma: nbInline, inline, codegenDecl: "static inline __attribute__((always_inline)) $# $#$#".}
+    else:
+        {.pragma: nbInline, inline.}
+
+    const
+        NbPayload       = 0x0000_FFFF_FFFF_FFFF'u64
+        NbIntegerTag    = 0xFFFF_0000_0000_0000'u64
+        NbFloatingShift = 1'u64 shl 49
+        NbTypeTag       = 0xFFFB_0000_0000_0000'u64
+        NbCharTag       = 0xFFFC_0000_0000_0000'u64
+        NbSingletonTag  = 0xFFFD_0000_0000_0000'u64
+        NbNullBits*     = NbSingletonTag or 0
+        NbFalseBits*    = NbSingletonTag or 2
+        NbTrueBits*     = NbSingletonTag or 3
+        NbMaybeBits*    = NbSingletonTag or 4
+        NbIntegerMin*   = -(1 shl 47)
+        NbIntegerMax*   = (1 shl 47) - 1
+
+    # The hooks have to be declared before anything that contains a Value
+    # gets its own ones generated
+    proc `=wasMoved`*(v: var NanBoxedValue) {.nbInline.}
+    proc `=destroy`*(v: NanBoxedValue) {.nbInline.}
+    proc `=copy`*(d: var NanBoxedValue, s: NanBoxedValue) {.nbInline.}
+    proc `=dup`*(s: NanBoxedValue): NanBoxedValue {.nbInline.}
+    proc `=sink`*(d: var NanBoxedValue, s: NanBoxedValue) {.nbInline.}
+
+    template nbTop(v: NanBoxedValue): uint64 = v.bits shr 48
+    template isRef*(v: NanBoxedValue): bool = nbTop(v) == 0         # (nil included)
+    template heapObj*(v: NanBoxedValue): ptr ValueObj = cast[ptr ValueObj](v.bits)
+    template heapRef(v: NanBoxedValue): ValueRef = cast[ValueRef](cast[pointer](v.bits))
+    template ownsRef(v: NanBoxedValue): bool = isRef(v) and v.bits != 0
+
+    proc `=wasMoved`*(v: var NanBoxedValue) {.nbInline.} =
+        v.bits = 0
+
+    proc `=destroy`*(v: NanBoxedValue) {.nbInline.} =
+        if ownsRef(v): GC_unref(heapRef(v))
+
+    proc `=copy`*(d: var NanBoxedValue, s: NanBoxedValue) {.nbInline.} =
+        if d.bits == s.bits: return
+        if ownsRef(s): GC_ref(heapRef(s))
+        if ownsRef(d): GC_unref(heapRef(d))
+        d.bits = s.bits
+
+    proc `=dup`*(s: NanBoxedValue): NanBoxedValue {.nbInline.} =
+        if ownsRef(s): GC_ref(heapRef(s))
+        result.bits = s.bits
+
+    proc `=sink`*(d: var NanBoxedValue, s: NanBoxedValue) {.nbInline.} =
+        if ownsRef(d): GC_unref(heapRef(d))
+        d.bits = s.bits
+
+    converter toValue*(r: sink ValueRef): NanBoxedValue {.nbInline.} =
+        ## a heap value, as a Value (that holds a reference to it)
+        result.bits = cast[uint64](cast[pointer](r))
+        if not r.isNil: GC_ref(r)
+
+    converter toValue*(n: typeof(nil)): NanBoxedValue {.nbInline.} =
+        result.bits = 0
+
+    proc isNil*(v: NanBoxedValue): bool {.nbInline.} = v.bits == 0
+    proc `==`*(v: NanBoxedValue, n: typeof(nil)): bool {.nbInline.} = v.bits == 0
+
+    template isInlineInteger*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFF
+
+    template isInlineFloating*(v: NanBoxedValue): bool = nbTop(v) >= 0x0002 and nbTop(v) <= 0xFFF2
+
+    template isSingleton*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFD
+
+    func inlineSingleton*(k: ValueKind, l: VLogical = False): NanBoxedValue {.nbInline.} =
+        NanBoxedValue(bits: NbSingletonTag or (
+            case k:
+                of Null: 0'u64
+                of Any: 1'u64
+                else:
+                    if l == False: 2'u64
+                    elif l == True: 3'u64
+                    else: 4'u64
+        ))
+
+    template isInlineType*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFB
+
+    func inlineType*(t: ValueKind): NanBoxedValue {.nbInline.} =
+        NanBoxedValue(bits: NbTypeTag or uint64(ord(t)))
+
+    template isInlineChar*(v: NanBoxedValue): bool = nbTop(v) == 0xFFFC
+
+    func inlineChar*(c: Rune): NanBoxedValue {.nbInline.} =
+        NanBoxedValue(bits: NbCharTag or uint64(cast[uint32](c)))
+
+    func inlineInteger*(i: int): NanBoxedValue {.nbInline.} =
+        NanBoxedValue(bits: NbIntegerTag or (cast[uint64](i) and NbPayload))
+
+    func inlineFloating*(f: float): NanBoxedValue {.nbInline.} =
+        var b = cast[uint64](f)
+        if f != f: b = 0x7FF8_0000_0000_0000'u64       # one NaN for all
+        NanBoxedValue(bits: b + NbFloatingShift)
+
+    # The fields of a ValueRef, on a Value
+
+    proc otherKind(v: NanBoxedValue): ValueKind {.noinline.} =
+        if isInlineChar(v): Char
+        elif isInlineType(v): Type
+        else: Floating
+
+    proc kind*(v: NanBoxedValue): ValueKind {.nbInline.} =
+        if likely(isRef(v)): heapObj(v).kind
+        elif isInlineInteger(v): Integer
+        elif isInlineFloating(v): Floating
+        elif isSingleton(v):
+            let k = v.bits and 0xFF
+            if k >= 2: Logical elif k == 0: Null else: Any
+        else: otherKind(v)
+
+    proc iKind*(v: NanBoxedValue): IntegerKind {.nbInline.} =
+        if isRef(v): heapObj(v).iKind else: NormalInteger
+
+    proc i*(v: NanBoxedValue): int {.nbInline.} =
+        if isInlineInteger(v): cast[int](v.bits shl 16) shr 16
+        else: heapObj(v).i
+
+    proc `i=`*(v: var NanBoxedValue, x: int) {.nbInline.} =
+        if isRef(v): heapObj(v).i = x
+        elif x >= NbIntegerMin and x <= NbIntegerMax: v = inlineInteger(x)
+        else: v = ValueRef(kind: Integer, iKind: NormalInteger, i: x)
+
+    proc t*(v: NanBoxedValue): ValueKind {.nbInline.} =
+        if isRef(v): heapObj(v).t
+        else: ValueKind(v.bits and 0xFF)
+
+    proc tpKind*(v: NanBoxedValue): TypeKind {.nbInline.} =
+        if isRef(v): heapObj(v).tpKind else: BuiltinType
+
+    proc tid*(v: NanBoxedValue): string =
+        ## (a built-in Type has no name of its own: "", as when reading it from a ValueRef)
+        if isRef(v): heapObj(v).tid else: ""
+
+    proc c*(v: NanBoxedValue): Rune {.nbInline.} =
+        if isRef(v): heapObj(v).c
+        else: Rune(cast[int32](uint32(v.bits and 0xFFFF_FFFF'u64)))
+
+    proc `c=`*(v: var NanBoxedValue, x: Rune) {.nbInline.} =
+        if isRef(v): heapObj(v).c = x
+        else: v = inlineChar(x)
+
+    proc f*(v: NanBoxedValue): float {.nbInline.} =
+        if isRef(v): heapObj(v).f
+        else: cast[float](v.bits - NbFloatingShift)
+
+    proc `f=`*(v: var NanBoxedValue, x: float) {.nbInline.} =
+        if isRef(v): heapObj(v).f = x
+        else: v = inlineFloating(x)
+
+    proc flags*(v: NanBoxedValue): ValueFlags {.nbInline.} =
+        if isRef(v): heapObj(v).flags
+        elif isSingleton(v):
+            case v.bits and 0xFF:
+                of 2: ValueFlags(False)
+                of 3: ValueFlags(True)
+                of 4: ValueFlags(Maybe)
+                else: {}
+        else: {}
+
+    proc `flags=`*(v: NanBoxedValue, x: ValueFlags) {.nbInline.} =
+        if isRef(v): heapObj(v).flags = x
+
+    proc info*(v: NanBoxedValue): ValueInfo {.nbInline.} =
+        if isRef(v): heapObj(v).info else: nil
+
+    proc `info=`*(v: NanBoxedValue, x: ValueInfo) {.nbInline.} =
+        if isRef(v): heapObj(v).info = x
+
+    proc ln*(v: NanBoxedValue): uint32 {.nbInline.} =
+        if isRef(v): heapObj(v).ln else: 0
+
+    proc `ln=`*(v: NanBoxedValue, x: uint32) {.nbInline.} =
+        if isRef(v): heapObj(v).ln = x
+
+    template `[]`*(v: NanBoxedValue): untyped = heapObj(v)[]
+
+    macro refFields(names: varargs[untyped]): untyped =
+        ## the fields that only heap values have: read & written in place
+        result = newStmtList()
+        for n in names:
+            let name = postfix(n, "*")
+            result.add quote do:
+                template `name`(v: NanBoxedValue): untyped = heapObj(v).`n`
+
+    refFields(bi, z, rat, version, s, sid, p, m, rx, u, q, err, errKind,
+              l, e, eobj, n, a, data, cachedTrans, singleton, rng, d, proto, o, magic,
+              sto, funcType, methType, dbKind, trans, tsk, evt)
+    when defined(SQLITE): refFields(sqlitedb)
+    when not defined(WEB): refFields(sock, chn)
 
 #=======================================
 # Constants
@@ -427,13 +694,36 @@ when sizeof(ValueObj) > 64:
 
 # Flags
 
-template readonly*(val: Value): bool = IsReadOnly in val.flags
-template `readonly=`*(val: Value, newVal: bool) = val.flags[IsReadOnly] = newVal
+when defined(NANBOX):
+    # (values held inline are never read-only or dynamic:
+    # they can't be shared, so there's nothing to look up)
+    template readonly*(val: Value): bool =
+        let v = val
+        isRef(v) and IsReadOnly in heapObj(v).flags
+else:
+    template readonly*(val: Value): bool = IsReadOnly in val.flags
+template `readonly=`*(val: Value, newVal: bool) =
+    var fl = val.flags; fl[IsReadOnly] = newVal; val.flags = fl
 
-template dynamic*(val: Value): bool = IsDynamic in val.flags
-template `dynamic=`*(val: Value, newVal: bool) = val.flags[IsDynamic] = newVal
+when defined(NANBOX):
+    template dynamic*(val: Value): bool =
+        let v = val
+        isRef(v) and IsDynamic in heapObj(v).flags
+else:
+    template dynamic*(val: Value): bool = IsDynamic in val.flags
+template `dynamic=`*(val: Value, newVal: bool) =
+    var fl = val.flags; fl[IsDynamic] = newVal; val.flags = fl
 
-template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
+when defined(NANBOX):
+    # (Logicals are held inline: no need to go through the flags)
+    proc b*(val: Value): VLogical {.nbInline.} =
+        case val.bits:
+            of NbTrueBits: True
+            of NbFalseBits: False
+            of NbMaybeBits: Maybe
+            else: VLogical(val.flags - NonLogicalF)
+else:
+    template b*(val: Value): VLogical = VLogical(val.flags - NonLogicalF)
 template `b=`*(val: Value, newVal: VLogical) = val.flags = val.flags - LogicalF + newVal
 
 template makeAccessor(field, subfield: untyped) =

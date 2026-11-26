@@ -2564,14 +2564,14 @@ proc defineModule*(moduleName: string) =
                     if not occurrences.hasKey(str):
                         occurrences[str] = newInteger(0)
 
-                    occurrences[str].i += 1
+                    occurrences[str].i = occurrences[str].i + (1)
             else:
                 for item in x.a:
                     let str = $(item)
                     if not occurrences.hasKey(str):
                         occurrences[str] = newInteger(0)
                         
-                    occurrences[str].i += 1
+                    occurrences[str].i = occurrences[str].i + (1)
             
             push(newDictionary(occurrences))
 
