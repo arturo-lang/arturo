@@ -694,11 +694,23 @@ when sizeof(ValueObj) > 64:
 
 # Flags
 
-template readonly*(val: Value): bool = IsReadOnly in val.flags
+when defined(NANBOX):
+    # (values held inline are never read-only or dynamic:
+    # they can't be shared, so there's nothing to look up)
+    template readonly*(val: Value): bool =
+        let v = val
+        isRef(v) and IsReadOnly in heapObj(v).flags
+else:
+    template readonly*(val: Value): bool = IsReadOnly in val.flags
 template `readonly=`*(val: Value, newVal: bool) =
     var fl = val.flags; fl[IsReadOnly] = newVal; val.flags = fl
 
-template dynamic*(val: Value): bool = IsDynamic in val.flags
+when defined(NANBOX):
+    template dynamic*(val: Value): bool =
+        let v = val
+        isRef(v) and IsDynamic in heapObj(v).flags
+else:
+    template dynamic*(val: Value): bool = IsDynamic in val.flags
 template `dynamic=`*(val: Value, newVal: bool) =
     var fl = val.flags; fl[IsDynamic] = newVal; val.flags = fl
 
