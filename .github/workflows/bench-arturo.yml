@@ -84,6 +84,14 @@ jobs:
                 # (setup-arturo can't install Nim twice in the same place)
                 rm -rf nim
 
+            - name: Clean up after the first build (Windows)
+              # (setup-arturo installs MSYS2 & creates bin/ anew: it can't with them there; the second
+              # setup installs the same MSYS2 packages, so both builds find their DLLs later)
+              if: matrix.os == 'windows'
+              shell: pwsh
+              run: |
+                Remove-Item -Recurse -Force "$env:RUNNER_TEMP\msys64", bin, nim -ErrorAction SilentlyContinue
+
             - name: Arturo master + PocketBignum (release, PGO)
               uses: arturo-lang/setup-arturo@v2
               with:
