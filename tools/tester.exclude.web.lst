@@ -11,6 +11,40 @@ parallelism
 compiler.ScriptNotExists
 runtime.FileNotFound.1
 runtime.FileNotFound.2
+evaluator
+lib.arithmetic
+lib.crypto
+lib.numbers
+quantities.signatures
+sorting
+assertion.AssertionFailed.1
+assertion.AssertionFailed.2
+assertion.ensureWithCustomMessage
+lib.core.unstack.StackUnderflow
+program.panic
+program.panic.underscores
+runtime.CannotConvert
+runtime.CannotConvertDifferentDimensions
+runtime.CannotConvertDifferentDimensions.2
+runtime.ConversionFailed
+runtime.DivisionByZero
+runtime.IntegerOperationOverflow
+runtime.IntegerParsingOverflow
+runtime.KeyNotFound
+runtime.KeyNotFound.underscores
+runtime.NotEnoughArguments.1
+runtime.NotEnoughArguments.2
+runtime.OutOfBounds
+runtime.RangeWIthZeroStep
+runtime.SymbolNotFound
+runtime.UnitExponentOutOfRange.1
+runtime.UnitExponentOutOfRange.2
+runtime.WrongArgumentType.1
+runtime.WrongArgumentType.2
+syntax.MissingClosingBracket
+syntax.NewlineInQuotedString
+syntax.UnterminatedString.1
+syntax.UnterminatedString.2
 ABC incremental counts
 ABC words
 Alternade words
@@ -46,3 +80,12 @@ Words from neighbour ones
 Harmonic series
 Wolstenholme numbers
 Factors of a Mersenne number
+Arithmetic/Rational
+CSV to HTML translation
+JSON
+Old Russian measure of length
+Ordered partitions
+Runge-Kutta method
+Strip block comments
+Subleq
+Top rank per group
