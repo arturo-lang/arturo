@@ -70,7 +70,7 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/setup-arturo@freebsd-extra     # TEMPORARY (nan-boxing): until arturo-lang/setup-arturo#50 is in
+              uses: arturo-lang/setup-arturo@v2
               env:
                 ARTURO_EXTRA: ${{ matrix.nanbox && '-d:NANBOX' || '' }}
               with:
