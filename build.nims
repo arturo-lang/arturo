@@ -439,7 +439,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##     Provides a cross-compilation for the Arturo's binary.
     ##
     ##     --arch -a: $hostCPU          chooses the target CPU
-    ##          [amd64, arm, arm64, i386, x86]
+    ##          [amd64, arm64]
     ##     --as: arturo                 changes the name of the binary
     ##     --mode -m: full              chooses the target Build Version
     ##          [full, mini, noui, web]
@@ -458,8 +458,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##     --help
 
     let
-        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
-                          "x86-32", "arm", "arm-32"]
+        availableCPUs = @["amd-64", "x64", "x86-64", "arm-64"]
         availableOSes = @["freebsd", "openbsd", "netbsd", "linux", "mac",
                           "macos", "macosx", "win", "windows",]
         availableBuilds = @["full", "mini", "noui", "web"]
@@ -475,13 +474,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
         let
             amd64 = availableCPUs[0..2]
             arm64 = [availableCPUs[3]]
-            x86 = availableCPUs[4..6]
-            arm32 = availableCPUs[7..8]
 
         >> amd64: amd64Config()
         >> arm64: arm64Config()
-        >> x86:   arm64Config()
-        >> arm32: arm32Config()
 
     match args.getOptionValue("mode", short="m", default="full", into=availableBuilds):
         >> ["full"]:
@@ -559,12 +554,11 @@ cmd package, "Package arturo app and build executable":
     ##     Compiles packages into executables.
     ##
     ##     --arch: $hostCPU             chooses the target CPU
-    ##          [amd64, arm, arm64, i386, x86]
+    ##          [amd64, arm64]
     ##     --debug -d                   enables debugging
     ##     --help
 
-    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64", "i386", "x86",
-                          "x86-32", "arm", "arm-32"]
+    const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64"]
 
     var config = buildConfig()
     config.binary = args.getPositionalArg(2)
@@ -575,13 +569,9 @@ cmd package, "Package arturo app and build executable":
         let
             amd64 = availableCPUs[0..2]
             arm64 = [availableCPUs[3]]
-            x86 = availableCPUs[4..6]
-            arm32 = availableCPUs[7..8]
 
         >> amd64: amd64Config()
         >> arm64: arm64Config()
-        >> x86:   arm64Config()
-        >> arm32: arm32Config()
 
     if args.hasFlag("debug", "d"):
         config.shouldCompress = false
