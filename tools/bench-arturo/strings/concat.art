@@ -1,0 +1,4 @@
+; building a string piece by piece (in place)
+s: ""
+loop 1..2000000 'i -> 's ++ "ab"
+print size s

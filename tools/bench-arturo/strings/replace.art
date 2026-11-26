@@ -1,0 +1,8 @@
+; replacing substrings
+s: repeat "hello world, hello there; " 8000
+n: 0
+loop 1..200 'k [
+    r: replace s "hello" "goodbye"
+    n: n + size r
+]
+print n

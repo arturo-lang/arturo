@@ -1,0 +1,8 @@
+; parsing comma-separated lines
+lines: map 1..20000 'i -> ~"|i|,name|i|,|i * 3|,|i % 5|,ok"
+total: 0
+loop lines 'l [
+    f: split.by: "," l
+    total: total + (to :integer f\0) + to :integer f\2
+]
+print total

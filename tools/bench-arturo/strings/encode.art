@@ -1,0 +1,9 @@
+; base-64 encoding & decoding
+s: repeat "Some text to encode, with ελληνικά too. " 2000
+n: 0
+loop 1..400 'k [
+    e: encode s
+    d: decode e
+    n: n + (size e) + size d
+]
+print n

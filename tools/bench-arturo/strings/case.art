@@ -1,0 +1,5 @@
+; upper, lower, capitalize
+w: map 1..40000 'i -> ~"word|i|Text"
+n: 0
+loop w 'x -> n: n + (size upper x) + (size lower x) + size capitalize x
+print n

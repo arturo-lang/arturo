@@ -1,0 +1,7 @@
+; string interpolation
+n: 0
+loop 1..60000 'i [
+    t: ~"item |i| of |i * 2| (|i % 7|)"
+    n: n + size t
+]
+print n

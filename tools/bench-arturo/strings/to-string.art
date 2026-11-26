@@ -1,0 +1,7 @@
+; numbers to strings
+n: 0
+loop 1..500000 'i [
+    n: n + size to :string i
+    n: n + size to :string i * 3
+]
+print n

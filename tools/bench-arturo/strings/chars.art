@@ -1,0 +1,5 @@
+; going through the characters of a string
+s: repeat "the quick brown fox αβγ 日本 " 40000
+n: 0
+loop s 'c -> if c = ' ' -> n: n + 1
+print [size s n]

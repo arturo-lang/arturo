@@ -1,0 +1,6 @@
+; regular expressions: matching, replacing, splitting
+s: ""
+loop 1..3000 'i -> 's ++ ~"user|i|@host|i % 50|.example.com sent |i * 7| bytes\n"
+print size match s {/\d+/}
+print size replace s {/host\d+/} "server"
+print size split.by: {/\n/} s
