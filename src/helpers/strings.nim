@@ -206,16 +206,10 @@ proc realFind*(s: string, subs: string): int =
             s.replacef(re"\e[^m]+m","")
         else:
             s
-    let subsLen = subs.len
-    let runeLen = cleanString.runeLen()
-    var i: int = 0
-
-    while i < runeLen:
-        if (i + subsLen <= runeLen) and (cleanString.runeSubStr(i, subsLen) == subs):
-            return i
-        i += 1
-
-    return -1
+    # (a plain search, then the character index of what was found)
+    let pos = cleanString.find(subs)
+    if pos < 0: return -1
+    return cleanString.byteToRuneIndex(pos)
 
 func wrapped*(initial: string, limit=50, delim="\n"): string =
     if initial.len < limit:
