@@ -31,6 +31,17 @@ def main():
             out.append(f"| {r['platform']} | " + " | ".join(cells) + " |")
         out.append("")
 
+    out += ["### Times (median, s): " + " / ".join(names), "", "| script | " +
+            " | ".join(r["platform"] for r in reports) + " |", "|---|" + "---:|" * len(reports)]
+    for s in [e["script"] for e in reports[0]["results"]]:
+        cells = []
+        for r in reports:
+            e = next((x for x in r["results"] if x["script"] == s), None)
+            cells.append(" / ".join((f"{e['bins'][n]['median']:.3f}" if e["bins"][n]["status"] == "ok"
+                                     else e["bins"][n]["status"]) for n in names) if e else "-")
+        out.append(f"| {s} | " + " | ".join(cells) + " |")
+    out.append("")
+
     out += ["### Every script", "", "| script | " +
             " | ".join(f"{r['platform']}<br>{b} vs {a}" for r in reports for a, b in ps) + " |",
             "|---|" + "---:|" * (len(reports) * len(ps))]

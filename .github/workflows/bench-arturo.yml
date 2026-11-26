@@ -30,7 +30,10 @@ jobs:
                     - { name: macos-amd64,   runner: macos-15-intel,   os: macos,   arch: amd64, prefix: '' }
                     - { name: windows-amd64, runner: windows-latest,   os: windows, arch: amd64, prefix: '' }
         steps:
+            # (in a folder of its own: setup-arturo builds in the workspace, and wants a bin/ of its own)
             - uses: actions/checkout@v6
+              with:
+                path: bench-src
 
             - name: Arturo 0.10.0 (as released)
               if: matrix.os != 'windows'
@@ -103,7 +106,7 @@ jobs:
               run: |
                 exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
                 py=$(command -v python3 || command -v python)
-                "$py" tools/bench-arturo/run.py \
+                "$py" bench-src/tools/bench-arturo/run.py \
                     --bin "0.10.0=bins/0.10.0/arturo$exe" \
                     --bin "master=bins/master/arturo$exe" \
                     --bin "master+pocketbignum=bins/pocketbignum/arturo$exe" \
