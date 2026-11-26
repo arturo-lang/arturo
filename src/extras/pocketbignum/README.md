@@ -1,86 +1,182 @@
-# PocketBignum
+<h1 align="center">
+    PocketBignum
+</h1>
 
-[![CI](https://github.com/pocket-libs/pocket-bignum/actions/workflows/ci.yml/badge.svg)](https://github.com/pocket-libs/pocket-bignum/actions/workflows/ci.yml)
+<p align="center">
+    <b>Small, fast & portable<br>arbitrary-precision arithmetic, in a single C header</b>
+    <br><br>
+    <img src="https://img.shields.io/github/license/pocket-libs/pocket-bignum?style=for-the-badge">
+    <img src="https://img.shields.io/badge/language-C-6489E2.svg?style=for-the-badge" alt="Language"/>
+    <a href="https://github.com/pocket-libs/pocket-bignum/actions/workflows/ci.yml" style="text-decoration: none; display: inline-block;"><img src="https://img.shields.io/github/actions/workflow/status/pocket-libs/pocket-bignum/ci.yml?branch=main&label=tests&style=for-the-badge" alt="Tests"/></a>
+</p>
 
-Small, fast, portable arbitrary-precision arithmetic in a single C99 header:
-integers, rationals and correctly rounded binary floats. Exposes the subset of
-GMP + MPFR that [Arturo](https://arturo-lang.io) uses, with drop-in `gmp.h` /
-`mpfr.h` facades. MIT licensed. No dependencies.
+---
 
-## Usage
+<!--ts-->
+
+* [What does this library do?](#what-does-this-library-do)
+* [How do I use it?](#how-do-i-use-it)
+    * [As a GMP/MPFR replacement](#as-a-gmpmpfr-replacement)
+    * [Options](#options)
+* [What's in it?](#whats-in-it)
+* [How fast is it?](#how-fast-is-it)
+* [Testing](#testing)
+* [Limitations](#limitations)
+* [License](#license)
+
+<!--te-->
+
+---
+
+### What does this library do?
+
+Integers, rationals and correctly-rounded binary floats - of any size - with no dependencies whatsoever: just one header file you drop into your project.
+
+It covers a big part of GMP & MPFR (with the same semantics, down to the edge cases), comes with drop-in `gmp.h` / `mpfr.h` facades, and - for everyday sizes - it's just as fast.
+
+> [!TIP]
+> If what you need is the absolute fastest thing for numbers with millions of digits, GMP is still your friend. If what you need is something small, portable and fast enough that you can just *bundle*, then you're in the right place. :wink:
+
+### How do I use it?
+
+Simply include it, and define `PBN_IMPLEMENTATION` in exactly one `.c` file (or just compile `pocketbignum.c`):
 
 ```c
-#define PBN_IMPLEMENTATION      // in exactly one .c file (or just compile pocketbignum.c)
-#include "pocketbignum.h"       // native names: pbz_* (int), pbq_* (rational), pbf_* (float)
+#include <stdio.h>
+#include <stdlib.h>
+
+#define PBN_IMPLEMENTATION
+#include "pocketbignum.h"
+
+int main(void) {
+    pbz_t a;
+    pbz_init(a);
+
+    pbz_ui_pow_ui(a, 3, 1000);                  // 3^1000
+    char *s = pbz_get_str(NULL, 10, a);
+    printf("%s\n", s);
+
+    free(s);
+    pbz_clear(a);
+    return 0;
+}
 ```
 
-As a GMP/MPFR replacement, put `compat/` on the include path; `<gmp.h>` and
-`<mpfr.h>` then map `mpz_*`, `mpq_*`, `mpfr_*` to PocketBignum, with identical
-struct layouts and field names (`__mpz_struct`, `__mpq_struct`, `__mpfr_struct`).
+The native names are `pbz_*` (integers), `pbq_*` (rationals) and `pbf_*` (floats).
 
-Options: `PBN_STATIC`, `PBN_LIMB_BITS=32|64`, `PBN_PORTABLE` (no intrinsics / `__int128`), `PBN_ABORT(msg)`.
+#### As a GMP/MPFR replacement
 
-## Scope
+Put `compat/` on your include path and `<gmp.h>` & `<mpfr.h>` map `mpz_*`, `mpq_*` and `mpfr_*` to PocketBignum - with identical struct layouts and field names (`__mpz_struct`, `__mpq_struct`, `__mpfr_struct`). That is: code written for GMP/MPFR should compile and run as it is.
+
+#### Options
+
+- `PBN_STATIC`: everything `static`
+- `PBN_LIMB_BITS=32|64`: the limb size
+- `PBN_PORTABLE`: pure C (no intrinsics, no `__int128`)
+- `PBN_NO_ASM`: no assembly kernels
+- `PBN_ABORT(msg)`: what to do on a fatal error
+
+Every algorithm threshold (`PBN_MUL_TOOM3_THRESHOLD`, `PBN_MUL_FFT_THRESHOLD`, etc) can also be overridden with `-D`.
+
+### What's in it?
 
 | Layer | Functions |
 |---|---|
 | `mpz` | ~115: arithmetic, all t/f/c divisions, 2exp ops, bitwise (two's complement), pow/powm/invert, gcd/lcm, sqrt, fac, primality (BPSW), nextprime, conversions, strings |
 | `mpq` | ~30: canonicalize, add/sub/mul/div, inv/neg/abs, mul/div_2exp, cmp*, get/set_d, get/set_str, num/den access |
-| `mpfr` | ~50: init/clear/prec, set/get (d, si, ui, z, str), cmp*, fits_uint_p, add/sub/mul/div (+ `_z`, `_d`), pow, pow_z, predicates. All 5 rounding modes, correct rounding, ternary values, exponent range [1-2^30, 2^30-1] like MPFR |
+| `mpfr` | ~50: init/clear/prec, set/get (d, si, ui, z, str), cmp*, fits_uint_p, add/sub/mul/div (+ `_z`, `_d`), pow, pow_z, predicates. All 5 rounding modes, correct rounding, ternary values, exponent range [1-2^30, 2^30-1] - like MPFR |
 
-Semantics follow GMP/MPFR precisely, including edge behaviour Arturo can observe:
-`mpz_probab_prime_p` 2/1/0 cutoffs, `mpq_set_si(0, d)` → 0/1, `mpfr_get_str` digit
-counts and MPFR's double-rounding of ties, `mpfr_set_str` syntax (`@inf@`, `nan(...)`,
-`0x...p`, `@` exponents), signed zeros, pow special cases (C99 Annex F).
+The semantics follow GMP/MPFR precisely - edge cases included: `mpz_probab_prime_p`'s 2/1/0 cutoffs, `mpq_set_si(0, d)` → 0/1, `mpfr_get_str` digit counts and MPFR's double-rounding of ties, `mpfr_set_str`'s syntax (`@inf@`, `nan(...)`, `0x...p`, `@` exponents), signed zeros, and `pow`'s special cases (C99 Annex F).
 
-## Testing
+Under the hood: Karatsuba, Toom-3 & Toom-4, an FFT (number-theoretic transforms modulo three primes) for big products, divide & conquer division and radix conversion, half-gcd, Montgomery `powm`, assembly kernels on x86-64 & arm64 - and thresholds tuned per CPU.
 
-```sh
-make test                  # everything below
-make test64 test32 testportable   # mpz fuzz vs GMP (64-bit limbs, 32-bit limbs, pure C)
-make testqf                # mpq fuzz vs GMP + mpfr fuzz vs MPFR, same three builds
-make testcompat            # program written against <gmp.h> names
-make testthresholds        # fuzz with tiny thresholds: Karatsuba, Toom-3 & divide-and-conquer
-                           # radix conversion on almost every operation
-make bench                 # timings vs GMP / MPFR
-make bench-ruby            # timings vs Ruby's Integer (needs ruby)
-make bench-small           # small numbers (1-3 limbs), the way Arturo uses them
-```
+### How fast is it?
 
-Fuzzers run under ASan + UBSan and compare every result, ternary value and aliasing
-variant against GMP 6.3 / MPFR 4.2.2 (needed only for testing: `GMP=/prefix`).
-
-## Performance (vs GMP 6.3 / MPFR 4.2.2)
-
-Ratio = PocketBignum's time / GMP's or MPFR's (lower is better), medians of 5 runs
-on CI (Linux, 64-bit limbs; amd64: AMD EPYC, arm64: Neoverse-N2).
+Here's how it compares to GMP 6.3 / MPFR 4.2.2: the ratio is PocketBignum's time divided by GMP's or MPFR's - so, lower is better and 1.0× means "just as fast". (Medians of 5 runs on CI - Linux, 64-bit limbs; amd64: AMD EPYC, arm64: Neoverse-N2)
 
 | | amd64 | arm64 |
 |---|---|---|
-| mpz add, mul, sqr, sqrt (1–2 limbs) | 0.8–1.1× | 0.4–1.0× |
-| mpz mul, sqr (4–64 limbs) | 1.3–1.7× | 0.9–1.5× |
-| mpz mul, sqr (128–4096 limbs) | 1.5–2.1× | 1.5–2.2× |
-| mpz division (2n by n limbs) | 0.9–1.6× | 1.1–1.6× |
-| mpz gcd | 0.6× (1 limb) – 1.8× | 1.0–2.7× |
-| mpz powm, prime_p | 1.1–1.9× | 1.0–1.3× |
-| mpz fac_ui | 1.1–3.2× | 0.7–2.8× |
-| mpz get_str, set_str (base 10) | 0.9–1.9× | 1.1–1.9× |
-| mpq (small & ~120-bit parts) add, mul, div, cmp | 0.8–1.1× | 0.4–1.2× |
-| mpq get_d | 2.0–2.1× | 1.3–1.5× |
-| mpfr 53-bit add, sub, mul, cmp, set_d, get_d, get_str, set_str | 0.4–1.2× | 0.6–1.4× |
-| mpfr 53-bit div | 1.1× | 1.1× |
-| mpfr 256-bit add, sub | 2.9–4.2× | 2.0–3.6× |
-| mpfr 256-bit mul, div | 1.2–1.4× | 1.1× |
-| mpfr pow, pow_z | 1.8–2.6× | 1.7–2.3× |
-| **all 99 benchmarks (geometric mean)** | **1.23×** | **1.19×** |
+| mpz add (1–16 limbs) | 0.8–1.0× | 1.0–1.5× |
+| mpz add (64–256 limbs) | 1.4–1.6× | 1.8–2.0× |
+| mpz mul, sqr (1–2 limbs) | 0.8–1.0× | 0.4–1.0× |
+| mpz mul, sqr (4–64 limbs) | 1.3–2.0× | 0.9–1.5× |
+| mpz mul, sqr (128–4096 limbs) | 1.6–2.0× | 1.5–1.9× |
+| mpz mul, sqr (7000–100000 limbs, FFT) | 1.3–2.0× | 1.4–1.9× |
+| mpz division (2n by n limbs) | 1.1–1.6× | 1.1–1.5× |
+| mpz division (quotient much shorter than the divisor) | 2.0× | 1.8–1.9× |
+| mpz gcd | 0.7× (1 limb) – 1.9× | 1.0–1.9× |
+| mpz powm (1–2 limb moduli) | 0.8–0.9× | 0.5–0.9× |
+| mpz powm (4–32 limb moduli), prime_p | 1.3–2.1× | 1.0–1.3× |
+| mpz fac_ui | 0.2× (n = 20) – 2.0× | 0.3–2.0× |
+| mpz sqrt | 0.7× (1 limb) – 1.6× | 0.4–1.6× |
+| mpz get_str, set_str (base 10, 4–1024 limbs) | 1.1–1.7× | 1.1–1.6× |
+| mpq (small & ~120-bit parts) add, mul, div, cmp, get_str | 0.4–1.2× | 0.4–1.2× |
+| mpq get_d | 1.1–1.6× | 1.3–1.4× |
+| mpfr 53-bit add, sub, mul, cmp, set_d, get_d, get_str, set_str | 0.4–1.1× | 0.6–1.3× |
+| mpfr 53-bit div, add_d | 1.2–1.3× | 1.2× |
+| mpfr 256-bit add, sub | 2.7–3.8× | 2.0–3.6× |
+| mpfr 256-bit mul, div | 1.4× | 1.1–1.2× |
+| mpfr pow, pow_z | 1.8–2.8× | 1.7–2.3× |
+| **all 103 benchmarks (geometric mean)** | **1.19×** | **1.15×** |
+
+> [!NOTE]
+> In whole programs - arithmetic loops, `powm`, primality tests, conversions, small rationals - that's within 0.8–1.2× of GMP. Where you'll actually notice the difference is with numbers of tens of thousands of limbs (e.g. `3^3000000`), or long sums of big fractions: there, it's 2–3× slower.
 
 `make bench` runs the same benchmarks locally.
 
-## Known gaps / roadmap
+### Testing
 
-- `mpfr_pow`: correct rounding via Ziv + atanh/Taylor series; needs double-limb kernels to reach MPFR speed
-- Multi-limb float add/sub: no same-precision fast path yet
-- Errors (division by zero, NaN to integer) call `PBN_ABORT` instead of raising SIGFPE
-- Not implemented (unused by Arturo): `mpf_*`, `mpn_*`, random numbers, `mpz_import/export`, I/O streams, other MPFR transcendentals
+```sh
+make test                           # everything below
+make test64 test32 testportable     # mpz fuzzing vs GMP (64-bit limbs, 32-bit limbs, pure C)
+make testqf                         # mpq fuzzing vs GMP + mpfr fuzzing vs MPFR (same three builds)
+make testcompat                     # a program written against <gmp.h> names
+make testthresholds                 # fuzzing with tiny thresholds: (almost) every operation goes
+                                    # through Karatsuba, Toom & divide-and-conquer
+make bench                          # timings vs GMP / MPFR
+make bench-ruby                     # timings vs Ruby's Integer (needs ruby)
+make bench-small                    # small numbers (1-3 limbs)
+tools/tune.sh [name...]             # threshold sweeps: each threshold timed with a few values
+```
 
-See also the [open issues](https://github.com/pocket-libs/pocket-bignum/issues).
+The fuzzers run under ASan + UBSan, comparing every result, ternary value and aliasing variant against GMP 6.3 / MPFR 4.2.2 (which are only needed for testing: `GMP=/prefix`).
+
+### Limitations
+
+- Very large numbers: multiplication above a few thousand limbs goes through an FFT modulo three primes (GMP uses Schönhage–Strassen and hand-tuned assembly) and is 1.3–2× slower; there's no Newton division either (division is divide & conquer at every size), so dividing or printing numbers of ~10⁵ limbs is 2–3× slower than GMP
+- Mid-size multiplication (300–2000 limbs): it goes up to Toom-4 (no Toom-6/8) and is 1.5–1.8× slower
+- Assembly: only the `mul_1` / `addmul_1` / `submul_1` kernels, on x86-64 (with ADX, detected at runtime) and arm64, with GCC or Clang - everything else (and MSVC, 32-bit or `PBN_PORTABLE` builds) is plain C; e.g. adding long numbers is 1.4–2× slower than with GMP
+- Thresholds are tuned for the CPUs of the CI runners (amd64 & arm64) - for other ones, `tools/tune.sh` will find better values
+- Floats: there's no same-precision fast path for multi-limb add/sub ([#23](https://github.com/pocket-libs/pocket-bignum/issues/23)), and `pow` needs double-limb kernels to get to MPFR's speed ([#24](https://github.com/pocket-libs/pocket-bignum/issues/24))
+- Division by zero and NaN-to-integer conversions call `PBN_ABORT` instead of raising SIGFPE ([#22](https://github.com/pocket-libs/pocket-bignum/issues/22))
+- The memory functions (`pbn_set_memory_functions`) are global: set them before any thread uses the library
+- Not implemented: `mpf_*`, `mpn_*`, random numbers, `mpz_import/export`, I/O streams, and most MPFR transcendentals
+
+> [!IMPORTANT]
+> For anything else, have a look at the [open issues](https://github.com/pocket-libs/pocket-bignum/issues) - or open a new one!
+
+---
+
+### License
+
+MIT License
+
+Copyright (c) 2026 Yanis Zafirópulos
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

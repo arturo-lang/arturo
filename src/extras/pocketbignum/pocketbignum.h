@@ -389,6 +389,7 @@ static inline int pbq_sgn(pbq_srcptr q) { return pbz_sgn(&q->_mp_num); }
 
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
@@ -653,9 +654,20 @@ static void pbn_abort_default(const char *msg) {
     fprintf(stderr, "pocketbignum: %s\n", msg);
     abort();
 }
-#ifndef PBN_ABORT
+#ifdef PBN_ABORT
+#  define PBN_ABORT_USER 1
+#else
 #  define PBN_ABORT(msg) pbn_abort_default(msg)
 #endif
+
+/* what GMP signals with SIGFPE (division by zero, NaN or infinity to an integer, square
+   root of a negative number): SIGFPE here too - unless PBN_ABORT is given, then that */
+static void pbn_fpe(const char *msg) {
+#ifndef PBN_ABORT_USER
+    raise(SIGFPE);
+#endif
+    PBN_ABORT(msg);     /* (if the handler returns) */
+}
 
 static void *pbn_def_alloc(size_t n) {
     void *p = malloc(n);
@@ -699,7 +711,7 @@ PBN_DEF const char *const pbn_version = PBN_VERSION;
 #define PBN_TMP_GET(name, n)     ((n) <= PBN_STACK_LIMBS ? name##_stack : PBN_TMP_ALLOC(n))
 #define PBN_TMP_PUT(name, p, n)  do { if ((p) != name##_stack) PBN_TMP_FREE((p), (n)); } while (0)
 
-static void pbn_divzero(void) { PBN_ABORT("division by zero"); }
+static void pbn_divzero(void) { pbn_fpe("division by zero"); }
 
 /* ------------------------------------------------------------------------- */
 /* pbn_n: raw limb-array kernels                                             */
@@ -2083,6 +2095,49 @@ PBN_INLINE void pbn_ntt_inv_stage(pbn_limb *a, pbn_size L, pbn_size h, const pbn
     }
 }
 
+/* two stages at once (h, then h/2), each element loaded & stored once for both: the
+   same butterflies as two calls of the ones above, a pass over memory fewer */
+PBN_INLINE void pbn_ntt_fwd_stage2(pbn_limb *a, pbn_size L, pbn_size h, const pbn_limb *tw, const pbn_limb *ts, pbn_limb p) {
+    pbn_limb p2 = 2 * p;
+    pbn_size q = h / 2, s, j;
+    const pbn_limb *th = tw + h, *sh = ts + h, *tq = tw + q, *sq = ts + q;
+    for (s = 0; s < L; s += 2 * h) {
+        pbn_limb *x0 = a + s, *x1 = x0 + q, *x2 = x0 + h, *x3 = x2 + q;
+        for (j = 0; j < q; j++) {
+            pbn_limb u0 = x0[j], u1 = x1[j], u2 = x2[j], u3 = x3[j], y0, y1, y2, y3;
+            y0 = pbn_ntt_fix(u0 + u2 - p2, p2);
+            y2 = pbn_ntt_shoup(u0 - u2 + p2, th[j], sh[j], p);
+            y1 = pbn_ntt_fix(u1 + u3 - p2, p2);
+            y3 = pbn_ntt_shoup(u1 - u3 + p2, th[j + q], sh[j + q], p);
+            x0[j] = pbn_ntt_fix(y0 + y1 - p2, p2);
+            x1[j] = pbn_ntt_shoup(y0 - y1 + p2, tq[j], sq[j], p);
+            x2[j] = pbn_ntt_fix(y2 + y3 - p2, p2);
+            x3[j] = pbn_ntt_shoup(y2 - y3 + p2, tq[j], sq[j], p);
+        }
+    }
+}
+
+/* the same for the inverse: stages h, then 2h */
+PBN_INLINE void pbn_ntt_inv_stage2(pbn_limb *a, pbn_size L, pbn_size h, const pbn_limb *tw, const pbn_limb *ts, pbn_limb p) {
+    pbn_limb p2 = 2 * p;
+    pbn_size s, j;
+    const pbn_limb *th = tw + h, *sh = ts + h, *t2 = tw + 2 * h, *s2 = ts + 2 * h;
+    for (s = 0; s < L; s += 4 * h) {
+        pbn_limb *x0 = a + s, *x1 = x0 + h, *x2 = x0 + 2 * h, *x3 = x2 + h;
+        for (j = 0; j < h; j++) {
+            pbn_limb u0 = x0[j], v1 = pbn_ntt_shoup(x1[j], th[j], sh[j], p);
+            pbn_limb u2 = x2[j], v3 = pbn_ntt_shoup(x3[j], th[j], sh[j], p);
+            pbn_limb y0 = pbn_ntt_fix(u0 + v1 - p2, p2), y1 = pbn_ntt_fix(u0 - v1, p2);
+            pbn_limb y2 = pbn_ntt_fix(u2 + v3 - p2, p2), y3 = pbn_ntt_fix(u2 - v3, p2);
+            pbn_limb w2 = pbn_ntt_shoup(y2, t2[j], s2[j], p), w3 = pbn_ntt_shoup(y3, t2[j + h], s2[j + h], p);
+            x0[j] = pbn_ntt_fix(y0 + w2 - p2, p2);
+            x2[j] = pbn_ntt_fix(y0 - w2, p2);
+            x1[j] = pbn_ntt_fix(y1 + w3 - p2, p2);
+            x3[j] = pbn_ntt_fix(y1 - w3, p2);
+        }
+    }
+}
+
 /* forward transform (decimation in frequency: natural order in, bit-reversed out);
    tw[h + j] only depends on the stage, so the halves use the same table */
 static void pbn_ntt_fwd(pbn_limb *a, pbn_size L, const pbn_limb *tw, const pbn_limb *ts, pbn_limb p) {
@@ -2093,7 +2148,8 @@ static void pbn_ntt_fwd(pbn_limb *a, pbn_size L, const pbn_limb *tw, const pbn_l
         pbn_ntt_fwd(a + L / 2, L / 2, tw, ts, p);
         return;
     }
-    for (h = L / 2; h >= 1; h >>= 1) pbn_ntt_fwd_stage(a, L, h, tw, ts, p);
+    for (h = L / 2; h >= 2; h >>= 2) pbn_ntt_fwd_stage2(a, L, h, tw, ts, p);
+    if (h == 1) pbn_ntt_fwd_stage(a, L, 1, tw, ts, p);
 }
 
 /* inverse transform without the 1/L (decimation in time: bit-reversed in, natural out),
@@ -2106,7 +2162,8 @@ static void pbn_ntt_inv(pbn_limb *a, pbn_size L, const pbn_limb *tw, const pbn_l
         pbn_ntt_inv_stage(a, L, L / 2, tw, ts, p);
         return;
     }
-    for (h = 1; h < L; h <<= 1) pbn_ntt_inv_stage(a, L, h, tw, ts, p);
+    for (h = 1; 2 * h < L; h <<= 2) pbn_ntt_inv_stage2(a, L, h, tw, ts, p);
+    if (h < L) pbn_ntt_inv_stage(a, L, h, tw, ts, p);
 }
 
 /* Length 3M: a radix-3 stage on top of three transforms of length M. With z a cube root
@@ -2628,7 +2685,7 @@ PBN_DEF void pbz_set_d(pbz_ptr r, double d) {
     int neg, e;
     double m;
     uint64_t mant;
-    if (d != d || d - d != 0) PBN_ABORT("invalid operation (NaN or infinity)");
+    if (d != d || d - d != 0) pbn_fpe("invalid operation (NaN or infinity)");
     neg = d < 0;
     if (neg) d = -d;
     if (d < 1.0) { SIZ(r) = 0; return; }
@@ -2693,7 +2750,7 @@ static int pbz_cmpabs_d_impl(pbz_srcptr a, double d) {
 
 PBN_DEF int pbz_cmp_d(pbz_srcptr a, double d) {
     int as, ds, c;
-    if (d != d) PBN_ABORT("invalid operation (NaN)");
+    if (d != d) pbn_fpe("invalid operation (NaN)");
     if (d - d != 0) return d > 0 ? -1 : 1;
     as = pbz_sgn(a);
     ds = d < 0 ? -1 : d > 0;
@@ -2704,7 +2761,7 @@ PBN_DEF int pbz_cmp_d(pbz_srcptr a, double d) {
 }
 
 PBN_DEF int pbz_cmpabs_d(pbz_srcptr a, double d) {
-    if (d != d) PBN_ABORT("invalid operation (NaN)");
+    if (d != d) pbn_fpe("invalid operation (NaN)");
     if (d - d != 0) return -1;
     return pbz_cmpabs_d_impl(a, d);
 }
@@ -4227,7 +4284,7 @@ PBN_DEF void pbz_sqrtrem(pbz_ptr s, pbz_ptr r, pbz_srcptr x) {
     unsigned k, sh;
     PBN_TMP_DECL(tb);
 
-    if (xn < 0) PBN_ABORT("square root of negative number");
+    if (xn < 0) pbn_fpe("square root of negative number");
     if (xn == 0) {
         if (s) SIZ(s) = 0;
         if (r) SIZ(r) = 0;
@@ -5562,6 +5619,27 @@ PBN_DEF double pbq_get_d(pbq_srcptr q) {
     long k, bits, ehi, allowed;
     double d;
     if (SIZ(QNUM(q)) == 0) return 0.0;
+#if defined(PBN_HAVE_DLIMB) && PBN_B == 64
+    /* both parts below 2^53: exact as doubles, so one division, then truncated (as GMP
+       does) by checking whether d * den went past num, exactly, on 128 bits */
+    if (PBN_ABS(SIZ(QNUM(q))) == 1 && SIZ(QDEN(q)) == 1
+        && PTR(QNUM(q))[0] < ((pbn_limb)1 << 53) && PTR(QDEN(q))[0] < ((pbn_limb)1 << 53)) {
+        pbn_limb nn = PTR(QNUM(q))[0], dd = PTR(QDEN(q))[0], m;
+        int e, sh;
+        pbn_dlimb lhs;
+        d = (double)nn / (double)dd;
+        m = (pbn_limb)ldexp(frexp(d, &e), 53);       /* d = m 2^(e - 53) */
+        lhs = (pbn_dlimb)m * dd;                      /* d * den = lhs 2^(e - 53) */
+        sh = e - 53;                                  /* d >= 2^-53: sh >= -105 */
+        if (sh >= 0) {
+            if ((lhs << sh) > nn) d = nextafter(d, 0.0);          /* (below 2^107) */
+        } else {
+            pbn_dlimb hi = lhs >> -sh, lo = lhs & ((((pbn_dlimb)1) << -sh) - 1);
+            if (hi > nn || (hi == nn && lo != 0)) d = nextafter(d, 0.0);
+        }
+        return SIZ(QNUM(q)) < 0 ? -d : d;
+    }
+#endif
     pbz_abs(n, QNUM(q));
     k = 55 + (long)pbz_bitlen(QDEN(q)) - (long)pbz_bitlen(n);
     if (k >= 0) pbz_mul_2exp(n, n, (pbn_bitcnt)k);
@@ -5591,7 +5669,7 @@ PBN_DEF double pbq_get_d(pbq_srcptr q) {
 PBN_DEF void pbq_set_d(pbq_ptr r, double d) {
     int neg, e;
     uint64_t m;
-    if (d != d || d - d != 0) PBN_ABORT("invalid operation (NaN or infinity)");
+    if (d != d || d - d != 0) pbn_fpe("invalid operation (NaN or infinity)");
     if (d == 0) { SIZ(QNUM(r)) = 0; pbz_set_ui(QDEN(r), 1); return; }
     neg = d < 0;
     m = (uint64_t)ldexp(frexp(neg ? -d : d, &e), 53);
@@ -6690,14 +6768,18 @@ static int pbf_set_scaled(pbf_ptr r, int sign, pbz_srcptr D, int base, long e10,
     return tern;
 }
 
+#define PBF_EXP_SATURATE ((long)PBF_EMAX + (long)(PBF_EMAX / 2))
+
 static long pbf_parse_exp(const char **pp, int *ok) {
     const char *p = *pp;
     int neg = 0;
     long v = 0;
     if (*p == '+' || *p == '-') { neg = *p == '-'; p++; }
     if (*p < '0' || *p > '9') { *ok = 0; return 0; }
+    /* saturated well past the exponent range (but within a 32-bit long, as on Windows):
+       anything that big is an overflow / underflow anyway */
     while (*p >= '0' && *p <= '9') {
-        if (v < LONG_MAX / 16) v = v * 10 + (*p - '0');
+        v = v <= (PBF_EXP_SATURATE - 9) / 10 ? v * 10 + (*p - '0') : PBF_EXP_SATURATE;
         p++;
     }
     *pp = p;
