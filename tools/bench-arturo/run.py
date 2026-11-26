@@ -61,6 +61,12 @@ def geomean(xs):
 
 
 def main():
+    # (UTF-8 out, whatever the console's encoding - e.g. cp1252 on Windows)
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     ap = argparse.ArgumentParser()
     ap.add_argument("--bin", action="append", required=True, help="NAME=PATH")
     ap.add_argument("--runs", type=int, default=10)
@@ -125,11 +131,11 @@ def main():
     report = {"platform": args.platform, "cpu": cpu_name(), "runs": args.runs,
               "bins": names, "versions": versions, "results": results}
     if args.json:
-        with open(args.json, "w") as fp:
+        with open(args.json, "w", encoding="utf-8") as fp:
             json.dump(report, fp, indent=1)
     md = markdown(report)
     if args.md:
-        with open(args.md, "w") as fp:
+        with open(args.md, "w", encoding="utf-8") as fp:
             fp.write(md)
     print(md)
 

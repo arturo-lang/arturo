@@ -12,7 +12,8 @@ from run import CATEGORIES, fmt_ratio, geomean, pairs, speedup
 
 
 def main():
-    reports = [json.load(open(f)) for f in sys.argv[1:]]
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    reports = [json.load(open(f, encoding="utf-8")) for f in sys.argv[1:]]
     reports.sort(key=lambda r: r["platform"])
     names = reports[0]["bins"]
     ps = pairs(names)
