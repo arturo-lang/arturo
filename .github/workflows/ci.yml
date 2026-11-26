@@ -179,9 +179,6 @@ jobs:
             - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
               name: Run tester (Web build)
               timeout-minutes: 90
-              # not blocking (yet): there are still
-              # too many Web-specific issues
-              continue-on-error: true
               run: |
                 cd $GITHUB_WORKSPACE/arturo
                 git clone https://github.com/arturo-lang/examples.git ../examples
