@@ -1,0 +1,117 @@
+# TEMPORARY (pocket-bignum): Arturo 0.10.0 (as released) vs master vs master + PocketBignum
+# (both as published: release builds, with PGO), on every platform - tools/bench-arturo
+name: Benchmark Arturo
+
+on:
+    push:
+        branches: [pocket-bignum]
+    workflow_dispatch:
+        inputs:
+            runs:
+                description: 'Timed runs per script and binary (medians are reported)'
+                default: '10'
+
+jobs:
+    bench:
+        name: bench (${{ matrix.name }})
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 240
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { name: linux-amd64,   runner: ubuntu-latest,    os: linux,   arch: amd64, prefix: 'taskset -c 1' }
+                    - { name: linux-arm64,   runner: ubuntu-24.04-arm, os: linux,   arch: arm64, prefix: 'taskset -c 1' }
+                    - { name: macos-arm64,   runner: macos-latest,     os: macos,   arch: arm64, prefix: '' }
+                    - { name: macos-amd64,   runner: macos-15-intel,   os: macos,   arch: amd64, prefix: '' }
+                    - { name: windows-amd64, runner: windows-latest,   os: windows, arch: amd64, prefix: '' }
+        steps:
+            - uses: actions/checkout@v6
+
+            - name: Arturo 0.10.0 (as released)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: fetch
+                from: stable
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+
+            - name: Keep it
+              shell: bash
+              run: |
+                python -c "import os, shutil; shutil.copytree(os.environ['arturoDistPath'], 'bins/0.10.0')"
+                ls bins/0.10.0
+                v=$(bins/0.10.0/arturo -v)
+                echo "$v"
+                case "$v" in *0.10.0*) ;; *) echo "not 0.10.0"; exit 1 ;; esac
+
+            - name: Arturo master (release, PGO)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                src: master
+                release: 'true'
+                pgo: 'true'
+
+            - name: Keep it
+              shell: bash
+              run: python -c "import os, shutil; shutil.copytree(os.environ['arturoDistPath'], 'bins/master')"
+
+            - name: Arturo master + PocketBignum (release, PGO)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                src: ${{ github.sha }}
+                release: 'true'
+                pgo: 'true'
+
+            - name: Keep it
+              shell: bash
+              run: python -c "import os, shutil; shutil.copytree(os.environ['arturoDistPath'], 'bins/pocketbignum')"
+
+            - name: Benchmarks
+              shell: bash
+              run: |
+                exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
+                python tools/bench-arturo/run.py \
+                    --bin "0.10.0=bins/0.10.0/arturo$exe" \
+                    --bin "master=bins/master/arturo$exe" \
+                    --bin "master+pocketbignum=bins/pocketbignum/arturo$exe" \
+                    --runs "${{ github.event.inputs.runs || '10' }}" \
+                    --prefix "${{ matrix.prefix }}" \
+                    --platform "${{ matrix.name }}" \
+                    --json "bench-${{ matrix.name }}.json" --md "bench-${{ matrix.name }}.md"
+                cat "bench-${{ matrix.name }}.md" >> "$GITHUB_STEP_SUMMARY"
+
+            - uses: actions/upload-artifact@v6
+              with:
+                name: bench-${{ matrix.name }}
+                path: bench-${{ matrix.name }}.*
+
+    summary:
+        name: summary
+        needs: bench
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/download-artifact@v6
+              with:
+                pattern: bench-*
+                merge-multiple: true
+                path: reports
+            - name: Summary
+              run: |
+                python3 tools/bench-arturo/summary.py reports/*.json > summary.md
+                cat summary.md >> "$GITHUB_STEP_SUMMARY"
+            - uses: actions/upload-artifact@v6
+              with:
+                name: bench-summary
+                path: summary.md
