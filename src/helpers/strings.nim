@@ -185,22 +185,31 @@ proc realLen*(s: string): int =
             s
     return cleanString.runeLen()
 
+func splitEvery*(s: string, n: int): seq[string] =
+    ## Split given string into chunks of `n` characters
+    ## (the last one may be shorter), in a single pass
+    if n <= 0: return @[s]
+    var start, pos, count = 0
+    while pos < s.len:
+        pos += s.runeLenAt(pos)
+        inc count
+        if count == n:
+            result.add(s[start ..< pos])
+            start = pos
+            count = 0
+    if start < s.len:
+        result.add(s[start ..< s.len])
+
 proc realFind*(s: string, subs: string): int =
     let cleanString = 
         when not defined(WEB):
             s.replacef(re"\e[^m]+m","")
         else:
             s
-    let subsLen = subs.len
-    let runeLen = cleanString.runeLen()
-    var i: int = 0
-
-    while i < runeLen:
-        if (i + subsLen <= runeLen) and (cleanString.runeSubStr(i, subsLen) == subs):
-            return i
-        i += 1
-
-    return -1
+    # (a plain search, then the character index of what was found)
+    let pos = cleanString.find(subs)
+    if pos < 0: return -1
+    return cleanString.byteToRuneIndex(pos)
 
 func wrapped*(initial: string, limit=50, delim="\n"): string =
     if initial.len < limit:

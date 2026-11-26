@@ -867,10 +867,13 @@ proc defineModule*(moduleName: string) =
                         let rLen = y.rng.len
                         var res: seq[Rune] = newSeq[Rune](rLen)
                         var i = 0
-                        let xStrLen = x.s.runeLen()
+                        # (decoded once: indexing characters one by one
+                        # would go through the string again every time)
+                        let xRunes = x.s.toRunes()
+                        let xStrLen = xRunes.len
                         for item in items(y.rng):
                             if likely(item.i >= 0 and item.i < xStrLen):
-                                res[i] = x.s.runeAtPos(item.i)
+                                res[i] = xRunes[item.i]
                             else:
                                 Error_OutOfBounds(item.i, Dumper(x), xStrLen-1, "String")
                             i += 1
@@ -2298,15 +2301,7 @@ proc defineModule*(moduleName: string) =
                         SetInPlaceAny(newStringBlock(@[runeSubStr(InPlaced.s, 0, aAt.i),
                                 runeSubStr(InPlaced.s, aAt.i)]))
                     elif checkAttr("every"):
-                        var ret: seq[string]
-                        var length = runeLen(InPlaced.s)
-                        var i = 0
-
-                        while i < length:
-                            ret.add(runeSubStr(InPlaced.s, i, aEvery.i))
-                            i += aEvery.i
-
-                        SetInPlaceAny(newStringBlock(ret))
+                        SetInPlaceAny(newStringBlock(splitEvery(InPlaced.s, aEvery.i)))
 
                     else:
                         SetInPlaceAny(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
@@ -2355,15 +2350,7 @@ proc defineModule*(moduleName: string) =
                 elif checkAttr("at"):
                     push(newStringBlock(@[runeSubStr(x.s, 0, aAt.i), runeSubStr(x.s, aAt.i)]))
                 elif checkAttr("every"):
-                    var ret: seq[string]
-                    var length = runeLen(x.s)
-                    var i = 0
-
-                    while i < length:
-                        ret.add(runeSubStr(x.s, i, aEvery.i))
-                        i += aEvery.i
-
-                    push(newStringBlock(ret))
+                    push(newStringBlock(splitEvery(x.s, aEvery.i)))
                 
                 else:
                     push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
