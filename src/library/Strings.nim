@@ -21,7 +21,7 @@
 
 when not defined(WEB):
     import re except Regex
-    import nre except Regex, toSeq
+    import extras/nre except Regex, toSeq
 
 import std/editdistance, json, os
 import sequtils, strutils, sugar
