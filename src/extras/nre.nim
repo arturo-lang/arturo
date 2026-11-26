@@ -195,7 +195,9 @@ type
     ## :   same as `match`
     pattern*: Regex  ## The regex doing the matching.
                      ## Not nil.
-    str*: string  ## The string that was matched against.
+    str* {.cursor.}: string  ## The string that was matched against.
+                             ## (Arturo: borrowed, not copied - each match
+                             ## copying the whole string made findIter quadratic)
     pcreMatchBounds: seq[HSlice[cint, cint]] ## First item is the bounds of the match
                                             ## Other items are the captures
                                             ## `a` is inclusive start, `b` is exclusive end
@@ -581,6 +583,9 @@ iterator findIter*(str: string, pattern: Regex, start = 0, endpos = int.high): R
   var offset = start
   var match: Option[RegexMatch] = default(Option[RegexMatch])
   var neverMatched = true
+  # (Arturo: PCRE checks the whole string is valid UTF-8 on every call;
+  # once it has, the next ones don't need to - or it's quadratic)
+  var noCheck = 0
 
   while true:
     var flags = 0
@@ -588,7 +593,8 @@ iterator findIter*(str: string, pattern: Regex, start = 0, endpos = int.high): R
        match.get.matchBounds.a > match.get.matchBounds.b:
       # 0-len match
       flags = pcre.NOTEMPTY_ATSTART
-    match = str.matchImpl(pattern, offset, endpos, flags)
+    match = str.matchImpl(pattern, offset, endpos, flags or noCheck)
+    if unicode: noCheck = pcre.NO_UTF8_CHECK
 
     if match.isNone:
       # either the end of the input or the string
