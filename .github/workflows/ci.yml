@@ -70,7 +70,7 @@ jobs:
                 echo "Building version: $version"
 
             - name: Install Arturo
-              uses: arturo-lang/setup-arturo@v2
+              uses: arturo-lang/setup-arturo@freebsd-extra     # TEMPORARY (nan-boxing): until arturo-lang/setup-arturo#50 is in
               env:
                 ARTURO_EXTRA: ${{ matrix.nanbox && '-d:NANBOX' || '' }}
               with:
@@ -84,6 +84,14 @@ jobs:
                 metadata: ${{ steps.version.outputs.VERSION }}
                 create_artifact: ${{ matrix.nanbox && 'false' || 'true' }}
                 artifact_version: ${{ steps.version.outputs.VERSION }}
+
+            - if: matrix.nanbox
+              name: Check NaN-boxing
+              run: |
+                # an Integer held inline has no address
+                out=$(arturo -e 'a: 2 print (info.get '"'"'a) \ "address"')
+                echo "$out"
+                echo "$out" | grep -q 'address:0x0' || { echo "not a NaN-boxed build"; exit 1; }
 
             - name: Check if tests should be skipped
               id: check_skip
