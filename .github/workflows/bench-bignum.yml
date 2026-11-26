@@ -1,4 +1,4 @@
-# TEMPORARY (pocket-bignum): master (GMP & MPFR) vs this branch (PocketBignum)
+# TEMPORARY (pocket-bignum): master (GMP & MPFR) vs this branch (PocketBignum), and Ruby
 name: Benchmark PocketBignum
 
 on:
@@ -45,22 +45,29 @@ jobs:
 
             - run: cp "$HOME/.arturo/bin/arturo" "$HOME/bins/pocketbignum"
 
+            - name: Install Ruby
+              uses: ruby/setup-ruby@v1
+              with:
+                ruby-version: ruby     # (the latest stable)
+
             - name: Same results
               run: |
+                ruby -v
                 for f in tools/bench-bignum/*.art; do
-                    a=$("$HOME/bins/gmp" "$f"); b=$("$HOME/bins/pocketbignum" "$f")
-                    [ "$a" = "$b" ] && echo "same: $(basename "$f")" || { echo "DIFFERENT: $f"; echo "$a"; echo "$b"; exit 1; }
+                    a=$("$HOME/bins/gmp" "$f" | sed 's/ *$//'); b=$("$HOME/bins/pocketbignum" "$f" | sed 's/ *$//'); c=$(ruby "${f%.art}.rb")
+                    [ "$a" = "$b" ] && [ "$a" = "$c" ] && echo "same: $(basename "$f")" || { echo "DIFFERENT: $f"; echo "$a"; echo "$b"; echo "$c"; exit 1; }
                 done
 
             - name: Timings (hyperfine)
               run: |
                 sudo apt-get install -y hyperfine > /dev/null
-                echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1)" | tee -a "$GITHUB_STEP_SUMMARY"
+                echo "cpu: $(lscpu | sed -n 's/^Model name: *//p' | head -1), $(ruby -v)" | tee -a "$GITHUB_STEP_SUMMARY"
                 for f in tools/bench-bignum/*.art; do
                     n=$(basename "$f" .art)
                     sudo nice -n -20 hyperfine -N --warmup 3 --runs 20 \
                         -n "$n (gmp)" "taskset -c 1 $HOME/bins/gmp $f" \
                         -n "$n (pocketbignum)" "taskset -c 1 $HOME/bins/pocketbignum $f" \
+                        -n "$n (ruby)" "taskset -c 1 $(command -v ruby) ${f%.art}.rb" \
                         --export-markdown "/tmp/$n.md"
                     cat "/tmp/$n.md" >> "$GITHUB_STEP_SUMMARY"
                 done
