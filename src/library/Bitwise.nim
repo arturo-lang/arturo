@@ -178,6 +178,7 @@ proc defineModule*(moduleName: string) =
                     SetInPlaceAny(newBigInteger(InPlaced.i) << y)
                 else:
                     inPlaceDo(`<<=`, y)
+                    commitInPlaceAny()
             elif normalIntegerOperation():
                 if safe and overflows(x):
                     push(newBigInteger(x.i) << y)

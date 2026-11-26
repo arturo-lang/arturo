@@ -43,7 +43,9 @@ suite "test if new object reference does not change the older one" [
 suite "test if new allocate the object to a new address" [
 
     test "change new primitive values does not change the old ones" [
-        loop (values new pairs) [sample][
+        ; (only values that live on the heap have an address: 
+        ;  with NaN-boxing, Integers don't)
+        loop (values new remove.key pairs "integer") [sample][
             a: sample\0
             b: new a
 

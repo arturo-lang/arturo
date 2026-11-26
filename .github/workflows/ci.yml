@@ -45,6 +45,9 @@ jobs:
                     - {os: windows, arch: arm64}
                     - {os: windows, arch: arm64,    mode: mini}
                     - {os: web,     arch: js,       mode: mini}
+                    # without NaN-boxing (as web & 32-bit builds are)
+                    - {os: linux,   arch: amd64,    classic: true}
+                    - {os: macos,   arch: arm64,    classic: true}
 
         defaults:
             run:
@@ -80,6 +83,8 @@ jobs:
 
             - name: Install Arturo
               uses: arturo-lang/setup-arturo@v2
+              env:
+                ARTURO_EXTRA: ${{ matrix.classic && '-d:NONANBOX' || '' }}
               with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
@@ -89,8 +94,20 @@ jobs:
                 support: ${{ matrix.support }}
                 src: ${{ github.ref }}
                 metadata: ${{ steps.version.outputs.VERSION }}
-                create_artifact: 'true'
+                create_artifact: ${{ !matrix.classic && 'true' || 'false' }}
                 artifact_version: ${{ steps.version.outputs.VERSION }}
+
+            - if: matrix.os != 'web'
+              name: Check NaN-boxing
+              run: |
+                # an Integer held inline has no address
+                out=$(arturo -e 'a: 2 print (info.get '"'"'a) \ "address"')
+                echo "$out"
+                if [ "${{ matrix.classic }}" = "true" ]; then
+                    echo "$out" | grep -qv 'address:0x0' || { echo "a NaN-boxed build"; exit 1; }
+                else
+                    echo "$out" | grep -q 'address:0x0' || { echo "not a NaN-boxed build"; exit 1; }
+                fi
 
             - name: Check if tests should be skipped
               id: check_skip
