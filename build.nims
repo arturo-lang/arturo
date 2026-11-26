@@ -436,6 +436,16 @@ cliInstance.defaultCommand = "build"
 let 
     args = cliInstance.args
 
+
+proc useNanbox(config: BuildConfig, disabled: bool): bool =
+    ## NaN-boxed values: for every 64-bit native build,
+    ## unless asked not to (--no-nanbox, or -d:NONANBOX
+    ## through ARTURO_EXTRA)
+    not disabled and
+        not config.webVersion and
+        targetCPU in ["amd64", "arm64"] and
+        not getEnv("ARTURO_EXTRA").contains("NONANBOX")
+
 cmd build, "[default] Build arturo and optionally install the executable":
     ## build:
     ##     Provides a cross-compilation for the Arturo's binary.
@@ -454,7 +464,8 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##     --debug -d                   enables debugging
     ##     --install -i                 installs the final binary
     ##     --log -l                     shows compilation logs
-    ##     --nanbox                     NaN-boxed values (64-bit only: faster, experimental)
+    ##     --no-nanbox                  no NaN-boxed values (they're the default
+    ##                                  for 64-bit native builds)
     ##     --pgo                        profile-guided optimization (slower build, faster binary)
     ##     --raw                        disables compression
     ##     --release                    enable release config mode
@@ -549,11 +560,8 @@ cmd build, "[default] Build arturo and optionally install the executable":
     if args.hasFlag("release"):
         releaseConfig()
 
-    if args.hasFlag("nanbox"):
-        if config.webVersion:
-            warn "--nanbox has no effect on web builds"
-        else:
-            --define:NANBOX
+    if useNanbox(config, args.hasFlag("no-nanbox")):
+        --define:NANBOX
 
     if args.hasFlag("pgo"):
         if config.webVersion:
@@ -595,6 +603,9 @@ cmd package, "Package arturo app and build executable":
     if args.hasFlag("debug", "d"):
         config.shouldCompress = false
         debugConfig()
+
+    if useNanbox(config, args.hasFlag("no-nanbox")):
+        --define:NANBOX
 
     config.buildPackage()
 
