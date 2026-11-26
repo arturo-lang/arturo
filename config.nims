@@ -11,10 +11,21 @@
 #=======================================
 
 import os, strutils
+import std/compilesettings
 
 #=======================================
 # Helpers
 #=======================================
+
+proc configWebTimes() =
+    # Web builds are compiled with `--checks:off`, but then Nim's JS
+    # backend breaks `std/times` (int64 → enum/range conversions stay
+    # BigInts, e.g. in `fromEpochDay`). So we compile just that module 
+    # with its checks on: `extras/web/times` includes a copy of it
+    when defined(WEB):
+        mkDir(".cache" / "web")
+        cpFile(querySetting(libPath) / "pure" / "times.nim", ".cache" / "web" / "stdtimes.nim")
+        patchFile("stdlib", "times", projectDir() / "extras" / "web" / "times")
 
 proc configMimalloc() =
     let
@@ -81,6 +92,14 @@ proc configSSL() =
     else:
         --dynlibOverride:ssl
         --dynlibOverride:crypto
+
+    # By default, TLS goes through the vendored mbedTLS (see extras/tls),
+    # with CA certificates embedded in the binary. `-d:OPENSSL` links the
+    # vendored OpenSSL instead (see library/Net), as before
+    if not defined(OPENSSL):
+        --define:useOpenssl3
+        "stdlib".patchFile("ssl_certs"):
+            "src"/"extras"/"tls"/"ssl_certs"
 
 proc configPlatform() =
     if hostOS == "macosx":
@@ -154,6 +173,7 @@ proc main() =
     # extra configuration
     #--------------------------
     configMimalloc()
+    configWebTimes()
     configWebkit()
     configPCRE()
     configSSL()

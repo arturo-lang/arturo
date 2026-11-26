@@ -19,7 +19,10 @@
 # Compilation & Linking
 #=======================================
 
-when defined(ssl):
+when defined(ssl) and not defined(OPENSSL):
+    # TLS through mbedTLS (see extras/tls)
+    import extras/tls
+elif defined(ssl):
     when defined(linux):
         when defined(LEGACYUNIX):
             when defined(arm64):
@@ -32,14 +35,20 @@ when defined(ssl):
             else:
                 {.passL: "-Bstatic -Lsrc/deps/openssl/linux/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(freebsd):
-        {.passL: "-Bstatic -Lsrc/deps/openssl/freebsd/amd64 -lssl -lcrypto -Bdynamic".}
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/deps/openssl/freebsd/arm64 -lssl -lcrypto -Bdynamic".}
+        else:
+            {.passL: "-Bstatic -Lsrc/deps/openssl/freebsd/amd64 -lssl -lcrypto -Bdynamic".}
     elif defined(macosx):
         when defined(arm64):
             {.passL: "src/deps/openssl/macos/arm64/libssl.a src/deps/openssl/macos/arm64/libcrypto.a".}
         else:
             {.passL: "src/deps/openssl/macos/amd64/libssl.a src/deps/openssl/macos/amd64/libcrypto.a".}
     elif defined(windows): 
-        {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
+        when defined(arm64):
+            {.passL: "-Bstatic -Lsrc/deps/openssl/windows/arm64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
+        else:
+            {.passL: "-Bstatic -Lsrc/deps/openssl/windows/amd64 -lssl -lcrypto -Bdynamic -lws2_32 -lcrypt32".}
 
 #=======================================
 # Libraries

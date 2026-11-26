@@ -298,12 +298,18 @@ when isMainModule and not defined(WEB):
                 echo ArturoVersionText
             of noAction:
                 discard
+
+        # exit explicitly (as `exit` does), so that whatever
+        # still runs at exit (e.g. pending event handlers)
+        # finds the VM intact
+        quit(QuitSuccess)
     else:
         arguments = commandLineParams()
         NoColors = not isColorFriendlyTerminal()
         NoErrorColors = not isColorFriendlyTerminal(toStderr=true)
         var bundleMain = static BundleMain
         discard run(bundleMain, arguments, isFile=false)#, withData=portable)
+        quit(QuitSuccess)
 else:
     proc main*(txt: cstring, params: JsObject = jsUndefined): JsObject {.exportc:"A$", varargs.}=
         var str = $(txt)

@@ -76,7 +76,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced &&= y; !!= InPlaced
+                ensureInPlace(); inPlaceDo(`&&=`, y); inPlaceDo(`!!=`)
             elif normalIntegerOperation():
                 push(normalIntegerNot(normalIntegerAnd(x.i, y.i).i))
             else:
@@ -101,7 +101,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced ||= y; !!= InPlaced
+                ensureInPlace(); inPlaceDo(`||=`, y); inPlaceDo(`!!=`)
             elif normalIntegerOperation():
                 push(normalIntegerNot(normalIntegerOr(x.i, y.i).i))
             else:
@@ -177,7 +177,8 @@ proc defineModule*(moduleName: string) =
                 if safe and overflows(InPlaced):
                     SetInPlaceAny(newBigInteger(InPlaced.i) << y)
                 else:
-                    InPlaced <<= y
+                    inPlaceDo(`<<=`, y)
+                    commitInPlaceAny()
             elif normalIntegerOperation():
                 if safe and overflows(x):
                     push(newBigInteger(x.i) << y)
@@ -225,7 +226,7 @@ proc defineModule*(moduleName: string) =
         """:
             #=======================================================
             if xKind==Literal : 
-                ensureInPlace(); InPlaced ^^= y; !!= InPlaced
+                ensureInPlace(); inPlaceDo(`^^=`, y); inPlaceDo(`!!=`)
             elif normalIntegerOperation():
                 push(normalIntegerNot(normalIntegerXor(x.i, y.i).i))
             else:

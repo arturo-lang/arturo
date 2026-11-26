@@ -66,6 +66,27 @@ proc getInt*(x: Int): int =
 proc fitsInt*(x: Int): bool =
     return mpz_fits_ulong_p(x[]) != 0
 
+proc fitsSignedInt*(x: Int): bool =
+    when isLLP64():
+        # clong is 32-bit, so check the upper half
+        var hi: mpz_t
+        mpz_init(hi)
+        mpz_fdiv_q_2exp(hi, x[], 32)
+        result = mpz_cmp_si(hi, low(int32).clong) >= 0 and mpz_cmp_si(hi, high(int32).clong) <= 0
+    else:
+        return mpz_fits_slong_p(x[]) != 0
+
+proc getSignedInt*(x: Int): int =
+    when isLLP64():
+        var hi, lo: mpz_t
+        mpz_init(hi)
+        mpz_init(lo)
+        mpz_fdiv_q_2exp(hi, x[], 32)
+        mpz_fdiv_r_2exp(lo, x[], 32)
+        result = (int(mpz_get_si(hi)) shl 32) or int(mpz_get_ui(lo))
+    else:
+        return int(mpz_get_si(x[]))
+
 proc fitsDouble*(x: Float): bool =
     if mpfr_fits_uint_p(x[], MPFR_RNDN)==0:
         return false
@@ -390,6 +411,14 @@ func cmp*(x: Int, y: int): cint =
     elif result > 0:
         result = 1
 
+func cmp*(x: Int, y: float): cint =
+    # works with infinities too - but not with NaN!
+    result = mpz_cmp_d(x[], y.cdouble)
+    if result < 0:
+        result = -1
+    elif result > 0:
+        result = 1
+
 func cmp*(x, y: Float): cint =
     result = mpfr_cmp(x[], y[])
     if result < 0:
@@ -465,6 +494,12 @@ func `==`*(x: Int, y: int | culong | Int): bool =
 func `==`*(x: int | culong, y: Int): bool =
     cmp(y, x) == 0
 
+func `==`*(x: Int, y: float): bool =
+    not y.isNaN and cmp(x, y) == 0
+
+func `==`*(x: float, y: Int): bool =
+    not x.isNaN and cmp(y, x) == 0
+
 func `==`*(x: Float, y: int | float | culong | Float): bool =
     cmp(x, y) == 0
 
@@ -479,6 +514,12 @@ func `<`*(x: Int, y: int | culong | Int): bool =
 
 func `<`*(x: int | culong, y: Int): bool =
     cmp(y, x) == 1
+
+func `<`*(x: Int, y: float): bool =
+    not y.isNaN and cmp(x, y) == -1
+
+func `<`*(x: float, y: Int): bool =
+    not x.isNaN and cmp(y, x) == 1
 
 func `<`*(x, y: Rat): bool =
     cmp(x, y) == -1

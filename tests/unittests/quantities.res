@@ -957,6 +957,9 @@
 >> temperature - math // conversions
 [+] passed!
 
+>> temperature - comparisons
+[+] passed!
+
 >> temperature - conforms?
 [+] passed!
 [+] passed!
@@ -1336,4 +1339,13 @@
 [+] passed!
 
 >> luminousFlux - alternative names
+[+] passed!
+
+>> in-place operations
+[+] passed!
+
+>> definitions
+[+] passed!
+
+>> printing
 [+] passed!

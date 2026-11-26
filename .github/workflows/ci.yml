@@ -22,7 +22,7 @@ jobs:
         runs-on: ${{ 
             (matrix.os == 'linux')   && (matrix.support == 'legacy' && (matrix.arch == 'arm64' && 'ubuntu-22.04-arm' || 'ubuntu-22.04') || matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
             (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macOS-15-intel') ||
-            (matrix.os == 'windows') && 'windows-latest' || 
+            (matrix.os == 'windows') && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-latest') || 
                                         'ubuntu-latest'  }}
                                                                    
         strategy:
@@ -42,7 +42,12 @@ jobs:
                     - {os: macos,   arch: arm64,    mode: mini}
                     - {os: windows, arch: amd64}
                     - {os: windows, arch: amd64,    mode: mini}
+                    - {os: windows, arch: arm64}
+                    - {os: windows, arch: arm64,    mode: mini}
                     - {os: web,     arch: js,       mode: mini}
+                    # without NaN-boxing (as web & 32-bit builds are)
+                    - {os: linux,   arch: amd64,    classic: true}
+                    - {os: macos,   arch: arm64,    classic: true}
 
         defaults:
             run:
@@ -78,6 +83,8 @@ jobs:
 
             - name: Install Arturo
               uses: arturo-lang/setup-arturo@v2
+              env:
+                ARTURO_EXTRA: ${{ matrix.classic && '-d:NONANBOX' || '' }}
               with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
@@ -87,8 +94,20 @@ jobs:
                 support: ${{ matrix.support }}
                 src: ${{ github.ref }}
                 metadata: ${{ steps.version.outputs.VERSION }}
-                create_artifact: 'true'
+                create_artifact: ${{ !matrix.classic && 'true' || 'false' }}
                 artifact_version: ${{ steps.version.outputs.VERSION }}
+
+            - if: matrix.os != 'web'
+              name: Check NaN-boxing
+              run: |
+                # an Integer held inline has no address
+                out=$(arturo -e 'a: 2 print (info.get '"'"'a) \ "address"')
+                echo "$out"
+                if [ "${{ matrix.classic }}" = "true" ]; then
+                    echo "$out" | grep -qv 'address:0x0' || { echo "a NaN-boxed build"; exit 1; }
+                else
+                    echo "$out" | grep -q 'address:0x0' || { echo "not a NaN-boxed build"; exit 1; }
+                fi
 
             - name: Check if tests should be skipped
               id: check_skip
@@ -148,3 +167,21 @@ jobs:
                         fi
                     fi
                 fi
+
+            - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
+              name: Install Arturo nightly (for running the tester)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                from: latest
+                mode: mini
+
+            - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
+              name: Run tester (Web build)
+              timeout-minutes: 90
+              run: |
+                cd $GITHUB_WORKSPACE/arturo
+                git clone https://github.com/arturo-lang/examples.git ../examples
+
+                arturo -v
+                ARTURO_JS=bin/arturo.js arturo tools/tester.art --web

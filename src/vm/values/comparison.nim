@@ -14,6 +14,9 @@
 
 import tables, times, unicode
     
+when defined(WEB):
+    import helpers/jsbignums
+
 when defined(GMP):
     import helpers/bignums as BignumsHelper
 
@@ -29,6 +32,7 @@ import vm/values/custom/[vcolor, vcomplex, vlogical, vquantity, vrange, vrationa
 
 const
     GMP = defined(GMP)
+    BignumSupport = defined(GMP) or defined(WEB)
 
 #=======================================
 # Helpers
@@ -54,11 +58,7 @@ proc `==`*(x: ValueArray, y: ValueArray): bool {.inline.} =
     return true
 
 when defined(GMP):
-    template toBig(v: untyped): untyped =
-        when defined(WEB):
-            big(v)
-        else:
-            v
+    template toBig(v: untyped): untyped = v
 
 #=======================================
 # Methods
@@ -109,16 +109,16 @@ proc `==`*(x: Value, y: Value): bool =
             of Quantity   || Floating  : return x.q == y.f
             of Quantity   || Rational  : return x.q == y.rat
             
-            of BigInteger || BigInteger: (when GMP: return x.bi == y.bi)
+            of BigInteger || BigInteger: (when BignumSupport: return x.bi == y.bi)
             
-            of BigInteger || Integer   : (when GMP: return x.bi == toBig(y.i))
+            of BigInteger || Integer   : (when BignumSupport: return x.bi == toBig(y.i))
             of BigInteger || Rational  : return false
-            of BigInteger || Floating  : (when GMP: return x.bi == toBig(int(y.f)))
+            of BigInteger || Floating  : (when BignumSupport: return x.bi == y.f)
             of BigInteger || Quantity  : (when GMP: return x.bi == y.q)
 
-            of Integer    || BigInteger: (when GMP: return toBig(x.i) == y.bi)
+            of Integer    || BigInteger: (when BignumSupport: return toBig(x.i) == y.bi)
             of Rational   || BigInteger: (when GMP: return x.rat == toRational(y.bi))
-            of Floating   || BigInteger: (when GMP: return toBig(int(x.f)) == y.bi)
+            of Floating   || BigInteger: (when BignumSupport: return x.f == y.bi)
             of Quantity   || BigInteger: (when GMP: return x.q == y.bi)
 
             of Error      || ErrorKind : return x.err.kind == y.errkind
@@ -315,16 +315,16 @@ proc `<`*(x: Value, y: Value): bool {.inline.}=
             of Quantity   || Floating  :   return x.q < y.f
             of Quantity   || Rational  :   return x.q < y.rat
             
-            of BigInteger || BigInteger:   (when GMP: return x.bi < y.bi)
+            of BigInteger || BigInteger:   (when BignumSupport: return x.bi < y.bi)
             
-            of BigInteger || Integer   :   (when GMP: return x.bi < toBig(y.i))
+            of BigInteger || Integer   :   (when BignumSupport: return x.bi < toBig(y.i))
             of BigInteger || Rational  :   return false
-            of BigInteger || Floating  :   (when GMP: return x.bi < toBig(int(y.f)))
+            of BigInteger || Floating  :   (when BignumSupport: return x.bi < y.f)
             of BigInteger || Quantity  :   (when GMP: return x.bi < y.q)
 
-            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      < y.bi)
+            of Integer    || BigInteger:   (when BignumSupport: return toBig(x.i)      < y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           < toRational(y.bi))
-            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) < y.bi)
+            of Floating   || BigInteger:   (when BignumSupport: return x.f             < y.bi)
             of Quantity   || BigInteger:   (when GMP: return x.q             < y.bi)
             else:
                 discard
@@ -397,16 +397,16 @@ proc `>`*(x: Value, y: Value): bool {.inline.}=
             of Quantity   || Floating  :   return x.q > y.f
             of Quantity   || Rational  :   return x.q > y.rat
             
-            of BigInteger || BigInteger:   (when GMP: return x.bi > y.bi)
+            of BigInteger || BigInteger:   (when BignumSupport: return x.bi > y.bi)
             
-            of BigInteger || Integer   :   (when GMP: return x.bi > toBig(y.i))
+            of BigInteger || Integer   :   (when BignumSupport: return x.bi > toBig(y.i))
             of BigInteger || Rational  :   return false
-            of BigInteger || Floating  :   (when GMP: return x.bi > toBig(int(y.f)))
+            of BigInteger || Floating  :   (when BignumSupport: return x.bi > y.f)
             of BigInteger || Quantity  :   (when GMP: return x.bi > y.q)
 
-            of Integer    || BigInteger:   (when GMP: return toBig(x.i)      > y.bi)
+            of Integer    || BigInteger:   (when BignumSupport: return toBig(x.i)      > y.bi)
             of Rational   || BigInteger:   (when GMP: return x.rat           > toRational(y.bi))
-            of Floating   || BigInteger:   (when GMP: return toBig(int(x.f)) > y.bi)
+            of Floating   || BigInteger:   (when BignumSupport: return x.f             > y.bi)
             of Quantity   || BigInteger:   (when GMP: return x.q             > y.bi)
             else:
                 discard

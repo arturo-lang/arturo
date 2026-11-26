@@ -64,7 +64,9 @@ proc generateJsonNode*(n: Value): JsonNode =
         of Regex        : result = newJString($(n.rx))
         of Color        : result = newJString($(n))
         of Date         : result = newJString($(n))
-        of Binary       : discard
+        of Binary       : result = newJString($(n))
+        of Complex      : result = newJString($(n))
+        of Rational     : result = newJString($(n))
         of Inline,
            Block        : 
            result = newJArray()
@@ -88,9 +90,7 @@ proc generateJsonNode*(n: Value): JsonNode =
             for k,v in pairs(n.sto.data):
                 result.add(k, generateJsonNode(v))
 
-        of Complex,
-           Rational,
-           Function,
+        of Function,
            Method,
            Database,
            Socket,
@@ -100,7 +100,7 @@ proc generateJsonNode*(n: Value): JsonNode =
            Event,
            Channel,
            Nothing,
-           Any          : discard
+           Any          : result = newJNull()
 
 proc parseJsonNode*(n: JsonNode): Value =
 
@@ -152,7 +152,9 @@ when defined(WEB):
             of Regex        : result = toJs($(n.rx))
             of Color        : result = toJs($(n))
             of Date         : result = toJs($(n))
-            of Binary       : discard
+            of Binary       : result = toJs($(n))
+            of Complex      : result = toJs($(n))
+            of Rational     : result = toJs($(n))
             of Inline,
                Block        : 
                 var ret: seq[JsObject]
@@ -176,9 +178,7 @@ when defined(WEB):
                 result = newJsObject()
                 for k,v in pairs(n.sto.data):
                     result[cstring(k)] = generateJsObject(v)
-            of Complex,
-               Rational,
-               Function,
+            of Function,
                Database,
                PathLiteral,
                Error,

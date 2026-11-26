@@ -1189,7 +1189,7 @@ do [
     topic "prepend - :binary < :binary :integer"
     do [
         b: to :binary 1
-        ensure -> to :string .format:".b" = prepend b 0
+        ensure -> to :string .format:".b" 0 = prepend b 0
         passed
     ]
 
@@ -3319,4 +3319,60 @@ do [
     ensure -> not? zero? 0..10
     passed
 
+]
+
+topic "non-ASCII :string"
+do [
+    ensure -> "hé" = first.n:2 "héllo"
+    ensure -> "lé" = last.n:2 "hellé"
+    ensure -> "abc" = last.n:10 "abc"
+    passed
+
+    ensure -> "hé" = take "héllo" 2
+    ensure -> "lé" = take "hellé" neg 2
+    ensure -> "llo" = drop "éllo"
+    ensure -> "llo" = drop.times:2 "héllo"
+    passed
+
+    ensure -> "hell" = chop "hellé"
+    ensure -> "hel" = chop.times:2 "hellé"
+    passed
+
+    ensure -> "olléh" = reverse "héllo"
+    ensure -> "hélo" = squeeze "héééllo"
+    passed
+
+    ensure -> contains?.at:2 "héllo" "l"
+    ensure -> contains?.at:2 "héllo" {/l/}
+    ensure -> in?.at:2 "l" "héllo"
+    ensure -> 4 = index "héllo" "o"
+    ensure -> 1 = index "abc" 'b'
+    passed
+
+    ensure -> "héxllo" = insert "héllo" 2 "x"
+    ensure -> "héxllo" = insert "héllo" 2 'x'
+    ensure -> "héllo!" = insert "héllo" 5 "!"
+    ensure -> throws? [insert "abc" 1 5]
+    passed
+
+    a: "héllo"
+    reverse 'a
+    ensure -> "olléh" = a
+
+    b: "héllo"
+    take 'b 2
+    ensure -> "hé" = b
+
+    c: "hellé"
+    chop 'c
+    ensure -> "hell" = c
+
+    d: "hééllo"
+    squeeze 'd
+    ensure -> "hélo" = d
+
+    e: "héllo"
+    insert 'e 2 "x"
+    ensure -> "héxllo" = e
+    passed
 ]

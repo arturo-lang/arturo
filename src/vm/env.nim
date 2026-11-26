@@ -113,6 +113,8 @@ proc getSystemInfo*(): ValueDict =
             "release"   : 
                 when defined(MINI):
                     newLiteral("mini")
+                elif defined(NOUI):
+                    newLiteral("noui")
                 else:
                     newLiteral("full")
         }.toOrderedTable

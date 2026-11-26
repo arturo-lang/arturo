@@ -25,8 +25,7 @@
 # Libraries
 #=======================================
 
-when not defined(WEB):
-    import extras/checksums/md5, extras/checksums/sha1
+import extras/checksums/md5, extras/checksums/sha1
 
 import base64, uri
 when not defined(WEB):
@@ -175,43 +174,38 @@ proc defineModule*(moduleName: string) =
                 else:
                     push(newString(x.s.encode()))
 
-    when not defined(WEB):
-        # TODO(Crypto\digest) could it be used for Web/JS builds too?
-        #  would it be that useful to have md5/sha1 encoding capabilities through JavaScript?
-        #  labels: library,enhancement,open discussion,web
-
-        builtin "digest",
-            alias       = unaliased, 
-            op          = opNop,
-            rule        = PrefixPrecedence,
-            description = "get digest for given value (default: MD5)",
-            args        = {
-                "value" : {String, Literal, PathLiteral}
-            },
-            attrs       = {
-                "sha"   : ({Logical},"use SHA1")
-            },
-            returns     = {String,Nothing},
-            example     = """                
-            print digest "Hello world"
-            ; 3e25960a79dbc69b674cd4ec67a72c62
-            ..........
-            print digest.sha "Hello world"
-            ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
-            """:
-                #=======================================================
-                if (hadAttr("sha")):
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        SetInPlaceAny(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
-                    else:
-                        push(newString(($(secureHash(x.s))).toLowerAscii()))
+    builtin "digest",
+        alias       = unaliased, 
+        op          = opNop,
+        rule        = PrefixPrecedence,
+        description = "get digest for given value (default: MD5)",
+        args        = {
+            "value" : {String, Literal, PathLiteral}
+        },
+        attrs       = {
+            "sha"   : ({Logical},"use SHA1")
+        },
+        returns     = {String,Nothing},
+        example     = """                
+        print digest "Hello world"
+        ; 3e25960a79dbc69b674cd4ec67a72c62
+        ..........
+        print digest.sha "Hello world"
+        ; 7b502c3a1f48c8609ae212cdfb639dee39673f5e
+        """:
+            #=======================================================
+            if (hadAttr("sha")):
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(($(secureHash(InPlaced.s))).toLowerAscii()))
                 else:
-                    if xKind in {Literal, PathLiteral}:
-                        ensureInPlaceAny()
-                        SetInPlaceAny(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
-                    else:
-                        push(newString(($(toMD5(x.s))).toLowerAscii()))
+                    push(newString(($(secureHash(x.s))).toLowerAscii()))
+            else:
+                if xKind in {Literal, PathLiteral}:
+                    ensureInPlaceAny()
+                    SetInPlaceAny(newString(($(toMD5(InPlaced.s))).toLowerAscii()))
+                else:
+                    push(newString(($(toMD5(x.s))).toLowerAscii()))
 
     builtin "hash",
         alias       = unaliased, 

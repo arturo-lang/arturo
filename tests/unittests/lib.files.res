@@ -40,6 +40,10 @@ filled folders moved to dest/
 >> permissions
 
 
+>> permissions.set
+
+passed!
+
 >> read
 
 Hello, world
@@ -678,6 +682,7 @@ passed!
 >> write.json.compact
 
 {"name":"Arturo","version":"1.9.83","build":"b/12","platform":"amd/win10"}
+["1/2","1.0+2.0i","01 02",null]
 
 >> write.binary
 

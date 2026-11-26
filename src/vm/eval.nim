@@ -88,7 +88,11 @@ proc addConst(consts: var ValueArray, instructions: var VBinary, v: Value, op: O
     var indx = consts.indexOfValue(v)
     if indx == -1:
         let newv = v
-        newv.readonly = true
+        # objects are never literals: when one ends up here
+        # (e.g. `this` for a method call), it's the object itself
+        # - so, marking it would make it be copied on assignment
+        if newv.kind != Object:
+            newv.readonly = true
         consts.add(newv)
         indx = consts.len-1
 
@@ -98,7 +102,9 @@ proc addConstAndGetIndex(consts: var ValueArray, instructions: var VBinary, v: V
     result = consts.indexOfValue(v)
     if result == -1:
         let newv = v
-        newv.readonly = true
+        # (objects: see above)
+        if newv.kind != Object:
+            newv.readonly = true
         consts.add(newv)
         result = consts.len-1
 

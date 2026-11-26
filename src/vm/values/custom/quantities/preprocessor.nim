@@ -78,7 +78,9 @@ when not defined(WEB):
 #=======================================
 
 const
-    MagicPower = 6.0
+    # exponents go from -5 to 5, so we need (at least) 11 "digits"
+    # for every dimension to have a unique signature
+    MagicPower = 11.0
 
     dimList = ["L", "T", "K", "M", "I", "N", "J", "C", "B", "A", "S"]
     expos {.used.} = ["⁻³", "⁻²", "⁻¹", "", "", "²", "³", "⁴", "⁵"]

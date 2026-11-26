@@ -1,0 +1,63 @@
+topic: $[topic :string] -> print ~"\n>> |topic|"
+
+; run given code in a separate process
+; (changes are saved when the process ends)
+run: $[code :string][
+    write code "store.inplace.art"
+    out: strip execute ~{|sys\binary| --no-color "store.inplace.art"}
+    unless empty? out -> print out
+]
+
+cleanUp: $[][
+    loop ["store.inplace.art" "inplacestore.json" "inplacestore"] 'f [
+        if exists? f -> delete f
+    ]
+]
+
+inPlace: $[kind :string][
+    run ~{
+        d: store|kind| "inplacestore"
+
+        d\list: [1]
+        'd\list ++ 2
+        print d\list
+
+        d\cnt: 0
+        inc 'd\cnt
+        print d\cnt
+
+        d\num: 10
+        'd\num + 5
+        print d\num
+
+        d\s: "ab"
+        upper 'd\s
+        print d\s
+
+        d\unsorted: [3 1 2]
+        sort 'd\unsorted
+        print d\unsorted
+
+        d\inner: #[k: 1]
+        inc 'd\inner\k
+        print d\inner\k
+    }
+    run ~{
+        d: store|kind| "inplacestore"
+        print [d\list d\cnt d\num d\s d\unsorted d\inner\k]
+    }
+    cleanUp
+]
+
+;---------------------------------
+
+cleanUp
+
+topic "in-place operations on a store's values - native"
+inPlace ""
+
+topic "in-place operations on a store's values - json"
+inPlace ".json"
+
+topic "in-place operations on a store's values - deferred"
+inPlace ".deferred"

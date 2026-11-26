@@ -102,6 +102,13 @@ proc storeByIndex(cnst: ValueArray, idx: int, doPop: static bool = true) {.inlin
 
         var stackTop {.cursor.} = stack.peek(0)
 
+        when not doPop:
+            # what's left on the stack must be the very value
+            # we store - and not the (readonly) original
+            if stackTop.readonly:
+                Stack[SP-1] = copyValue(stackTop)
+                stackTop = Stack[SP-1]
+
         SetSymById(symIdOf(cnst[idx]), stackTop, safe=true)
         when doPop:
             stack.popN(1)
@@ -194,7 +201,8 @@ template callByIndex(idx: int):untyped =
 template fetchAttributeByIndex(idx: int):untyped =
     stack.pushAttr(cnst[idx].s, stack.pop())
 
-template performConditionalJump(symb: untyped, short: static bool=false): untyped =
+template performConditionalJump(symb: untyped, short: static bool=false): untyped {.dirty.} =
+    # (dirty: `i` is the caller's instruction index)
     when short:
         let x = stack.pop()
         let y = stack.pop()

@@ -47,6 +47,16 @@ const
 # Helpers
 #=======================================
 
+func addressOf(v: Value): string {.inline.} =
+    when defined(WEB):
+        # (no memory addresses in JS)
+        "0x0"
+    elif defined(NANBOX):
+        # (values held inline have no address)
+        if v.isRef: fmt"{v.bits:#X}" else: "0x0"
+    else:
+        fmt"{cast[uint](v):#X}"
+
 template printLine(charWith = lineChar) =
     
     stdout.write initialSep
@@ -374,7 +384,7 @@ proc printHeader(obj: ValueObj) {. inline .} =
     
     let 
         typeStr = valueKind(obj.val).alignLeft(30)
-        address = fmt"{cast[uint](obj.val):#X}".align(32)
+        address = addressOf(obj.val).align(32)
     
     let data = if (not obj.val.info.isNil) and obj.val.info.module != "":
         fmt"{typeStr}{fg(grayColor)}{align(obj.val.info.module, 32)}"
@@ -430,7 +440,7 @@ proc getInfo*(objName: string, objValue: Value, aliases: SymbolDict): ValueDict 
     let obj:    ValueObj  = (name: objName, val: objValue)
 
     result["name"]    = newString(obj.name)
-    result["address"] = newString(fmt"{cast[uint](obj.val):#X}")
+    result["address"] = newString(addressOf(obj.val))
     result["type"]    = newType(obj.val.kind)
     
     if obj.val.info.isNil:

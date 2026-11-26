@@ -1,0 +1,71 @@
+topic: $[topic :string] -> print ~"\n>> |topic|"
+
+; run given code in a separate process
+; (changes are saved when the process ends)
+run: $[code :string][
+    write code "store.run.art"
+    out: strip execute ~{|sys\binary| --no-color "store.run.art"}
+    unless empty? out -> print out
+]
+
+cleanUp: $[][
+    loop ["store.run.art" "teststore.art" "teststore.json" "teststore"] 'f [
+        if exists? f -> delete f
+    ]
+]
+
+changeNested: $[kind :string][
+    run ~{
+        d: store|kind| "teststore"
+        d\inner: #[k: 1]
+        d\inner\k: 2
+        d\l: [1 2]
+        d\l\0: 99
+        d\l\1: 98
+    }
+    run ~{
+        d: store|kind| "teststore"
+        print [d\inner\k d\l]
+    }
+    cleanUp
+]
+
+;---------------------------------
+
+cleanUp
+
+topic "nested changes are saved - native"
+changeNested ""
+
+topic "nested changes are saved - json"
+changeNested ".json"
+
+topic "nested changes are saved - deferred"
+changeNested ".deferred"
+
+topic "nested changes, through a variable"
+run {
+    d: store "teststore"
+    d\inner: #[list: []]
+    x: d\inner
+    x\list: [1 2 3]
+}
+run {
+    d: store "teststore"
+    print d\inner\list
+}
+cleanUp
+
+topic "a store that is only read isn't written to"
+run {
+    d: store "teststore"
+    d\inner: #[k: 1]
+}
+before: read "teststore"
+run {
+    d: store "teststore"
+    x: d\inner
+    print x\k
+}
+print before = read "teststore"
+cleanUp

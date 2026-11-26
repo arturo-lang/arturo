@@ -15,7 +15,7 @@
 import lenientops, macros, math, strutils, tables
 
 when defined(WEB):
-    import std/jsbigints
+    import helpers/jsbignums
 
 when defined(GMP):
     import helpers/bignums as BignumsHelper
@@ -70,7 +70,8 @@ macro generateOperationA*(name: static[string], op: untyped, inplaceOp: untyped)
             if normalIntegerOperation(inPlace=true):
                 `normalIntegerI`(InPlaced)
             else:
-                `inplaceOp`(InPlaced)
+                inPlaceDo(`inplaceOp`)
+            commitInPlaceAny()
         elif normalIntegerOperation():
             push(`normalInteger`(x.i))
         else:
@@ -88,7 +89,8 @@ macro generateOperationB*(name: static[string], op: untyped, inplaceOp: untyped)
             if normalIntegerOperation(inPlace=true):
                 `normalIntegerI`(InPlaced, y.i)
             else:
-                `inplaceOp`(InPlaced, y)
+                inPlaceDo(`inplaceOp`, y)
+            commitInPlaceAny()
         elif normalIntegerOperation():
             push(`normalInteger`(x.i, y.i))
         else:
@@ -98,15 +100,12 @@ macro generateOperationB*(name: static[string], op: untyped, inplaceOp: untyped)
 # Helpers
 #=======================================
 
-template toBig(v: untyped): untyped =
-    when defined(WEB):
-        big(v)
-    else:
-        v
+when not defined(WEB):
+    template toBig(v: untyped): untyped = v
 
 template toNewBig(v: untyped): untyped =
     when defined(WEB):
-        big(v)
+        toBig(v)
     else:
         newInt(v)
 
@@ -187,7 +186,16 @@ template normalIntegerOperation*(inPlace=false): bool =
     ## Relies on ``ord(NormalInteger) == 0`` and on the fact that reading
     ## ``iKind`` of a non-Integer Value is harmless
     ## (similar to pattern used by ``getValuePair``)
-    when inPlace:
+    when defined(WEB):
+        # JS backend trips the case-object guard if we read `iKind`
+        # on a non-Integer value, so short-circuit on `kind` first.
+        let xv {.cursor.} = (when inPlace: InPlaced else: x)
+        when declared(y):
+            likely(xKind == Integer and yKind == Integer and
+                   xv.iKind == NormalInteger and y.iKind == NormalInteger)
+        else:
+            likely(xKind == Integer and xv.iKind == NormalInteger)
+    elif inPlace:
         when declared(y):
             likely(((ord(xKind) xor ord(Integer)) or
                     (ord(yKind) xor ord(Integer)) or
@@ -220,11 +228,14 @@ template normalIntegerAdd*(x, y: int): untyped =
 template normalIntegerAddI*(x: var Value, y: int): untyped =
     ## add two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(addIntWithOverflowI(x.i, y, x.i)):
+    var inPlaceRes: int
+    if unlikely(addIntWithOverflow(x.i, y, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(y))
         else:
             Error_IntegerOperationOverflow("add", Dumper(x), Dumper(newInteger(y)))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerInc*(x: int): untyped =
     ## increment a normal Integer value by 1, checking for overflow
@@ -242,11 +253,14 @@ template normalIntegerInc*(x: int): untyped =
 template normalIntegerIncI*(x: var Value): untyped =
     ## increment a normal Integer value by 1, checking for overflow
     ## and set result in-place
-    if unlikely(addIntWithOverflowI(x.i, 1, x.i)):
+    var inPlaceRes: int
+    if unlikely(addIntWithOverflow(x.i, 1, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) + toBig(1))
         else:
             Error_IntegerSingleOperationOverflow("inc", Dumper(x))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerSub*(x, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
@@ -264,11 +278,14 @@ template normalIntegerSub*(x, y: int): untyped =
 template normalIntegerSubI*(x: var Value, y: int): untyped =
     ## subtract two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(subIntWithOverflowI(x.i, y, x.i)):
+    var inPlaceRes: int
+    if unlikely(subIntWithOverflow(x.i, y, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(y))
         else:
             Error_IntegerOperationOverflow("sub", Dumper(x), Dumper(newInteger(y)))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerDec*(x: int): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
@@ -286,11 +303,14 @@ template normalIntegerDec*(x: int): untyped =
 template normalIntegerDecI*(x: var Value): untyped =
     ## decrement a normal Integer value by 1, checking for overflow
     ## and set result in-place
-    if unlikely(subIntWithOverflowI(x.i, 1, x.i)):
+    var inPlaceRes: int
+    if unlikely(subIntWithOverflow(x.i, 1, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) - toBig(1))
         else:
             Error_IntegerSingleOperationOverflow("dec", Dumper(x))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerMul*(x, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
@@ -308,11 +328,14 @@ template normalIntegerMul*(x, y: int): untyped =
 template normalIntegerMulI*(x: var Value, y: int): untyped =
     ## multiply two normal Integer values, checking for overflow
     ## and set result in-place
-    if unlikely(mulIntWithOverflowI(x.i, y, x.i)):
+    var inPlaceRes: int
+    if unlikely(mulIntWithOverflow(x.i, y, inPlaceRes)):
         when BignumSupport:
             x = newInteger(toNewBig(x.i) * toBig(y))
         else:
             Error_IntegerOperationOverflow("mul", Dumper(x), Dumper(newInteger(y)))
+    else:
+        x.i = inPlaceRes
 
 template normalIntegerNeg*(x: int): untyped =
     ## negate a normal Integer value, checking for overflow
@@ -330,21 +353,38 @@ template normalIntegerNeg*(x: int): untyped =
 template normalIntegerNegI*(x: var Value): untyped =
     ## negate a normal Integer value, checking for overflow
     ## and set result in-place
-    if unlikely(mulIntWithOverflowI(x.i, -1, x.i)):
+    var inPlaceRes: int
+    if unlikely(mulIntWithOverflow(x.i, -1, inPlaceRes)):
         when BignumSupport:
-            x = newInteger(toNewBig(x.i) + toBig(-1))
+            x = newInteger(toNewBig(x.i) * toBig(-1))
         else:
             Error_IntegerSingleOperationOverflow("neg", Dumper(x))
+    else:
+        x.i = inPlaceRes
+
+proc normalIntegerDivEdge(x, y: int): Value {.noinline.} =
+    ## divide by 0 or -1 (the latter overflows,
+    ## if it's the smallest Integer)
+    if y == -1: normalIntegerNeg(x)
+    else: newInteger(x div notZero(y))
+
+proc normalIntegerModEdge(x, y: int): Value {.noinline.} =
+    ## modulo by 0 or -1 (the latter overflows,
+    ## if it's the smallest Integer)
+    if y == -1: newInteger(0)
+    else: newInteger(x mod notZero(y))
 
 template normalIntegerDiv*(x, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    newInteger(x div notZero(y))
+    if unlikely(y in -1..0): normalIntegerDivEdge(x, y)
+    else: newInteger(x div y)
 
 template normalIntegerDivI*(x: var Value, y: int): untyped =
     ## divide (integer division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    x = newInteger(x.i div notZero(y))
+    if unlikely(y in -1..0): x = normalIntegerDivEdge(x.i, y)
+    else: x = newInteger(x.i div y)
 
 template normalIntegerFDiv*(x, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
@@ -359,24 +399,30 @@ template normalIntegerFDivI*(x: var Value, y: int): untyped =
 template normalIntegerMod*(x, y: int): untyped =
     ## modulo two normal Integer values, checking for DivisionByZero
     ## and return result
-    newInteger(x mod notZero(y))
+    if unlikely(y in -1..0): normalIntegerModEdge(x, y)
+    else: newInteger(x mod y)
 
 template normalIntegerModI*(x: var Value, y: int): untyped =
     ## divide (floating-point division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    x = newInteger(x.i mod notZero(y))
+    if unlikely(y in -1..0): x = normalIntegerModEdge(x.i, y)
+    else: x = newInteger(x.i mod y)
 
 template normalIntegerDivMod*(x, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and return result
-    let (quotient, remainder) = math.divmod(x, notZero(y))
-    newBlock(@[newInteger(quotient), newInteger(remainder)])
+    if unlikely(y == -1): newBlock(@[normalIntegerNeg(x), newInteger(0)])
+    else:
+        let (quotient, remainder) = math.divmod(x, notZero(y))
+        newBlock(@[newInteger(quotient), newInteger(remainder)])
 
 template normalIntegerDivModI*(x: var Value, y: int): untyped =
     ## divide+modulo (integer division) two normal Integer values, checking for DivisionByZero
     ## and set result in-place
-    let (quotient, remainder) = math.divmod(x.i, notZero(y))
-    x = newBlock(@[newInteger(quotient), newInteger(remainder)])
+    if unlikely(y == -1): x = newBlock(@[normalIntegerNeg(x.i), newInteger(0)])
+    else:
+        let (quotient, remainder) = math.divmod(x.i, notZero(y))
+        x = newBlock(@[newInteger(quotient), newInteger(remainder)])
 
 template normalIntegerPow*(x, y: int): untyped =
     ## get the power of two normal Integer values, checking for overflow
@@ -400,75 +446,114 @@ template normalIntegerPowI*(x: var Value, y: int): untyped =
     ## get the power of two normal Integer values, checking for overflow
     ## and set result in-place
     if likely(y >= 0):
-        if unlikely(powIntWithOverflowI(x.i, y, x.i)):
+        var inPlaceRes: int
+        if unlikely(powIntWithOverflow(x.i, y, inPlaceRes)):
             when defined(GMP):
                 x = newInteger(pow(x.i, culong(y)))
             elif defined(WEB):
                 x = newInteger(big(x.i) ** big(y))  
             else:
                 Error_IntegerOperationOverflow("pow", Dumper(x), Dumper(newInteger(y)))
+        else:
+            x.i = inPlaceRes
     else:
         x = newFloating(pow(float(x.i), float(y)))
 
 template normalIntegerAnd*(x, y: int): untyped =
     ## bitwise AND two normal Integer values
     ## and return result
-    newInteger(x and y)
+    when defined(WEB):
+        newInteger(bitAnd(x, y))
+    else:
+        newInteger(x and y)
 
 template normalIntegerAndI*(x: var Value, y: int): untyped =
     ## bitwise AND two normal Integer values
     ## and set result in-place
-    x.i = x.i and y
+    when defined(WEB):
+        x.i = getSignedInt(bitAnd(x.i, y))
+    else:
+        x.i = x.i and y
 
 template normalIntegerOr*(x, y: int): untyped =
     ## bitwise OR two normal Integer values
     ## and return result
-    newInteger(x or y)
+    when defined(WEB):
+        newInteger(bitOr(x, y))
+    else:
+        newInteger(x or y)
 
 template normalIntegerOrI*(x: var Value, y: int): untyped =
     ## bitwise OR two normal Integer values
     ## and set result in-place
-    x.i = x.i or y
+    when defined(WEB):
+        x.i = getSignedInt(bitOr(x.i, y))
+    else:
+        x.i = x.i or y
 
 template normalIntegerXor*(x, y: int): untyped =
     ## bitwise XOR two normal Integer values
     ## and return result
-    newInteger(x xor y)
+    when defined(WEB):
+        newInteger(bitXor(x, y))
+    else:
+        newInteger(x xor y)
 
 template normalIntegerXorI*(x: var Value, y: int): untyped =
     ## bitwise XOR two normal Integer values
     ## and set result in-place
-    x.i = x.i xor y
+    when defined(WEB):
+        x.i = getSignedInt(bitXor(x.i, y))
+    else:
+        x.i = x.i xor y
 
 template normalIntegerNot*(x: int): untyped =
     ## bitwise NOT of a normal Integer value
     ## and return result
-    newInteger(not x)
+    when defined(WEB):
+        newInteger(bitNot(x))
+    else:
+        newInteger(not x)
 
 template normalIntegerNotI*(x: var Value): untyped =
     ## bitwise NOT of a normal Integer value
     ## and set result in-place
-    x.i = not x.i
+    when defined(WEB):
+        x.i = getSignedInt(bitNot(x.i))
+    else:
+        x.i = not x.i
 
 template normalIntegerShl*(x, y: int): untyped =
     ## bitwise shift-left two normal Integer values
     ## and return result
-    newInteger(x shl y)
+    when defined(WEB):
+        newInteger(bitShl(x, y))
+    else:
+        newInteger(x shl y)
 
 template normalIntegerShlI*(x: var Value, y: int): untyped =
     ## bitwise shift-left two normal Integer values
     ## and set result in-place
-    x.i = x.i shl y
+    when defined(WEB):
+        x = newInteger(bitShl(x.i, y))
+    else:
+        x.i = x.i shl y
 
 template normalIntegerShr*(x, y: int): untyped =
     ## bitwise shift-right two normal Integer values
     ## and return result
-    newInteger(x shr y)
+    when defined(WEB):
+        newInteger(bitShr(x, y))
+    else:
+        newInteger(x shr y)
 
 template normalIntegerShrI*(x: var Value, y: int): untyped =
     ## bitwise shift-right two normal Integer values
     ## and set result in-place
-    x.i = x.i shr y
+    when defined(WEB):
+        x.i = getSignedInt(bitShr(x.i, y))
+    else:
+        x.i = x.i shr y
 
 template arithmeticFastpathA*(slowOp, intFastFn: untyped): untyped =
     ## inline fast-path for unary arithmetic ops on a NormalInteger operand -
@@ -548,13 +633,13 @@ proc `+`*(x: Value, y: Value): Value =
         of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi + toBig(y.i)))
         of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi + y.bi))
         of Integer    || Floating       :   return newFloating(x.i + y.f)
-        of BigInteger || Floating       :   (when defined(GMP): return newFloating(x.bi + y.f))
+        of BigInteger || Floating       :   (when BignumSupport: return newFloating(x.bi + y.f))
         of Integer    || Rational       :   return newRational(x.i + y.rat)
         of BigInteger || Rational       :   (when defined(GMP): return newRational(x.bi + y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) + y.z)
 
         of Floating   || Integer        :   return newFloating(x.f + float(y.i))
-        of Floating   || BigInteger     :   (when defined(GMP): return newFloating(x.f + y.bi))
+        of Floating   || BigInteger     :   (when BignumSupport: return newFloating(x.f + y.bi))
         of Floating   || Floating       :   return newFloating(x.f + y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) + y.rat)
         of Floating   || Complex        :   return newComplex(x.f + y.z)
@@ -591,14 +676,14 @@ proc `+=`*(x: var Value, y: Value) =
         of BigInteger || Integer        :   (when BignumSupport: x.bi += toBig(y.i))
         of BigInteger || BigInteger     :   (when BignumSupport: x.bi += y.bi)
         of Integer    || Floating       :   x = newFloating(x.i + y.f)
-        of BigInteger || Floating       :   (when defined(GMP): x = newFloating(x.bi + y.f))
+        of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi + y.f))
         of Integer    || Rational       :   x = newRational(x.i + y.rat)
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(x.bi + y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) + y.z)
 
-        of Floating   || Integer        :   x.f += float(y.i)
-        of Floating   || BigInteger     :   (when defined(GMP): x = newFloating(x.f + y.bi))
-        of Floating   || Floating       :   x.f += y.f
+        of Floating   || Integer        :   x.f = x.f + (float(y.i))
+        of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f + y.bi))
+        of Floating   || Floating       :   x.f = x.f + (y.f)
         of Floating   || Rational       :   x = newRational(toRational(x.f) + y.rat)
         of Floating   || Complex        :   x = newComplex(x.f + y.z)
 
@@ -645,7 +730,7 @@ proc incI*(x: var Value) =
         of Integer:
             if x.iKind==NormalInteger: normalIntegerIncI(x)
             else: (when BignumSupport: inc(x.bi, 1))
-        of Floating: x.f += 1.0
+        of Floating: x.f = x.f + (1.0)
         of Rational: x.rat += 1
         of Complex: x.z = x.z + 1.0
         of Quantity: x.q += 1
@@ -662,13 +747,13 @@ proc `-`*(x: Value, y: Value): Value =
         of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi - toBig(y.i)))
         of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi - y.bi))
         of Integer    || Floating       :   return newFloating(x.i - y.f)
-        of BigInteger || Floating       :   (when defined(GMP): return newFloating(x.bi - y.f))
+        of BigInteger || Floating       :   (when BignumSupport: return newFloating(x.bi - y.f))
         of Integer    || Rational       :   return newRational(x.i - y.rat)
         of BigInteger || Rational       :   (when defined(GMP): return newRational(x.bi - y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) - y.z)
 
         of Floating   || Integer        :   return newFloating(x.f - float(y.i))
-        of Floating   || BigInteger     :   (when defined(GMP): return newFloating(x.f - y.bi))
+        of Floating   || BigInteger     :   (when BignumSupport: return newFloating(x.f - y.bi))
         of Floating   || Floating       :   return newFloating(x.f - y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) - y.rat)
         of Floating   || Complex        :   return newComplex(x.f - y.z)
@@ -705,14 +790,14 @@ proc `-=`*(x: var Value, y: Value) =
         of BigInteger || Integer        :   (when BignumSupport: x.bi -= toBig(y.i))
         of BigInteger || BigInteger     :   (when BignumSupport: x.bi -= y.bi)
         of Integer    || Floating       :   x = newFloating(x.i - y.f)
-        of BigInteger || Floating       :   (when defined(GMP): x = newFloating(x.bi - y.f))
+        of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi - y.f))
         of Integer    || Rational       :   x = newRational(x.i - y.rat)
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(x.bi - y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) - y.z)
 
-        of Floating   || Integer        :   x.f -= float(y.i)
-        of Floating   || BigInteger     :   (when defined(GMP): x = newFloating(x.f - y.bi))
-        of Floating   || Floating       :   x.f -= y.f
+        of Floating   || Integer        :   x.f = x.f - (float(y.i))
+        of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f - y.bi))
+        of Floating   || Floating       :   x.f = x.f - (y.f)
         of Floating   || Rational       :   x = newRational(toRational(x.f) - y.rat)
         of Floating   || Complex        :   x = newComplex(x.f - y.z)
 
@@ -759,7 +844,7 @@ proc decI*(x: var Value) =
         of Integer:
             if x.iKind==NormalInteger: normalIntegerDecI(x)
             else: (when BignumSupport: dec(x.bi, 1))
-        of Floating: x.f -= 1.0
+        of Floating: x.f = x.f - (1.0)
         of Rational: x.rat -= 1
         of Complex: x.z = x.z - 1.0
         of Quantity: x.q -= 1
@@ -776,7 +861,7 @@ proc `*`*(x: Value, y: Value): Value =
         of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi * toBig(y.i)))
         of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi * y.bi))
         of Integer    || Floating       :   return newFloating(x.i * y.f)
-        of BigInteger || Floating       :   (when defined(GMP): return newFloating(x.bi * y.f))
+        of BigInteger || Floating       :   (when BignumSupport: return newFloating(x.bi * y.f))
         of Integer    || Rational       :   return newRational(x.i * y.rat)
         of BigInteger || Rational       :   (when defined(GMP): return newRational(x.bi * y.rat))
         of Integer    || Complex        :   return newComplex(float(x.i) * y.z)
@@ -786,7 +871,7 @@ proc `*`*(x: Value, y: Value): Value =
         of BigInteger || Unit           :   (when defined(GMP): return newQuantity(x, y.u))
 
         of Floating   || Integer        :   return newFloating(x.f * float(y.i))
-        of Floating   || BigInteger     :   (when defined(GMP): return newFloating(x.f * y.bi))
+        of Floating   || BigInteger     :   (when BignumSupport: return newFloating(x.f * y.bi))
         of Floating   || Floating       :   return newFloating(x.f * y.f)
         of Floating   || Rational       :   return newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   return newComplex(x.f * y.z)
@@ -834,7 +919,7 @@ proc `*=`*(x: var Value, y: Value) =
         of BigInteger || Integer        :   (when BignumSupport: x.bi *= toBig(y.i))
         of BigInteger || BigInteger     :   (when BignumSupport: x.bi *= y.bi)
         of Integer    || Floating       :   x = newFloating(x.i * y.f)
-        of BigInteger || Floating       :   (when defined(GMP): x = newFloating(x.bi * y.f))
+        of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi * y.f))
         of Integer    || Rational       :   x = newRational(x.i * y.rat)
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(x.bi * y.rat))
         of Integer    || Complex        :   x = newComplex(float(x.i) * y.z)
@@ -843,9 +928,9 @@ proc `*=`*(x: var Value, y: Value) =
         of Integer    || Unit           :   x = newQuantity(x, y.u)
         of BigInteger || Unit           :   (when defined(GMP): x = newQuantity(x, y.u))
 
-        of Floating   || Integer        :   x.f *= float(y.i)
-        of Floating   || BigInteger     :   (when defined(GMP): x = newFloating(x.f * y.bi))
-        of Floating   || Floating       :   x.f *= y.f
+        of Floating   || Integer        :   x.f = x.f * (float(y.i))
+        of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f * y.bi))
+        of Floating   || Floating       :   x.f = x.f * (y.f)
         of Floating   || Rational       :   x = newRational(toRational(x.f) * y.rat)
         of Floating   || Complex        :   x = newComplex(x.f * y.z)
         of Floating   || Quantity       :   x = newQuantity(x.f * y.q)
@@ -885,7 +970,7 @@ proc neg*(x: Value): Value =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: return normalIntegerNeg(x.i)
-            else: (when defined(GMP): return newInteger(neg(x.bi)))
+            else: (when BignumSupport: return newInteger(neg(x.bi)))
         of Floating: return newFloating(x.f*(-1.0))
         of Rational: return newRational(neg(x.rat))
         of Complex: return newComplex(x.z*(-1.0))
@@ -902,8 +987,8 @@ proc negI*(x: var Value) =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerNegI(x)
-            else: (when defined(GMP): negI(x.bi))
-        of Floating: x.f *= -1.0
+            else: (when BignumSupport: negI(x.bi))
+        of Floating: x.f = x.f * (-1.0)
         of Rational: x.rat *= -1
         of Complex: x.z *= -1.0
         of Quantity: x.q *= -1
@@ -920,13 +1005,13 @@ proc `/`*(x: Value, y: Value): Value =
         of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi div toBig(notZero(y.i))))
         of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi div notZero(y.bi)))
         of Integer    || Floating       :   return newFloating(x.i / notZero(y.f))
-        of BigInteger || Floating       :   (when defined(GMP): return newFloating(x.bi / notZero(y.f)))
+        of BigInteger || Floating       :   (when BignumSupport: return newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   return newInteger(toRational(x.i) div notZero(y.rat))
         of BigInteger || Rational       :   (when defined(GMP): return newInteger(toRational(x.bi) div notZero(y.rat)))
         of Integer    || Complex        :   return newComplex(float(x.i) / notZero(y.z))
 
         of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
-        of Floating   || BigInteger     :   (when defined(GMP): return newFloating(x.f / notZero(y.bi)))
+        of Floating   || BigInteger     :   (when BignumSupport: return newFloating(x.f / notZero(y.bi)))
         of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
         of Floating   || Rational       :   return newInteger(toRational(x.f) div notZero(y.rat))
         of Floating   || Complex        :   return newComplex(x.f / notZero(y.z))
@@ -959,17 +1044,17 @@ proc `/=`*(x: var Value, y: Value) =
     case pair:
         of Integer    || Integer        :   normalIntegerDivI(x, y.i)
         of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) div notZero(y.bi)))
-        of BigInteger || Integer        :   (when defined(GMP): divI(x.bi, notZero(y.i)))
-        of BigInteger || BigInteger     :   (when defined(GMP): divI(x.bi, notZero(y.bi)))
+        of BigInteger || Integer        :   (when BignumSupport: divI(x.bi, notZero(y.i)))
+        of BigInteger || BigInteger     :   (when BignumSupport: divI(x.bi, notZero(y.bi)))
         of Integer    || Floating       :   x = newFloating(x.i / notZero(y.f))
-        of BigInteger || Floating       :   (when defined(GMP): x = newFloating(x.bi / notZero(y.f)))
+        of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   x = newInteger(toRational(x.i) div notZero(y.rat))
         of BigInteger || Rational       :   (when defined(GMP): x = newInteger(toRational(x.bi) div notZero(y.rat)))
         of Integer    || Complex        :   x = newComplex(float(x.i) / notZero(y.z))
 
-        of Floating   || Integer        :   x.f /= float(notZero(y.i))
-        of Floating   || BigInteger     :   (when defined(GMP): x = newFloating(x.f / notZero(y.bi)))
-        of Floating   || Floating       :   x.f /= notZero(y.f)
+        of Floating   || Integer        :   x.f = x.f / (float(notZero(y.i)))
+        of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f / notZero(y.bi)))
+        of Floating   || Floating       :   x.f = x.f / (notZero(y.f))
         of Floating   || Rational       :   x = newInteger(toRational(x.f) div notZero(y.rat))
         of Floating   || Complex        :   x = newComplex(x.f / notZero(y.z))
 
@@ -997,14 +1082,14 @@ proc `//`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerFDiv(x.i, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): return newInteger(x.i // notZero(y.bi)))
+        of Integer    || BigInteger     :   (when BignumSupport: return newInteger(x.i // notZero(y.bi)))
         of Integer    || Floating       :   return newFloating(float(x.i) / notZero(y.f))
-        of BigInteger || Floating       :   (when defined(GMP): return newFloating(x.bi / notZero(y.f)))
+        of BigInteger || Floating       :   (when BignumSupport: return newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   return newRational(x.i / notZero(y.rat))
         of BigInteger || Rational       :   (when defined(GMP): return newRational(x.bi / notZero(y.rat)))
 
         of Floating   || Integer        :   return newFloating(x.f / float(notZero(y.i)))
-        of Floating   || BigInteger     :   (when defined(GMP): return newFloating(x.f / notZero(y.bi)))
+        of Floating   || BigInteger     :   (when BignumSupport: return newFloating(x.f / notZero(y.bi)))
         of Floating   || Floating       :   return newFloating(x.f / notZero(y.f))
         of Floating   || Rational       :   return newRational(toRational(x.f) / notZero(y.rat))
 
@@ -1030,15 +1115,15 @@ proc `//=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerFDivI(x, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): x = newInteger(x.i // notZero(y.bi)))
+        of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(x.i // notZero(y.bi)))
         of Integer    || Floating       :   x = newFloating(float(x.i) / notZero(y.f))
-        of BigInteger || Floating       :   (when defined(GMP): x = newFloating(x.bi / notZero(y.f)))
+        of BigInteger || Floating       :   (when BignumSupport: x = newFloating(x.bi / notZero(y.f)))
         of Integer    || Rational       :   x = newRational(x.i / notZero(y.rat))
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(x.bi / notZero(y.rat)))
 
-        of Floating   || Integer        :   x.f /= float(notZero(y.i))
-        of Floating   || BigInteger     :   (when defined(GMP): x = newFloating(x.f / notZero(y.bi)))
-        of Floating   || Floating       :   x.f /= notZero(y.f)
+        of Floating   || Integer        :   x.f = x.f / (float(notZero(y.i)))
+        of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(x.f / notZero(y.bi)))
+        of Floating   || Floating       :   x.f = x.f / (notZero(y.f))
         of Floating   || Rational       :   x = newRational(toRational(x.f) / notZero(y.rat))
 
         of Rational   || Integer        :   x.rat /= notZero(y.i)
@@ -1060,9 +1145,9 @@ proc `%`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerMod(x.i, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): return newInteger(toBig(x.i) mod notZero(y.bi)))
-        of BigInteger || Integer        :   (when defined(GMP): return newInteger(x.bi mod toBig(notZero(y.i))))
-        of BigInteger || BigInteger     :   (when defined(GMP): return newInteger(x.bi mod notZero(y.bi)))
+        of Integer    || BigInteger     :   (when BignumSupport: return newInteger(toBig(x.i) mod notZero(y.bi)))
+        of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi mod toBig(notZero(y.i))))
+        of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi mod notZero(y.bi)))
         of Integer    || Floating       :   return newFloating(float(x.i) mod notZero(y.f))
         of Integer    || Rational       :   return newRational(toRational(x.i) mod notZero(y.rat))
         of BigInteger || Rational       :   (when defined(GMP): return newRational(toRational(x.bi) mod notZero(y.rat)))
@@ -1093,9 +1178,9 @@ proc `%=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerModI(x, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): x = newInteger(toBig(x.i) mod notZero(y.bi)))
-        of BigInteger || Integer        :   (when defined(GMP): modI(x.bi, toBig(notZero(y.i))))
-        of BigInteger || BigInteger     :   (when defined(GMP): modI(x.bi, notZero(y.bi)))
+        of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) mod notZero(y.bi)))
+        of BigInteger || Integer        :   (when BignumSupport: modI(x.bi, toBig(notZero(y.i))))
+        of BigInteger || BigInteger     :   (when BignumSupport: modI(x.bi, notZero(y.bi)))
         of Integer    || Floating       :   x = newFloating(float(x.i) mod notZero(y.f))
         of Integer    || Rational       :   x = newRational(toRational(x.i) mod notZero(y.rat))
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(toRational(x.bi) mod notZero(y.rat)))
@@ -1123,15 +1208,15 @@ proc `/%`*(x: Value, y: Value): Value =
     case pair:
         of Integer    || Integer        :   return normalIntegerDivMod(x.i, y.i)
         of Integer    || BigInteger     :   
-            when defined(GMP): 
+            when BignumSupport:
                 let dm=divmod(x.i, notZero(y.bi))
                 return newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
         of BigInteger || Integer        :   
-            when defined(GMP): 
+            when BignumSupport:
                 let dm=divmod(x.bi, notZero(y.i))
                 return newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
         of BigInteger || BigInteger     :   
-            when defined(GMP): 
+            when BignumSupport:
                 let dm=divmod(x.bi, notZero(y.bi))
                 return newBlock(@[newInteger(dm[0]), newInteger(dm[1])])
         of Integer    || Floating       :   return newBlock(@[x/y, x%y])
@@ -1170,14 +1255,14 @@ proc `^`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerPow(x.i, y.i)
-        of BigInteger || Integer        :   (when defined(GMP): return newInteger(pow(x.bi, culong(y.i))))
+        of BigInteger || Integer        :   (when BignumSupport: return newInteger(pow(x.bi, culong(y.i))))
         of Integer    || Floating       :   return newFloating(pow(float(x.i), y.f))
-        of BigInteger || Floating       :   (when defined(GMP): return newFloating(pow(x.bi, y.f)))
+        of BigInteger || Floating       :   (when BignumSupport: return newFloating(pow(x.bi, y.f)))
         of Integer    || Rational       :   return newRational(pow(float(x.i), toFloat(y.rat)))
         of BigInteger || Rational       :   (when defined(GMP): return newRational(pow(x.bi, toFloat(y.rat))))
 
         of Floating   || Integer        :   return newFloating(pow(x.f, float(y.i)))
-        of Floating   || BigInteger     :   (when defined(GMP): return newFloating(pow(x.f, y.bi)))
+        of Floating   || BigInteger     :   (when BignumSupport: return newFloating(pow(x.f, y.bi)))
         of Floating   || Floating       :   return newFloating(pow(x.f, y.f))
 
         of Rational   || Integer        :   return newRational(x.rat ^ y.i)
@@ -1204,14 +1289,14 @@ proc `^=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerPowI(x, y.i)
-        of BigInteger || Integer        :   (when defined(GMP): powI(x.bi, culong(y.i)))
+        of BigInteger || Integer        :   (when BignumSupport: powI(x.bi, culong(y.i)))
         of Integer    || Floating       :   x = newFloating(pow(float(x.i), y.f))
-        of BigInteger || Floating       :   (when defined(GMP): x = newFloating(pow(x.bi, y.f)))
+        of BigInteger || Floating       :   (when BignumSupport: x = newFloating(pow(x.bi, y.f)))
         of Integer    || Rational       :   x = newRational(pow(float(x.i), toFloat(y.rat)))
         of BigInteger || Rational       :   (when defined(GMP): x = newRational(pow(x.bi, toFloat(y.rat))))
 
         of Floating   || Integer        :   x.f = pow(x.f, float(y.i))
-        of Floating   || BigInteger     :   (when defined(GMP): x = newFloating(pow(x.f, y.bi)))
+        of Floating   || BigInteger     :   (when BignumSupport: x = newFloating(pow(x.f, y.bi)))
         of Floating   || Floating       :   x.f = pow(x.f, y.f)
 
         of Rational   || Integer        :   x = newRational(x.rat ^ y.i)
@@ -1235,9 +1320,9 @@ proc `&&`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerAnd(x.i, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): return newInteger(toBig(x.i) and y.bi))
-        of BigInteger || Integer        :   (when defined(GMP): return newInteger(x.bi and toBig(y.i)))
-        of BigInteger || BigInteger     :   (when defined(GMP): return newInteger(x.bi and y.bi))
+        of Integer    || BigInteger     :   (when BignumSupport: return newInteger(toBig(x.i) and y.bi))
+        of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi and toBig(y.i)))
+        of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi and y.bi))
         of Integer    || Binary         :   return newBinary(numberToBinary(x.i) and y.n)
 
         of Binary     || Integer        :   return newBinary(x.n and numberToBinary(y.i))
@@ -1255,9 +1340,9 @@ proc `&&=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerAndI(x, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): x = newInteger(toBig(x.i) and y.bi))
-        of BigInteger || Integer        :   (when defined(GMP): andI(x.bi, toBig(y.i)))
-        of BigInteger || BigInteger     :   (when defined(GMP): andI(x.bi, y.bi))
+        of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) and y.bi))
+        of BigInteger || Integer        :   (when BignumSupport: andI(x.bi, toBig(y.i)))
+        of BigInteger || BigInteger     :   (when BignumSupport: andI(x.bi, y.bi))
         of Integer    || Binary         :   x = newBinary(numberToBinary(x.i) and y.n)
 
         of Binary     || Integer        :   x.n = x.n and numberToBinary(y.i)
@@ -1272,9 +1357,9 @@ proc `||`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerOr(x.i, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): return newInteger(toBig(x.i) or y.bi))
-        of BigInteger || Integer        :   (when defined(GMP): return newInteger(x.bi or toBig(y.i)))
-        of BigInteger || BigInteger     :   (when defined(GMP): return newInteger(x.bi or y.bi))
+        of Integer    || BigInteger     :   (when BignumSupport: return newInteger(toBig(x.i) or y.bi))
+        of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi or toBig(y.i)))
+        of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi or y.bi))
         of Integer    || Binary         :   return newBinary(numberToBinary(x.i) or y.n)
 
         of Binary     || Integer        :   return newBinary(x.n or numberToBinary(y.i))
@@ -1292,9 +1377,9 @@ proc `||=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerOrI(x, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): x = newInteger(toBig(x.i) or y.bi))
-        of BigInteger || Integer        :   (when defined(GMP): orI(x.bi, toBig(y.i)))
-        of BigInteger || BigInteger     :   (when defined(GMP): orI(x.bi, y.bi))
+        of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) or y.bi))
+        of BigInteger || Integer        :   (when BignumSupport: orI(x.bi, toBig(y.i)))
+        of BigInteger || BigInteger     :   (when BignumSupport: orI(x.bi, y.bi))
         of Integer    || Binary         :   x = newBinary(numberToBinary(x.i) or y.n)
 
         of Binary     || Integer        :   x.n = x.n or numberToBinary(y.i)
@@ -1309,9 +1394,9 @@ proc `^^`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerXor(x.i, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): return newInteger(toBig(x.i) xor y.bi))
-        of BigInteger || Integer        :   (when defined(GMP): return newInteger(x.bi xor toBig(y.i)))
-        of BigInteger || BigInteger     :   (when defined(GMP): return newInteger(x.bi xor y.bi))
+        of Integer    || BigInteger     :   (when BignumSupport: return newInteger(toBig(x.i) xor y.bi))
+        of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi xor toBig(y.i)))
+        of BigInteger || BigInteger     :   (when BignumSupport: return newInteger(x.bi xor y.bi))
         of Integer    || Binary         :   return newBinary(numberToBinary(x.i) xor y.n)
 
         of Binary     || Integer        :   return newBinary(x.n xor numberToBinary(y.i))
@@ -1329,9 +1414,9 @@ proc `^^=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerXorI(x, y.i)
-        of Integer    || BigInteger     :   (when defined(GMP): x = newInteger(toBig(x.i) xor y.bi))
-        of BigInteger || Integer        :   (when defined(GMP): xorI(x.bi, toBig(y.i)))
-        of BigInteger || BigInteger     :   (when defined(GMP): xorI(x.bi, y.bi))
+        of Integer    || BigInteger     :   (when BignumSupport: x = newInteger(toBig(x.i) xor y.bi))
+        of BigInteger || Integer        :   (when BignumSupport: xorI(x.bi, toBig(y.i)))
+        of BigInteger || BigInteger     :   (when BignumSupport: xorI(x.bi, y.bi))
         of Integer    || Binary         :   x = newBinary(numberToBinary(x.i) xor y.n)
 
         of Binary     || Integer        :   x.n = x.n xor numberToBinary(y.i)
@@ -1346,7 +1431,7 @@ proc `!!`*(x: Value): Value =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: return normalIntegerNot(x.i)
-            else: (when defined(GMP): return newInteger(not x.bi))
+            else: (when BignumSupport: return newInteger(not x.bi))
         of Binary: return newBinary(not x.n)
         else:
             return invalidOperation("not")
@@ -1360,7 +1445,7 @@ proc `!!=`*(x: var Value) =
     case x.kind:
         of Integer:
             if x.iKind==NormalInteger: normalIntegerNotI(x)
-            else: (when defined(GMP): notI(x.bi))
+            else: (when BignumSupport: notI(x.bi))
         of Binary: x.n = not x.n
         else:
             discard invalidOperation("not")
@@ -1371,7 +1456,7 @@ proc `<<`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerShl(x.i, y.i)
-        of BigInteger || Integer        :   (when defined(GMP): return newInteger(x.bi shl culong(y.i)))
+        of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi shl culong(y.i)))
         else:
             return invalidOperation("shl")
 
@@ -1384,7 +1469,7 @@ proc `<<=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerShlI(x, y.i)
-        of BigInteger || Integer        :   (when defined(GMP): shlI(x.bi, culong(y.i)))
+        of BigInteger || Integer        :   (when BignumSupport: shlI(x.bi, culong(y.i)))
         else:
             discard invalidOperation("shl")
     
@@ -1394,7 +1479,7 @@ proc `>>`*(x: Value, y: Value): Value =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   return normalIntegerShr(x.i, y.i)
-        of BigInteger || Integer        :   (when defined(GMP): return newInteger(x.bi shr culong(y.i)))
+        of BigInteger || Integer        :   (when BignumSupport: return newInteger(x.bi shr culong(y.i)))
         else:
             return invalidOperation("shr")
 
@@ -1407,6 +1492,6 @@ proc `>>=`*(x: var Value, y: Value) =
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerShrI(x, y.i)
-        of BigInteger || Integer        :   (when defined(GMP): shrI(x.bi, culong(y.i)))
+        of BigInteger || Integer        :   (when BignumSupport: shrI(x.bi, culong(y.i)))
         else:
             discard invalidOperation("shl")

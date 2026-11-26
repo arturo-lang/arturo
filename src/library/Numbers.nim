@@ -22,7 +22,7 @@
 import math, random, sequtils, sugar
 
 when defined(WEB):
-    import std/jsbigints
+    import helpers/jsbignums
 
 when defined(GMP):
     import helpers/bignums as BignumsHelper
@@ -83,7 +83,8 @@ proc defineModule*(moduleName: string) =
             #=======================================================
             if xKind==Integer:
                 if x.iKind==NormalInteger: 
-                    push(newInteger(abs(x.i)))
+                    if unlikely(x.i == low(int)): push(normalIntegerNeg(x.i))
+                    else: push(newInteger(abs(x.i)))
                 else:
                     when defined(WEB) or defined(GMP):
                         push(newInteger(abs(x.bi)))
@@ -355,10 +356,10 @@ proc defineModule*(moduleName: string) =
         returns     = {Floating,Complex},
         example     = """
             atan2 1 1           ; 0.7853981633974483
-            atan2 1 1.5         ; 0.9827937232473291
+            atan2 1 1.5         ; 0.5880026035475675
         """:
             #=======================================================
-            push(newFloating(arctan2(asFloat(y), asFloat(x))))
+            push(newFloating(arctan2(asFloat(x), asFloat(y))))
 
     builtin "atanh",
         alias       = unaliased, 
@@ -819,12 +820,19 @@ proc defineModule*(moduleName: string) =
 
                 if current.iKind==NormalInteger:
                     if elem.iKind==BigInteger:
-                        when defined(GMP):
+                        when defined(GMP) or defined(WEB):
                             current = newInteger(gcd(current.i, elem.bi))
                     else:
-                        current = newInteger(safeGcd(current.i, elem.i))
+                        when defined(GMP):
+                            # the smallest Integer has no positive counterpart
+                            if unlikely(current.i == low(int) or elem.i == low(int)):
+                                current = newInteger(gcd(current.i, newInt(elem.i)))
+                            else:
+                                current = newInteger(safeGcd(current.i, elem.i))
+                        else:
+                            current = newInteger(safeGcd(current.i, elem.i))
                 else:
-                    when defined(GMP):
+                    when defined(GMP) or defined(WEB):
                         if elem.iKind==BigInteger:
                             current = newInteger(gcd(current.bi, elem.bi))
                         else:
@@ -878,12 +886,19 @@ proc defineModule*(moduleName: string) =
 
                 if current.iKind==NormalInteger:
                     if elem.iKind==BigInteger:
-                        when defined(GMP):
+                        when defined(GMP) or defined(WEB):
                             current = newInteger(lcm(current.i, elem.bi))
                     else:
-                        current = newInteger(safeLcm(current.i, elem.i))
+                        when defined(GMP):
+                            # the smallest Integer has no positive counterpart
+                            if unlikely(current.i == low(int) or elem.i == low(int)):
+                                current = newInteger(lcm(current.i, newInt(elem.i)))
+                            else:
+                                current = newInteger(safeLcm(current.i, elem.i))
+                        else:
+                            current = newInteger(safeLcm(current.i, elem.i))
                 else:
-                    when defined(GMP):
+                    when defined(GMP) or defined(WEB):
                         if elem.iKind==BigInteger:
                             current = newInteger(lcm(current.bi, elem.bi))
                         else:
@@ -967,9 +982,7 @@ proc defineModule*(moduleName: string) =
             else:
                 push(newInteger(getNumerator(rat, big=true)))
 
-    when defined(GMP):
-        # TODO(Numbers\powmod) not working for Web builds
-        # labels: web,enhancement
+    when defined(GMP) or defined(WEB):
         builtin "powmod",
             alias       = unaliased, 
             op          = opNop,
@@ -1450,7 +1463,7 @@ proc defineModule*(moduleName: string) =
             print select 1..10 => odd?       ; 1 3 5 7 9
         """:
             #=======================================================
-            push(newLogical(x % I2 == I1))
+            push(newLogical(x % I2 != I0))
 
     builtin "positive?",
         alias       = unaliased, 
@@ -1508,7 +1521,7 @@ proc defineModule*(moduleName: string) =
             if x.iKind==NormalInteger:
                 push(newLogical(isPrime(x.i.uint64)))
             else:
-                when defined(GMP):
+                when defined(GMP) or defined(WEB):
                     push(newLogical(probablyPrime(x.bi,25)>0))
 
     #----------------------------

@@ -205,6 +205,13 @@ proc FetchPathSym*(pl: ValueArray, inplace: static bool = false): Value =
                 result = GetDictionaryKey(result, p.s)
             of Object:
                 result = GetKey(result.o, p.s)
+            of Store:
+                result.sto.forceLoad(result.sto)
+                let sto = result.sto
+                result = GetKey(sto.data, p.s)
+                when inplace:
+                    # it's going to be changed in-place
+                    sto.pending = true
             of String:
                 when inplace:
                     Error_PathLiteralMofifyingString()
@@ -241,6 +248,13 @@ proc SetPathSym*(pl: ValueArray, val: Value) =
                     current = GetKey(current.o, p.s)
                 else:
                     current.o[p.s] = val
+            of Store:
+                current.sto.forceLoad(current.sto)
+                current.sto.pending = true
+                if pidx != pl.len - 1:
+                    current = GetKey(current.sto.data, p.s)
+                else:
+                    current.sto.data[p.s] = val
             of String:
                 if pidx != pl.len - 1:
                     current = newChar(current.s.runeAtPos(p.i))
@@ -380,6 +394,31 @@ template InPlaced*(): untyped =
     ## **Hint:** always after having called `ensureInPlace` first!
     InPlaceAddr[]
 
+template inPlaceDo*(op: untyped): untyped =
+    ## Call an in-place operation (one taking a `var Value`) on InPlaced
+    ##
+    ## **Hint:** with the JS backend, a dereferenced pointer passed 
+    ## as `var` is passed by value - so, in Web builds, we go through
+    ## a copy & store it back
+    when defined(WEB):
+        var inPlacedValue = InPlaced
+        op(inPlacedValue)
+        InPlaced = inPlacedValue
+    else:
+        op(InPlaced)
+
+template inPlaceDo*(op: untyped, y: untyped): untyped =
+    ## Call an in-place operation (one taking a `var Value`) 
+    ## on InPlaced, with `y` as its second argument
+    ##
+    ## **Hint:** see above
+    when defined(WEB):
+        var inPlacedValue = InPlaced
+        op(inPlacedValue, y)
+        InPlaced = inPlacedValue
+    else:
+        op(InPlaced, y)
+
 proc showInPlaceError*(varname: string) =
     ## Show error in case `ensureInPlace` fails
     if SymExists(varname):
@@ -421,6 +460,13 @@ template ensureInPlaceAny*(): untyped =
 template SetInPlace*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table
     SetSym(x.s, v, safe)
+
+template commitInPlaceAny*(): untyped =
+    ## With NaN-boxing, a value that's held inline and reached 
+    ## through a path is a copy of the element - so, after 
+    ## an in-place change, it has to be stored back
+    when defined(NANBOX):
+        if xKind != Literal: SetPathSym(x.p, InPlaced)
 
 template SetInPlaceAny*(v: Value, safe: static bool = false): untyped =
     ## Sets InPlace symbol to given value in the symbol table

@@ -34,6 +34,9 @@ import vm/values/custom/[verror, vquantity, vsymbol]
 
 import helpers/strings
 
+when defined(WEB):
+    import helpers/jsbignums
+
 #=======================================
 # Types
 #=======================================
@@ -551,7 +554,11 @@ template parseNumber(p: var Parser, inPath: bool = false) =
                     add(p.value, p.buf[pos])
                     inc(pos)
 
-                p.value = $(parseNumFromString(p.value, numBase))
+                when defined(WEB):
+                    # (JS numbers can't hold more than 32 bits here)
+                    p.value = toString(big(cstring(p.value)))
+                else:
+                    p.value = $(parseNumFromString(p.value, numBase))
                 p.bufpos = pos
                 alreadyParsedNumber = true
             else:

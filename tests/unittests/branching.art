@@ -136,3 +136,26 @@ until [
     print "until continue: never"
 ][j >= 3]
 print ~"until continue: after loop: |j|"
+
+; BREAK & CONTINUE
+; IN WHEN & CASE
+
+loop 1..5 'i [
+    when [ i = 3 -> break ]
+    print ~"when break: |i|"
+]
+
+loop 1..5 'i [
+    when [ odd? i -> continue ]
+    print ~"when continue: |i|"
+]
+
+loop 1..5 'i [
+    case i [ 3 -> break ]
+    print ~"case break: |i|"
+]
+
+loop 1..5 'i [
+    case i [ 2 -> continue  4 -> continue ]
+    print ~"case continue: |i|"
+]

@@ -317,6 +317,9 @@ else:
 
             execUnscoped(evaled)
 
+            # print whatever is left (e.g. from `prints`)
+            flushPending()
+
             var ret: Value = VNULL
 
             if SP>0:

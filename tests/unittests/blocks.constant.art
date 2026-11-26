@@ -61,3 +61,45 @@ f6: function [b][
 do x
 f6 x
 do x
+
+; ...even right after the assignment
+
+f7: function [b][ b\0: 99 ]
+
+x7: [1 2 3]
+f7 x7
+print x7
+
+f8: function [s][ 's ++ "x" ]
+
+x8: "abc"
+f8 x8
+print x8
+
+f9: function [b][ 'b ++ 4 ]
+
+x9: [1 2 3]
+f9 x9
+print x9
+
+loop 1..2 'i [
+    x10: [1 2 3]
+    f7 x10
+    print x10
+]
+
+f11: function [][
+    x11: [1 2 3]
+    f7 x11
+    x11
+]
+print f11
+print f11
+
+; ...while the literal itself stays intact
+
+loop 1..2 'i [
+    x12: [1 2 3]
+    print x12
+    f7 x12
+]

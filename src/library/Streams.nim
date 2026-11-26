@@ -87,7 +87,7 @@ proc defineModule*(moduleName: string) =
                     receivers: initDeque[Future[Value]]()
                 )
                 channelsByName[x.s] = chn
-                push Value(kind: Channel, chn: chn)
+                push ValueRef(kind: Channel, chn: chn)
 
         builtin "accept",
             alias       = unaliased,
