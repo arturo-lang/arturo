@@ -185,6 +185,49 @@ proc realLen*(s: string): int =
             s
     return cleanString.runeLen()
 
+func firstChars*(s: string, n: int): string =
+    ## The first `n` characters of given string (all of it,
+    ## if it's shorter) - only going through those
+    if n <= 0: return ""
+    var pos, count = 0
+    while pos < s.len and count < n:
+        pos += s.runeLenAt(pos)
+        inc count
+    result = s[0 ..< min(pos, s.len)]
+
+func lastChars*(s: string, n: int): string =
+    ## The last `n` characters of given string (all of it,
+    ## if it's shorter) - only going through those
+    if n <= 0: return ""
+    var pos = s.len
+    var count = 0
+    while pos > 0 and count < n:
+        pos -= s.lastRune(pos - 1)[1]
+        inc count
+    result = s[max(pos, 0) ..< s.len]
+
+func dropChars*(s: string, times: int): string =
+    ## Given string without its first `times` characters
+    ## (its last ones, for a negative `times`): empty if it
+    ## doesn't have that many
+    if times == 0: return s
+    let k = abs(times)
+    var count = 0
+    if times > 0:
+        var pos = 0
+        while pos < s.len and count < k:
+            pos += s.runeLenAt(pos)
+            inc count
+        if count < k: return ""
+        result = s[min(pos, s.len) ..< s.len]
+    else:
+        var pos = s.len
+        while pos > 0 and count < k:
+            pos -= s.lastRune(pos - 1)[1]
+            inc count
+        if count < k: return ""
+        result = s[0 ..< max(pos, 0)]
+
 func splitEvery*(s: string, n: int): seq[string] =
     ## Split given string into chunks of `n` characters
     ## (the last one may be shorter), in a single pass
