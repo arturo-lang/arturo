@@ -1,3 +1,0 @@
-s: 0.0
-loop 1..2000000 'k [s: s + 1.5 * (to :floating k) / 7.0]
-print s

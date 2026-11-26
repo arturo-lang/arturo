@@ -1,5 +1,0 @@
-d: #[]
-loop 1..100000 'k [d\[to :string k % 5000]: k]
-t: 0
-loop 1..100000 'k [t: t + d\[to :string k % 5000]]
-print [size d t]

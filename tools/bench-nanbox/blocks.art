@@ -1,4 +1,0 @@
-b: map 1..200000 'x -> (x * 7919) % 100003
-s: sort b
-e: select s => even?
-print [size s first s last s size e sum e]
