@@ -454,6 +454,7 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##     --debug -d                   enables debugging
     ##     --install -i                 installs the final binary
     ##     --log -l                     shows compilation logs
+    ##     --nanbox                     NaN-boxed values (64-bit only: faster, experimental)
     ##     --pgo                        profile-guided optimization (slower build, faster binary)
     ##     --raw                        disables compression
     ##     --release                    enable release config mode
@@ -547,6 +548,12 @@ cmd build, "[default] Build arturo and optionally install the executable":
 
     if args.hasFlag("release"):
         releaseConfig()
+
+    if args.hasFlag("nanbox"):
+        if config.webVersion:
+            warn "--nanbox has no effect on web builds"
+        else:
+            --define:NANBOX
 
     if args.hasFlag("pgo"):
         if config.webVersion:
