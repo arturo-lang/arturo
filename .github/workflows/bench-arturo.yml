@@ -16,6 +16,10 @@ jobs:
         name: bench (${{ matrix.name }})
         runs-on: ${{ matrix.runner }}
         timeout-minutes: 240
+        defaults:
+            run:
+                # (on Windows, MSYS2 - once setup-arturo has installed it: the builds' DLLs are on its path)
+                shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
         strategy:
             fail-fast: false
             matrix:
@@ -69,7 +73,6 @@ jobs:
                 pgo: 'true'
 
             - name: Keep it
-              shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
               run: |
                 mkdir -p bins/master
                 if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/master/
@@ -90,7 +93,6 @@ jobs:
                 pgo: 'true'
 
             - name: Keep it
-              shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
               run: |
                 mkdir -p bins/pocketbignum
                 if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/pocketbignum/
@@ -98,8 +100,6 @@ jobs:
                 bins/pocketbignum/arturo -v
 
             - name: Benchmarks
-              # (on Windows, in MSYS2: the builds' DLLs are on its path)
-              shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
               run: |
                 exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
                 py=$(command -v python3 || command -v python)
