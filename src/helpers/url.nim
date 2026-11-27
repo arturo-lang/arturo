@@ -27,8 +27,12 @@ import vm/values/value
 #  labels: helpers, enhancement, open discussion
 
 func isUrl*(s: string): bool {.inline.} =
+    # (both RegExes need one of these prefixes - so anything
+    # else, like a plain path, doesn't have to go through them)
+    if not (s.startsWith("http") or s.startsWith("localhost:")):
+        return false
+
     when not defined(WEB):
-        
         return s.match(re"^localhost:\d+(?:[/?#][\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\x80-\xff]*)?$") or s.match(re"^https?:\/\/(?:[\w\-\._~!\$&'\(\)\*\+,;=:%\x80-\xff]*@)?(?:[\w\x80-\xff][\w.\-\x80-\xff]*|\[[0-9a-fA-F:.]+\])(?::\d*)?(?:[/?#][\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=%\x80-\xff]*)?$")
     else:
         # (the same RegExes - with JS strings being UTF-16, 

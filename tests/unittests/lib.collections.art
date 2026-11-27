@@ -1768,6 +1768,14 @@ do [
     ensure -> "Arturo" = a
     passed
 
+    a: "Artüro", set a 3 "ö"
+    ensure -> "Artöro" = a
+    passed
+
+    a: "Artüro", set a 3 'o'
+    ensure -> "Artoro" = a
+    passed
+
 ]
 
 topic "set - :binary"
