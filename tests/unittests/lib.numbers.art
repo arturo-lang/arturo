@@ -747,3 +747,8 @@ do [
     passed
 
 ]
+
+print to :rational neg 0.75
+print to :rational neg 1.1
+print to :rational neg 123.456
+print to :rational neg 0.00001
