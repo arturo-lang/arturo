@@ -1,0 +1,2 @@
+s: "Hello World"
+loop 1..300000 'i [ r: lower s ]

@@ -68,3 +68,11 @@ print b < (∞ - ∞)
 print b > (∞ - ∞)
 print max @[b ∞ 1.0e300]
 print sort @[∞ b neg ∞ 1.0e300]
+
+print to :rational 1e19
+print to :rational neg 1.5e19
+print to :rational 9223372036854775808.0
+print to :rational neg 9223372036854775808.0
+print (to :rational [1 3]) + neg 9223372036854775808.0
+print 1e19 + to :rational [1 2]
+print to :integer (to :rational 1e19) / 2

@@ -157,8 +157,40 @@ func jaro*(s1, s2: string): float =
  
     result = (matches / s1.len + matches / s2.len + (matches - transpositions) / matches) / 3
 
-template replaceAll*(original, match, replacement: string): string =
-    original.replace(match, replacement)
+when defined(WEB):
+    template replaceAll*(original, match, replacement: string): string =
+        original.replace(match, replacement)
+else:
+    func replaceAll*(original, match, replacement: string): string =
+        ## Replace every occurrence of `match` (non-overlapping, from the start):
+        ## like strutils' replace, but copying the pieces straight into the
+        ## result - instead of a new substring for every one of them
+        if match.len == 0: return original
+        var table {.noinit.}: SkipTable
+        initSkipTable(table, match)
+        let last = original.high
+        var j = find(table, original, match, 0, last)
+        if j < 0: return original
+
+        result = newStringUninit(
+            if replacement.len > match.len: original.len + original.len div 8
+            else: original.len
+        )
+        var i, pos = 0
+
+        template put(src: string, start, count: int) =
+            if count > 0:
+                if pos + count > result.len: result.setLen(max(2 * result.len, pos + count))
+                copyMem(addr result[pos], unsafeAddr src[start], count)
+                pos += count
+
+        while j >= 0:
+            put(original, i, j - i)
+            put(replacement, 0, replacement.len)
+            i = j + match.len
+            j = find(table, original, match, i, last)
+        put(original, i, original.len - i)
+        result.setLen(pos)
 
 func replaceOnce*(s, sub: string, by = ""): string =
     let subLen = sub.len
@@ -185,22 +217,74 @@ proc realLen*(s: string): int =
             s
     return cleanString.runeLen()
 
+func firstChars*(s: string, n: int): string =
+    ## The first `n` characters of given string (all of it,
+    ## if it's shorter) - only going through those
+    if n <= 0: return ""
+    var pos, count = 0
+    while pos < s.len and count < n:
+        pos += s.runeLenAt(pos)
+        inc count
+    result = s[0 ..< min(pos, s.len)]
+
+func lastChars*(s: string, n: int): string =
+    ## The last `n` characters of given string (all of it,
+    ## if it's shorter) - only going through those
+    if n <= 0: return ""
+    var pos = s.len
+    var count = 0
+    while pos > 0 and count < n:
+        pos -= s.lastRune(pos - 1)[1]
+        inc count
+    result = s[max(pos, 0) ..< s.len]
+
+func dropChars*(s: string, times: int): string =
+    ## Given string without its first `times` characters
+    ## (its last ones, for a negative `times`): empty if it
+    ## doesn't have that many
+    if times == 0: return s
+    let k = abs(times)
+    var count = 0
+    if times > 0:
+        var pos = 0
+        while pos < s.len and count < k:
+            pos += s.runeLenAt(pos)
+            inc count
+        if count < k: return ""
+        result = s[min(pos, s.len) ..< s.len]
+    else:
+        var pos = s.len
+        while pos > 0 and count < k:
+            pos -= s.lastRune(pos - 1)[1]
+            inc count
+        if count < k: return ""
+        result = s[0 ..< max(pos, 0)]
+
+func splitEvery*(s: string, n: int): seq[string] =
+    ## Split given string into chunks of `n` characters
+    ## (the last one may be shorter), in a single pass
+    if n <= 0: return @[s]
+    var start, pos, count = 0
+    while pos < s.len:
+        pos += s.runeLenAt(pos)
+        inc count
+        if count == n:
+            result.add(s[start ..< pos])
+            start = pos
+            count = 0
+    if start < s.len:
+        result.add(s[start ..< s.len])
+
 proc realFind*(s: string, subs: string): int =
     let cleanString = 
         when not defined(WEB):
             s.replacef(re"\e[^m]+m","")
         else:
             s
-    let subsLen = subs.len
-    let runeLen = cleanString.runeLen()
-    var i: int = 0
-
-    while i < runeLen:
-        if (i + subsLen <= runeLen) and (cleanString.runeSubStr(i, subsLen) == subs):
-            return i
-        i += 1
-
-    return -1
+    # (a plain search, then the character index of what was found)
+    let pos = cleanString.find(subs)
+    if pos < 0: return -1
+    return cleanString.byteToRuneIndex(pos)
 
 func wrapped*(initial: string, limit=50, delim="\n"): string =
     if initial.len < limit:

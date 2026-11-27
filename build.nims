@@ -462,6 +462,8 @@ cmd build, "[default] Build arturo and optionally install the executable":
     ##     --who: none                  defines who is compiling the code
     ##          [dev, user]
     ##     --debug -d                   enables debugging
+    ##     --gmp                        links to the system's GMP & MPFR (instead
+    ##                                  of the bundled PocketBignum)
     ##     --install -i                 installs the final binary
     ##     --log -l                     shows compilation logs
     ##     --no-nanbox                  no NaN-boxed values (they're the default
@@ -558,6 +560,9 @@ cmd build, "[default] Build arturo and optionally install the executable":
     if useNanbox(config, args.hasFlag("no-nanbox")):
         --define:NANBOX
 
+    if args.hasFlag("gmp"):
+        --define:SYSTEMGMP
+
     if args.hasFlag("pgo"):
         if config.webVersion:
             warn "--pgo has no effect on web builds"
@@ -573,6 +578,7 @@ cmd package, "Package arturo app and build executable":
     ##     --arch: $hostCPU             chooses the target CPU
     ##          [amd64, arm64]
     ##     --debug -d                   enables debugging
+    ##     --gmp                        links to the system's GMP & MPFR
     ##     --help
 
     const availableCPUs = @["amd-64", "x64", "x86-64", "arm-64"]
@@ -596,6 +602,9 @@ cmd package, "Package arturo app and build executable":
 
     if useNanbox(config, args.hasFlag("no-nanbox")):
         --define:NANBOX
+
+    if args.hasFlag("gmp"):
+        --define:SYSTEMGMP
 
     config.buildPackage()
 

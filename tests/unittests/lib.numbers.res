@@ -112,3 +112,7 @@
 >> sin - with :quantity
 [+] passed!
 [+] passed!
+-3/4
+-11/10
+-15432/125
+-1/100000

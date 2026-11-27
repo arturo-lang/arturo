@@ -290,10 +290,7 @@ proc defineModule*(moduleName: string) =
                 ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
-                    if numberInRange(InPlaced.s.toRunes()):
-                        InPlaced.s = $(InPlaced.s.toRunes().drop())
-                    else: 
-                        InPlaced.s = ""
+                    InPlaced.s = dropChars(InPlaced.s, times)
                 of Block:
                     if numberInRange(InPlaced.a):
                         InPlaced.a = InPlaced.a.drop()
@@ -303,8 +300,7 @@ proc defineModule*(moduleName: string) =
             else:
                 case x.kind
                 of String:
-                    if numberInRange(x.s.toRunes()): push(newString($(x.s.toRunes().drop())))
-                    else: push(newString(""))
+                    push(newString(dropChars(x.s, times)))
                 of Block:
                     if numberInRange(x.a): push(newBlock(x.a.drop()))
                     else: push(newBlock())
@@ -551,10 +547,7 @@ proc defineModule*(moduleName: string) =
                 ensureInPlaceAny()
                 case InPlaced.kind
                 of String:
-                    if numberInRange(InPlaced.s.toRunes()):
-                        InPlaced.s = $(InPlaced.s.toRunes().drop())
-                    else: 
-                        InPlaced.s = ""
+                    InPlaced.s = dropChars(InPlaced.s, times)
                 of Block:
                     if numberInRange(InPlaced.a):
                         InPlaced.a = InPlaced.a.drop()
@@ -564,8 +557,7 @@ proc defineModule*(moduleName: string) =
             else:
                 case x.kind
                 of String:
-                    if numberInRange(x.s.toRunes()): push(newString($(x.s.toRunes().drop())))
-                    else: push(newString(""))
+                    push(newString(dropChars(x.s, times)))
                 of Block:
                     if numberInRange(x.a): push(newBlock(x.a.drop()))
                     else: push(newBlock())
@@ -652,8 +644,7 @@ proc defineModule*(moduleName: string) =
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
                     else: 
-                        let runes = x.s.toRunes()
-                        push(newString($(runes[0..max(min(aN.i-1, runes.high), -1)])))
+                        push(newString(firstChars(x.s, aN.i)))
                 elif xKind == Range:
                     if aN.i == 1 or aN.i == 0:
                         push(x.rng[1, true])
@@ -859,18 +850,23 @@ proc defineModule*(moduleName: string) =
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
                     if likely(yKind==Integer):
-                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
-                            push(newChar(x.s.runeAtPos(y.i)))
+                        # (going through the string just once)
+                        let offset = if y.i >= 0: x.s.runeOffset(y.i) else: -1
+                        if likely(offset >= 0 and offset < x.s.len):
+                            push(newChar(x.s.runeAt(offset)))
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     elif yKind==Range:
                         let rLen = y.rng.len
                         var res: seq[Rune] = newSeq[Rune](rLen)
                         var i = 0
-                        let xStrLen = x.s.runeLen()
+                        # (decoded once: indexing characters one by one
+                        # would go through the string again every time)
+                        let xRunes = x.s.toRunes()
+                        let xStrLen = xRunes.len
                         for item in items(y.rng):
                             if likely(item.i >= 0 and item.i < xStrLen):
-                                res[i] = x.s.runeAtPos(item.i)
+                                res[i] = xRunes[item.i]
                             else:
                                 Error_OutOfBounds(item.i, Dumper(x), xStrLen-1, "String")
                             i += 1
@@ -1106,8 +1102,7 @@ proc defineModule*(moduleName: string) =
                 if xKind == String:
                     if x.s.len == 0: push(newString(""))
                     else: 
-                        let runes = x.s.toRunes()
-                        push(newString($(runes[min(max(0, runes.len-aN.i), runes.len)..^1])))
+                        push(newString(lastChars(x.s, aN.i)))
                 elif xKind == Range:
                     if x.rng.infinite:
                         push(newFloating(Inf))
@@ -1904,17 +1899,14 @@ proc defineModule*(moduleName: string) =
                 
                 of String:
                     if likely(yKind == Integer):
-                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
-                            var res: string
-                            var idx = 0
-                            for r in x.s.runes:
-                                if idx != y.i: res.add r
-                                else: 
-                                    if zKind == String: res.add $(z.s[0])
-                                    else: res.add z.c
-                                idx += 1
-
-                            x.s = res
+                        # (only that character is replaced - 
+                        # without rebuilding the whole string)
+                        let offset = if y.i >= 0: x.s.runeOffset(y.i) else: -1
+                        if likely(offset >= 0 and offset < x.s.len):
+                            let replacement = 
+                                if zKind == String: z.s.firstChars(1)
+                                else: $(z.c)
+                            x.s[offset ..< offset + x.s.runeLenAt(offset)] = replacement
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     else:
@@ -2099,23 +2091,7 @@ proc defineModule*(moduleName: string) =
                 if x.a.len == 0: push(newBlock())
                 else:
                     if checkAttr("by"):
-                        if x.a.len > 0:
-                            var sorted: ValueArray
-
-                            if x.a[0].kind == Dictionary:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                            order = sortOrdering)
-                            else:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.o[aBy.s], v2.o[aBy.s]),
-                                            order = sortOrdering)
-
-                            push(newBlock(sorted))
-                        else:
-                            push(newDictionary())
+                        push(newBlock(x.a.sortedByKey(aBy.s, sortOrdering)))
                     else:
                         if checkAttr("as"):
                             push(newBlock(x.a.unisorted(aAs.s,
@@ -2179,10 +2155,7 @@ proc defineModule*(moduleName: string) =
                 if InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
                         if checkAttr("by"):
-                            InPlaced.a.sort(
-                                proc (v1, v2: Value): int =
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                        order = sortOrdering)
+                            InPlaced.a = InPlaced.a.sortedByKey(aBy.s, sortOrdering)
                         else:               
                             if checkAttr("as"):
                                 InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
@@ -2298,15 +2271,7 @@ proc defineModule*(moduleName: string) =
                         SetInPlaceAny(newStringBlock(@[runeSubStr(InPlaced.s, 0, aAt.i),
                                 runeSubStr(InPlaced.s, aAt.i)]))
                     elif checkAttr("every"):
-                        var ret: seq[string]
-                        var length = runeLen(InPlaced.s)
-                        var i = 0
-
-                        while i < length:
-                            ret.add(runeSubStr(InPlaced.s, i, aEvery.i))
-                            i += aEvery.i
-
-                        SetInPlaceAny(newStringBlock(ret))
+                        SetInPlaceAny(newStringBlock(splitEvery(InPlaced.s, aEvery.i)))
 
                     else:
                         SetInPlaceAny(newStringBlock(toSeq(runes(InPlaced.s)).map((w) =>
@@ -2355,15 +2320,7 @@ proc defineModule*(moduleName: string) =
                 elif checkAttr("at"):
                     push(newStringBlock(@[runeSubStr(x.s, 0, aAt.i), runeSubStr(x.s, aAt.i)]))
                 elif checkAttr("every"):
-                    var ret: seq[string]
-                    var length = runeLen(x.s)
-                    var i = 0
-
-                    while i < length:
-                        ret.add(runeSubStr(x.s, i, aEvery.i))
-                        i += aEvery.i
-
-                    push(newStringBlock(ret))
+                    push(newStringBlock(splitEvery(x.s, aEvery.i)))
                 
                 else:
                     push(newStringBlock(toSeq(runes(x.s)).map((x) => $(x))))
@@ -2494,7 +2451,7 @@ proc defineModule*(moduleName: string) =
                 case InPlaced.kind
                 of String:
                     if InPlaced.s.len > 0:
-                        InPlaced.s = $(InPlaced.s.toRunes().take())
+                        InPlaced.s = (if 0 < y.i: firstChars(InPlaced.s, y.i) else: lastChars(InPlaced.s, abs(y.i)))
                 of Block:
                     if InPlaced.a.len > 0:
                         InPlaced.a = InPlaced.a.take()
@@ -2518,7 +2475,7 @@ proc defineModule*(moduleName: string) =
                 of String:
                     if x.s.len == 0: push(newString(""))
                     else:
-                        push(newString($(x.s.toRunes().take())))
+                        push(newString(if 0 < y.i: firstChars(x.s, y.i) else: lastChars(x.s, abs(y.i))))
                 of Block:
                     if x.a.len == 0: push(newBlock())
                     else:
@@ -3000,7 +2957,8 @@ proc defineModule*(moduleName: string) =
                 of Floating:
                     push(newLogical(x.f == 1.0))
                 of String:
-                    push(newLogical(runeLen(x.s) == 1))
+                    # (exactly one character: the first one is all of it)
+                    push(newLogical(x.s.len > 0 and x.s.runeLenAt(0) == x.s.len))
                 of Block:
                     push(newLogical(x.a.len == 1))
                 of Range:
@@ -3080,7 +3038,7 @@ proc defineModule*(moduleName: string) =
                 of Floating:
                     push(newLogical(x.f == 0.0))
                 of String:
-                    push(newLogical(runeLen(x.s) == 0))
+                    push(newLogical(x.s.len == 0))
                 of Block:
                     push(newLogical(x.a.len == 0))
                 of Range:

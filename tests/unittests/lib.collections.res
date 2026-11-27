@@ -477,6 +477,8 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> set - :binary
 [+] passed!
@@ -781,3 +783,7 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[name:a p:1] [name:c p:2] [name:b p:2] 
+[name:c p:2] [name:b p:2] [name:a p:1] 
+2 0 1 
+2 3 1 

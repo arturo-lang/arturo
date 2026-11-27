@@ -1768,6 +1768,14 @@ do [
     ensure -> "Arturo" = a
     passed
 
+    a: "Artüro", set a 3 "ö"
+    ensure -> "Artöro" = a
+    passed
+
+    a: "Artüro", set a 3 'o'
+    ensure -> "Artoro" = a
+    passed
+
 ]
 
 topic "set - :binary"
@@ -3376,3 +3384,14 @@ do [
     ensure -> "héxllo" = e
     passed
 ]
+tasks: @[#[name: "c" p: 2] #[name: "a" p: 1] #[name: "b" p: 2]]
+sort.by:'p 'tasks
+print tasks
+sort.descending.by:"name" 'tasks
+print tasks
+
+define :sortPt [x y][]
+sortPts: @[to :sortPt [3 1] to :sortPt [1 2] to :sortPt [2 0]]
+print map sort.by:'x sortPts 'q -> q\y
+sort.by:'y 'sortPts
+print map sortPts 'q -> q\x
