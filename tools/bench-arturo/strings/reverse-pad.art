@@ -1,5 +1,0 @@
-; reversing, padding, truncating
-w: map 1..40000 'i -> ~"item|i|"
-n: 0
-loop w 'x -> n: n + (size reverse x) + (size pad x 20) + size truncate x 4
-print n

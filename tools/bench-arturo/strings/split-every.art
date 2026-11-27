@@ -1,4 +1,0 @@
-; splitting into fixed-size chunks
-s: repeat "0123456789" 400000
-w: split.every: 5 s
-print size w

@@ -1,6 +1,0 @@
-; dictionary inserts & lookups
-d: #[]
-loop 1..60000 'i -> d\[to :string i]: i * 2
-s: 0
-loop 1..60000 'i -> s: s + d\[to :string i]
-print [size d s]

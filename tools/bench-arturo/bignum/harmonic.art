@@ -1,2 +1,0 @@
-s: to :rational @[1 (2^64) + 1]  loop 1..25000 'k [s: s + to :rational @[1 k]]
-print size to :string denominator s

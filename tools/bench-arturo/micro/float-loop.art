@@ -1,6 +1,0 @@
-; floating-point arithmetic in a tight loop
-x: 0.0
-loop 1..2000000 'i [
-    x: x + 1.0 / to :floating i
-]
-print to :integer x * 1000000

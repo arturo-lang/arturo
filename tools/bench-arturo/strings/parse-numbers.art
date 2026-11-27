@@ -1,5 +1,0 @@
-; strings to numbers
-strs: map 1..400000 'i -> to :string i * 7
-s: 0
-loop strs 'x -> s: s + to :integer x
-print s

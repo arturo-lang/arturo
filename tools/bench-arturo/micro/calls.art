@@ -1,6 +1,0 @@
-; many calls of small functions with a few arguments
-f: function [a b c][a + b * c]
-g: function [x][f x 2 3]
-s: 0
-loop 1..400000 'i -> s: s + g i
-print s

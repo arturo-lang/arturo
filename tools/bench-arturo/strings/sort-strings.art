@@ -1,9 +1,0 @@
-; sorting strings
-seed: 5
-w: []
-loop 1..50000 'i [
-    seed: ((seed * 1103515245) + 12345) % 2147483648
-    'w ++ to :string seed
-]
-s: sort w
-print [first s last s]

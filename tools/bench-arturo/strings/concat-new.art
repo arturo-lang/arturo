@@ -1,4 +1,0 @@
-; building a string with ++ (a new string every time)
-s: ""
-loop 1..40000 'i -> s: s ++ "xy"
-print size s

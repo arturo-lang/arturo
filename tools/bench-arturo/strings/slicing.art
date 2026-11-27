@@ -1,9 +1,0 @@
-; slicing, take, drop
-s: repeat "abcdefghij" 2000
-n: 0
-loop 1..2000 'i [
-    n: n + size s\[i..i+50]
-    n: n + size take s 30
-    n: n + size drop.times: 19970 s
-]
-print n

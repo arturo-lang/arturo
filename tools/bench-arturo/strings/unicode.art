@@ -1,6 +1,0 @@
-; Unicode strings: size, upper, lower, characters
-s: repeat "ελληνικά 日本語 русский ÅÄÖ " 30000
-print size s
-print size upper s
-print size lower s
-print size split s

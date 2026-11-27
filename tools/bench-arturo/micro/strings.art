@@ -1,8 +1,0 @@
-; string building & manipulation
-s: ""
-loop 1..60000 'i -> 's ++ to :string i % 10
-words: split.every: 5 s
-up: map words 'w -> upper w
-joined: join.with: "-" up
-r: replace joined "5" "five"
-print [size s size words size joined size r]

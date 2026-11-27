@@ -1,8 +1,0 @@
-; splitting into words & joining them back
-line: "the quick brown fox jumps over the lazy dog again and again"
-n: 0
-loop 1..120000 'i [
-    w: split.words line
-    n: n + size join.with: "," w
-]
-print n

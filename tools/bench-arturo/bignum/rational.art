@@ -1,2 +1,0 @@
-a: to :rational @[2^100 3^70]  b: to :rational @[7^40 5^60]  loop 1..200000 'k [y: a + b]
-print size to :string y
