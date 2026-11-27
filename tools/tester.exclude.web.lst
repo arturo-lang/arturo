@@ -28,6 +28,7 @@ runtime.CannotConvertDifferentDimensions
 runtime.CannotConvertDifferentDimensions.2
 runtime.ConversionFailed
 runtime.DivisionByZero
+runtime.IncompatibleBlockValueAttribute
 runtime.IntegerOperationOverflow
 runtime.IntegerParsingOverflow
 runtime.KeyNotFound
