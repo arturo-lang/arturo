@@ -1,0 +1,2 @@
+s: "item"
+loop 1..300000 'i [ r: pad s 10 ]
