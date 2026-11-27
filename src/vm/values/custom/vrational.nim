@@ -221,7 +221,7 @@ func toRational*(x: float): VRational =
         if x == float(ai): 
             break # division by zero
         x = 1 / (x - float(ai))
-        if x > float(high(int32)): 
+        if abs(x) > float(high(int32)): 
             when defined(GMP):
                 if m11 == 0 or m21 == 0: 
                     return toBigRational(initial)
