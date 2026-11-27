@@ -1904,7 +1904,7 @@ proc defineModule*(moduleName: string) =
                         let offset = if y.i >= 0: x.s.runeOffset(y.i) else: -1
                         if likely(offset >= 0 and offset < x.s.len):
                             let replacement = 
-                                if zKind == String: $(z.s[0])
+                                if zKind == String: z.s.firstChars(1)
                                 else: $(z.c)
                             x.s[offset ..< offset + x.s.runeLenAt(offset)] = replacement
                         else:
