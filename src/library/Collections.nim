@@ -55,26 +55,6 @@ when defined(BUNDLE):
     import vm/bundle/resources
 
 #=======================================
-# Helpers
-#=======================================
-
-proc sortedByKey(arr: ValueArray, key: string, order: SortOrder): ValueArray =
-    # every item: a Dictionary or Object with that key
-    # (fetched just once, and not for every comparison)
-    var keyed = newSeqOfCap[(Value, Value)](arr.len)
-    for item in arr:
-        case item.kind:
-            of Dictionary: keyed.add((GetDictionaryKey(item, key), item))
-            of Object: keyed.add((GetObjectKey(item, key), item))
-            else: showWrongValueAttrTypeError("sort", "by", item, {Dictionary, Object})
-
-    keyed.sort(proc (p1, p2: (Value, Value)): int = cmp(p1[0], p2[0]),
-                order = order)
-
-    result = newSeqOfCap[Value](keyed.len)
-    for p in keyed: result.add(p[1])
-
-#=======================================
 # Definitions
 #=======================================
 
