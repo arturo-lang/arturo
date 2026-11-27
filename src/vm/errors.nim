@@ -285,6 +285,8 @@ proc toVError*(e: ref Exception): VError =
 
 proc printError(s: string) =
     when not defined(WEB):
+        # (whatever has been printed so far comes first)
+        stdout.flushFile()
         if NoErrorColors:
             # (any colors already in there, e.g. from the
             # message itself, have to go too)
