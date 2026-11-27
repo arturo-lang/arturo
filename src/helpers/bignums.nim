@@ -68,6 +68,10 @@ proc fitsInt*(x: Int): bool =
 
 proc fitsSignedInt*(x: Int): bool =
     when isLLP64():
+        # more than one (64-bit) limb: too big, without looking any further
+        # (checking the upper half below means going through all of it)
+        when sizeof(mp_limb_t) == 8:
+            if mpz_size(x[]) > 1: return false
         # clong is 32-bit, so check the upper half
         var hi: mpz_t
         mpz_init(hi)
