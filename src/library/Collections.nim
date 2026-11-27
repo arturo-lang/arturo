@@ -2957,7 +2957,8 @@ proc defineModule*(moduleName: string) =
                 of Floating:
                     push(newLogical(x.f == 1.0))
                 of String:
-                    push(newLogical(runeLen(x.s) == 1))
+                    # (exactly one character: the first one is all of it)
+                    push(newLogical(x.s.len > 0 and x.s.runeLenAt(0) == x.s.len))
                 of Block:
                     push(newLogical(x.a.len == 1))
                 of Range:
@@ -3037,7 +3038,7 @@ proc defineModule*(moduleName: string) =
                 of Floating:
                     push(newLogical(x.f == 0.0))
                 of String:
-                    push(newLogical(runeLen(x.s) == 0))
+                    push(newLogical(x.s.len == 0))
                 of Block:
                     push(newLogical(x.a.len == 0))
                 of Range:
