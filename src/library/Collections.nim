@@ -2092,23 +2092,7 @@ proc defineModule*(moduleName: string) =
                 if x.a.len == 0: push(newBlock())
                 else:
                     if checkAttr("by"):
-                        if x.a.len > 0:
-                            var sorted: ValueArray
-
-                            if x.a[0].kind == Dictionary:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                            order = sortOrdering)
-                            else:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.o[aBy.s], v2.o[aBy.s]),
-                                            order = sortOrdering)
-
-                            push(newBlock(sorted))
-                        else:
-                            push(newDictionary())
+                        push(newBlock(x.a.sortedByKey(aBy.s, sortOrdering)))
                     else:
                         if checkAttr("as"):
                             push(newBlock(x.a.unisorted(aAs.s,
@@ -2172,10 +2156,7 @@ proc defineModule*(moduleName: string) =
                 if InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
                         if checkAttr("by"):
-                            InPlaced.a.sort(
-                                proc (v1, v2: Value): int =
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                        order = sortOrdering)
+                            InPlaced.a = InPlaced.a.sortedByKey(aBy.s, sortOrdering)
                         else:               
                             if checkAttr("as"):
                                 InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
