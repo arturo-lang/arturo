@@ -2092,23 +2092,21 @@ proc defineModule*(moduleName: string) =
                 if x.a.len == 0: push(newBlock())
                 else:
                     if checkAttr("by"):
-                        if x.a.len > 0:
-                            var sorted: ValueArray
+                        # every item: a Dictionary or Object with that key
+                        # (fetched just once, and not for every comparison)
+                        var keyed = newSeqOfCap[(Value, Value)](x.a.len)
+                        for item in x.a:
+                            case item.kind:
+                                of Dictionary: keyed.add((GetDictionaryKey(item, aBy.s), item))
+                                of Object: keyed.add((GetObjectKey(item, aBy.s), item))
+                                else: showWrongValueAttrTypeError("sort", "by", item, {Dictionary, Object})
 
-                            if x.a[0].kind == Dictionary:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                            order = sortOrdering)
-                            else:
-                                sorted = x.a.sorted(
-                                    proc (v1, v2: Value): int =
-                                    cmp(v1.o[aBy.s], v2.o[aBy.s]),
-                                            order = sortOrdering)
+                        keyed.sort(proc (p1, p2: (Value, Value)): int = cmp(p1[0], p2[0]),
+                                    order = sortOrdering)
 
-                            push(newBlock(sorted))
-                        else:
-                            push(newDictionary())
+                        var sorted = newSeqOfCap[Value](keyed.len)
+                        for p in keyed: sorted.add(p[1])
+                        push(newBlock(sorted))
                     else:
                         if checkAttr("as"):
                             push(newBlock(x.a.unisorted(aAs.s,
