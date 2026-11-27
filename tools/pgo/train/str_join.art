@@ -1,0 +1,2 @@
+w: ["a" "bb" "ccc" "dddd"]
+loop 1..300000 'i [ r: join.with: "," w ]

@@ -87,8 +87,14 @@ func reduce(x: var VRational) =
 
 when defined(GMP):
     func simplifyRational(x: var VRational) =
-        if x.rKind == BigRational and canBeSimplified(x.br):
-            x = toRational(getInt(numerator(x.br)), getInt(denominator(x.br)))
+        if x.rKind == BigRational:
+            let num = numerator(x.br)
+            let den = denominator(x.br)
+            if fitsSignedInt(num) and fitsSignedInt(den):
+                let n = getSignedInt(num)
+                # (low(int) can't be negated: it stays a big one)
+                if n != low(int):
+                    x = toRational(n, getSignedInt(den))
 
 func canBeCoerced*(x: VRational): bool =
     if x.rKind == NormalRational:
@@ -191,6 +197,12 @@ func toRational*(x: int): VRational =
 
 func toRational*(x: float): VRational =
     # create VRational from float
+    when defined(GMP):
+        # too big for an int (it'd overflow, below): a whole number
+        # anyway, so it's exact as a big one
+        if abs(x) >= 9223372036854775808.0 and abs(x) != Inf:
+            return toBigRational(x)
+
     let n: int = high(int) shr (sizeof(int) div 2 * 8)
     var
         m11, m22 = 1
@@ -209,7 +221,7 @@ func toRational*(x: float): VRational =
         if x == float(ai): 
             break # division by zero
         x = 1 / (x - float(ai))
-        if x > float(high(int32)): 
+        if abs(x) > float(high(int32)): 
             when defined(GMP):
                 if m11 == 0 or m21 == 0: 
                     return toBigRational(initial)
@@ -307,8 +319,10 @@ func toInt*(x: VRational): int =
         result = x.num div x.den
     else:
         when defined(GMP):
-            if canBeSimplified(x.br):
-                result = getInt(numerator(x.br)) div getInt(denominator(x.br))
+            let num = numerator(x.br)
+            let den = denominator(x.br)
+            if fitsSignedInt(num) and fitsSignedInt(den):
+                result = getSignedInt(num) div getSignedInt(den)
             else:
                 raise newException(ValueError, "cannot convert to int")
 

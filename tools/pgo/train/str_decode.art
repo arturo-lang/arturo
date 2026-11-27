@@ -1,0 +1,2 @@
+e: encode repeat "Some text to encode, with ελληνικά too. " 50
+loop 1..20000 'i [ r: decode e ]

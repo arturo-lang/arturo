@@ -1,0 +1,2 @@
+s: "user42@example.com sent 1234 bytes"
+loop 1..200000 'i [ r: match s {/\d+/} ]
