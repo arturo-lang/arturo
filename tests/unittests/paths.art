@@ -65,3 +65,75 @@ d\name: "Jane"
 d\details\city: "Anotherplace"
 
 print d
+
+; inline as the root of a path
+e: [10 20 30]
+
+print (e ++ [40])\3
+print (reverse e)\0
+print (e)\1
+print ((e))\2
+print (([1 [2 3]])\1)\0
+
+f: #[a: #[b: 1] c: ["x" "y"]]
+
+print (f)\a\b
+print (f)\c\1
+print (get f 'a)\b
+
+g: function [][ #[name: "John" tags: ["red" "green"]] ]
+
+print (g)\name
+print (g)\tags\1
+
+; ...with computed fields
+h: [[1 2] [3 4]]
+i: 1
+
+print (h)\[i]\0
+print (h)\[i - 1]\[i]
+
+; ...with strings
+print ("hello")\1
+print (upper "abc")\2
+print ("héllo")\1
+
+; ...in expressions
+print (f)\a\b + 10
+print 10 + (f)\a\b
+print ((f)\a\b) * 3
+print ~"interpolated: |(e)\2|"
+
+; ...inside functions & loops
+k: function [x n][ (reverse x)\[n] ]
+
+print k [1 2 3] 0
+print k ["a" "b" "c"] 2
+
+loop 0..2 'n [ print (e)\[n] ]
+
+; ...as labels
+l: [1 2 3]
+(l)\0: 100
+print l
+
+m: #[inner: #[k: 1]]
+(m)\inner\k: 2
+print m
+
+(get m 'inner)\j: 3
+print m
+
+; ...without a space, `\name` is still `this\name`
+define :point [
+    init: method [x][ this\x: x ]
+    show: method [][ print [(1 + 1) \x] ]
+    double: method [][ print (this)\x * 2 ]
+]
+
+p: to :point [5]!
+p\show
+p\double
+
+; ...and they can be expressed (and read back)
+print express [(e)\0 (e ++ [1])\[i]:]

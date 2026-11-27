@@ -155,6 +155,7 @@ proc FetchSymById*(v: Value): Value {.inline.} =
 #  labels: vm, enhancement, performance, benchmark
 
 proc CheckCallablePath*(pl: ValueArray): Value =
+    if pl[0].kind != Word: return nil
     result = Syms.getOrDefault(pl[0].s)
     if result.isNil: return
 
