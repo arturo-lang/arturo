@@ -1323,7 +1323,9 @@ proc doParse*(input: string, isFile: bool = true, inFile: bool = false): Value =
     else:
         var stream = newStringStream(input)
 
-        lexbase.open(p, stream)
+        # (a buffer just as big as the input, 
+        # instead of the default 8KB - each time)
+        lexbase.open(p, stream, bufLen = min(input.len + 1, 8192))
     try:
         # do parse    
         result = parseBlock(p, 0)
