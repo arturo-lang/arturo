@@ -1,0 +1,4 @@
+tasks: @[#[name: "b" p: 2] #[name: "a" p: 1]]
+print sort.by:'p tasks
+
+print sort.by:'size ["aa" "b"]
