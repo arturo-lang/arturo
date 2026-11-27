@@ -850,8 +850,10 @@ proc defineModule*(moduleName: string) =
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
                     if likely(yKind==Integer):
-                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
-                            push(newChar(x.s.runeAtPos(y.i)))
+                        # (going through the string just once)
+                        let offset = if y.i >= 0: x.s.runeOffset(y.i) else: -1
+                        if likely(offset >= 0 and offset < x.s.len):
+                            push(newChar(x.s.runeAt(offset)))
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     elif yKind==Range:
