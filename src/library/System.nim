@@ -253,6 +253,8 @@ proc defineModule*(moduleName: string) =
                         cmd.add(quoteShell(args[i]))
 
                     if directly:
+                        # (whatever has been printed so far comes first)
+                        stdout.flushFile()
                         let pcode = execCmd(cmd)
 
                         if code:

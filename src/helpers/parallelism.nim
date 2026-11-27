@@ -698,6 +698,8 @@ when not defined(WEB):
             "unless null? __err__ [\n" &
             "    write express.safe #[kind: __err__\\kind\\label msg: __err__\\message] \"" & errFileEmbed & "\"\n" &
             "]"
+        # (whatever has been printed so far comes first)
+        stdout.flushFile()
         let p = startProcess(arturoBin,
                              args = @["-e", wrapped],
                              env = childEnv,
