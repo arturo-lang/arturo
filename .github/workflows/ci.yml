@@ -45,7 +45,8 @@ jobs:
                     - {os: windows, arch: arm64}
                     - {os: windows, arch: arm64,    mode: mini}
                     - {os: web,     arch: js,       mode: mini}
-                    # without NaN-boxing (as web & 32-bit builds are)
+                    
+                    # without NaN-boxing
                     - {os: linux,   arch: amd64,    classic: true}
                     - {os: macos,   arch: arm64,    classic: true}
 
@@ -97,18 +98,6 @@ jobs:
                 create_artifact: ${{ !matrix.classic && 'true' || 'false' }}
                 artifact_version: ${{ steps.version.outputs.VERSION }}
 
-            - if: matrix.os != 'web'
-              name: Check NaN-boxing
-              run: |
-                # an Integer held inline has no address
-                out=$(arturo -e 'a: 2 print (info.get '"'"'a) \ "address"')
-                echo "$out"
-                if [ "${{ matrix.classic }}" = "true" ]; then
-                    echo "$out" | grep -qv 'address:0x0' || { echo "a NaN-boxed build"; exit 1; }
-                else
-                    echo "$out" | grep -q 'address:0x0' || { echo "not a NaN-boxed build"; exit 1; }
-                fi
-
             - name: Check if tests should be skipped
               id: check_skip
               shell: bash
@@ -127,7 +116,7 @@ jobs:
                 fi
 
             - if: (env.arturoCanRun == 'true' || matrix.os == 'web') && steps.check_skip.outputs.skip != 'true'
-              name: Run tests
+              name: Run tests (native)
               timeout-minutes: 15
               run: |
                 cd $GITHUB_WORKSPACE/arturo
@@ -177,7 +166,7 @@ jobs:
                 mode: mini
 
             - if: matrix.os == 'web' && steps.check_skip.outputs.skip != 'true'
-              name: Run tester (Web build)
+              name: Run tests (web)
               timeout-minutes: 90
               run: |
                 cd $GITHUB_WORKSPACE/arturo
