@@ -96,28 +96,28 @@ Here's how it compares to GMP 6.3 / MPFR 4.2.2: the ratio is PocketBignum's time
 
 | | amd64 | arm64 |
 |---|---|---|
-| mpz add (1–256 limbs) | 0.7–1.0× | 1.0–1.1× |
-| mpz mul, sqr (1–2 limbs) | 0.9–1.0× | 0.4–1.0× |
-| mpz mul, sqr (4–64 limbs) | 1.3–2.0× | 0.9–1.4× |
-| mpz mul, sqr (128–4096 limbs) | 1.5–1.9× | 1.3–1.6× |
+| mpz add (1–256 limbs) | 1.0–1.2× | 1.0–1.1× |
+| mpz mul, sqr (1–2 limbs) | 0.8–1.1× | 0.4–1.0× |
+| mpz mul, sqr (4–64 limbs) | 1.1–1.5× | 0.8–1.4× |
+| mpz mul, sqr (128–4096 limbs) | 1.3–1.7× | 1.3–1.6× |
 | mpz mul, sqr (7000–100000 limbs, FFT) | 1.3–2.0× | 1.4–1.9× |
-| mpz division (2n by n limbs) | 1.1–1.5× | 1.2–1.4× |
-| mpz division (quotient much shorter than the divisor) | 1.9× | 1.6× |
-| mpz gcd | 0.7× (1 limb) – 1.9× | 1.0–1.9× |
-| mpz powm (1–2 limb moduli) | 0.9× | 0.6–1.2× |
-| mpz powm (4–32 limb moduli), prime_p | 1.3–2.1× | 1.0–1.3× |
-| mpz fac_ui | 0.2× (n = 20) – 2.0× | 0.2–1.9× |
-| mpz sqrt | 0.7× (1 limb) – 1.6× | 0.4–1.5× |
-| mpz get_str, set_str (base 10, 4–1024 limbs) | 1.1–1.7× | 1.1–1.5× |
-| mpq (small & ~120-bit parts) add, mul, div, cmp, get_str, set_d | 0.4–1.1× | 0.4–1.4× |
-| mpq get_d | 0.6× (small) – 2.1× | 0.6–1.5× |
-| mpfr 53-bit add, sub, mul, mul_z, cmp, set_d, get_d, get_str, set_str | 0.4–1.4× | 0.3–1.4× |
-| mpfr 53-bit div, add_d | 1.2–1.3× | 1.1–1.2× |
-| mpfr 256-bit add, sub | 2.6–3.9× | 1.9–3.5× |
-| mpfr 256-bit mul, div | 1.4× | 1.1× |
-| mpfr 256-bit add_d, mul_z, cmp, set_d, get_d, get_str, set_str | 0.4–1.6× | 0.4–1.5× |
-| mpfr pow, pow_z | 1.9–2.8× | 1.6–2.2× |
-| **all 103 benchmarks (geometric mean)** | **1.17×** | **1.11×** |
+| mpz division (2n by n limbs) | 0.9–1.3× | 1.1–1.4× |
+| mpz division (quotient much shorter than the divisor) | 1.6–1.7× | 1.6× |
+| mpz gcd | 0.6× (1 limb) – 1.6× | 1.0–1.9× |
+| mpz powm (1–2 limb moduli) | 0.8–0.9× | 0.6–1.2× |
+| mpz powm (4–32 limb moduli), prime_p | 1.1–1.7× | 0.9–1.3× |
+| mpz fac_ui | 0.2× (n = 20) – 1.8× | 0.2–1.9× |
+| mpz sqrt | 0.7× (1 limb) – 1.5× | 0.4–1.5× |
+| mpz get_str, set_str (base 10, 4–1024 limbs) | 1.0–1.5× | 1.0–1.5× |
+| mpq (small & ~120-bit parts) add, mul, div, cmp, get_str, set_d | 0.2–1.1× | 0.4–1.2× |
+| mpq get_d | 0.4–1.4× | 0.6–1.4× |
+| mpfr 53-bit add, sub, mul, mul_z, cmp, set_d, get_d, get_str, set_str | 0.3–1.4× | 0.3–1.4× |
+| mpfr 53-bit div, add_d | 1.3–1.5× | 1.1–1.2× |
+| mpfr 256-bit add, sub | 3.2–4.8× | 2.0–3.5× |
+| mpfr 256-bit mul, div | 1.1–1.3× | 1.1× |
+| mpfr 256-bit add_d, mul_z, cmp, set_d, get_d, get_str, set_str | 0.4–1.8× | 0.4–1.5× |
+| mpfr pow, pow_z | 1.6–2.3× | 1.5–2.3× |
+| **all 103 benchmarks (geometric mean)** | **1.08×** | **1.08×** |
 
 > [!NOTE]
 > In whole programs - arithmetic loops, `powm`, primality tests, conversions, small rationals - that's within 0.8–1.2× of GMP. Where you'll actually notice the difference is with numbers of tens of thousands of limbs (e.g. `3^3000000`), or long sums of big fractions: there, it's 2–3× slower.
@@ -145,7 +145,7 @@ The fuzzers run under ASan + UBSan, comparing every result, ternary value and al
 
 - Very large numbers: multiplication above a few thousand limbs goes through an FFT modulo three primes (GMP uses Schönhage–Strassen and hand-tuned assembly) and is 1.3–2× slower; there's no Newton division either (division is divide & conquer at every size), so dividing or printing numbers of ~10⁵ limbs is 2–3× slower than GMP
 - Mid-size multiplication (300–2000 limbs): it goes up to Toom-4 (no Toom-6/8) and is 1.5–1.8× slower
-- Assembly: only the `add_n` / `sub_n` / `mul_1` / `addmul_1` / `submul_1` kernels, on x86-64 (`mul_1` & co. with ADX, detected at runtime) and arm64, with GCC or Clang - everything else (and MSVC, 32-bit or `PBN_PORTABLE` builds) is plain C; e.g. 4-16 limb products on amd64 are 1.3-2× slower than with GMP ([#45](https://github.com/pocket-libs/pocket-bignum/issues/45))
+- Assembly: only the `add_n` / `sub_n` / `mul_1` / `addmul_1` / `submul_1` kernels, on x86-64 (`mul_1` & co. with ADX, detected at runtime) and arm64, with GCC or Clang - everything else (and MSVC, 32-bit or `PBN_PORTABLE` builds) is plain C
 - Thresholds are tuned for the CPUs of the CI runners (amd64 & arm64) - for other ones, `tools/tune.sh` will find better values
 - Floats: there's no same-precision fast path for multi-limb add/sub ([#23](https://github.com/pocket-libs/pocket-bignum/issues/23)), and `pow` needs double-limb kernels to get to MPFR's speed ([#24](https://github.com/pocket-libs/pocket-bignum/issues/24))
 - The memory functions (`pbn_set_memory_functions`) are global: set them before any thread uses the library
