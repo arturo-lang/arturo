@@ -43,7 +43,7 @@
 #include <stdint.h>
 #include <limits.h>
 
-#define PBN_VERSION "0.1.0"
+#define PBN_VERSION "0.2.0"
 
 #ifndef PBN_LIMB_BITS
 #  if UINTPTR_MAX > 0xFFFFFFFFu || defined(__SIZEOF_INT128__)
@@ -365,6 +365,73 @@ PBN_API int pbf_div_z(pbf_ptr r, pbf_srcptr a, pbz_srcptr b, pbf_rnd_t rnd);
 PBN_API int pbf_div_d(pbf_ptr r, pbf_srcptr a, double b, pbf_rnd_t rnd);
 PBN_API int pbf_pow(pbf_ptr r, pbf_srcptr x, pbf_srcptr y, pbf_rnd_t rnd);
 PBN_API int pbf_pow_z(pbf_ptr r, pbf_srcptr x, pbz_srcptr z, pbf_rnd_t rnd);
+
+/* ---- more of GMP & MPFR: for completeness (built on the functions above) ---- */
+PBN_API pbn_bitcnt pbz_scan0(pbz_srcptr a, pbn_bitcnt start);
+PBN_API pbn_bitcnt pbz_scan1(pbz_srcptr a, pbn_bitcnt start);
+PBN_API pbn_bitcnt pbz_hamdist(pbz_srcptr a, pbz_srcptr b);
+PBN_API int  pbz_divisible_2exp_p(pbz_srcptr a, pbn_bitcnt b);
+PBN_API int  pbz_congruent_p(pbz_srcptr a, pbz_srcptr c, pbz_srcptr d);
+PBN_API int  pbz_congruent_ui_p(pbz_srcptr a, unsigned long c, unsigned long d);
+PBN_API int  pbz_congruent_2exp_p(pbz_srcptr a, pbz_srcptr c, pbn_bitcnt b);
+PBN_API pbn_bitcnt pbz_remove(pbz_ptr r, pbz_srcptr a, pbz_srcptr f);
+PBN_API int  pbz_root(pbz_ptr r, pbz_srcptr a, unsigned long n);
+PBN_API void pbz_rootrem(pbz_ptr r, pbz_ptr rem, pbz_srcptr a, unsigned long n);
+PBN_API int  pbz_perfect_power_p(pbz_srcptr a);
+PBN_API void pbz_bin_ui(pbz_ptr r, pbz_srcptr n, unsigned long k);
+PBN_API void pbz_bin_uiui(pbz_ptr r, unsigned long n, unsigned long k);
+PBN_API void pbz_fib_ui(pbz_ptr r, unsigned long n);
+PBN_API void pbz_fib2_ui(pbz_ptr fn, pbz_ptr fnsub1, unsigned long n);
+PBN_API void pbz_lucnum_ui(pbz_ptr r, unsigned long n);
+PBN_API void pbz_lucnum2_ui(pbz_ptr ln, pbz_ptr lnsub1, unsigned long n);
+PBN_API void pbz_2fac_ui(pbz_ptr r, unsigned long n);
+PBN_API void pbz_mfac_uiui(pbz_ptr r, unsigned long n, unsigned long m);
+PBN_API void pbz_primorial_ui(pbz_ptr r, unsigned long n);
+PBN_API void pbz_gcdext(pbz_ptr g, pbz_ptr s, pbz_ptr t, pbz_srcptr a, pbz_srcptr b);
+PBN_API int  pbz_jacobi(pbz_srcptr a, pbz_srcptr b);
+PBN_API int  pbz_legendre(pbz_srcptr a, pbz_srcptr p);
+PBN_API int  pbz_kronecker(pbz_srcptr a, pbz_srcptr b);
+PBN_API int  pbz_kronecker_si(pbz_srcptr a, long b);
+PBN_API int  pbz_kronecker_ui(pbz_srcptr a, unsigned long b);
+PBN_API int  pbz_si_kronecker(long a, pbz_srcptr b);
+PBN_API int  pbz_ui_kronecker(unsigned long a, pbz_srcptr b);
+PBN_API void pbz_set_q(pbz_ptr r, pbq_srcptr q);
+PBN_API double pbz_get_d_2exp(long *exp, pbz_srcptr a);
+PBN_API void pbz_powm_sec(pbz_ptr r, pbz_srcptr b, pbz_srcptr e, pbz_srcptr m);
+PBN_API int  pbz_prevprime(pbz_ptr r, pbz_srcptr n);
+
+PBN_API int pbf_add_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd);
+PBN_API int pbf_add_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd);
+PBN_API int pbf_sub_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd);
+PBN_API int pbf_sub_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd);
+PBN_API int pbf_ui_sub(pbf_ptr r, unsigned long a, pbf_srcptr b, pbf_rnd_t rnd);
+PBN_API int pbf_si_sub(pbf_ptr r, long a, pbf_srcptr b, pbf_rnd_t rnd);
+PBN_API int pbf_mul_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd);
+PBN_API int pbf_mul_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd);
+PBN_API int pbf_div_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd);
+PBN_API int pbf_div_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd);
+PBN_API int pbf_ui_div(pbf_ptr r, unsigned long a, pbf_srcptr b, pbf_rnd_t rnd);
+PBN_API int pbf_si_div(pbf_ptr r, long a, pbf_srcptr b, pbf_rnd_t rnd);
+PBN_API int pbf_sqr(pbf_ptr r, pbf_srcptr a, pbf_rnd_t rnd);
+PBN_API int pbf_cmpabs(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_greater_p(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_greaterequal_p(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_less_p(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_lessequal_p(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_lessgreater_p(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_equal_p(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_unordered_p(pbf_srcptr a, pbf_srcptr b);
+PBN_API int pbf_min(pbf_ptr r, pbf_srcptr a, pbf_srcptr b, pbf_rnd_t rnd);
+PBN_API int pbf_max(pbf_ptr r, pbf_srcptr a, pbf_srcptr b, pbf_rnd_t rnd);
+PBN_API int pbf_setsign(pbf_ptr r, pbf_srcptr a, int s, pbf_rnd_t rnd);
+PBN_API int pbf_copysign(pbf_ptr r, pbf_srcptr a, pbf_srcptr b, pbf_rnd_t rnd);
+PBN_API int pbf_integer_p(pbf_srcptr x);
+PBN_API int pbf_floor(pbf_ptr r, pbf_srcptr x);
+PBN_API int pbf_ceil(pbf_ptr r, pbf_srcptr x);
+PBN_API int pbf_trunc(pbf_ptr r, pbf_srcptr x);
+PBN_API int pbf_get_z(pbz_ptr z, pbf_srcptr x, pbf_rnd_t rnd);
+PBN_API long pbf_get_si(pbf_srcptr x, pbf_rnd_t rnd);
+PBN_API unsigned long pbf_get_ui(pbf_srcptr x, pbf_rnd_t rnd);
 
 #ifdef __cplusplus
 }
@@ -7525,6 +7592,576 @@ PBN_DEF int pbf_pow(pbf_ptr r, pbf_srcptr xs, pbf_srcptr ys, pbf_rnd_t rnd) {
             w += w / 2 + 32;
         }
     }
+}
+
+/* ========================================================================= */
+/* more of GMP & MPFR, for completeness: simple, built on the functions above */
+/* ========================================================================= */
+
+PBN_DEF pbn_bitcnt pbz_scan1(pbz_srcptr a, pbn_bitcnt k) {
+    pbn_size n = PBN_ABS(SIZ(a)), i = (pbn_size)(k / PBN_B);
+    if (SIZ(a) >= 0) {
+        pbn_limb w;
+        if (i >= n) return ~(pbn_bitcnt)0;
+        w = PTR(a)[i] & (PBN_LIMB_MAX << (k % PBN_B));
+        while (w == 0) {
+            if (++i >= n) return ~(pbn_bitcnt)0;
+            w = PTR(a)[i];
+        }
+        return (pbn_bitcnt)i * PBN_B + (pbn_bitcnt)pbn_ctz(w);
+    }
+    /* negative (two's complement): all ones beyond the top */
+    for (; k <= (pbn_bitcnt)n * PBN_B; k++) if (pbz_tstbit(a, k)) return k;
+    return k;
+}
+
+PBN_DEF pbn_bitcnt pbz_scan0(pbz_srcptr a, pbn_bitcnt k) {
+    pbn_size n = PBN_ABS(SIZ(a)), i = (pbn_size)(k / PBN_B);
+    if (SIZ(a) >= 0) {
+        pbn_limb w;
+        if (i >= n) return k;
+        w = ~PTR(a)[i] & (PBN_LIMB_MAX << (k % PBN_B));
+        while (w == 0) {
+            if (++i >= n) return (pbn_bitcnt)n * PBN_B;
+            w = ~PTR(a)[i];
+        }
+        return (pbn_bitcnt)i * PBN_B + (pbn_bitcnt)pbn_ctz(w);
+    }
+    for (; k <= (pbn_bitcnt)n * PBN_B; k++) if (!pbz_tstbit(a, k)) return k;
+    return ~(pbn_bitcnt)0;
+}
+
+PBN_DEF pbn_bitcnt pbz_hamdist(pbz_srcptr a, pbz_srcptr b) {
+    pbz_t x;
+    pbn_bitcnt c;
+    if ((SIZ(a) < 0) != (SIZ(b) < 0)) return ~(pbn_bitcnt)0;
+    pbz_init(x);
+    pbz_xor(x, a, b);
+    c = pbz_popcount(x);
+    pbz_clear(x);
+    return c;
+}
+
+PBN_DEF int pbz_divisible_2exp_p(pbz_srcptr a, pbn_bitcnt b) {
+    pbn_size n = PBN_ABS(SIZ(a)), i, full = (pbn_size)(b / PBN_B);
+    unsigned rest = (unsigned)(b % PBN_B);
+    if (n == 0) return 1;
+    for (i = 0; i < full; i++) if (i >= n || PTR(a)[i]) return 0;     /* (a != 0: below 2^b) */
+    if (full >= n) return rest == 0;
+    return rest == 0 || (PTR(a)[full] & (((pbn_limb)1 << rest) - 1)) == 0;
+}
+
+PBN_DEF int pbz_congruent_p(pbz_srcptr a, pbz_srcptr c, pbz_srcptr d) {
+    pbz_t t;
+    int r;
+    pbz_init(t);
+    pbz_sub(t, a, c);
+    r = SIZ(d) == 0 ? SIZ(t) == 0 : pbz_divisible_p(t, d);
+    pbz_clear(t);
+    return r;
+}
+
+PBN_DEF int pbz_congruent_ui_p(pbz_srcptr a, unsigned long c, unsigned long d) {
+    if (d == 0) return pbz_cmp_ui(a, c) == 0;
+    return pbz_fdiv_ui(a, d) == c % d;
+}
+
+PBN_DEF int pbz_congruent_2exp_p(pbz_srcptr a, pbz_srcptr c, pbn_bitcnt b) {
+    pbz_t t;
+    int r;
+    pbz_init(t);
+    pbz_sub(t, a, c);
+    r = pbz_divisible_2exp_p(t, b);
+    pbz_clear(t);
+    return r;
+}
+
+PBN_DEF pbn_bitcnt pbz_remove(pbz_ptr r, pbz_srcptr a, pbz_srcptr f) {
+    pbz_t x, ff;
+    pbn_bitcnt c = 0;
+    pbz_init_set(x, a);
+    pbz_init_set(ff, f);
+    if (pbz_cmpabs_ui(ff, 1) > 0 && SIZ(x) != 0)
+        while (pbz_divisible_p(x, ff)) { pbz_divexact(x, x, ff); c++; }
+    pbz_swap(r, x);
+    pbz_clears(x, ff, (pbz_ptr)NULL);
+    return c;
+}
+
+/* floor(a^(1/n)) for a >= 0, n >= 1 (Newton from above) */
+static void pbz_root_nonneg(pbz_ptr r, pbz_srcptr a, unsigned long n) {
+    pbn_bitcnt bits;
+    pbz_t x, y, t;
+    if (SIZ(a) == 0 || n == 1) { pbz_set(r, a); return; }
+    bits = pbz_bitlen(a);
+    if (n == 2) { pbz_sqrt(r, a); return; }
+    if (bits <= n) { pbz_set_ui(r, 1); return; }    /* 2^(bits-1) <= a < 2^bits <= 2^n */
+    pbz_inits(x, y, t, (pbz_ptr)NULL);
+    pbz_set_ui(x, 1);
+    pbz_mul_2exp(x, x, (bits + n - 1) / n);         /* >= the root */
+    for (;;) {
+        pbz_pow_ui(t, x, n - 1);
+        pbz_tdiv_q(t, a, t);
+        pbz_mul_ui(y, x, n - 1);
+        pbz_add(y, y, t);
+        pbz_tdiv_q_ui(y, y, n);
+        if (pbz_cmp(y, x) >= 0) break;
+        pbz_swap(x, y);
+    }
+    pbz_swap(r, x);
+    pbz_clears(x, y, t, (pbz_ptr)NULL);
+}
+
+PBN_DEF void pbz_rootrem(pbz_ptr r, pbz_ptr rem, pbz_srcptr a, unsigned long n) {
+    pbz_t x, aa, p;
+    if (n == 0 || (SIZ(a) < 0 && !(n & 1))) pbn_divzero();
+    pbz_inits(x, p, (pbz_ptr)NULL);
+    pbz_init_set(aa, a);
+    pbz_abs(x, aa);
+    pbz_root_nonneg(x, x, n);
+    if (SIZ(aa) < 0) pbz_neg(x, x);                 /* truncated, like GMP */
+    if (rem) {
+        pbz_pow_ui(p, x, n);
+        pbz_sub(rem, aa, p);
+    }
+    if (r) pbz_swap(r, x);
+    pbz_clears(x, aa, p, (pbz_ptr)NULL);
+}
+
+PBN_DEF int pbz_root(pbz_ptr r, pbz_srcptr a, unsigned long n) {
+    pbz_t rem;
+    int exact;
+    pbz_init(rem);
+    pbz_rootrem(r, rem, a, n);
+    exact = SIZ(rem) == 0;
+    pbz_clear(rem);
+    return exact;
+}
+
+PBN_DEF int pbz_perfect_power_p(pbz_srcptr a) {
+    pbn_bitcnt bits;
+    unsigned long p;
+    pbz_t x, s;
+    int found = 0;
+    if (pbz_cmpabs_ui(a, 1) <= 0) return 1;
+    pbz_inits(x, s, (pbz_ptr)NULL);
+    pbz_abs(x, a);
+    bits = pbz_bitlen(x);
+    for (p = 2; p <= bits && !found; p++) {
+        unsigned long d;
+        int prime = 1;
+        for (d = 2; d * d <= p; d++) if (p % d == 0) { prime = 0; break; }
+        if (!prime || (SIZ(a) < 0 && p == 2)) continue;
+        found = pbz_root(s, x, p);
+    }
+    pbz_clears(x, s, (pbz_ptr)NULL);
+    return found;
+}
+
+PBN_DEF void pbz_bin_ui(pbz_ptr r, pbz_srcptr n, unsigned long k) {
+    pbz_t m, x, t;
+    unsigned long i;
+    int neg = 0;
+    pbz_inits(x, t, (pbz_ptr)NULL);
+    pbz_init_set(m, n);
+    if (SIZ(m) < 0) {
+        /* bin(-n, k) = (-1)^k bin(n + k - 1, k) */
+        pbz_neg(m, m);
+        pbz_add_ui(m, m, k);
+        pbz_sub_ui(m, m, 1);
+        neg = (int)(k & 1);
+    }
+    if (pbz_cmp_ui(m, k) < 0) {
+        SIZ(x) = 0;
+    } else {
+        pbz_sub_ui(t, m, k);
+        if (pbz_cmp_ui(t, k) < 0) k = pbz_get_ui(t);
+        pbz_set_ui(x, 1);
+        for (i = 0; i < k; i++) {
+            pbz_sub_ui(t, m, i);
+            pbz_mul(x, x, t);
+            pbz_divexact_ui(x, x, i + 1);
+        }
+    }
+    if (neg) pbz_neg(x, x);
+    pbz_swap(r, x);
+    pbz_clears(m, x, t, (pbz_ptr)NULL);
+}
+
+PBN_DEF void pbz_bin_uiui(pbz_ptr r, unsigned long n, unsigned long k) {
+    PBZ_TMP_UL(t, n);
+    pbz_bin_ui(r, t, k);
+}
+
+/* (F(n), F(n+1)), by doubling */
+static void pbz_fib_pair(pbz_ptr a, pbz_ptr b, unsigned long n) {
+    pbz_t t, u;
+    int i;
+    pbz_inits(t, u, (pbz_ptr)NULL);
+    pbz_set_ui(a, 0);
+    pbz_set_ui(b, 1);
+    for (i = (int)(sizeof(unsigned long) * CHAR_BIT) - 1; i >= 0; i--) {
+        /* F(2k) = F(k) (2 F(k+1) - F(k)), F(2k+1) = F(k)^2 + F(k+1)^2 */
+        pbz_mul_2exp(t, b, 1);
+        pbz_sub(t, t, a);
+        pbz_mul(t, t, a);
+        pbz_mul(u, a, a);
+        pbz_mul(a, b, b);
+        pbz_add(u, u, a);
+        if ((n >> i) & 1) {
+            pbz_add(a, t, u);
+            pbz_swap(b, a);
+            pbz_swap(a, u);
+        } else {
+            pbz_swap(a, t);
+            pbz_swap(b, u);
+        }
+    }
+    pbz_clears(t, u, (pbz_ptr)NULL);
+}
+
+PBN_DEF void pbz_fib_ui(pbz_ptr r, unsigned long n) {
+    pbz_t b;
+    pbz_init(b);
+    pbz_fib_pair(r, b, n);
+    pbz_clear(b);
+}
+
+PBN_DEF void pbz_fib2_ui(pbz_ptr fn, pbz_ptr fnsub1, unsigned long n) {
+    pbz_t b;
+    pbz_init(b);
+    pbz_fib_pair(fn, b, n);
+    pbz_sub(fnsub1, b, fn);              /* F(n-1) = F(n+1) - F(n) */
+    pbz_clear(b);
+}
+
+PBN_DEF void pbz_lucnum2_ui(pbz_ptr ln, pbz_ptr lnsub1, unsigned long n) {
+    pbz_t a, b, t;
+    pbz_inits(a, b, t, (pbz_ptr)NULL);
+    pbz_fib_pair(a, b, n);
+    /* L(n) = 2 F(n+1) - F(n), L(n-1) = 3 F(n) - F(n+1) */
+    if (lnsub1) {
+        pbz_mul_ui(t, a, 3);
+        pbz_sub(lnsub1, t, b);
+    }
+    pbz_mul_2exp(t, b, 1);
+    pbz_sub(ln, t, a);
+    pbz_clears(a, b, t, (pbz_ptr)NULL);
+}
+
+PBN_DEF void pbz_lucnum_ui(pbz_ptr r, unsigned long n) { pbz_lucnum2_ui(r, NULL, n); }
+
+PBN_DEF void pbz_mfac_uiui(pbz_ptr r, unsigned long n, unsigned long m) {
+    pbz_t x;
+    if (n < 3 || n - 3 < m - 1) { pbz_set_ui(r, n ? n : 1); return; }
+    pbz_init_set_ui(x, n);
+    for (n -= m; n > 1; n = n > m ? n - m : 0) pbz_mul_ui(x, x, n);
+    pbz_swap(r, x);
+    pbz_clear(x);
+}
+
+PBN_DEF void pbz_2fac_ui(pbz_ptr r, unsigned long n) { pbz_mfac_uiui(r, n, 2); }
+
+PBN_DEF void pbz_primorial_ui(pbz_ptr r, unsigned long n) {
+    unsigned char *sieve;
+    unsigned long i, j;
+    pbz_t x;
+    pbz_init_set_ui(x, 1);
+    if (n >= 2) {
+        sieve = (unsigned char *)pbn_alloc_fn(n + 1);
+        memset(sieve, 1, n + 1);
+        for (i = 2; i <= n; i++) {
+            if (!sieve[i]) continue;
+            pbz_mul_ui(x, x, i);
+            if (i <= n / i) for (j = i * i; j <= n; j += i) sieve[j] = 0;
+        }
+        pbn_free_fn(sieve, n + 1);
+    }
+    pbz_swap(r, x);
+    pbz_clear(x);
+}
+
+PBN_DEF void pbz_gcdext(pbz_ptr g, pbz_ptr s, pbz_ptr t, pbz_srcptr a, pbz_srcptr b) {
+    pbz_t aa, bb, r0, r1, s0, s1, q, x, tt;
+    pbz_inits(r0, r1, s0, s1, q, x, tt, (pbz_ptr)NULL);
+    pbz_init_set(aa, a);
+    pbz_init_set(bb, b);
+    if (pbz_cmpabs(aa, bb) == 0 || SIZ(aa) == 0) {
+        /* g = |b|, s = 0, t = sgn(b) */
+        pbz_abs(r0, bb);
+        SIZ(s0) = 0;
+        pbz_set_si(tt, pbz_sgn(bb));
+    } else if (SIZ(bb) == 0) {
+        pbz_abs(r0, aa);
+        pbz_set_si(s0, pbz_sgn(aa));
+        SIZ(tt) = 0;
+    } else {
+        /* Euclid on |a|, |b|, with the cofactors of a */
+        pbz_abs(r0, aa);
+        pbz_abs(r1, bb);
+        pbz_set_ui(s0, 1);
+        SIZ(s1) = 0;
+        while (SIZ(r1) != 0) {
+            pbz_tdiv_qr(q, x, r0, r1);
+            pbz_swap(r0, r1);
+            pbz_swap(r1, x);
+            pbz_mul(x, q, s1);
+            pbz_sub(x, s0, x);
+            pbz_swap(s0, s1);
+            pbz_swap(s1, x);
+        }
+        if (SIZ(aa) < 0) pbz_neg(s0, s0);
+        /* t = (g - a s) / b */
+        pbz_mul(x, aa, s0);
+        pbz_sub(x, r0, x);
+        pbz_divexact(tt, x, bb);
+    }
+    if (t) pbz_swap(t, tt);
+    if (s) pbz_swap(s, s0);
+    pbz_swap(g, r0);
+    pbz_clears(aa, bb, r0, r1, s0, s1, q, x, tt, (pbz_ptr)NULL);
+}
+
+PBN_DEF int pbz_kronecker(pbz_srcptr a0, pbz_srcptr b0) {
+    pbz_t a, b;
+    int k = 1;
+    pbn_bitcnt v;
+    if (SIZ(b0) == 0) return pbz_cmpabs_ui(a0, 1) == 0;
+    if (pbz_even_p(a0) && pbz_even_p(b0)) return 0;
+    pbz_init_set(a, a0);
+    pbz_init_set(b, b0);
+    /* the factor 2^v of b: (a/2) is -1 for a = 3, 5 mod 8 */
+    v = pbz_scan1(b, 0);
+    if (v) {
+        pbz_tdiv_q_2exp(b, b, v);
+        if ((v & 1) && ((pbz_fdiv_ui(a, 8) == 3) || (pbz_fdiv_ui(a, 8) == 5))) k = -k;
+    }
+    /* the sign of b: (a/-1) = -1 for a < 0 */
+    if (SIZ(b) < 0) {
+        pbz_neg(b, b);
+        if (SIZ(a) < 0) k = -k;
+    }
+    /* b odd, positive: Jacobi */
+    pbz_fdiv_r(a, a, b);
+    while (SIZ(a) != 0) {
+        v = pbz_scan1(a, 0);
+        if (v) {
+            unsigned long b8 = pbz_fdiv_ui(b, 8);
+            pbz_tdiv_q_2exp(a, a, v);
+            if ((v & 1) && (b8 == 3 || b8 == 5)) k = -k;
+        }
+        pbz_swap(a, b);
+        if (pbz_fdiv_ui(a, 4) == 3 && pbz_fdiv_ui(b, 4) == 3) k = -k;
+        pbz_fdiv_r(a, a, b);
+    }
+    if (pbz_cmp_ui(b, 1) != 0) k = 0;
+    pbz_clears(a, b, (pbz_ptr)NULL);
+    return k;
+}
+
+PBN_DEF int pbz_jacobi(pbz_srcptr a, pbz_srcptr b) { return pbz_kronecker(a, b); }
+PBN_DEF int pbz_legendre(pbz_srcptr a, pbz_srcptr p) { return pbz_kronecker(a, p); }
+PBN_DEF int pbz_kronecker_si(pbz_srcptr a, long b) { PBZ_TMP_SL(t, b); return pbz_kronecker(a, t); }
+PBN_DEF int pbz_kronecker_ui(pbz_srcptr a, unsigned long b) { PBZ_TMP_UL(t, b); return pbz_kronecker(a, t); }
+PBN_DEF int pbz_si_kronecker(long a, pbz_srcptr b) { PBZ_TMP_SL(t, a); return pbz_kronecker(t, b); }
+PBN_DEF int pbz_ui_kronecker(unsigned long a, pbz_srcptr b) { PBZ_TMP_UL(t, a); return pbz_kronecker(t, b); }
+
+PBN_DEF void pbz_set_q(pbz_ptr r, pbq_srcptr q) { pbz_tdiv_q(r, &q->_mp_num, &q->_mp_den); }
+
+PBN_DEF double pbz_get_d_2exp(long *exp, pbz_srcptr a) {
+    pbn_bitcnt bits;
+    pbz_t t;
+    double d;
+    if (SIZ(a) == 0) { *exp = 0; return 0.0; }
+    bits = pbz_bitlen(a);
+    pbz_init(t);
+    if (bits > 53) pbz_tdiv_q_2exp(t, a, bits - 53);     /* truncated, like GMP */
+    else pbz_set(t, a);
+    d = ldexp(pbz_get_d(t), -(int)(bits > 53 ? 53 : bits));
+    pbz_clear(t);
+    *exp = (long)bits;
+    return d;
+}
+
+PBN_DEF void pbz_powm_sec(pbz_ptr r, pbz_srcptr b, pbz_srcptr e, pbz_srcptr m) { pbz_powm(r, b, e, m); }
+
+PBN_DEF int pbz_prevprime(pbz_ptr r, pbz_srcptr n) {
+    pbz_t t;
+    int p = 0;
+    if (pbz_cmp_ui(n, 2) <= 0) return 0;
+    if (pbz_cmp_ui(n, 3) == 0) { pbz_set_ui(r, 2); return 2; }
+    pbz_init(t);
+    pbz_sub_ui(t, n, 1);
+    if (pbz_even_p(t)) pbz_sub_ui(t, t, 1);
+    while (pbz_cmp_ui(t, 3) >= 0 && !(p = pbz_probab_prime_p(t, 25))) pbz_sub_ui(t, t, 2);
+    if (!p) { pbz_set_ui(t, 2); p = 2; }
+    pbz_swap(r, t);
+    pbz_clear(t);
+    return p;
+}
+
+/* ---- floats ---- */
+
+PBN_DEF int pbf_add_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd) {
+    PBZ_TMP_UL(t, b);
+    if (b == 0) return pbf_set(r, a, rnd);
+    return pbf_add_z(r, a, t, rnd);
+}
+PBN_DEF int pbf_add_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd) {
+    PBZ_TMP_SL(t, b);
+    if (b == 0) return pbf_set(r, a, rnd);
+    return pbf_add_z(r, a, t, rnd);
+}
+PBN_DEF int pbf_sub_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd) {
+    PBZ_TMP_UL(t, b);
+    if (b == 0) return pbf_set(r, a, rnd);
+    return pbf_sub_z(r, a, t, rnd);
+}
+PBN_DEF int pbf_sub_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd) {
+    PBZ_TMP_SL(t, b);
+    if (b == 0) return pbf_set(r, a, rnd);
+    return pbf_sub_z(r, a, t, rnd);
+}
+PBN_DEF int pbf_ui_sub(pbf_ptr r, unsigned long a, pbf_srcptr b, pbf_rnd_t rnd) {
+    PBZ_TMP_UL(t, a);
+    if (a == 0) return pbf_neg(r, b, rnd);
+    return pbf_add_v(r, pbf_view_z(t), pbf_view_neg(pbf_view_of(b)), rnd, 1);
+}
+PBN_DEF int pbf_si_sub(pbf_ptr r, long a, pbf_srcptr b, pbf_rnd_t rnd) {
+    int t;
+    if (a >= 0) return pbf_ui_sub(r, (unsigned long)a, b, rnd);
+    /* -(b + |a|), rounded the other way: like MPFR (an exact 0 comes out as -0) */
+    t = pbf_add_ui(r, b, 0UL - (unsigned long)a, rnd == PBF_RNDU ? PBF_RNDD : rnd == PBF_RNDD ? PBF_RNDU : rnd);
+    FSIGN(r) = -FSIGN(r);
+    return -t;
+}
+PBN_DEF int pbf_mul_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd) { PBZ_TMP_UL(t, b); return pbf_mul_z(r, a, t, rnd); }
+PBN_DEF int pbf_mul_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd) { PBZ_TMP_SL(t, b); return pbf_mul_z(r, a, t, rnd); }
+PBN_DEF int pbf_div_ui(pbf_ptr r, pbf_srcptr a, unsigned long b, pbf_rnd_t rnd) { PBZ_TMP_UL(t, b); return pbf_div_z(r, a, t, rnd); }
+PBN_DEF int pbf_div_si(pbf_ptr r, pbf_srcptr a, long b, pbf_rnd_t rnd) { PBZ_TMP_SL(t, b); return pbf_div_z(r, a, t, rnd); }
+PBN_DEF int pbf_ui_div(pbf_ptr r, unsigned long a, pbf_srcptr b, pbf_rnd_t rnd) {
+    PBZ_TMP_UL(t, a);
+    return pbf_div_v(r, pbf_view_z(t), pbf_view_of(b), rnd, 1);
+}
+PBN_DEF int pbf_si_div(pbf_ptr r, long a, pbf_srcptr b, pbf_rnd_t rnd) {
+    PBZ_TMP_SL(t, a);
+    return pbf_div_v(r, pbf_view_z(t), pbf_view_of(b), rnd, 1);
+}
+PBN_DEF int pbf_sqr(pbf_ptr r, pbf_srcptr a, pbf_rnd_t rnd) { return pbf_mul(r, a, a, rnd); }
+
+PBN_DEF int pbf_cmpabs(pbf_srcptr a, pbf_srcptr b) {
+    pbf_struct x = *a, y = *b;
+    FSIGN(&x) = 1;
+    FSIGN(&y) = 1;
+    return pbf_cmp(&x, &y);
+}
+
+#define PBF_ORDERED(a, b) (!pbf_nan_p(a) && !pbf_nan_p(b))
+PBN_DEF int pbf_greater_p(pbf_srcptr a, pbf_srcptr b)      { return PBF_ORDERED(a, b) && pbf_cmp(a, b) > 0; }
+PBN_DEF int pbf_greaterequal_p(pbf_srcptr a, pbf_srcptr b) { return PBF_ORDERED(a, b) && pbf_cmp(a, b) >= 0; }
+PBN_DEF int pbf_less_p(pbf_srcptr a, pbf_srcptr b)         { return PBF_ORDERED(a, b) && pbf_cmp(a, b) < 0; }
+PBN_DEF int pbf_lessequal_p(pbf_srcptr a, pbf_srcptr b)    { return PBF_ORDERED(a, b) && pbf_cmp(a, b) <= 0; }
+PBN_DEF int pbf_lessgreater_p(pbf_srcptr a, pbf_srcptr b)  { return PBF_ORDERED(a, b) && pbf_cmp(a, b) != 0; }
+PBN_DEF int pbf_equal_p(pbf_srcptr a, pbf_srcptr b)        { return PBF_ORDERED(a, b) && pbf_cmp(a, b) == 0; }
+PBN_DEF int pbf_unordered_p(pbf_srcptr a, pbf_srcptr b)    { return !PBF_ORDERED(a, b); }
+#undef PBF_ORDERED
+
+static int pbf_minmax(pbf_ptr r, pbf_srcptr a, pbf_srcptr b, pbf_rnd_t rnd, int max) {
+    int c;
+    if (pbf_nan_p(a) && pbf_nan_p(b)) { pbf_set_nan(r); return 0; }
+    if (pbf_nan_p(a)) return pbf_set(r, b, rnd);
+    if (pbf_nan_p(b)) return pbf_set(r, a, rnd);
+    if (pbf_zero_p(a) && pbf_zero_p(b)) {        /* -0 < +0 here */
+        c = (FSIGN(a) < 0) == (FSIGN(b) < 0) ? 0 : FSIGN(a) < 0 ? -1 : 1;
+    } else {
+        c = pbf_cmp(a, b);
+    }
+    return pbf_set(r, (c < 0) == !max ? a : b, rnd);
+}
+PBN_DEF int pbf_min(pbf_ptr r, pbf_srcptr a, pbf_srcptr b, pbf_rnd_t rnd) { return pbf_minmax(r, a, b, rnd, 0); }
+PBN_DEF int pbf_max(pbf_ptr r, pbf_srcptr a, pbf_srcptr b, pbf_rnd_t rnd) { return pbf_minmax(r, a, b, rnd, 1); }
+
+PBN_DEF int pbf_setsign(pbf_ptr r, pbf_srcptr a, int s, pbf_rnd_t rnd) {
+    pbf_struct x = *a;
+    FSIGN(&x) = s ? -1 : 1;
+    return pbf_set(r, &x, rnd);
+}
+PBN_DEF int pbf_copysign(pbf_ptr r, pbf_srcptr a, pbf_srcptr b, pbf_rnd_t rnd) {
+    return pbf_setsign(r, a, FSIGN(b) < 0, rnd);
+}
+
+PBN_DEF int pbf_integer_p(pbf_srcptr x) {
+    pbf_view v = pbf_view_of(x);
+    pbz_t m;
+    if (v.cls == PBF_C_ZERO) return 1;
+    if (v.cls != PBF_C_NUM) return 0;
+    if (v.e >= 0) return 1;
+    pbz_roinit_n(m, v.mp, v.mn);
+    return pbz_scan1(m, 0) >= (pbn_bitcnt)(-v.e);
+}
+
+/* to an integer in a direction, then to r's precision in the same direction: returns 0 if
+   x is an integer r holds exactly, +-1 if it's an integer r can't hold, +-2 otherwise */
+static int pbf_rint_dir(pbf_ptr r, pbf_srcptr x, pbf_rnd_t dir) {
+    pbf_view v = pbf_view_of(x);
+    pbz_t z;
+    int t, side;
+    if (v.cls != PBF_C_NUM) return pbf_set(r, x, PBF_RNDN);
+    if (pbf_integer_p(x)) {
+        t = pbf_set(r, x, dir);
+        return t > 0 ? 1 : t < 0 ? -1 : 0;
+    }
+    side = dir == PBF_RNDU ? 1 : dir == PBF_RNDD ? -1 : -v.sign;    /* (RNDZ: toward 0) */
+    pbz_init(z);
+    pbf_rint_z(z, &v, dir);
+    if (SIZ(z) == 0) pbf_set_zero(r, v.sign);
+    else pbf_set_z(r, z, dir);
+    pbz_clear(z);
+    return 2 * side;
+}
+PBN_DEF int pbf_floor(pbf_ptr r, pbf_srcptr x) { return pbf_rint_dir(r, x, PBF_RNDD); }
+PBN_DEF int pbf_ceil(pbf_ptr r, pbf_srcptr x)  { return pbf_rint_dir(r, x, PBF_RNDU); }
+PBN_DEF int pbf_trunc(pbf_ptr r, pbf_srcptr x) { return pbf_rint_dir(r, x, PBF_RNDZ); }
+
+PBN_DEF int pbf_get_z(pbz_ptr z, pbf_srcptr x, pbf_rnd_t rnd) {
+    pbf_view v = pbf_view_of(x);
+    pbf_t t;
+    int c;
+    if (v.cls != PBF_C_NUM) { SIZ(z) = 0; return 0; }
+    pbf_rint_z(z, &v, rnd);
+    pbf_init2(t, SIZ(z) != 0 && pbz_bitlen(z) > 1 ? (pbf_prec_t)pbz_bitlen(z) : 2);
+    pbf_set_z(t, z, PBF_RNDN);                   /* (exact) */
+    c = pbf_cmp(t, x);
+    pbf_clear(t);
+    return c > 0 ? 1 : c < 0 ? -1 : 0;
+}
+
+PBN_DEF long pbf_get_si(pbf_srcptr x, pbf_rnd_t rnd) {
+    pbf_view v = pbf_view_of(x);
+    pbz_t z;
+    long r;
+    if (v.cls == PBF_C_NAN || v.cls == PBF_C_ZERO) return 0;
+    if (v.cls == PBF_C_INF) return v.sign < 0 ? LONG_MIN : LONG_MAX;
+    if (v.ex > (long)(sizeof(long) * CHAR_BIT) + 1) return v.sign < 0 ? LONG_MIN : LONG_MAX;
+    pbz_init(z);
+    pbf_rint_z(z, &v, rnd);
+    r = pbz_fits_slong_p(z) ? pbz_get_si(z) : v.sign < 0 ? LONG_MIN : LONG_MAX;
+    pbz_clear(z);
+    return r;
+}
+
+PBN_DEF unsigned long pbf_get_ui(pbf_srcptr x, pbf_rnd_t rnd) {
+    pbf_view v = pbf_view_of(x);
+    pbz_t z;
+    unsigned long r;
+    if (v.cls == PBF_C_NAN || v.cls == PBF_C_ZERO) return 0;
+    if (v.cls == PBF_C_INF) return v.sign < 0 ? 0 : ULONG_MAX;
+    if (v.ex > (long)(sizeof(unsigned long) * CHAR_BIT) + 1) return v.sign < 0 ? 0 : ULONG_MAX;
+    pbz_init(z);
+    pbf_rint_z(z, &v, rnd);
+    r = SIZ(z) < 0 ? 0 : pbz_fits_ulong_p(z) ? pbz_get_ui(z) : ULONG_MAX;
+    pbz_clear(z);
+    return r;
 }
 
 #ifdef __cplusplus
