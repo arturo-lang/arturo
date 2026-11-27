@@ -55,6 +55,26 @@ when defined(BUNDLE):
     import vm/bundle/resources
 
 #=======================================
+# Helpers
+#=======================================
+
+proc sortedByKey(arr: ValueArray, key: string, order: SortOrder): ValueArray =
+    # every item: a Dictionary or Object with that key
+    # (fetched just once, and not for every comparison)
+    var keyed = newSeqOfCap[(Value, Value)](arr.len)
+    for item in arr:
+        case item.kind:
+            of Dictionary: keyed.add((GetDictionaryKey(item, key), item))
+            of Object: keyed.add((GetObjectKey(item, key), item))
+            else: showWrongValueAttrTypeError("sort", "by", item, {Dictionary, Object})
+
+    keyed.sort(proc (p1, p2: (Value, Value)): int = cmp(p1[0], p2[0]),
+                order = order)
+
+    result = newSeqOfCap[Value](keyed.len)
+    for p in keyed: result.add(p[1])
+
+#=======================================
 # Definitions
 #=======================================
 
@@ -2092,21 +2112,7 @@ proc defineModule*(moduleName: string) =
                 if x.a.len == 0: push(newBlock())
                 else:
                     if checkAttr("by"):
-                        # every item: a Dictionary or Object with that key
-                        # (fetched just once, and not for every comparison)
-                        var keyed = newSeqOfCap[(Value, Value)](x.a.len)
-                        for item in x.a:
-                            case item.kind:
-                                of Dictionary: keyed.add((GetDictionaryKey(item, aBy.s), item))
-                                of Object: keyed.add((GetObjectKey(item, aBy.s), item))
-                                else: showWrongValueAttrTypeError("sort", "by", item, {Dictionary, Object})
-
-                        keyed.sort(proc (p1, p2: (Value, Value)): int = cmp(p1[0], p2[0]),
-                                    order = sortOrdering)
-
-                        var sorted = newSeqOfCap[Value](keyed.len)
-                        for p in keyed: sorted.add(p[1])
-                        push(newBlock(sorted))
+                        push(newBlock(x.a.sortedByKey(aBy.s, sortOrdering)))
                     else:
                         if checkAttr("as"):
                             push(newBlock(x.a.unisorted(aAs.s,
@@ -2170,10 +2176,7 @@ proc defineModule*(moduleName: string) =
                 if InPlaced.kind == Block:
                     if InPlaced.a.len > 0:
                         if checkAttr("by"):
-                            InPlaced.a.sort(
-                                proc (v1, v2: Value): int =
-                                cmp(v1.d[aBy.s], v2.d[aBy.s]),
-                                        order = sortOrdering)
+                            InPlaced.a = InPlaced.a.sortedByKey(aBy.s, sortOrdering)
                         else:               
                             if checkAttr("as"):
                                 InPlaced.a.unisort(aAs.s, sensitive = hadAttr(
