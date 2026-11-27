@@ -3038,7 +3038,7 @@ proc defineModule*(moduleName: string) =
                 of Floating:
                     push(newLogical(x.f == 0.0))
                 of String:
-                    push(newLogical(runeLen(x.s) == 0))
+                    push(newLogical(x.s.len == 0))
                 of Block:
                     push(newLogical(x.a.len == 0))
                 of Range:
