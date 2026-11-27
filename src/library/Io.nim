@@ -311,13 +311,15 @@ proc defineModule*(moduleName: string) =
                     else: stdout.write("\n")
 
                 if not inLines: stdout.write("\n")
-                stdout.flushFile()
+                when defined(WEB):
+                    stdout.flushFile()
             else:
                 when defined(WEB):
                     stdout.write($(x) & "\n")
                     stdout.flushFile()
                 else:
-                    echo $(x)
+                    # (no flushing on every line: echo does that)
+                    stdout.writeLine($(x))
 
     builtin "prints",
         alias       = unaliased,
