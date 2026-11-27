@@ -48,6 +48,7 @@ import vm/values/custom/[vrange]
 
 var
     templateStore = initTable[string,Translation]()
+    interpolatedStore = initTable[string,Translation]()
 
 #=======================================
 # Helpers
@@ -88,6 +89,20 @@ template replaceStrWith(str: var string, src: Value, dst: Value): untyped =
         str = str.replaceAll(src.s, dst.s)
     elif src.kind==Regex:
         str = str.replaceAll(src.rx, dst.s)
+
+proc evalInterpolated(code: string): string =
+    # (each `|...|` is parsed & compiled just once)
+    var evaled = interpolatedStore.getOrDefault(code, nil)
+    if evaled.isNil:
+        let (translation, canStore) = doEvalAndCheckSafety(doParse(code, isFile=false))
+        evaled = translation
+        if canStore: interpolatedStore[code] = evaled
+
+    let stop = SP
+    execUnscoped(evaled)
+    # (there may be nothing to pop, e.g. with `| |`)
+    if SP > stop: $(stack.pop())
+    else: ""
 
 #=======================================
 # Definitions
@@ -770,20 +785,10 @@ proc defineModule*(moduleName: string) =
 
                 while keepGoing:
                     when defined(WEB):
-                        res = res.replaceInterpolated(proc (code: string): string =
-                                    let stop = SP
-                                    execUnscoped(doParse(code, isFile=false))
-                                    # (there may be nothing to pop, e.g. with `| |`)
-                                    if SP > stop: $(stack.pop())
-                                    else: ""
-                                )
+                        res = res.replaceInterpolated(evalInterpolated)
                     else:
                         res = res.replace(Interpolated, proc (match: RegexMatch): string =
-                                    let stop = SP
-                                    execUnscoped(doParse(match.captures[0], isFile=false))
-                                    # (there may be nothing to pop, e.g. with `| |`)
-                                    if SP > stop: $(stack.pop())
-                                    else: ""
+                                    evalInterpolated(match.captures[0])
                                 )
 
                     # if recursive, check if there's still more embedded tags
