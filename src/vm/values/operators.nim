@@ -669,6 +669,17 @@ proc `+=`*(x: var Value, y: Value) =
     ## 
     ## **Hint:** In-place, mutating operation
 
+    when defined(NANBOX):
+        # both held inline: two 48-bit Integers can't overflow (a result
+        # that doesn't fit inline goes to the heap, as with the setter
+        # below), and two Floatings are just that - skipping the dispatch
+        if isInlineInteger(x) and isInlineInteger(y):
+            x.i = x.i + y.i
+            return
+        if isInlineFloating(x) and isInlineFloating(y):
+            x.f = x.f + y.f
+            return
+
     let pair = getValuePair()
     case pair:
         of Integer    || Integer        :   normalIntegerAddI(x, y.i)
@@ -782,6 +793,17 @@ proc `-=`*(x: var Value, y: Value) =
     ## and store the result in the first value
     ## 
     ## **Hint:** In-place, mutating operation
+
+    when defined(NANBOX):
+        # both held inline: two 48-bit Integers can't overflow (a result
+        # that doesn't fit inline goes to the heap, as with the setter
+        # below), and two Floatings are just that - skipping the dispatch
+        if isInlineInteger(x) and isInlineInteger(y):
+            x.i = x.i - y.i
+            return
+        if isInlineFloating(x) and isInlineFloating(y):
+            x.f = x.f - y.f
+            return
 
     let pair = getValuePair()
     case pair:
