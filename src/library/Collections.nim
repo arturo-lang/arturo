@@ -850,8 +850,10 @@ proc defineModule*(moduleName: string) =
                                 push(getStoreKey(x.sto, $(y)))
                 of String:
                     if likely(yKind==Integer):
-                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
-                            push(newChar(x.s.runeAtPos(y.i)))
+                        # (going through the string just once)
+                        let offset = if y.i >= 0: x.s.runeOffset(y.i) else: -1
+                        if likely(offset >= 0 and offset < x.s.len):
+                            push(newChar(x.s.runeAt(offset)))
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     elif yKind==Range:
@@ -1897,17 +1899,14 @@ proc defineModule*(moduleName: string) =
                 
                 of String:
                     if likely(yKind == Integer):
-                        if likely(y.i >= 0 and y.i < x.s.runeLen()):
-                            var res: string
-                            var idx = 0
-                            for r in x.s.runes:
-                                if idx != y.i: res.add r
-                                else: 
-                                    if zKind == String: res.add $(z.s[0])
-                                    else: res.add z.c
-                                idx += 1
-
-                            x.s = res
+                        # (only that character is replaced - 
+                        # without rebuilding the whole string)
+                        let offset = if y.i >= 0: x.s.runeOffset(y.i) else: -1
+                        if likely(offset >= 0 and offset < x.s.len):
+                            let replacement = 
+                                if zKind == String: z.s.firstChars(1)
+                                else: $(z.c)
+                            x.s[offset ..< offset + x.s.runeLenAt(offset)] = replacement
                         else:
                             Error_OutOfBounds(y.i, Dumper(x), x.s.runeLen()-1, "String")
                     else:

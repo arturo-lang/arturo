@@ -477,6 +477,8 @@
 [+] passed!
 [+] passed!
 [+] passed!
+[+] passed!
+[+] passed!
 
 >> set - :binary
 [+] passed!
