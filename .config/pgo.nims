@@ -32,12 +32,20 @@ proc pgoFlags(generate: bool): seq[string] =
             if generate: @["-fprofile-instr-generate"]
             else: @["-fprofile-instr-use=" & pgoProfile]
         else:
+            # (code the training doesn't go through much is still optimized
+            # for speed, instead of size - e.g. the library's less common bits)
             if generate: @["-fprofile-generate", "-fprofile-update=single"]
-            else: @["-fprofile-use", "-fprofile-correction", "-Wno-missing-profile"]
+            else: @["-fprofile-use", "-fprofile-correction", "-Wno-missing-profile", "-fprofile-partial-training"]
 
     for flag in compilerFlags:
         result.add "--passC:" & flag
         result.add "--passL:" & flag
+
+    if pgoUsesClang and not generate:
+        # the same for clang: no profile-guided size optimizations (for
+        # the compiler & - with LTO - for the linker, which generates the code)
+        result.add "--passC:'-mllvm -pgso=false'"
+        result.add "--passL:'-Wl,-mllvm,-pgso=false'"
 
 proc pgoFilesIn(dir: string, ext: string): seq[string] =
     for file in listFiles(dir):
