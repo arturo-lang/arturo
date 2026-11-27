@@ -1,0 +1,2 @@
+s: "hello world, hello there"
+loop 1..300000 'i [ r: take s 5  q: drop.times: 3 s ]
