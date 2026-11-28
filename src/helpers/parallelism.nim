@@ -106,7 +106,7 @@ when not defined(WEB):
         Scheduler = object
             mainCtx: VMContext
             currentFiber: Fiber
-            ready: seq[Fiber]
+            ready: Deque[Fiber]
 
     var scheduler {.global.}: Scheduler
 
@@ -115,7 +115,7 @@ when not defined(WEB):
         if scheduler.mainCtx.isNil:
             scheduler.mainCtx = VMContext()
         scheduler.currentFiber = nil
-        scheduler.ready.setLen(0)
+        scheduler.ready.clear()
 
     proc readyLen*(): int {.inline.} =
         scheduler.ready.len
@@ -129,13 +129,12 @@ when not defined(WEB):
             initScheduler()
         result = createFiber(entry)
         result.ctx = newVMContext(parentSyms)
-        scheduler.ready.add(result)
+        scheduler.ready.addLast(result)
 
     proc runOneStep*() =
         ## Resume next ready fiber or poll dispatcher once.
         if scheduler.ready.len > 0:
-            let f = scheduler.ready[0]
-            scheduler.ready.delete(0)
+            let f = scheduler.ready.popFirst()
             if isDone(f):                     # cancel race: already-done fiber re-queued
                 return
             scheduler.currentFiber = f
@@ -189,7 +188,7 @@ when not defined(WEB):
         if not fut.finished:
             fut.addCallback(proc () {.gcsafe.} =
                 {.cast(gcsafe).}:
-                    scheduler.ready.add(me))
+                    scheduler.ready.addLast(me))
             suspend()
             if me.ctx.cancelRequested:
                 raise newException(FiberCancelledError, "task cancelled")
@@ -897,7 +896,7 @@ when not defined(WEB):
             {.cast(gcsafe).}:
                 cancelCtx.cancelRequested = true
                 if not isDone(cancelF):
-                    scheduler.ready.add(cancelF)
+                    scheduler.ready.addLast(cancelF)
 
         result = newTask(tsk)
 
