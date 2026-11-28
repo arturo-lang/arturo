@@ -45,6 +45,54 @@ when not defined(WEB):
     const
         DefaultFiberStackSize* = 256 * 1024     ## 256KB per fiber
 
+        GuardedFiberStacks = not (defined(windows) and not defined(amd64))
+            ## (on Windows/ARM64, minicoro uses the system's own fibers:
+            ## their stacks come with guard pages already)
+
+    # Fiber stacks are mapped straight from the OS, with an inaccessible
+    # page right below them: running out of one is a fault we can report
+    # - instead of quietly writing over whatever happens to be there
+
+    when GuardedFiberStacks:
+        when defined(windows):
+            const
+                MEM_COMMIT = 0x1000'u32
+                MEM_RESERVE = 0x2000'u32
+                MEM_RELEASE = 0x8000'u32
+                PAGE_NOACCESS = 0x01'u32
+                PAGE_READWRITE = 0x04'u32
+
+            proc VirtualAlloc(address: pointer, size: csize_t, allocationType, protect: uint32): pointer {.stdcall, dynlib: "kernel32", importc.}
+            proc VirtualProtect(address: pointer, size: csize_t, newProtect: uint32, oldProtect: ptr uint32): int32 {.stdcall, dynlib: "kernel32", importc.}
+            proc VirtualFree(address: pointer, size: csize_t, freeType: uint32): int32 {.stdcall, dynlib: "kernel32", importc.}
+
+            let PageSize = 4096
+        else:
+            let PageSize = sysconf(SC_PAGESIZE)
+
+        proc mappedSize(size: csize_t): int {.inline.} =
+            ## Whole pages for given size, plus the guard page
+            ((int(size) + PageSize - 1) and not (PageSize - 1)) + PageSize
+
+        proc allocFiberMemory(size: csize_t, data: pointer): pointer {.cdecl.} =
+            when defined(windows):
+                let p = VirtualAlloc(nil, csize_t(mappedSize(size)), MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE)
+                if p.isNil: return nil
+                var old: uint32
+                discard VirtualProtect(p, csize_t(PageSize), PAGE_NOACCESS, addr old)
+            else:
+                let p = mmap(nil, mappedSize(size), PROT_READ or PROT_WRITE, MAP_PRIVATE or MAP_ANONYMOUS, -1, 0)
+                if p == MAP_FAILED: return nil
+                discard mprotect(p, PageSize, PROT_NONE)
+            result = cast[pointer](cast[uint](p) + uint(PageSize))
+
+        proc freeFiberMemory(p: pointer, size: csize_t, data: pointer) {.cdecl.} =
+            let start = cast[pointer](cast[uint](p) - uint(PageSize))
+            when defined(windows):
+                discard VirtualFree(start, 0, MEM_RELEASE)
+            else:
+                discard munmap(start, mappedSize(size))
+
     type
         Fiber* = ref object
             handle: McoCoroPtr
@@ -68,6 +116,9 @@ when not defined(WEB):
         GC_ref(result)  # keep alive while minicoro holds the user_data ptr
         var desc = mco_desc_init(fiberTrampoline, csize_t(stackSize))
         desc.userData = cast[pointer](result)
+        when GuardedFiberStacks:
+            desc.allocCb = cast[pointer](allocFiberMemory)
+            desc.deallocCb = cast[pointer](freeFiberMemory)
         var co: McoCoroPtr
         fiberCheck(mco_create(addr co, addr desc), "create")
         result.handle = co
