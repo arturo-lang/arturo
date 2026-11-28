@@ -721,3 +721,53 @@ do [
     passed
 
 ]
+
+
+topic "fibers — lots of them, one after the other"
+do [
+
+    ; whatever a fiber leaves behind doesn't reach the next ones
+    ensure -> (@1..3000) = map.parallel 1..3000 'x [1 2 "junk" [a b] x]
+    passed
+
+    ; values made in a fiber outlive it
+    r: map.parallel 1..500 'x [#[n: x, l: @[x x]]]
+    ensure -> 500 = last map r 'd -> d\n
+    ensure -> 250500 = sum map r 'd -> sum d\l
+    passed
+
+    ; again & again
+    total: 0
+    loop 1..20 'k [
+        total: total + sum map.parallel 1..200 'x [x + k]
+    ]
+    ensure -> 444000 = total
+    passed
+
+    ; nested, with failures in-between
+    r: map.parallel 1..20 'x [sum map.parallel 1..50 'y [x * y]]
+    ensure -> 267750 = sum r
+    r: map.parallel 1..300 'x [if 0 = x % 7 -> throw "boom" x]
+    ensure -> 42 = size select r => error?
+    ensure -> (@1..300) = map.parallel 1..300 'x -> x
+    passed
+
+]
+
+
+topic "fibers — lots of them, all suspended at once"
+do [
+
+    ensure -> (@1..300) = map.parallel 1..300 'x [pause 1 x]
+    ensure -> (@1..500) = map.parallel:7 1..500 'x [pause 1 x]
+    passed
+
+    ; finished ones can still be cancelled
+    t: do.async [41 + 1]
+    ensure -> 42 = wait t
+    cancel t
+    ensure -> 42 = wait t
+    loop 1..3 'k -> ensure -> some?.parallel 1..300 'x [pause 1 x = 10]
+    passed
+
+]

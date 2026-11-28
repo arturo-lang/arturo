@@ -76,6 +76,7 @@ when not defined(WEB):
         if f.handle != nil:
             fiberCheck(mco_destroy(f.handle), "destroy")
             f.handle = nil
+            f.entry = nil
             GC_unref(f)
 
     proc resume*(f: Fiber) {.inline.} =
@@ -85,7 +86,7 @@ when not defined(WEB):
         fiberCheck(mco_yield(mco_running()), "suspend")
 
     proc isDone*(f: Fiber): bool {.inline.} =
-        mco_status(f.handle) == mcoDead
+        f.handle.isNil or mco_status(f.handle) == mcoDead
 
     proc currentFiberHandle*(): McoCoroPtr {.inline.} =
         ## minicoro handle of running fiber, nil on main thread.
@@ -105,7 +106,7 @@ when not defined(WEB):
         Scheduler = object
             mainCtx: VMContext
             currentFiber: Fiber
-            ready: seq[Fiber]
+            ready: Deque[Fiber]
 
     var scheduler {.global.}: Scheduler
 
@@ -114,7 +115,7 @@ when not defined(WEB):
         if scheduler.mainCtx.isNil:
             scheduler.mainCtx = VMContext()
         scheduler.currentFiber = nil
-        scheduler.ready.setLen(0)
+        scheduler.ready.clear()
 
     proc readyLen*(): int {.inline.} =
         scheduler.ready.len
@@ -128,13 +129,12 @@ when not defined(WEB):
             initScheduler()
         result = createFiber(entry)
         result.ctx = newVMContext(parentSyms)
-        scheduler.ready.add(result)
+        scheduler.ready.addLast(result)
 
     proc runOneStep*() =
         ## Resume next ready fiber or poll dispatcher once.
         if scheduler.ready.len > 0:
-            let f = scheduler.ready[0]
-            scheduler.ready.delete(0)
+            let f = scheduler.ready.popFirst()
             if isDone(f):                     # cancel race: already-done fiber re-queued
                 return
             scheduler.currentFiber = f
@@ -144,6 +144,10 @@ when not defined(WEB):
             swapOutTo(f.ctx)
             swapInFrom(scheduler.mainCtx)
             scheduler.currentFiber = nil
+            if isDone(f):
+                # (nothing will run on it again)
+                f.ctx.release()
+                destroyFiber(f)
         elif hasPendingOperations():
             poll()
 
@@ -184,7 +188,7 @@ when not defined(WEB):
         if not fut.finished:
             fut.addCallback(proc () {.gcsafe.} =
                 {.cast(gcsafe).}:
-                    scheduler.ready.add(me))
+                    scheduler.ready.addLast(me))
             suspend()
             if me.ctx.cancelRequested:
                 raise newException(FiberCancelledError, "task cancelled")
@@ -892,7 +896,7 @@ when not defined(WEB):
             {.cast(gcsafe).}:
                 cancelCtx.cancelRequested = true
                 if not isDone(cancelF):
-                    scheduler.ready.add(cancelF)
+                    scheduler.ready.addLast(cancelF)
 
         result = newTask(tsk)
 

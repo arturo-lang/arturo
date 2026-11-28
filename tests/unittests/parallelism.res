@@ -129,3 +129,13 @@
 [+] passed!
 [+] passed!
 [+] passed!
+
+>> fibers — lots of them, one after the other
+[+] passed!
+[+] passed!
+[+] passed!
+[+] passed!
+
+>> fibers — lots of them, all suspended at once
+[+] passed!
+[+] passed!

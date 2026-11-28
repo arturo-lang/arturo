@@ -1,0 +1,131 @@
+# TEMPORARY (parallel-fibers): master vs this branch, on every platform (release builds, with PGO):
+# correctness checks (same output everywhere, unit tests - several times) & benchmarks - tools/bench-parallel
+name: Benchmark .parallel
+
+on:
+    push:
+        branches: [parallel-fibers]
+    workflow_dispatch:
+        inputs:
+            runs:
+                description: 'Timed runs per case and binary (medians are reported)'
+                default: '5'
+
+jobs:
+    bench:
+        name: bench (${{ matrix.name }})
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 240
+        defaults:
+            run:
+                # (on Windows, MSYS2 - once setup-arturo has installed it: the builds' DLLs are on its path)
+                shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - { name: linux-amd64,   runner: ubuntu-latest,    os: linux,   arch: amd64, prefix: 'taskset -c 1' }
+                    - { name: linux-arm64,   runner: ubuntu-24.04-arm, os: linux,   arch: arm64, prefix: 'taskset -c 1' }
+                    - { name: macos-arm64,   runner: macos-latest,     os: macos,   arch: arm64, prefix: '' }
+                    - { name: macos-amd64,   runner: macos-15-intel,   os: macos,   arch: amd64, prefix: '' }
+                    - { name: windows-amd64, runner: windows-latest,   os: windows, arch: amd64, prefix: '' }
+        steps:
+            # (in a folder of its own: setup-arturo builds in the workspace, and wants a bin/ of its own)
+            - uses: actions/checkout@v6
+              with:
+                path: bench-src
+
+            - name: Arturo master (release, PGO)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                src: master
+                release: 'true'
+                pgo: 'true'
+
+            - name: Keep it
+              run: |
+                mkdir -p bins/master
+                if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/master/
+                else cp -R "$arturoDistPath"/. bins/master/; fi
+                bins/master/arturo -v
+                # (setup-arturo can't install Nim twice in the same place)
+                rm -rf nim
+
+            - name: Clean up after the first build (Windows)
+              # (setup-arturo installs MSYS2 & creates bin/ anew: it can't with them there; the second
+              # setup installs the same MSYS2 packages, so both builds find their DLLs later)
+              if: matrix.os == 'windows'
+              shell: pwsh
+              run: |
+                Remove-Item -Recurse -Force "$env:RUNNER_TEMP\msys64", bin, nim -ErrorAction SilentlyContinue
+
+            - name: Arturo + this branch (release, PGO)
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                src: ${{ github.sha }}
+                release: 'true'
+                pgo: 'true'
+
+            - name: Keep it
+              run: |
+                mkdir -p bins/branch
+                if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/branch/
+                else cp -R "$arturoDistPath"/. bins/branch/; fi
+                bins/branch/arturo -v
+
+            - name: Correctness
+              run: |
+                exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
+                py=$(command -v python3 || command -v python)
+                "$py" bench-src/tools/bench-parallel/run.py --check --repeat 3 \
+                    --bin "master=bins/master/arturo$exe" \
+                    --bin "branch=bins/branch/arturo$exe"
+
+            - name: Benchmarks
+              if: always()
+              run: |
+                exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
+                py=$(command -v python3 || command -v python)
+                "$py" bench-src/tools/bench-parallel/run.py \
+                    --bin "master=bins/master/arturo$exe" \
+                    --bin "branch=bins/branch/arturo$exe" \
+                    --runs "${{ github.event.inputs.runs || '5' }}" \
+                    --prefix "${{ matrix.prefix }}" \
+                    --platform "${{ matrix.name }}" \
+                    --json "bench-${{ matrix.name }}.json" --md "bench-${{ matrix.name }}.md"
+                cat "bench-${{ matrix.name }}.md" >> "$GITHUB_STEP_SUMMARY"
+
+            - uses: actions/upload-artifact@v6
+              if: always()
+              with:
+                name: bench-${{ matrix.name }}
+                path: bench-${{ matrix.name }}.*
+
+    summary:
+        name: summary
+        needs: bench
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/download-artifact@v6
+              with:
+                pattern: bench-*
+                merge-multiple: true
+                path: reports
+            - name: Summary
+              run: |
+                python3 tools/bench-parallel/summary.py reports/*.json > summary.md
+                cat summary.md >> "$GITHUB_STEP_SUMMARY"
+            - uses: actions/upload-artifact@v6
+              with:
+                name: bench-summary
+                path: summary.md

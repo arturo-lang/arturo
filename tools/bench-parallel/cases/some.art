@@ -1,0 +1,2 @@
+n: to :integer arg\0
+print some?.parallel 1..n 'x [pause 1 x = 10]

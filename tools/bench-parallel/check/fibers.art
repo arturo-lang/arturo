@@ -1,0 +1,115 @@
+topic: $[t][print ~"\n>> |t|"]
+drain: $[] -> wait do.async [pause 20]
+
+topic "leftovers on a (reused) stack don't leak into the next fiber"
+r: map.parallel 1..3000 'x [1 2 3 "junk" [a b] x]
+print [size r sum r]
+r: map.parallel 1..3000 'x [if even? x [10 20 30] x * 2]
+print [size r sum r]
+
+topic "deep recursion inside fibers (on reused stacks)"
+depth: function [n][if n = 0 -> return 0  1 + depth n - 1]
+r: map.parallel 1..200 'x [depth 50 + x % 50]
+print [first r last r sum r]
+
+topic "many fibers suspended at once"
+r: map.parallel 1..3000 'x [pause 1 x * 3]
+print [size r sum r first r last r]
+
+topic "capped, suspending"
+r: map.parallel:7 1..1000 'x [pause 1 x]
+print [size r sum r (r = @1..1000)]
+
+topic "rounds of fan-out"
+total: 0
+loop 1..30 'k [
+    r: map.parallel 1..300 'x [x + k]
+    total: total + sum r
+]
+print total
+
+topic "nested"
+r: map.parallel 1..20 'x [
+    sum map.parallel 1..50 'y [x * y]
+]
+print [size r sum r]
+r: map.parallel 1..20 'x [
+    t: do.async [pause 1 x * 100]
+    wait t
+]
+print sum r
+
+topic "errors inside fibers"
+r: map.parallel 1..500 'x [if 0 = x % 7 -> throw "boom" x]
+print [size r size select r => error?]
+r: map.parallel 1..500 'x [x]
+print sum r
+
+topic "values made inside fibers outlive them"
+r: map.parallel 1..200 'x [#[n: x, sq: x * x, l: @[x x]]]
+print [sum map r 'd -> d\sq  sum map r 'd -> sum d\l]
+fs: map.parallel 1..50 'x [function [y][y * 2]]
+print sum map fs 'g -> call g [5]
+r: map.parallel 1..100 'x [repeat to :string x 3]
+print [first r last r]
+s: map.parallel "héllo wörld" 'c [upper c]
+print join s
+
+topic "select / every? / some? / sort / group"
+print size select.parallel 1..5000 'x [zero? x % 3]
+print every?.parallel 1..2000 'x [x > 0]
+print some?.parallel 1..5000 'x [x = 4000]
+print some?.parallel 1..2000 'x [x < 0]
+loop 1..5 'k [ print some?.parallel 1..3000 'x [pause 1 x = 10] ]
+print first sort.by:'x.parallel map 1..100 'x [#[x: 100 - x]]
+print size keys gather.parallel 1..1000 'x [x % 10]
+print maximum.parallel 1..1000 'x [x % 77]
+
+topic "loop.parallel & .with"
+acc: 0
+loop.parallel 1..100 'x [acc: acc + x]
+print acc
+r: map.parallel.with:'i 1..300 'x [i * x]
+print sum r
+
+topic "tasks: cancel after done, cancel pending, wait.first"
+t: do.async [41 + 1]
+print wait t
+cancel t
+print wait t
+t: do.async.lazy [pause 50 "late"]
+cancel t
+print wait t
+ts: map 1..20 'x -> do.async [pause 50 * 20 - x x]
+print wait.first.cancel ts
+ts: map 1..100 'x -> do.async [pause 1 x]
+print sum wait.all ts
+
+topic "channels"
+Ch: channel.bounded: 10 'nums
+got: []
+workers: map 1..4 'w [
+    do.async [
+        keepGoing: true
+        while [keepGoing][
+            v: receive Ch
+            switch null? v [ keepGoing: false ][ 'got ++ v ]
+        ]
+    ]
+]
+loop 1..500 'x -> send Ch x
+unplug Ch
+wait.all workers
+print [size got sum got]
+
+topic "events from fibers"
+E: event 'fromfibers
+seen: []
+on.with:'p E [ 'seen ++ p ]
+r: map.parallel 1..100 'x [emit.with: x E  x]
+drain
+print [sum r size seen sum seen]
+
+topic "finally, a big one"
+r: map.parallel 1..20000 'x [x]
+print [size r sum r]
