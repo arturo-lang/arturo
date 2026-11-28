@@ -42,7 +42,7 @@
 #=======================================
 
 when not defined(WEB):
-    import os, re, terminal
+    import os, terminal
     import std/with
 import sequtils, strformat, strutils, sugar
 
@@ -206,12 +206,17 @@ func `~~`*(s: string, inputs: seq[string]): string =
     var finalS = s
     when not defined(WEB):
         for line in s.splitLines():
-            for found in line.findAll(re"\$[\$#]"):
-                if found=="$$":
-                    let ind = line.realFind("$$")
-                    replacements.add(strip(lineTrunc(strip(inputs[replacements.len]),ind)))
+            var i = 0
+            while i < line.len - 1:
+                if line[i] == '$' and line[i + 1] in {'$', '#'}:
+                    if line[i + 1] == '$':
+                        let ind = line.realFind("$$")
+                        replacements.add(strip(lineTrunc(strip(inputs[replacements.len]),ind)))
+                    else:
+                        replacements.add(inputs[replacements.len])
+                    i += 2
                 else:
-                    replacements.add(inputs[replacements.len])
+                    inc i
     else:
         replacements = inputs
     
@@ -290,7 +295,7 @@ proc printError(s: string) =
         if NoErrorColors:
             # (any colors already in there, e.g. from the
             # message itself, have to go too)
-            stderr.writeLine s.replacef(re"\e[^m]+m", "")
+            stderr.writeLine s.stripColors()
         else:
             stderr.writeLine s
     else:

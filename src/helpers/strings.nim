@@ -13,11 +13,6 @@
 import lenientops, math, sequtils
 import strutils, sugar, tables, unicode
 
-when defined(WEB):
-    import jsre
-else:
-    import re
-
 #=======================================
 # Methods
 #=======================================
@@ -209,10 +204,25 @@ func replaceOnce*(s, sub: string, by = ""): string =
 
         add result, substr(s, i)
 
+func stripColors*(s: string): string =
+    ## Given string without its terminal color codes
+    ## (an escape, then anything up to the next `m`)
+    if '\e' notin s: return s
+    result = newStringOfCap(s.len)
+    var i = 0
+    while i < s.len:
+        if s[i] == '\e' and i + 1 < s.len and s[i + 1] != 'm':
+            let j = s.find('m', i + 2)
+            if j > 0:
+                i = j + 1
+                continue
+        result.add(s[i])
+        inc i
+
 proc realLen*(s: string): int =
     let cleanString = 
         when not defined(WEB):
-            s.replacef(re"\e[^m]+m","")
+            s.stripColors()
         else:
             s
     return cleanString.runeLen()
@@ -278,7 +288,7 @@ func splitEvery*(s: string, n: int): seq[string] =
 proc realFind*(s: string, subs: string): int =
     let cleanString = 
         when not defined(WEB):
-            s.replacef(re"\e[^m]+m","")
+            s.stripColors()
         else:
             s
     # (a plain search, then the character index of what was found)
