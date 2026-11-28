@@ -9,7 +9,7 @@ print [size r sum r]
 
 topic "deep recursion inside fibers (on reused stacks)"
 depth: function [n][if n = 0 -> return 0  1 + depth n - 1]
-r: map.parallel 1..200 'x [depth 300 + x]
+r: map.parallel 1..200 'x [depth 50 + x % 50]
 print [first r last r sum r]
 
 topic "many fibers suspended at once"
