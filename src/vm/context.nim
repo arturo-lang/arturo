@@ -57,7 +57,7 @@ proc newVMContext*(parentSyms: SymSlots): VMContext =
         line: CurrentLine,
         cancelRequested: false
     )
-    newSeq(result.stack, StackSize)
+    # (no stack yet: it's only needed once the fiber runs)
 
 proc swapOutTo*(ctx: VMContext) =
     ## Save live VM globals into `ctx`, leave slots empty.
@@ -76,6 +76,9 @@ proc swapOutTo*(ctx: VMContext) =
 
 proc swapInFrom*(ctx: VMContext) =
     ## Restore live VM globals from `ctx`. Reverse of `swapOutTo`.
+    if ctx.stack.len == 0:
+        # first run
+        newSeq(ctx.stack, StackSize)
     Stack       = move ctx.stack
     SP          = ctx.sp
     Attrs       = move ctx.attrs
