@@ -128,6 +128,12 @@ template loadByIndex(idx: int):untyped =
     hookProcProfiler("exec/loadByIndex"):
         stack.push(FetchSymById(cnst[idx]))
 
+template checkRecursion() =
+    ## A runaway recursion is an error (that can be caught),
+    ## not a crash - in a fiber too
+    when not defined(WEB):
+        if unlikely(stackExhausted()): Error_StackOverflow()
+
 proc callFunction*(f: Value, fnName: string, args: ValueArray) =
     ## Take a Function value, whether a user or a built-in one, 
     ## and execute it with given arguments
@@ -426,6 +432,7 @@ proc execFunction*(fun: Value, fid: Hash) =
     ##   overwrite the value in the outer scope
     ## - Symbols declared in `.exports` will not 
     ##   abide by this rule
+    checkRecursion()
 
     var memoizedParams: Value = nil
 
@@ -492,6 +499,7 @@ proc execFunctionInline*(fun: Value, fid: Hash) =
     ##   overwrite the value in the outer scope
     ## - Symbols declared in `.exports` will not 
     ##   abide by this rule
+    checkRecursion()
 
     var memoizedParams: Value = nil
  
@@ -554,6 +562,7 @@ proc execMethod*(meth: Value) =
     ##   available in the outer scope
     ## - Symbols re-assigned inside will NOT 
     ##   overwrite the value in the outer scope
+    checkRecursion()
 
     when not defined(WEB):
         let framed = pushDefinitionFrame(meth)
