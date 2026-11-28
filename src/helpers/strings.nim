@@ -13,11 +13,6 @@
 import lenientops, math, sequtils
 import strutils, sugar, tables, unicode
 
-when defined(WEB):
-    import jsre
-else:
-    import re
-
 #=======================================
 # Methods
 #=======================================
@@ -227,7 +222,7 @@ func stripColors*(s: string): string =
 proc realLen*(s: string): int =
     let cleanString = 
         when not defined(WEB):
-            s.replacef(re"\e[^m]+m","")
+            s.stripColors()
         else:
             s
     return cleanString.runeLen()
@@ -293,7 +288,7 @@ func splitEvery*(s: string, n: int): seq[string] =
 proc realFind*(s: string, subs: string): int =
     let cleanString = 
         when not defined(WEB):
-            s.replacef(re"\e[^m]+m","")
+            s.stripColors()
         else:
             s
     # (a plain search, then the character index of what was found)
