@@ -33,8 +33,11 @@ when not defined(windows):
         signalStack: array[65536, byte]     ## needed for reporting stack overflows
 
 var
-    StackBottom: uint   ## the lowest address of the main stack
+    StackBottom: uint   ## the lowest address of the stack we're on
     StackLimit: uint    ## going below this means we're about to run out of stack
+
+    MainStackBottom: uint   ## the same, for the main stack
+    MainStackLimit: uint    ## (while we're on a fiber's)
 
 #=======================================
 # Helpers
@@ -99,6 +102,11 @@ else:
         reportFault()
         exitnow(128 + sig)
 
+func stackLimitFor(bottom, size: uint): uint {.inline.} =
+    ## Where we stop, for a stack with given bottom & size
+    ## (leaving enough room to report the error)
+    bottom + max(size div 16, 128 * 1024)
+
 #=======================================
 # Methods
 #=======================================
@@ -145,10 +153,23 @@ proc setupFaultHandler*() =
         if getrlimit(RLIMIT_STACK, limit) == 0 and limit.rlim_cur > 0 and limit.rlim_cur < (1 shl 32):
             size = min(uint(limit.rlim_cur), top)
     StackBottom = top - size
-    StackLimit = StackBottom + max(size div 16, 128 * 1024)
+    StackLimit = stackLimitFor(StackBottom, size)
+    MainStackBottom = StackBottom
+    MainStackLimit = StackLimit
+
+proc useStack*(bottom: pointer, size: int) {.inline.} =
+    ## From now on, check against given stack
+    ## (a fiber's, that's about to run)
+    StackBottom = cast[uint](bottom)
+    StackLimit = stackLimitFor(StackBottom, uint(size))
+
+proc useMainStack*() {.inline.} =
+    ## Back to checking against the main stack
+    StackBottom = MainStackBottom
+    StackLimit = MainStackLimit
 
 template stackExhausted*(): bool =
-    ## Are we (on the main stack and) about to run out of it?
+    ## Are we (on the stack we think we are, and) about to run out of it?
     var marker {.noinit.}: int
     let sp = cast[uint](addr marker)
     sp < StackLimit and sp > StackBottom
