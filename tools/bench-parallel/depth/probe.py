@@ -31,4 +31,4 @@ for spec in sys.argv[1:]:
         d = deepest(binary, where, hi)
         beyond = [(k, probe(binary, k, where)) for k in (d + 1, d * 2, d * 10)]
         print("%-8s %-6s deepest: %7d   beyond: %s" % (name, where, d,
-              ", ".join("%d → %s" % kv for kv in beyond)), flush=True)
+              ", ".join("%d -> %s" % kv for kv in beyond)), flush=True)
