@@ -12,6 +12,11 @@ depth: function [n][if n = 0 -> return 0  1 + depth n - 1]
 r: map.parallel 1..200 'x [depth 50 + x % 50]
 print [first r last r sum r]
 
+topic "a runaway recursion is an error, for that task only"
+r: map.parallel [10 100000000 20] 'x [depth x]
+print [r\0 type r\1 r\2]
+print sum map.parallel 1..20 'x [depth 1000 + x]
+
 topic "many fibers suspended at once"
 r: map.parallel 1..3000 'x [pause 1 x * 3]
 print [size r sum r first r last r]
