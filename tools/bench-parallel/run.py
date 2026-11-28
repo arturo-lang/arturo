@@ -9,6 +9,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 WINDOWS = os.name == "nt"
 
+# master never frees a fiber (~1MB each): without a cap, it can take a
+# whole runner down with it (on Linux - macOS kills it by itself)
+REFERENCE_MEMORY = 6 * 1024 ** 3
+
 # (name, script, argument, only for these binaries - None: all of them)
 # sizes are kept low enough for master, which needs ~1MB per fiber
 CASES = [
@@ -50,13 +54,21 @@ def peakOf(p):
     # (Linux says KB, macOS bytes)
     return p.returncode, usage.ru_maxrss * (1 if sys.platform == "darwin" else 1024)
 
-def run(binary, script, args, prefix, timeout, cwd=None):
+def capped(limit):
+    """Something to run in the child, capping its memory (where we can)"""
+    if WINDOWS or not limit or sys.platform == "darwin": return None
+    def cap():
+        import resource
+        resource.setrlimit(resource.RLIMIT_AS, (limit, limit))
+    return cap
+
+def run(binary, script, args, prefix, timeout, cwd=None, limit=None):
     """Run script once: (exit code, output, seconds, peak bytes)"""
     cmd = (prefix.split() if prefix else []) + [binary, script] + [str(a) for a in args]
     out = os.path.join(HERE, ".out-%d" % os.getpid())
     with open(out, "wb") as f:
         start = time.perf_counter()
-        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, cwd=cwd)
+        p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT, cwd=cwd, preexec_fn=capped(limit))
         killer = threading.Timer(timeout, p.kill)
         killer.start()
         try:
@@ -83,12 +95,15 @@ def bench(bins, runs, prefix, timeout):
         outputs = {}
         for bname, bpath in bins:
             if only and bname not in only: continue
+            tested = bname == bins[-1][0]
             times, peaks, status = [], [], "ok"
             for _ in range(runs):
-                code, text, secs, peak = run(bpath, path, [arg], prefix, timeout)
+                code, text, secs, peak = run(bpath, path, [arg], prefix, timeout,
+                                             limit=None if tested else REFERENCE_MEMORY)
                 if code != 0:
                     status = "failed (%s)" % code
                     print("  %s / %s: %s\n%s" % (name, bname, status, text[-2000:]), flush=True)
+                    if tested: failed = True
                     break
                 outputs[bname] = text
                 times.append(secs); peaks.append(peak)
@@ -135,38 +150,30 @@ def markdown(results, bins, platform):
 #---------------------------------------
 
 def check(bins, repeat, timeout):
+    """Every binary against what's expected - only the last one (the one
+    being tested) can fail it: the others may not even finish (master
+    never frees a fiber), which we just report"""
     failed = False
-
-    # the stress script: every binary has to print exactly the same
-    script = os.path.join(HERE, "check", "fibers.art")
-    outs = {}
-    for bname, bpath in bins:
-        for i in range(repeat):
-            code, text, secs, peak = run(bpath, script, [], "", timeout)
-            print("  fibers.art / %s #%d: exit %s, %.2fs, %.1fMB" % (bname, i + 1, code, secs, peak / 1048576), flush=True)
-            if code != 0:
-                print(text[-3000:]); failed = True
-            outs.setdefault(bname, set()).add(text)
-    every = set().union(*outs.values())
-    if len(every) != 1:
-        failed = True
-        print("  fibers.art: DIFFERENT OUTPUTS")
-        for bname, texts in outs.items():
-            for t in texts: print("---- %s\n%s" % (bname, t))
-    else:
-        print("  fibers.art: same output, everywhere\n" + every.pop())
-
-    # the unit tests: against what's expected (like the tester does)
     tests = os.path.join(ROOT, "tests", "unittests")
-    expected = open(os.path.join(tests, "parallelism.res"), encoding="utf-8").read().strip().splitlines()
-    for bname, bpath in bins:
-        for i in range(repeat):
-            code, text, secs, peak = run(bpath, "parallelism.art", [], "", timeout, cwd=tests)
-            ok = text.splitlines() == expected
-            print("  parallelism.art / %s #%d: %s, %.2fs, %.1fMB" % (bname, i + 1, "passed" if ok else "FAILED", secs, peak / 1048576), flush=True)
-            if not ok:
-                failed = True
-                print(text[-3000:])
+    checks = [
+        # (name, script, expected, where to run it)
+        ("fibers.art", os.path.join(HERE, "check", "fibers.art"), os.path.join(HERE, "check", "fibers.res"), None),
+        ("parallelism.art", "parallelism.art", os.path.join(tests, "parallelism.res"), tests),
+    ]
+    for name, script, res, cwd in checks:
+        expected = open(res, encoding="utf-8").read().replace("\r\n", "\n").strip().splitlines()
+        for bname, bpath in bins:
+            tested = bname == bins[-1][0]
+            for i in range(repeat if tested else 1):
+                code, text, secs, peak = run(bpath, script, [], "", timeout, cwd=cwd,
+                                             limit=None if tested else REFERENCE_MEMORY)
+                ok = code == 0 and text.splitlines() == expected
+                verdict = "passed" if ok else ("FAILED" if tested else "couldn't finish - not counted" if code != 0 else "DIFFERENT")
+                print("  %s / %s #%d: %s (exit %s), %.2fs, %.1fMB" % (name, bname, i + 1, verdict, code, secs, peak / 1048576), flush=True)
+                if not ok:
+                    print(text[-3000:])
+                    # (a reference that finishes has to agree too)
+                    if tested or code == 0: failed = True
     return failed
 
 #---------------------------------------
