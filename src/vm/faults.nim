@@ -55,6 +55,8 @@ when defined(windows):
     proc GetCurrentThreadStackLimits(low, high: ptr uint) {.stdcall, dynlib: "kernel32", importc.}
 
 # Only async-signal-safe stuff here: no allocations whatsoever
+# (apart from flushing stdout, before we go: whatever has
+# been printed so far shouldn't get lost)
 
 proc say(s: cstring) =
     when defined(windows):
@@ -88,10 +90,12 @@ when defined(windows):
         let code = cast[ptr ptr uint32](pointers)[][]
         if code != AccessViolation and code != StackOverflow:
             return ContinueSearch
+        flushFile(stdout)
         reportFault()
         c_exit(139)
 else:
     proc faultHandler(sig: cint) {.noconv.} =
+        flushFile(stdout)
         reportFault()
         exitnow(128 + sig)
 
