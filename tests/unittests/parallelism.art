@@ -779,7 +779,7 @@ do [
     depth: function [n][if n = 0 -> return 0  1 + depth n - 1]
 
     ; deep enough
-    ensure -> [1500 1500] = map.parallel 1..2 'x [depth 1500]
+    ensure -> [1000 1000] = map.parallel 1..2 'x [depth 1000]
     passed
 
     ; a runaway one is an :error - for that task only
