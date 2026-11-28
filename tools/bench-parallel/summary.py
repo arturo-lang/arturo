@@ -12,17 +12,18 @@ def cell(b):
     if b["status"] != "ok": return b["status"]
     return "%.3fs · %.0fMB" % (b["time"], b["peak"] / 1048576)
 
-print("## .parallel: master vs branch\n")
+base, tested = reports[0]["bins"][0], reports[0]["bins"][-1]
+print("## .parallel: %s vs %s\n" % (base, tested))
 print("time (median) · peak memory\n")
 cases = [r["case"] for r in reports[0]["results"]]
 for case in cases:
     print("#### %s\n" % case)
-    print("| platform | master | branch | speedup | memory |")
+    print("| platform | %s | %s | speedup | memory |" % (base, tested))
     print("|---|---:|---:|---:|---:|")
     for rep in reports:
         row = next((r for r in rep["results"] if r["case"] == case), None)
         if row is None: continue
-        m, b = row["bins"].get("master"), row["bins"].get("branch")
+        m, b = row["bins"].get(base), row["bins"].get(tested)
         sp = mem = "-"
         if m and b and m["time"] and b["time"]:
             sp = "%.1fx" % (m["time"] / b["time"])

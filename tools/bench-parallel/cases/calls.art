@@ -1,0 +1,5 @@
+n: to :integer arg\0
+f: function [x][x + 1]
+s: 0
+loop 1..n 'i [s: f s]
+print s

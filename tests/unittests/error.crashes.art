@@ -19,8 +19,16 @@ do [
     passed
 ]
 
+topic "a runaway recursion is a regular error"
+do [
+    out: run "stack-overflow"
+    ensure -> contains? out "Stack overflow"
+    ensure -> not? contains? out "Internal Error"
+    passed
+]
+
 topic "crashes are reported"
 do [
-    ensure -> contains? run "stack-overflow" "Internal Error"
+    ensure -> contains? run "native-overflow" "Internal Error"
     passed
 ]

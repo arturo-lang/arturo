@@ -6,6 +6,10 @@
 >> deep recursion inside fibers (on reused stacks)
 51 50 14900 
 
+>> a runaway recursion is an error, for that task only
+10 :error 20 
+8210
+
 >> many fibers suspended at once
 3000 13504500 3 9000 
 

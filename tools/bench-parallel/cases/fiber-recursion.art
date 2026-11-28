@@ -1,0 +1,3 @@
+n: to :integer arg\0
+depth: function [x][if x = 0 -> return 0  1 + depth x - 1]
+print sum map.parallel 1..100 'x [depth n]

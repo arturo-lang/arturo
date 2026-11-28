@@ -1,10 +1,10 @@
-# TEMPORARY (parallel-fibers): master vs this branch, on every platform (release builds, with PGO):
+# TEMPORARY (fiber-stacks): parallel-fibers (what it's based on) vs this branch, on every platform (release builds, with PGO):
 # correctness checks (same output everywhere, unit tests - several times) & benchmarks - tools/bench-parallel
 name: Benchmark .parallel
 
 on:
     push:
-        branches: [parallel-fibers]
+        branches: [fiber-stacks]
     workflow_dispatch:
         inputs:
             runs:
@@ -35,23 +35,23 @@ jobs:
               with:
                 path: bench-src
 
-            - name: Arturo master (release, PGO)
+            - name: Arturo parallel-fibers (release, PGO)
               uses: arturo-lang/setup-arturo@v2
               with:
                 do: compile
                 token: ${{ secrets.GITHUB_TOKEN }}
                 os: ${{ matrix.os }}
                 arch: ${{ matrix.arch }}
-                src: master
+                src: parallel-fibers
                 release: 'true'
                 pgo: 'true'
 
             - name: Keep it
               run: |
-                mkdir -p bins/master
-                if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/master/
-                else cp -R "$arturoDistPath"/. bins/master/; fi
-                bins/master/arturo -v
+                mkdir -p bins/base
+                if [ "${{ matrix.os }}" = "windows" ]; then cp bin/arturo.exe bins/base/
+                else cp -R "$arturoDistPath"/. bins/base/; fi
+                bins/base/arturo -v
                 # (setup-arturo can't install Nim twice in the same place)
                 rm -rf nim
 
@@ -86,7 +86,7 @@ jobs:
                 exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
                 py=$(command -v python3 || command -v python)
                 "$py" bench-src/tools/bench-parallel/run.py --check --repeat 3 \
-                    --bin "master=bins/master/arturo$exe" \
+                    --bin "base=bins/base/arturo$exe" \
                     --bin "branch=bins/branch/arturo$exe"
 
             - name: Benchmarks
@@ -95,7 +95,7 @@ jobs:
                 exe=""; [ "${{ matrix.os }}" = "windows" ] && exe=".exe"
                 py=$(command -v python3 || command -v python)
                 "$py" bench-src/tools/bench-parallel/run.py \
-                    --bin "master=bins/master/arturo$exe" \
+                    --bin "base=bins/base/arturo$exe" \
                     --bin "branch=bins/branch/arturo$exe" \
                     --runs "${{ github.event.inputs.runs || '5' }}" \
                     --prefix "${{ matrix.prefix }}" \

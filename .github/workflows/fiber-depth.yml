@@ -1,0 +1,50 @@
+# TEMPORARY (fiber-stacks): how deep a recursion can go, on the main thread & in a fiber,
+# and how it fails beyond that - every platform, as CI builds it, as released & mini
+name: Fiber depth
+
+on:
+    push:
+        branches: [fiber-stacks]
+    workflow_dispatch:
+
+jobs:
+    depth:
+        name: depth (${{ matrix.os }}-${{ matrix.arch }}, ${{ matrix.build }})
+        runs-on: ${{
+            (matrix.os == 'linux')   && (matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest') ||
+            (matrix.os == 'macos')   && (matrix.arch == 'arm64' && 'macos-latest' || 'macos-15-intel') ||
+            (matrix.os == 'windows') && (matrix.arch == 'arm64' && 'windows-11-arm' || 'windows-latest') }}
+        timeout-minutes: 90
+        defaults:
+            run:
+                shell: ${{ matrix.os == 'windows' && 'msys2 {0}' || 'bash' }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [linux, macos, windows]
+                arch: [amd64, arm64]
+                build: [ci, release, mini]
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                path: depth-src
+
+            - name: Arturo (${{ matrix.build }})
+              uses: arturo-lang/setup-arturo@v2
+              with:
+                do: compile
+                token: ${{ secrets.GITHUB_TOKEN }}
+                os: ${{ matrix.os }}
+                arch: ${{ matrix.arch }}
+                mode: ${{ matrix.build == 'mini' && 'mini' || '' }}
+                src: ${{ github.sha }}
+                release: ${{ matrix.build == 'release' && 'true' || 'false' }}
+                pgo: ${{ matrix.build == 'release' && 'true' || 'false' }}
+
+            - name: Depth
+              run: |
+                if [ "${{ matrix.os }}" = "windows" ]; then bin=bin/arturo.exe; else bin="$arturoDistPath/arturo"; fi
+                "$bin" -v
+                py=$(command -v python3 || command -v python)
+                "$py" depth-src/tools/bench-parallel/depth/probe.py "${{ matrix.build }}=$bin" | tee depth.txt
+                echo '```' >> "$GITHUB_STEP_SUMMARY"; cat depth.txt >> "$GITHUB_STEP_SUMMARY"; echo '```' >> "$GITHUB_STEP_SUMMARY"

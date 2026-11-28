@@ -29,6 +29,7 @@ when not defined(WEB):
     import extras/minicoro
 
     import vm/errors
+    import vm/faults
     import vm/lib
     import vm/[context, exec, parse, stack]
     import vm/values/custom/[vtask, verror]
@@ -42,12 +43,79 @@ when not defined(WEB):
 
 when not defined(WEB):
     const
-        DefaultFiberStackSize* = 256 * 1024     ## 256KB per fiber
+        # what each fiber gets: only what's actually used of it takes up memory
+        # (on Windows, all of it is committed upfront - so, not that much)
+        DefaultFiberStackSize* =
+            when defined(windows):  1024 * 1024
+            else:                   4 * 1024 * 1024
+
+        GuardedFiberStacks = not (defined(windows) and not defined(amd64))
+            ## (on Windows/ARM64, minicoro uses the system's own fibers:
+            ## their stacks come with guard pages already)
+
+    # Fiber stacks are mapped straight from the OS, with an inaccessible
+    # page right below them: running out of one is a fault we can report
+    # - instead of quietly writing over whatever happens to be there
+
+    when GuardedFiberStacks:
+        when defined(windows):
+            const
+                MEM_COMMIT = 0x1000'u32
+                MEM_RESERVE = 0x2000'u32
+                MEM_RELEASE = 0x8000'u32
+                PAGE_NOACCESS = 0x01'u32
+                PAGE_READWRITE = 0x04'u32
+
+            proc VirtualAlloc(address: pointer, size: csize_t, allocationType, protect: uint32): pointer {.stdcall, dynlib: "kernel32", importc.}
+            proc VirtualProtect(address: pointer, size: csize_t, newProtect: uint32, oldProtect: ptr uint32): int32 {.stdcall, dynlib: "kernel32", importc.}
+            proc VirtualFree(address: pointer, size: csize_t, freeType: uint32): int32 {.stdcall, dynlib: "kernel32", importc.}
+
+            let PageSize = 4096
+        else:
+            let PageSize = sysconf(SC_PAGESIZE)
+
+        proc mappedSize(size: csize_t): int {.inline.} =
+            ## Whole pages for given size, plus the guard page
+            ((int(size) + PageSize - 1) and not (PageSize - 1)) + PageSize
+
+        # (the memory of finished fibers is kept & reused, just like their
+        # value stacks: never more than the most fibers there have been at
+        # the same time - and no mapping & unmapping for every one of them)
+        var
+            FiberMemoryPool: seq[pointer]
+            FiberMemorySize: csize_t
+
+        proc allocFiberMemory(size: csize_t, data: pointer): pointer {.cdecl.} =
+            if size == FiberMemorySize and FiberMemoryPool.len > 0:
+                return FiberMemoryPool.pop()
+            when defined(windows):
+                let p = VirtualAlloc(nil, csize_t(mappedSize(size)), MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE)
+                if p.isNil: return nil
+                var old: uint32
+                discard VirtualProtect(p, csize_t(PageSize), PAGE_NOACCESS, addr old)
+            else:
+                let p = mmap(nil, mappedSize(size), PROT_READ or PROT_WRITE, MAP_PRIVATE or MAP_ANONYMOUS, -1, 0)
+                if p == MAP_FAILED: return nil
+                discard mprotect(p, PageSize, PROT_NONE)
+            result = cast[pointer](cast[uint](p) + uint(PageSize))
+
+        proc freeFiberMemory(p: pointer, size: csize_t, data: pointer) {.cdecl.} =
+            if FiberMemorySize == 0: FiberMemorySize = size
+            if size == FiberMemorySize:
+                FiberMemoryPool.add(p)
+                return
+            let start = cast[pointer](cast[uint](p) - uint(PageSize))
+            when defined(windows):
+                discard VirtualFree(start, 0, MEM_RELEASE)
+            else:
+                discard munmap(start, mappedSize(size))
 
     type
         Fiber* = ref object
-            handle: McoCoroPtr
+            handle: McoCoroPtr                  ## nil until it first runs
             entry: proc ()
+            stackSize: int
+            done: bool
             ctx*: VMContext                     ## per-fiber VM globals slice; nil if outside scheduler
 
     proc fiberCheck(res: McoResult, op: string) {.inline.} =
@@ -63,30 +131,42 @@ when not defined(WEB):
                       stackSize: int = DefaultFiberStackSize): Fiber =
         ## Create suspended fiber. First `resume` runs `entry`. On return,
         ## fiber becomes `mcoDead`; clean up with `destroyFiber`.
-        result = Fiber(entry: entry)
+        ## (its stack is only there once it first runs: with lots of
+        ## fibers that are spawned at once, only the ones that have
+        ## started - and haven't finished yet - have one)
+        result = Fiber(entry: entry, stackSize: stackSize)
         GC_ref(result)  # keep alive while minicoro holds the user_data ptr
-        var desc = mco_desc_init(fiberTrampoline, csize_t(stackSize))
-        desc.userData = cast[pointer](result)
+
+    proc start(f: Fiber) =
+        ## Create the actual coroutine (& its stack)
+        var desc = mco_desc_init(fiberTrampoline, csize_t(f.stackSize))
+        desc.userData = cast[pointer](f)
+        when GuardedFiberStacks:
+            desc.allocCb = cast[pointer](allocFiberMemory)
+            desc.deallocCb = cast[pointer](freeFiberMemory)
         var co: McoCoroPtr
         fiberCheck(mco_create(addr co, addr desc), "create")
-        result.handle = co
+        f.handle = co
 
     proc destroyFiber*(f: Fiber) =
         ## Release fiber stack + struct. Only when suspended or dead.
+        if f.done: return
         if f.handle != nil:
             fiberCheck(mco_destroy(f.handle), "destroy")
             f.handle = nil
-            f.entry = nil
-            GC_unref(f)
+        f.done = true
+        f.entry = nil
+        GC_unref(f)
 
     proc resume*(f: Fiber) {.inline.} =
+        if f.handle.isNil: f.start()
         fiberCheck(mco_resume(f.handle), "resume")
 
     proc suspend*() {.inline.} =
         fiberCheck(mco_yield(mco_running()), "suspend")
 
     proc isDone*(f: Fiber): bool {.inline.} =
-        f.handle.isNil or mco_status(f.handle) == mcoDead
+        f.done or (not f.handle.isNil and mco_status(f.handle) == mcoDead)
 
     proc currentFiberHandle*(): McoCoroPtr {.inline.} =
         ## minicoro handle of running fiber, nil on main thread.
@@ -140,7 +220,13 @@ when not defined(WEB):
             scheduler.currentFiber = f
             swapOutTo(scheduler.mainCtx)
             swapInFrom(f.ctx)
-            resume(f)
+            if f.handle.isNil: f.start()
+            # (so that a runaway recursion in there is an error, not a crash)
+            useStack(f.handle.stackBase, int(f.handle.stackSize))
+            try:
+                resume(f)
+            finally:
+                useMainStack()
             swapOutTo(f.ctx)
             swapInFrom(scheduler.mainCtx)
             scheduler.currentFiber = nil
