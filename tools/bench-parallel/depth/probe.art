@@ -1,0 +1,6 @@
+; how a recursion of given depth goes: on the main thread or in a fiber
+n: to :integer arg\0
+where: arg\1
+depth: function [x][if x = 0 -> return 0  1 + depth x - 1]
+r: switch where = "fiber" -> wait do.async [depth n] -> try [depth n]
+print switch error? r -> "error" -> "ok"
