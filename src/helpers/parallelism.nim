@@ -76,6 +76,7 @@ when not defined(WEB):
         if f.handle != nil:
             fiberCheck(mco_destroy(f.handle), "destroy")
             f.handle = nil
+            f.entry = nil
             GC_unref(f)
 
     proc resume*(f: Fiber) {.inline.} =
@@ -85,7 +86,7 @@ when not defined(WEB):
         fiberCheck(mco_yield(mco_running()), "suspend")
 
     proc isDone*(f: Fiber): bool {.inline.} =
-        mco_status(f.handle) == mcoDead
+        f.handle.isNil or mco_status(f.handle) == mcoDead
 
     proc currentFiberHandle*(): McoCoroPtr {.inline.} =
         ## minicoro handle of running fiber, nil on main thread.
@@ -144,6 +145,10 @@ when not defined(WEB):
             swapOutTo(f.ctx)
             swapInFrom(scheduler.mainCtx)
             scheduler.currentFiber = nil
+            if isDone(f):
+                # (nothing will run on it again)
+                f.ctx.release()
+                destroyFiber(f)
         elif hasPendingOperations():
             poll()
 
