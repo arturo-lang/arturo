@@ -74,7 +74,16 @@ when not defined(WEB):
             ## Whole pages for given size, plus the guard page
             ((int(size) + PageSize - 1) and not (PageSize - 1)) + PageSize
 
+        # (the memory of finished fibers is kept & reused, just like their
+        # value stacks: never more than the most fibers there have been at
+        # the same time - and no mapping & unmapping for every one of them)
+        var
+            FiberMemoryPool: seq[pointer]
+            FiberMemorySize: csize_t
+
         proc allocFiberMemory(size: csize_t, data: pointer): pointer {.cdecl.} =
+            if size == FiberMemorySize and FiberMemoryPool.len > 0:
+                return FiberMemoryPool.pop()
             when defined(windows):
                 let p = VirtualAlloc(nil, csize_t(mappedSize(size)), MEM_RESERVE or MEM_COMMIT, PAGE_READWRITE)
                 if p.isNil: return nil
@@ -87,6 +96,10 @@ when not defined(WEB):
             result = cast[pointer](cast[uint](p) + uint(PageSize))
 
         proc freeFiberMemory(p: pointer, size: csize_t, data: pointer) {.cdecl.} =
+            if FiberMemorySize == 0: FiberMemorySize = size
+            if size == FiberMemorySize:
+                FiberMemoryPool.add(p)
+                return
             let start = cast[pointer](cast[uint](p) - uint(PageSize))
             when defined(windows):
                 discard VirtualFree(start, 0, MEM_RELEASE)
