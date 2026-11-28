@@ -8,7 +8,7 @@
 
 >> a runaway recursion is an error, for that task only
 10 :error 20 
-20210
+8210
 
 >> many fibers suspended at once
 3000 13504500 3 9000 

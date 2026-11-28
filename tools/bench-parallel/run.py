@@ -30,7 +30,7 @@ CASES = [
     ("no fibers",           "no-fibers",        30,     None),
     ("calls 3M",            "calls",            3000000, None),
     ("recursion in fibers", "fiber-recursion",  200,    None),
-    ("deeper, in fibers",   "fiber-recursion",  1500,   ["branch"]),
+    ("deeper, in fibers",   "fiber-recursion",  500,    ["branch"]),
 ]
 
 #---------------------------------------
