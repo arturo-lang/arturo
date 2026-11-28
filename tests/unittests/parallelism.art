@@ -771,3 +771,30 @@ do [
     passed
 
 ]
+
+
+topic "fibers — recursion"
+do [
+
+    depth: function [n][if n = 0 -> return 0  1 + depth n - 1]
+
+    ; deep enough
+    ensure -> [1500 1500] = map.parallel 1..2 'x [depth 1500]
+    passed
+
+    ; a runaway one is an :error - for that task only
+    r: map.parallel [10 100000000 20] 'x [depth x]
+    ensure -> 10 = r\0
+    ensure -> error? r\1
+    ensure -> 20 = r\2
+    ensure -> error? wait do.async [depth 100000000]
+    passed
+
+    ; that can be caught, in there
+    ensure -> :error = wait do.async [
+        caught: try [depth 100000000]
+        type caught
+    ]
+    passed
+
+]

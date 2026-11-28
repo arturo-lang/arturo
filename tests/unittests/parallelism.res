@@ -139,3 +139,8 @@
 >> fibers — lots of them, all suspended at once
 [+] passed!
 [+] passed!
+
+>> fibers — recursion
+[+] passed!
+[+] passed!
+[+] passed!
