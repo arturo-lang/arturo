@@ -34,9 +34,11 @@ type
 
     McoCoro* {.importc: "mco_coro", header: "minicoro/minicoro.h",
                incompleteStruct.} = object
-        ## Opaque struct — declared so the C signature for entry
+        ## Mostly opaque struct — declared so the C signature for entry
         ## functions and FFI procs uses `mco_coro*`, not `void*`.
-        ## We never inspect the layout from Nim.
+        ## The only fields we read are the ones about its stack.
+        stackBase* {.importc: "stack_base".}: pointer
+        stackSize* {.importc: "stack_size".}: csize_t
 
     McoCoroPtr* = ptr McoCoro
 
