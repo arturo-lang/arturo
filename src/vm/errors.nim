@@ -290,7 +290,7 @@ proc printError(s: string) =
         if NoErrorColors:
             # (any colors already in there, e.g. from the
             # message itself, have to go too)
-            stderr.writeLine s.replacef(re"\e[^m]+m", "")
+            stderr.writeLine s.stripColors()
         else:
             stderr.writeLine s
     else:
