@@ -1,0 +1,4 @@
+n: to :integer arg\0
+fib: function [x][if x < 2 -> return x  (fib x - 1) + fib x - 2]
+print fib n
+print sum map 1..100000 'x [x * 2]

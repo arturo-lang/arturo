@@ -1,0 +1,3 @@
+n: to :integer arg\0
+ts: map 1..n 'x -> do.async [x * x]
+print sum wait.all ts

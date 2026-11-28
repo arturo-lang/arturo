@@ -1,0 +1,16 @@
+n: to :integer arg\0
+Ch: channel.bounded: 16 'jobs
+got: []
+workers: map 1..4 'w [
+    do.async [
+        keepGoing: true
+        while [keepGoing][
+            v: receive Ch
+            switch null? v [ keepGoing: false ][ 'got ++ v ]
+        ]
+    ]
+]
+loop 1..n 'x -> send Ch x
+unplug Ch
+wait.all workers
+print [size got sum got]

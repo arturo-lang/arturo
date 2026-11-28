@@ -1,0 +1,2 @@
+n: to :integer arg\0
+print sum map.parallel:8 1..n 'x [x * 2]

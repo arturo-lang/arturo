@@ -1,0 +1,2 @@
+n: to :integer arg\0
+print size select.parallel 1..n 'x [zero? x % 3]
