@@ -108,8 +108,10 @@ when not defined(WEB):
 
     type
         Fiber* = ref object
-            handle: McoCoroPtr
+            handle: McoCoroPtr                  ## nil until it first runs
             entry: proc ()
+            stackSize: int
+            done: bool
             ctx*: VMContext                     ## per-fiber VM globals slice; nil if outside scheduler
 
     proc fiberCheck(res: McoResult, op: string) {.inline.} =
@@ -125,33 +127,42 @@ when not defined(WEB):
                       stackSize: int = DefaultFiberStackSize): Fiber =
         ## Create suspended fiber. First `resume` runs `entry`. On return,
         ## fiber becomes `mcoDead`; clean up with `destroyFiber`.
-        result = Fiber(entry: entry)
+        ## (its stack is only there once it first runs: with lots of
+        ## fibers that are spawned at once, only the ones that have
+        ## started - and haven't finished yet - have one)
+        result = Fiber(entry: entry, stackSize: stackSize)
         GC_ref(result)  # keep alive while minicoro holds the user_data ptr
-        var desc = mco_desc_init(fiberTrampoline, csize_t(stackSize))
-        desc.userData = cast[pointer](result)
+
+    proc start(f: Fiber) =
+        ## Create the actual coroutine (& its stack)
+        var desc = mco_desc_init(fiberTrampoline, csize_t(f.stackSize))
+        desc.userData = cast[pointer](f)
         when GuardedFiberStacks:
             desc.allocCb = cast[pointer](allocFiberMemory)
             desc.deallocCb = cast[pointer](freeFiberMemory)
         var co: McoCoroPtr
         fiberCheck(mco_create(addr co, addr desc), "create")
-        result.handle = co
+        f.handle = co
 
     proc destroyFiber*(f: Fiber) =
         ## Release fiber stack + struct. Only when suspended or dead.
+        if f.done: return
         if f.handle != nil:
             fiberCheck(mco_destroy(f.handle), "destroy")
             f.handle = nil
-            f.entry = nil
-            GC_unref(f)
+        f.done = true
+        f.entry = nil
+        GC_unref(f)
 
     proc resume*(f: Fiber) {.inline.} =
+        if f.handle.isNil: f.start()
         fiberCheck(mco_resume(f.handle), "resume")
 
     proc suspend*() {.inline.} =
         fiberCheck(mco_yield(mco_running()), "suspend")
 
     proc isDone*(f: Fiber): bool {.inline.} =
-        f.handle.isNil or mco_status(f.handle) == mcoDead
+        f.done or (not f.handle.isNil and mco_status(f.handle) == mcoDead)
 
     proc currentFiberHandle*(): McoCoroPtr {.inline.} =
         ## minicoro handle of running fiber, nil on main thread.
@@ -205,6 +216,7 @@ when not defined(WEB):
             scheduler.currentFiber = f
             swapOutTo(scheduler.mainCtx)
             swapInFrom(f.ctx)
+            if f.handle.isNil: f.start()
             # (so that a runaway recursion in there is an error, not a crash)
             useStack(f.handle.stackBase, int(f.handle.stackSize))
             try:
