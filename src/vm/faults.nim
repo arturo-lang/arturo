@@ -168,8 +168,10 @@ proc useMainStack*() {.inline.} =
     StackBottom = MainStackBottom
     StackLimit = MainStackLimit
 
+proc frameAddress(level: cint): pointer {.importc: "__builtin_frame_address", nodecl.}
+
 template stackExhausted*(): bool =
     ## Are we (on the stack we think we are, and) about to run out of it?
-    var marker {.noinit.}: int
-    let sp = cast[uint](addr marker)
+    ## (no local of our own: taking its address costs, in a hot loop)
+    let sp = cast[uint](frameAddress(0))
     sp < StackLimit and sp > StackBottom
