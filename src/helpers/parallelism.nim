@@ -29,6 +29,7 @@ when not defined(WEB):
     import extras/minicoro
 
     import vm/errors
+    import vm/faults
     import vm/lib
     import vm/[context, exec, parse, stack]
     import vm/values/custom/[vtask, verror]
@@ -140,7 +141,12 @@ when not defined(WEB):
             scheduler.currentFiber = f
             swapOutTo(scheduler.mainCtx)
             swapInFrom(f.ctx)
-            resume(f)
+            # (so that a runaway recursion in there is an error, not a crash)
+            useStack(f.handle.stackBase, int(f.handle.stackSize))
+            try:
+                resume(f)
+            finally:
+                useMainStack()
             swapOutTo(f.ctx)
             swapInFrom(scheduler.mainCtx)
             scheduler.currentFiber = nil
