@@ -43,7 +43,7 @@ when not defined(WEB):
 
 when not defined(WEB):
     const
-        DefaultFiberStackSize* = 256 * 1024     ## 256KB per fiber
+        DefaultFiberStackSize* = 1024 * 1024    ## 1MB per fiber (only what's actually used of it takes up memory)
 
         GuardedFiberStacks = not (defined(windows) and not defined(amd64))
             ## (on Windows/ARM64, minicoro uses the system's own fibers:
